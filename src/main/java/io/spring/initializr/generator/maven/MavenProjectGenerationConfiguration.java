@@ -16,9 +16,7 @@
 
 package io.spring.initializr.generator.maven;
 
-import io.spring.initializr.generator.BuildSystem;
 import io.spring.initializr.generator.ProjectGenerationConfiguration;
-import io.spring.initializr.generator.condition.ConditionalOnBuildSystem;
 import io.spring.initializr.generator.git.GitIgnoreContributor;
 
 import org.springframework.context.annotation.Bean;
@@ -32,7 +30,7 @@ import org.springframework.core.annotation.Order;
  * @author Andy Wilkinson
  */
 @ProjectGenerationConfiguration
-@ConditionalOnBuildSystem(BuildSystem.MAVEN)
+@ConditionalOnMaven
 public class MavenProjectGenerationConfiguration {
 
 	@Bean

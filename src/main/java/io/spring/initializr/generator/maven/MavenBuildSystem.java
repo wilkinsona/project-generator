@@ -14,25 +14,22 @@
  * limitations under the License.
  */
 
-package io.spring.initializr.generator;
+package io.spring.initializr.generator.maven;
 
 import io.spring.initializr.generator.build.BuildSystem;
 
 /**
- * Description of a project that is being generated.
+ * Maven {@link BuildSystem}.
  *
  * @author Andy Wilkinson
  */
-public class ProjectDescription {
+public class MavenBuildSystem implements BuildSystem {
 
-	private BuildSystem buildSystem;
+	static final String ID = "maven";
 
-	public BuildSystem getBuildSystem() {
-		return this.buildSystem;
-	}
-
-	public void setBuildSystem(BuildSystem buildSystem) {
-		this.buildSystem = buildSystem;
+	@Override
+	public String id() {
+		return ID;
 	}
 
 }

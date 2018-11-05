@@ -16,8 +16,6 @@
 
 package io.spring.initializr.generator.gradle;
 
-import io.spring.initializr.generator.BuildSystem;
-import io.spring.initializr.generator.condition.ConditionalOnBuildSystem;
 import io.spring.initializr.generator.git.GitIgnoreContributor;
 
 import org.springframework.context.annotation.Bean;
@@ -32,7 +30,7 @@ import org.springframework.core.annotation.Order;
  * @author Andy Wilkinson
  */
 @Configuration
-@ConditionalOnBuildSystem(BuildSystem.GRADLE)
+@ConditionalOnGradle
 public class GradleProjectGenerationConfiguration {
 
 	@Bean

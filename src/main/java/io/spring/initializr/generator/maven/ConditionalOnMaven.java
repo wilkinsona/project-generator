@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package io.spring.initializr.generator.condition;
+package io.spring.initializr.generator.maven;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
@@ -22,22 +22,17 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import io.spring.initializr.generator.BuildSystem;
-
-import org.springframework.context.annotation.Conditional;
+import io.spring.initializr.generator.build.ConditionalOnBuildSystem;
 
 /**
- * Condition that matches when a generated project will use a particular
- * {@link BuildSystem}.
+ * Condition that matches when a generated project will use Maven.
  *
  * @author Andy Wilkinson
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ ElementType.TYPE, ElementType.METHOD })
 @Documented
-@Conditional(OnBuildSystemCondition.class)
-public @interface ConditionalOnBuildSystem {
-
-	BuildSystem value();
+@ConditionalOnBuildSystem(MavenBuildSystem.ID)
+public @interface ConditionalOnMaven {
 
 }

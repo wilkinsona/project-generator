@@ -14,25 +14,24 @@
  * limitations under the License.
  */
 
-package io.spring.initializr.generator;
+package io.spring.initializr.generator.gradle;
 
 import io.spring.initializr.generator.build.BuildSystem;
+import io.spring.initializr.generator.build.BuildSystemFactory;
 
 /**
- * Description of a project that is being generated.
+ * {@link BuildSystemFactory Factory} for {@link GradleBuildSystem}.
  *
  * @author Andy Wilkinson
  */
-public class ProjectDescription {
+class GradleBuildSystemFactory implements BuildSystemFactory {
 
-	private BuildSystem buildSystem;
-
-	public BuildSystem getBuildSystem() {
-		return this.buildSystem;
-	}
-
-	public void setBuildSystem(BuildSystem buildSystem) {
-		this.buildSystem = buildSystem;
+	@Override
+	public BuildSystem createBuildSystem(String id) {
+		if (GradleBuildSystem.ID.equals(id)) {
+			return new GradleBuildSystem();
+		}
+		return null;
 	}
 
 }

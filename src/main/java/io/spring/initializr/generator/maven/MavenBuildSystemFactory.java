@@ -14,23 +14,23 @@
  * limitations under the License.
  */
 
-package io.spring.initializr.generator;
+package io.spring.initializr.generator.maven;
+
+import io.spring.initializr.generator.build.BuildSystemFactory;
 
 /**
- * Enumeration of supported build systems.
+ * {@link BuildSystemFactory Factory} for {@link MavenBuildSystem}.
  *
  * @author Andy Wilkinson
  */
-public enum BuildSystem {
+class MavenBuildSystemFactory implements BuildSystemFactory {
 
-	/**
-	 * Gradle build system.
-	 */
-	GRADLE,
-
-	/**
-	 * Maven build system.
-	 */
-	MAVEN;
+	@Override
+	public MavenBuildSystem createBuildSystem(String id) {
+		if (MavenBuildSystem.ID.equals(id)) {
+			return new MavenBuildSystem();
+		}
+		return null;
+	}
 
 }

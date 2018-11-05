@@ -14,25 +14,22 @@
  * limitations under the License.
  */
 
-package io.spring.initializr.generator;
+package io.spring.initializr.generator.gradle;
 
 import io.spring.initializr.generator.build.BuildSystem;
 
 /**
- * Description of a project that is being generated.
+ * Gradle {@link BuildSystem}.
  *
  * @author Andy Wilkinson
  */
-public class ProjectDescription {
+public class GradleBuildSystem implements BuildSystem {
 
-	private BuildSystem buildSystem;
+	static final String ID = "gradle";
 
-	public BuildSystem getBuildSystem() {
-		return this.buildSystem;
-	}
-
-	public void setBuildSystem(BuildSystem buildSystem) {
-		this.buildSystem = buildSystem;
+	@Override
+	public String id() {
+		return ID;
 	}
 
 }

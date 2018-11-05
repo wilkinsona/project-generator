@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-package io.spring.initializr.generator.condition;
+package io.spring.initializr.generator.build;
 
-import io.spring.initializr.generator.BuildSystem;
 import io.spring.initializr.generator.ProjectDescription;
+import io.spring.initializr.generator.condition.ProjectGenerationCondition;
 
 import org.springframework.context.annotation.ConditionContext;
 import org.springframework.core.type.AnnotatedTypeMetadata;
@@ -33,10 +33,11 @@ class OnBuildSystemCondition extends ProjectGenerationCondition {
 	@Override
 	protected boolean matches(ProjectDescription projectDescription,
 			ConditionContext context, AnnotatedTypeMetadata metadata) {
-		BuildSystem buildSystem = (BuildSystem) metadata
+		String buildSystemId = (String) metadata
 				.getAllAnnotationAttributes(ConditionalOnBuildSystem.class.getName())
 				.getFirst("value");
-		return projectDescription.getBuildSystem() == buildSystem;
+		BuildSystem buildSystem = BuildSystem.forId(buildSystemId);
+		return projectDescription.getBuildSystem().id().equals(buildSystem.id());
 	}
 
 }

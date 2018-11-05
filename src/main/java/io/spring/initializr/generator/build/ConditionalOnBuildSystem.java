@@ -14,25 +14,28 @@
  * limitations under the License.
  */
 
-package io.spring.initializr.generator;
+package io.spring.initializr.generator.build;
 
-import io.spring.initializr.generator.build.BuildSystem;
+import java.lang.annotation.Documented;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+
+import org.springframework.context.annotation.Conditional;
 
 /**
- * Description of a project that is being generated.
+ * Condition that matches when a generated project will use a particular
+ * {@link BuildSystem}.
  *
  * @author Andy Wilkinson
  */
-public class ProjectDescription {
+@Retention(RetentionPolicy.RUNTIME)
+@Target({ ElementType.TYPE, ElementType.METHOD })
+@Documented
+@Conditional(OnBuildSystemCondition.class)
+public @interface ConditionalOnBuildSystem {
 
-	private BuildSystem buildSystem;
-
-	public BuildSystem getBuildSystem() {
-		return this.buildSystem;
-	}
-
-	public void setBuildSystem(BuildSystem buildSystem) {
-		this.buildSystem = buildSystem;
-	}
+	String value();
 
 }

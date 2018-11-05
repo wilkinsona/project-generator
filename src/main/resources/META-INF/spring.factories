@@ -1,4 +1,9 @@
+io.spring.initializr.generator.build.BuildSystemFactory=\
+io.spring.initializr.generator.gradle.GradleBuildSystemFactory,\
+io.spring.initializr.generator.maven.MavenBuildSystemFactory
+
 io.spring.initializr.generator.ProjectGenerationConfiguration=\
 io.spring.initializr.generator.git.GitProjectGenerationConfiguration,\
 io.spring.initializr.generator.gradle.GradleProjectGenerationConfiguration,\
 io.spring.initializr.generator.maven.MavenProjectGenerationConfiguration
+

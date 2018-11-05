@@ -26,6 +26,8 @@ import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
 import java.util.List;
 
+import io.spring.initializr.generator.gradle.GradleBuildSystem;
+import io.spring.initializr.generator.maven.MavenBuildSystem;
 import org.junit.Test;
 
 import org.springframework.util.FileSystemUtils;
@@ -43,7 +45,7 @@ public class ProjectGeneratorTests {
 	public void gradleWrapperIsContributedWhenGeneratingGradleProject()
 			throws IOException {
 		ProjectDescription description = new ProjectDescription();
-		description.setBuildSystem(BuildSystem.GRADLE);
+		description.setBuildSystem(new GradleBuildSystem());
 		File project = new ProjectGenerator().generate(description);
 		List<String> relativePaths = getRelativePathsOfProjectFiles(project);
 		assertThat(relativePaths).contains("gradlew", "gradlew.bat",
@@ -55,7 +57,7 @@ public class ProjectGeneratorTests {
 	@Test
 	public void mavenWrapperIsContributedWhenGeneratingMavenProject() throws IOException {
 		ProjectDescription description = new ProjectDescription();
-		description.setBuildSystem(BuildSystem.MAVEN);
+		description.setBuildSystem(new MavenBuildSystem());
 		File project = new ProjectGenerator().generate(description);
 		List<String> relativePaths = getRelativePathsOfProjectFiles(project);
 		assertThat(relativePaths).contains("mvnw", "mvnw.cmd",
@@ -68,7 +70,7 @@ public class ProjectGeneratorTests {
 	@Test
 	public void gitIgnoreIsContributedWhenGeneratingGradleProject() throws IOException {
 		ProjectDescription description = new ProjectDescription();
-		description.setBuildSystem(BuildSystem.GRADLE);
+		description.setBuildSystem(new GradleBuildSystem());
 		File project = new ProjectGenerator().generate(description);
 		assertThat(Files.readAllLines(new File(project, ".gitignore").toPath()))
 				.contains(".gradle", "### STS ###");
@@ -77,7 +79,7 @@ public class ProjectGeneratorTests {
 	@Test
 	public void gitIgnoreIsContributedWhenGeneratingMavenProject() throws IOException {
 		ProjectDescription description = new ProjectDescription();
-		description.setBuildSystem(BuildSystem.MAVEN);
+		description.setBuildSystem(new MavenBuildSystem());
 		File project = new ProjectGenerator().generate(description);
 		assertThat(Files.readAllLines(new File(project, ".gitignore").toPath()))
 				.contains("/target/", "### STS ###");

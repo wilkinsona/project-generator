@@ -14,25 +14,25 @@
  * limitations under the License.
  */
 
-package io.spring.initializr.generator;
+package io.spring.initializr.generator.gradle;
 
-import io.spring.initializr.generator.build.BuildSystem;
+import java.lang.annotation.Documented;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+
+import io.spring.initializr.generator.build.ConditionalOnBuildSystem;
 
 /**
- * Description of a project that is being generated.
+ * Condition that matches when a generated project will use Gradle.
  *
  * @author Andy Wilkinson
  */
-public class ProjectDescription {
-
-	private BuildSystem buildSystem;
-
-	public BuildSystem getBuildSystem() {
-		return this.buildSystem;
-	}
-
-	public void setBuildSystem(BuildSystem buildSystem) {
-		this.buildSystem = buildSystem;
-	}
+@Retention(RetentionPolicy.RUNTIME)
+@Target({ ElementType.TYPE, ElementType.METHOD })
+@Documented
+@ConditionalOnBuildSystem(GradleBuildSystem.ID)
+public @interface ConditionalOnGradle {
 
 }
