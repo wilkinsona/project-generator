@@ -1,0 +1,100 @@
+/*
+ * Copyright 2012-2018 the original author or authors.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package io.spring.initializr.generator.code.java;
+
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.util.List;
+
+import io.spring.initializr.generator.code.Annotation;
+import io.spring.initializr.generator.code.Parameter;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
+
+import static org.assertj.core.api.Assertions.assertThat;
+
+/**
+ * Tests for {@link JavaSourceCodeWriter}.
+ *
+ * @author Andy Wilkinson
+ */
+public class JavaSourceCodeWriterTests {
+
+	@Rule
+	public final TemporaryFolder temp = new TemporaryFolder();
+
+	private final JavaSourceCodeWriter writer = new JavaSourceCodeWriter();
+
+	@Test
+	public void emptyCompilationUnit() throws IOException {
+		JavaSourceCode sourceCode = new JavaSourceCode();
+		JavaCompilationUnit compilationUnit = new JavaCompilationUnit("com.example",
+				"Test");
+		sourceCode.addCompilationUnit(compilationUnit);
+		this.writer.writeTo(this.temp.getRoot(), sourceCode);
+		File testSource = new File(this.temp.getRoot(), "com/example/Test.java");
+		assertThat(testSource).isFile();
+		List<String> lines = Files.readAllLines(testSource.toPath());
+		assertThat(lines).containsExactly("package com.example;", "");
+	}
+
+	@Test
+	public void emptyTypeDeclaration() throws IOException {
+		JavaSourceCode sourceCode = new JavaSourceCode();
+		JavaCompilationUnit compilationUnit = new JavaCompilationUnit("com.example",
+				"Test");
+		JavaTypeDeclaration test = new JavaTypeDeclaration("Test");
+		compilationUnit.addTypeDeclaration(test);
+		sourceCode.addCompilationUnit(compilationUnit);
+		this.writer.writeTo(this.temp.getRoot(), sourceCode);
+		File testSource = new File(this.temp.getRoot(), "com/example/Test.java");
+		assertThat(testSource).isFile();
+		List<String> lines = Files.readAllLines(testSource.toPath());
+		assertThat(lines).containsExactly("package com.example;", "",
+				"public class Test {", "", "}", "");
+	}
+
+	@Test
+	public void springBootApplication() throws IOException {
+		JavaSourceCode sourceCode = new JavaSourceCode();
+		JavaCompilationUnit compilationUnit = new JavaCompilationUnit("com.example",
+				"Test");
+		JavaTypeDeclaration test = new JavaTypeDeclaration("Test");
+		test.annotate(new Annotation(
+				"org.springframework.boot.autoconfigure.SpringBootApplication"));
+		test.addMethodDeclaration(JavaMethodDeclaration.staticMethod("main")
+				.returning("void").parameters(new Parameter("java.lang.String[]", "args"))
+				.body(new JavaMethodInvocation(
+						"org.springframework.boot.SpringApplication", "run", "Test.class",
+						"args")));
+		compilationUnit.addTypeDeclaration(test);
+		sourceCode.addCompilationUnit(compilationUnit);
+		this.writer.writeTo(this.temp.getRoot(), sourceCode);
+		File testSource = new File(this.temp.getRoot(), "com/example/Test.java");
+		assertThat(testSource).isFile();
+		List<String> lines = Files.readAllLines(testSource.toPath());
+		lines.forEach(System.out::println);
+		assertThat(lines).containsExactly("package com.example;", "",
+				"import org.springframework.boot.autoconfigure.SpringBootApplication;",
+				"", "@SpringBootApplication", "public class Test {", "",
+				"    public static void main(String[] args) {",
+				"        SpringApplication.run(Test.class, args);", "    }", "", "}", "");
+	}
+
+}
