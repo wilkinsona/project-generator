@@ -14,25 +14,25 @@
  * limitations under the License.
  */
 
-package io.spring.initializr.generator.git;
+package io.spring.initializr.generator;
 
-import io.spring.initializr.generator.ProjectGenerationConfiguration;
+import java.lang.annotation.Documented;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
-import org.springframework.context.annotation.Bean;
-import org.springframework.core.annotation.Order;
+import org.springframework.context.annotation.Configuration;
 
 /**
- * Configuration for Git-related contributions to a generated project.
+ * Specialization of {@link Configuration} for configuration of project generation.
  *
  * @author Andy Wilkinson
  */
-@ProjectGenerationConfiguration
-public class GitProjectGenerationConfiguration {
-
-	@Bean
-	@Order(0)
-	public GitIgnoreContributor gitIgnoreContributor() {
-		return new GitIgnoreContributor();
-	}
+@Target(ElementType.TYPE)
+@Retention(RetentionPolicy.RUNTIME)
+@Documented
+@Configuration
+public @interface ProjectGenerationConfiguration {
 
 }

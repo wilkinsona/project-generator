@@ -22,12 +22,13 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
 
-import io.spring.initializr.generator.git.GitProjectGenerationConfiguration;
-import io.spring.initializr.generator.gradle.GradleProjectGenerationConfiguration;
-import io.spring.initializr.generator.maven.MavenProjectGenerationConfiguration;
-
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
+import org.springframework.context.annotation.ImportSelector;
+import org.springframework.core.io.support.SpringFactoriesLoader;
+import org.springframework.core.type.AnnotationMetadata;
 
 /**
  * Main entry point for project generation.
@@ -40,10 +41,7 @@ public class ProjectGenerator {
 		long start = System.currentTimeMillis();
 		try (AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext()) {
 			context.registerBean(ProjectDescription.class, () -> description);
-			context.register(ProjectGenerationConfiguration.class);
-			context.register(GitProjectGenerationConfiguration.class);
-			context.register(GradleProjectGenerationConfiguration.class);
-			context.register(MavenProjectGenerationConfiguration.class);
+			context.register(CoreConfiguration.class);
 			context.refresh();
 			Path projectRoot = Files.createTempDirectory("project-");
 			context.getBean(FileContributors.class).contribute(projectRoot.toFile());
@@ -56,14 +54,32 @@ public class ProjectGenerator {
 	}
 
 	/**
-	 * Configuration used the bootstrap the application context used for project
+	 * Configuration used to bootstrap the application context used for project
 	 * generation.
 	 */
-	static class ProjectGenerationConfiguration {
+	@Configuration
+	@Import(ProjectGenerationImportSelector.class)
+	static class CoreConfiguration {
 
 		@Bean
 		public FileContributors fileContributors(List<FileContributor> fileContributors) {
 			return new FileContributors(fileContributors);
+		}
+
+	}
+
+	/**
+	 * {@link ImportSelector} for loading classes configured in {@code spring.factories}
+	 * using the {@code io.spring.initializr.generator.ProjectGenerationConfiguration}
+	 * key.
+	 */
+	static class ProjectGenerationImportSelector implements ImportSelector {
+
+		@Override
+		public String[] selectImports(AnnotationMetadata importingClassMetadata) {
+			List<String> factories = SpringFactoriesLoader.loadFactoryNames(
+					ProjectGenerationConfiguration.class, getClass().getClassLoader());
+			return factories.toArray(new String[0]);
 		}
 
 	}
