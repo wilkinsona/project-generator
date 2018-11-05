@@ -16,6 +16,10 @@
 
 package io.spring.initializr.generator;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
 import io.spring.initializr.generator.build.BuildSystem;
 import io.spring.initializr.generator.language.Language;
 
@@ -25,6 +29,8 @@ import io.spring.initializr.generator.language.Language;
  * @author Andy Wilkinson
  */
 public class ProjectDescription {
+
+	private final List<Dependency> dependencies = new ArrayList<>();
 
 	private BuildSystem buildSystem;
 
@@ -64,6 +70,14 @@ public class ProjectDescription {
 
 	public void setArtifactId(String artifactId) {
 		this.artifactId = artifactId;
+	}
+
+	public void addDependency(Dependency dependency) {
+		this.dependencies.add(dependency);
+	}
+
+	public List<Dependency> getDependencies() {
+		return Collections.unmodifiableList(this.dependencies);
 	}
 
 }

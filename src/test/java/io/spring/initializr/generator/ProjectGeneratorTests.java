@@ -100,6 +100,24 @@ public class ProjectGeneratorTests {
 				.toPath()).forEach(System.out::println);
 	}
 
+	@Test
+	public void mainClassIsAnnotatedWithEnableConfigServerWhenGeneratingProjectThatDependsUponSpringCloudConfigServer()
+			throws IOException {
+		ProjectDescription description = new ProjectDescription();
+		description.setBuildSystem(new MavenBuildSystem());
+		description.setLanguage(new JavaLanguage());
+		description.setGroupId("com.example");
+		description.addDependency(new Dependency("org.springframework.cloud",
+				"spring-cloud-config-server"));
+		File project = new ProjectGenerator().generate(description);
+		List<String> relativePaths = getRelativePathsOfProjectFiles(project);
+		assertThat(relativePaths)
+				.contains("src/main/java/com/example/DemoApplication.java");
+		assertThat(Files.readAllLines(
+				new File(project, "src/main/java/com/example/DemoApplication.java")
+						.toPath())).contains("@EnableConfigServer");
+	}
+
 	private List<String> getRelativePathsOfProjectFiles(File project) throws IOException {
 		List<String> relativePaths = new ArrayList<>();
 		Path projectPath = project.toPath();
