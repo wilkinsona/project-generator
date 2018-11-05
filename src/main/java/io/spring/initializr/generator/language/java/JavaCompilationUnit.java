@@ -14,25 +14,24 @@
  * limitations under the License.
  */
 
-package io.spring.initializr.generator.code;
+package io.spring.initializr.generator.language.java;
 
-import java.io.File;
-import java.io.IOException;
+import io.spring.initializr.generator.language.CompilationUnit;
 
 /**
- * A writer for some {@link SourceCode}.
+ * A Java-specific {@link CompilationUnit}.
  *
- * @param <S> the type of source code that can be written by this writer
  * @author Andy Wilkinson
  */
-public interface SourceCodeWriter<S extends SourceCode<?, ?>> {
+public class JavaCompilationUnit extends CompilationUnit<JavaTypeDeclaration> {
 
-	/**
-	 * Writes, to the given {@code directory}, the given {@code sourceCode}.
-	 * @param directory the root directory beneath which the source code is written
-	 * @param sourceCode the source code to write
-	 * @throws IOException if writing fails
-	 */
-	void writeTo(File directory, S sourceCode) throws IOException;
+	JavaCompilationUnit(String packageName, String name) {
+		super(packageName, name);
+	}
+
+	@Override
+	protected JavaTypeDeclaration doCreateTypeDeclaration(String name) {
+		return new JavaTypeDeclaration(name);
+	}
 
 }

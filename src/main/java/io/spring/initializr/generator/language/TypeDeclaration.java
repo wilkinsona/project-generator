@@ -14,45 +14,39 @@
  * limitations under the License.
  */
 
-package io.spring.initializr.generator.code;
+package io.spring.initializr.generator.language;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
 /**
- * A compilation unit that represents an individual source file.
+ * A type declared in a {@link CompilationUnit}.
  *
- * @param <T> the concrete type declaration supported by the compilation unit
  * @author Andy Wilkinson
  */
-public class CompilationUnit<T extends TypeDeclaration> {
+public class TypeDeclaration implements Annotatable {
 
-	private final String packageName;
+	private final List<Annotation> annotations = new ArrayList<Annotation>();
 
 	private final String name;
 
-	private final List<T> typeDeclarations = new ArrayList<>();
-
-	public CompilationUnit(String packageName, String name) {
-		this.packageName = packageName;
+	public TypeDeclaration(String name) {
 		this.name = name;
 	}
 
-	public String getPackageName() {
-		return this.packageName;
+	@Override
+	public void annotate(Annotation annotation) {
+		this.annotations.add(annotation);
+	}
+
+	@Override
+	public List<Annotation> getAnnotations() {
+		return Collections.unmodifiableList(this.annotations);
 	}
 
 	public String getName() {
 		return this.name;
-	}
-
-	public void addTypeDeclaration(T type) {
-		this.typeDeclarations.add(type);
-	}
-
-	public List<T> getTypeDeclarations() {
-		return Collections.unmodifiableList(this.typeDeclarations);
 	}
 
 }

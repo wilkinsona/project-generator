@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-package io.spring.initializr.generator.code.java;
+package io.spring.initializr.generator.language.java;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import io.spring.initializr.generator.code.Parameter;
+import io.spring.initializr.generator.language.Parameter;
 
 /**
  * Declaration of a method written in Java.

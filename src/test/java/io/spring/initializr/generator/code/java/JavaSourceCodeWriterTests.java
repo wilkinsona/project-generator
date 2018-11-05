@@ -21,8 +21,14 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.util.List;
 
-import io.spring.initializr.generator.code.Annotation;
-import io.spring.initializr.generator.code.Parameter;
+import io.spring.initializr.generator.language.Annotation;
+import io.spring.initializr.generator.language.Parameter;
+import io.spring.initializr.generator.language.java.JavaCompilationUnit;
+import io.spring.initializr.generator.language.java.JavaMethodDeclaration;
+import io.spring.initializr.generator.language.java.JavaMethodInvocation;
+import io.spring.initializr.generator.language.java.JavaSourceCode;
+import io.spring.initializr.generator.language.java.JavaSourceCodeWriter;
+import io.spring.initializr.generator.language.java.JavaTypeDeclaration;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
@@ -44,9 +50,7 @@ public class JavaSourceCodeWriterTests {
 	@Test
 	public void emptyCompilationUnit() throws IOException {
 		JavaSourceCode sourceCode = new JavaSourceCode();
-		JavaCompilationUnit compilationUnit = new JavaCompilationUnit("com.example",
-				"Test");
-		sourceCode.addCompilationUnit(compilationUnit);
+		sourceCode.createCompilationUnit("com.example", "Test");
 		this.writer.writeTo(this.temp.getRoot(), sourceCode);
 		File testSource = new File(this.temp.getRoot(), "com/example/Test.java");
 		assertThat(testSource).isFile();
@@ -57,11 +61,9 @@ public class JavaSourceCodeWriterTests {
 	@Test
 	public void emptyTypeDeclaration() throws IOException {
 		JavaSourceCode sourceCode = new JavaSourceCode();
-		JavaCompilationUnit compilationUnit = new JavaCompilationUnit("com.example",
-				"Test");
-		JavaTypeDeclaration test = new JavaTypeDeclaration("Test");
-		compilationUnit.addTypeDeclaration(test);
-		sourceCode.addCompilationUnit(compilationUnit);
+		JavaCompilationUnit compilationUnit = sourceCode
+				.createCompilationUnit("com.example", "Test");
+		compilationUnit.createTypeDeclaration("Test");
 		this.writer.writeTo(this.temp.getRoot(), sourceCode);
 		File testSource = new File(this.temp.getRoot(), "com/example/Test.java");
 		assertThat(testSource).isFile();
@@ -73,9 +75,9 @@ public class JavaSourceCodeWriterTests {
 	@Test
 	public void springBootApplication() throws IOException {
 		JavaSourceCode sourceCode = new JavaSourceCode();
-		JavaCompilationUnit compilationUnit = new JavaCompilationUnit("com.example",
-				"Test");
-		JavaTypeDeclaration test = new JavaTypeDeclaration("Test");
+		JavaCompilationUnit compilationUnit = sourceCode
+				.createCompilationUnit("com.example", "Test");
+		JavaTypeDeclaration test = compilationUnit.createTypeDeclaration("Test");
 		test.annotate(new Annotation(
 				"org.springframework.boot.autoconfigure.SpringBootApplication"));
 		test.addMethodDeclaration(JavaMethodDeclaration.staticMethod("main")
@@ -83,8 +85,6 @@ public class JavaSourceCodeWriterTests {
 				.body(new JavaMethodInvocation(
 						"org.springframework.boot.SpringApplication", "run", "Test.class",
 						"args")));
-		compilationUnit.addTypeDeclaration(test);
-		sourceCode.addCompilationUnit(compilationUnit);
 		this.writer.writeTo(this.temp.getRoot(), sourceCode);
 		File testSource = new File(this.temp.getRoot(), "com/example/Test.java");
 		assertThat(testSource).isFile();

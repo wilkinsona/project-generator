@@ -14,15 +14,25 @@
  * limitations under the License.
  */
 
-package io.spring.initializr.generator.code.java;
+package io.spring.initializr.generator.language.java;
 
-import io.spring.initializr.generator.code.SourceCode;
+import java.lang.annotation.Documented;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+
+import io.spring.initializr.generator.language.ConditionalOnLanguage;
 
 /**
- * Java {@link SourceCode}.
+ * Condition that matches when a generated project will be written in Java.
  *
  * @author Andy Wilkinson
  */
-public class JavaSourceCode extends SourceCode<JavaTypeDeclaration, JavaCompilationUnit> {
+@Retention(RetentionPolicy.RUNTIME)
+@Target({ ElementType.TYPE, ElementType.METHOD })
+@Documented
+@ConditionalOnLanguage(JavaLanguage.ID)
+public @interface ConditionalOnJavaLanguage {
 
 }

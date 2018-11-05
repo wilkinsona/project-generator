@@ -14,19 +14,21 @@
  * limitations under the License.
  */
 
-package io.spring.initializr.generator.code.java;
-
-import io.spring.initializr.generator.code.CompilationUnit;
+package io.spring.initializr.generator.language;
 
 /**
- * A Java-specific {@link CompilationUnit}.
+ * A factory for creating a {@link Language}.
  *
  * @author Andy Wilkinson
  */
-public class JavaCompilationUnit extends CompilationUnit<JavaTypeDeclaration> {
+public interface LanguageFactory {
 
-	public JavaCompilationUnit(String packageName, String name) {
-		super(packageName, name);
-	}
+	/**
+	 * Creates and returns a {@link Language} for the given id. If the factory does not
+	 * recognise the given {@code id}, {@code null} should be returned.
+	 * @param id the id of the language
+	 * @return the language or {@code null}
+	 */
+	Language createLanguage(String id);
 
 }

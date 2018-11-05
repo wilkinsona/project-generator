@@ -14,33 +14,19 @@
  * limitations under the License.
  */
 
-package io.spring.initializr.generator.code;
+package io.spring.initializr.generator.language;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 /**
- * Representation of application source code.
+ * A representation of something that can be annotated.
  *
- * @param <T> types
- * @param <C> compilation units
  * @author Andy Wilkinson
  */
-public class SourceCode<T extends TypeDeclaration, C extends CompilationUnit<T>> {
+public interface Annotatable {
 
-	private final List<C> compilationUnits = new ArrayList<C>();
+	void annotate(Annotation annotation);
 
-	public void addCompilationUnit(C compilationUnit) {
-		this.compilationUnits.add(compilationUnit);
-	}
-
-	/**
-	 * Returns an unmodifiable view of the {@link CompilationUnit compilation units}.
-	 * @return the compilation units
-	 */
-	public List<C> getCompilationUnits() {
-		return Collections.unmodifiableList(this.compilationUnits);
-	}
+	List<Annotation> getAnnotations();
 
 }

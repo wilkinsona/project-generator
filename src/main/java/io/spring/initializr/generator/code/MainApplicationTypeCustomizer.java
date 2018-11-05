@@ -14,35 +14,18 @@
  * limitations under the License.
  */
 
-package io.spring.initializr.generator.gradle;
+package io.spring.initializr.generator.code;
 
-import java.io.File;
-
-import io.spring.initializr.generator.build.BuildSystem;
-import io.spring.initializr.generator.language.Language;
+import io.spring.initializr.generator.language.TypeDeclaration;
 
 /**
- * Gradle {@link BuildSystem}.
+ * Callback for customizing the application's main type.
  *
+ * @param <T> type declaration for customization
  * @author Andy Wilkinson
  */
-public class GradleBuildSystem implements BuildSystem {
+public interface MainApplicationTypeCustomizer<T extends TypeDeclaration> {
 
-	static final String ID = "gradle";
-
-	@Override
-	public String id() {
-		return ID;
-	}
-
-	@Override
-	public File getMainDirectory(File projectRoot, Language language) {
-		return new File(projectRoot, "src/main/" + language.id());
-	}
-
-	@Override
-	public File getTestDirectory(File projectRoot, Language language) {
-		return new File(projectRoot, "src/test" + language.id());
-	}
+	void customize(T typeDeclaration);
 
 }

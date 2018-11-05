@@ -14,35 +14,24 @@
  * limitations under the License.
  */
 
-package io.spring.initializr.generator.gradle;
+package io.spring.initializr.generator.language.java;
 
-import java.io.File;
-
-import io.spring.initializr.generator.build.BuildSystem;
 import io.spring.initializr.generator.language.Language;
+import io.spring.initializr.generator.language.LanguageFactory;
 
 /**
- * Gradle {@link BuildSystem}.
+ * A {@link LanguageFactory} for Java.
  *
  * @author Andy Wilkinson
  */
-public class GradleBuildSystem implements BuildSystem {
-
-	static final String ID = "gradle";
+class JavaLanguageFactory implements LanguageFactory {
 
 	@Override
-	public String id() {
-		return ID;
-	}
-
-	@Override
-	public File getMainDirectory(File projectRoot, Language language) {
-		return new File(projectRoot, "src/main/" + language.id());
-	}
-
-	@Override
-	public File getTestDirectory(File projectRoot, Language language) {
-		return new File(projectRoot, "src/test" + language.id());
+	public Language createLanguage(String id) {
+		if (JavaLanguage.ID.equals(id)) {
+			return new JavaLanguage();
+		}
+		return null;
 	}
 
 }

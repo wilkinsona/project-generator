@@ -14,35 +14,19 @@
  * limitations under the License.
  */
 
-package io.spring.initializr.generator.code;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+package io.spring.initializr.generator.language;
 
 /**
- * A type declared in a {@link CompilationUnit}.
+ * An annotation.
  *
  * @author Andy Wilkinson
  */
-public class TypeDeclaration implements Annotatable {
-
-	private final List<Annotation> annotations = new ArrayList<Annotation>();
+public class Annotation {
 
 	private final String name;
 
-	public TypeDeclaration(String name) {
+	public Annotation(String name) {
 		this.name = name;
-	}
-
-	@Override
-	public void annotate(Annotation annotation) {
-		this.annotations.add(annotation);
-	}
-
-	@Override
-	public List<Annotation> getAnnotations() {
-		return Collections.unmodifiableList(this.annotations);
 	}
 
 	public String getName() {

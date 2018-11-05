@@ -14,23 +14,19 @@
  * limitations under the License.
  */
 
-package io.spring.initializr.generator.code;
+package io.spring.initializr.generator.language.java;
+
+import io.spring.initializr.generator.language.SourceCode;
 
 /**
- * An annotation.
+ * Java {@link SourceCode}.
  *
  * @author Andy Wilkinson
  */
-public class Annotation {
+public class JavaSourceCode extends SourceCode<JavaTypeDeclaration, JavaCompilationUnit> {
 
-	private final String name;
-
-	public Annotation(String name) {
-		this.name = name;
-	}
-
-	public String getName() {
-		return this.name;
+	public JavaSourceCode() {
+		super(JavaCompilationUnit::new);
 	}
 
 }

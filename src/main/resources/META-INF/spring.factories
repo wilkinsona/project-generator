@@ -2,7 +2,12 @@ io.spring.initializr.generator.build.BuildSystemFactory=\
 io.spring.initializr.generator.gradle.GradleBuildSystemFactory,\
 io.spring.initializr.generator.maven.MavenBuildSystemFactory
 
+io.spring.initializr.generator.language.LanguageFactory=\
+io.spring.initializr.generator.language.java.JavaLanguageFactory
+
 io.spring.initializr.generator.ProjectGenerationConfiguration=\
+io.spring.initializr.generator.code.SourceCodeProjectGenerationConfiguration,\
+io.spring.initializr.generator.code.java.JavaSourceCodeProjectGenerationConfiguration,\
 io.spring.initializr.generator.git.GitProjectGenerationConfiguration,\
 io.spring.initializr.generator.gradle.GradleProjectGenerationConfiguration,\
 io.spring.initializr.generator.maven.MavenProjectGenerationConfiguration

@@ -14,35 +14,25 @@
  * limitations under the License.
  */
 
-package io.spring.initializr.generator.gradle;
+package io.spring.initializr.generator.language;
 
 import java.io.File;
-
-import io.spring.initializr.generator.build.BuildSystem;
-import io.spring.initializr.generator.language.Language;
+import java.io.IOException;
 
 /**
- * Gradle {@link BuildSystem}.
+ * A writer for some {@link SourceCode}.
  *
+ * @param <S> the type of source code that can be written by this writer
  * @author Andy Wilkinson
  */
-public class GradleBuildSystem implements BuildSystem {
+public interface SourceCodeWriter<S extends SourceCode<?, ?>> {
 
-	static final String ID = "gradle";
-
-	@Override
-	public String id() {
-		return ID;
-	}
-
-	@Override
-	public File getMainDirectory(File projectRoot, Language language) {
-		return new File(projectRoot, "src/main/" + language.id());
-	}
-
-	@Override
-	public File getTestDirectory(File projectRoot, Language language) {
-		return new File(projectRoot, "src/test" + language.id());
-	}
+	/**
+	 * Writes, to the given {@code directory}, the given {@code sourceCode}.
+	 * @param directory the root directory beneath which the source code is written
+	 * @param sourceCode the source code to write
+	 * @throws IOException if writing fails
+	 */
+	void writeTo(File directory, S sourceCode) throws IOException;
 
 }

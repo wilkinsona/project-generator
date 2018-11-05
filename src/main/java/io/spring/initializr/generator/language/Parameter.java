@@ -14,13 +14,30 @@
  * limitations under the License.
  */
 
-package io.spring.initializr.generator.code.java;
+package io.spring.initializr.generator.language;
 
 /**
- * A statement in Java.
+ * A parameter, typically of a method or function.
  *
  * @author Andy Wilkinson
  */
-public class JavaStatement {
+public class Parameter {
+
+	private final String type;
+
+	private final String name;
+
+	public Parameter(String type, String name) {
+		this.type = type;
+		this.name = name;
+	}
+
+	public String getType() {
+		return this.type;
+	}
+
+	public String getName() {
+		return this.name;
+	}
 
 }

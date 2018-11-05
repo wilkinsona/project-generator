@@ -14,19 +14,32 @@
  * limitations under the License.
  */
 
-package io.spring.initializr.generator.code;
+package io.spring.initializr.generator.language.java;
 
+import java.util.ArrayList;
 import java.util.List;
 
+import io.spring.initializr.generator.language.TypeDeclaration;
+
 /**
- * A representation of something that can be annotated.
+ * A {@link TypeDeclaration declaration } of a type written in Java.
  *
  * @author Andy Wilkinson
  */
-public interface Annotatable {
+public class JavaTypeDeclaration extends TypeDeclaration {
 
-	void annotate(Annotation annotation);
+	private final List<JavaMethodDeclaration> methodDeclarations = new ArrayList<>();
 
-	List<Annotation> getAnnotations();
+	JavaTypeDeclaration(String name) {
+		super(name);
+	}
+
+	public void addMethodDeclaration(JavaMethodDeclaration methodDeclaration) {
+		this.methodDeclarations.add(methodDeclaration);
+	}
+
+	public List<JavaMethodDeclaration> getMethodDeclarations() {
+		return this.methodDeclarations;
+	}
 
 }

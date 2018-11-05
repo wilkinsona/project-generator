@@ -14,32 +14,24 @@
  * limitations under the License.
  */
 
-package io.spring.initializr.generator.code.java;
+package io.spring.initializr.generator.code;
 
-import java.util.ArrayList;
-import java.util.List;
+import io.spring.initializr.generator.language.Annotation;
+import io.spring.initializr.generator.language.TypeDeclaration;
 
-import io.spring.initializr.generator.code.TypeDeclaration;
+import org.springframework.context.annotation.Bean;
 
 /**
- * A {@link TypeDeclaration declaration } of a type written in Java.
+ * Project generation configuration for projects written in any language.
  *
  * @author Andy Wilkinson
  */
-public class JavaTypeDeclaration extends TypeDeclaration {
+public class SourceCodeProjectGenerationConfiguration {
 
-	private final List<JavaMethodDeclaration> methodDeclarations = new ArrayList<>();
-
-	public JavaTypeDeclaration(String name) {
-		super(name);
-	}
-
-	public void addMethodDeclaration(JavaMethodDeclaration methodDeclaration) {
-		this.methodDeclarations.add(methodDeclaration);
-	}
-
-	public List<JavaMethodDeclaration> getMethodDeclarations() {
-		return this.methodDeclarations;
+	@Bean
+	public MainApplicationTypeCustomizer<TypeDeclaration> springBootApplicationAnnotator() {
+		return (typeDeclaration) -> typeDeclaration.annotate(new Annotation(
+				"org.springframework.boot.autoconfigure.SpringBootApplication"));
 	}
 
 }

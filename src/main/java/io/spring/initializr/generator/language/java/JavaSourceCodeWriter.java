@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package io.spring.initializr.generator.code.java;
+package io.spring.initializr.generator.language.java;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -24,10 +24,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import io.spring.initializr.generator.code.Annotation;
-import io.spring.initializr.generator.code.Parameter;
-import io.spring.initializr.generator.code.SourceCode;
-import io.spring.initializr.generator.code.SourceCodeWriter;
+import io.spring.initializr.generator.language.Annotation;
+import io.spring.initializr.generator.language.Parameter;
+import io.spring.initializr.generator.language.SourceCode;
+import io.spring.initializr.generator.language.SourceCodeWriter;
 
 /**
  * A {@link SourceCodeWriter} that writes {@link SourceCode} in Java.

@@ -14,35 +14,28 @@
  * limitations under the License.
  */
 
-package io.spring.initializr.generator.gradle;
+package io.spring.initializr.generator.language;
 
-import java.io.File;
+import java.lang.annotation.Documented;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
-import io.spring.initializr.generator.build.BuildSystem;
-import io.spring.initializr.generator.language.Language;
+import org.springframework.context.annotation.Conditional;
 
 /**
- * Gradle {@link BuildSystem}.
+ * Condition that matches when a generated project will be written using a particular
+ * {@link Language}.
  *
  * @author Andy Wilkinson
  */
-public class GradleBuildSystem implements BuildSystem {
+@Retention(RetentionPolicy.RUNTIME)
+@Target({ ElementType.TYPE, ElementType.METHOD })
+@Documented
+@Conditional(OnLanguageCondition.class)
+public @interface ConditionalOnLanguage {
 
-	static final String ID = "gradle";
-
-	@Override
-	public String id() {
-		return ID;
-	}
-
-	@Override
-	public File getMainDirectory(File projectRoot, Language language) {
-		return new File(projectRoot, "src/main/" + language.id());
-	}
-
-	@Override
-	public File getTestDirectory(File projectRoot, Language language) {
-		return new File(projectRoot, "src/test" + language.id());
-	}
+	String value();
 
 }

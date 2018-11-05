@@ -17,6 +17,7 @@
 package io.spring.initializr.generator;
 
 import io.spring.initializr.generator.build.BuildSystem;
+import io.spring.initializr.generator.language.Language;
 
 /**
  * Description of a project that is being generated.
@@ -27,12 +28,42 @@ public class ProjectDescription {
 
 	private BuildSystem buildSystem;
 
+	private Language language;
+
+	private String groupId;
+
+	private String artifactId;
+
 	public BuildSystem getBuildSystem() {
 		return this.buildSystem;
 	}
 
 	public void setBuildSystem(BuildSystem buildSystem) {
 		this.buildSystem = buildSystem;
+	}
+
+	public Language getLanguage() {
+		return this.language;
+	}
+
+	public void setLanguage(Language language) {
+		this.language = language;
+	}
+
+	public String getGroupId() {
+		return this.groupId;
+	}
+
+	public void setGroupId(String groupId) {
+		this.groupId = groupId;
+	}
+
+	public String getArtifactId() {
+		return this.artifactId;
+	}
+
+	public void setArtifactId(String artifactId) {
+		this.artifactId = artifactId;
 	}
 
 }

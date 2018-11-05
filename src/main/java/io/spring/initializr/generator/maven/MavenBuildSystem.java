@@ -16,7 +16,10 @@
 
 package io.spring.initializr.generator.maven;
 
+import java.io.File;
+
 import io.spring.initializr.generator.build.BuildSystem;
+import io.spring.initializr.generator.language.Language;
 
 /**
  * Maven {@link BuildSystem}.
@@ -30,6 +33,16 @@ public class MavenBuildSystem implements BuildSystem {
 	@Override
 	public String id() {
 		return ID;
+	}
+
+	@Override
+	public File getMainDirectory(File projectRoot, Language language) {
+		return new File(projectRoot, "src/main/" + language.id());
+	}
+
+	@Override
+	public File getTestDirectory(File projectRoot, Language language) {
+		return new File(projectRoot, "src/test" + language.id());
 	}
 
 }

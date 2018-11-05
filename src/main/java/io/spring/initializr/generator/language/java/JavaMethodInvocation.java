@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package io.spring.initializr.generator.code.java;
+package io.spring.initializr.generator.language.java;
 
 import java.util.Arrays;
 import java.util.List;

@@ -27,6 +27,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import io.spring.initializr.generator.gradle.GradleBuildSystem;
+import io.spring.initializr.generator.language.java.JavaLanguage;
 import io.spring.initializr.generator.maven.MavenBuildSystem;
 import org.junit.Test;
 
@@ -83,6 +84,20 @@ public class ProjectGeneratorTests {
 		File project = new ProjectGenerator().generate(description);
 		assertThat(Files.readAllLines(new File(project, ".gitignore").toPath()))
 				.contains("/target/", "### STS ###");
+	}
+
+	@Test
+	public void mainJavaClassIsContributedWhenGeneratingJavaProject() throws IOException {
+		ProjectDescription description = new ProjectDescription();
+		description.setBuildSystem(new MavenBuildSystem());
+		description.setLanguage(new JavaLanguage());
+		description.setGroupId("com.example");
+		File project = new ProjectGenerator().generate(description);
+		List<String> relativePaths = getRelativePathsOfProjectFiles(project);
+		assertThat(relativePaths)
+				.contains("src/main/java/com/example/DemoApplication.java");
+		Files.lines(new File(project, "src/main/java/com/example/DemoApplication.java")
+				.toPath()).forEach(System.out::println);
 	}
 
 	private List<String> getRelativePathsOfProjectFiles(File project) throws IOException {

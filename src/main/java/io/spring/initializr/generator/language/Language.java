@@ -14,30 +14,29 @@
  * limitations under the License.
  */
 
-package io.spring.initializr.generator.code;
+package io.spring.initializr.generator.language;
+
+import java.util.Objects;
+
+import org.springframework.core.io.support.SpringFactoriesLoader;
 
 /**
- * A parameter, typically of a method or function.
+ * A language in which a generated project can be written.
  *
  * @author Andy Wilkinson
  */
-public class Parameter {
+public interface Language {
 
-	private final String type;
+	String id();
 
-	private final String name;
-
-	public Parameter(String type, String name) {
-		this.type = type;
-		this.name = name;
-	}
-
-	public String getType() {
-		return this.type;
-	}
-
-	public String getName() {
-		return this.name;
+	static Language forId(String id) {
+		return SpringFactoriesLoader
+				.loadFactories(LanguageFactory.class,
+						LanguageFactory.class.getClassLoader())
+				.stream().map((factory) -> factory.createLanguage(id))
+				.filter(Objects::nonNull).findFirst()
+				.orElseThrow(() -> new IllegalStateException(
+						"Unrecognized language id '" + id + "'"));
 	}
 
 }

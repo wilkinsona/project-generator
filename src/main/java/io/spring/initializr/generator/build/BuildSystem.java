@@ -16,7 +16,10 @@
 
 package io.spring.initializr.generator.build;
 
+import java.io.File;
 import java.util.Objects;
+
+import io.spring.initializr.generator.language.Language;
 
 import org.springframework.core.io.support.SpringFactoriesLoader;
 
@@ -42,5 +45,9 @@ public interface BuildSystem {
 				.orElseThrow(() -> new IllegalStateException(
 						"Unrecognized build system id '" + id + "'"));
 	}
+
+	File getMainDirectory(File projectRoot, Language language);
+
+	File getTestDirectory(File projectRoot, Language language);
 
 }
