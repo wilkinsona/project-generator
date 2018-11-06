@@ -23,6 +23,7 @@ import io.spring.initializr.generator.buildsystem.gradle.ConditionalOnGradleVers
 import io.spring.initializr.generator.buildsystem.gradle.GradleBuild;
 import io.spring.initializr.generator.git.GitIgnoreContributor;
 import io.spring.initializr.generator.language.java.ConditionalOnJavaLanguage;
+import io.spring.initializr.generator.springboot.ConditionalOnSpringBootVersion;
 
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.context.annotation.Bean;
@@ -77,6 +78,13 @@ public class GradleProjectGenerationConfiguration {
 		return (gradleBuild) -> {
 			gradleBuild.addPlugin("org.springframework.boot",
 					projectDescription.getSpringBootVersion().toString());
+		};
+	}
+
+	@Bean
+	@ConditionalOnSpringBootVersion("2.0.0.M1)")
+	public BuildCustomizer<GradleBuild> applyDependencyManagementPluginContributor() {
+		return (gradleBuild) -> {
 			gradleBuild.applyPlugin("io.spring.dependency-management");
 		};
 	}
