@@ -22,7 +22,9 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import io.spring.initializr.generator.language.Annotation;
 import io.spring.initializr.generator.language.Parameter;
@@ -127,24 +129,34 @@ public class JavaSourceCodeWriter implements SourceCodeWriter<JavaSourceCode> {
 		List<String> imports = new ArrayList<String>();
 		for (JavaTypeDeclaration typeDeclaration : compilationUnit
 				.getTypeDeclarations()) {
-			for (Annotation annotation : typeDeclaration.getAnnotations()) {
-				if (requiresImport(annotation.getName())) {
-					imports.add(annotation.getName());
-				}
-			}
+			imports.addAll(getRequiredImports(typeDeclaration.getAnnotations(),
+					Annotation::getName));
 			for (JavaMethodDeclaration methodDeclaration : typeDeclaration
 					.getMethodDeclarations()) {
 				if (requiresImport(methodDeclaration.getReturnType())) {
 					imports.add(methodDeclaration.getReturnType());
 				}
-				for (Parameter parameter : methodDeclaration.getParameters()) {
-					if (requiresImport(parameter.getType())) {
-						imports.add(parameter.getType());
-					}
-				}
+				imports.addAll(getRequiredImports(methodDeclaration.getParameters(),
+						Parameter::getType));
+				imports.addAll(getRequiredImports(
+						methodDeclaration.getStatements().stream()
+								.filter(JavaMethodInvocation.class::isInstance)
+								.map(JavaMethodInvocation.class::cast),
+						JavaMethodInvocation::getTarget));
 			}
 		}
 		return imports;
+	}
+
+	private <T> List<String> getRequiredImports(List<T> candidates,
+			Function<T, String> mapping) {
+		return getRequiredImports(candidates.stream(), mapping);
+	}
+
+	private <T> List<String> getRequiredImports(Stream<T> candidates,
+			Function<T, String> mapping) {
+		return candidates.map(mapping).filter(this::requiresImport)
+				.collect(Collectors.toList());
 	}
 
 	private String getUnqualifiedName(String name) {
