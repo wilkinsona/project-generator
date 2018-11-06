@@ -19,10 +19,10 @@ package io.spring.initializr.generator.build.gradle;
 import io.spring.initializr.generator.ProjectDescription;
 import io.spring.initializr.generator.build.BuildCustomizer;
 import io.spring.initializr.generator.buildsystem.gradle.ConditionalOnGradle;
+import io.spring.initializr.generator.buildsystem.gradle.ConditionalOnGradleVersion;
 import io.spring.initializr.generator.buildsystem.gradle.GradleBuild;
 import io.spring.initializr.generator.git.GitIgnoreContributor;
 import io.spring.initializr.generator.language.java.ConditionalOnJavaLanguage;
-import io.spring.initializr.generator.springboot.ConditionalOnSpringBootVersion;
 
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.context.annotation.Bean;
@@ -41,13 +41,13 @@ import org.springframework.core.annotation.Order;
 public class GradleProjectGenerationConfiguration {
 
 	@Bean
-	@ConditionalOnSpringBootVersion("[1.5.0.M1, 2.0.0.M1)")
+	@ConditionalOnGradleVersion("3")
 	public GradleWrapperContributor gradle3WrapperContributor() {
 		return new GradleWrapperContributor("3");
 	}
 
 	@Bean
-	@ConditionalOnSpringBootVersion("2.0.0.M1")
+	@ConditionalOnGradleVersion("4")
 	public GradleWrapperContributor gradle4WrapperContributor() {
 		return new GradleWrapperContributor("4");
 	}
