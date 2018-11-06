@@ -72,6 +72,10 @@ public class GradleBuild extends Build {
 		return Collections.unmodifiableMap(this.taskCustomizations);
 	}
 
+	/**
+	 * Customization of a task in a Gradle build.
+	 *
+	 */
 	public static class TaskCustomization {
 
 		private final List<Invocation> invocations = new ArrayList<>();
@@ -84,6 +88,9 @@ public class GradleBuild extends Build {
 			return this.invocations;
 		}
 
+		/**
+		 * An invocation of a method that customizes a task.
+		 */
 		public static class Invocation {
 
 			private final String target;
