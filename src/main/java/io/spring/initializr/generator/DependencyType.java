@@ -17,46 +17,35 @@
 package io.spring.initializr.generator;
 
 /**
- * A dependency to be declared in a project's build configuration.
+ * The types of dependencies supported by project generation.
  *
  * @author Andy Wilkinson
  */
-public class Dependency {
-
-	private final String groupId;
-
-	private final String artifactId;
-
-	private final DependencyType type;
-
-	public Dependency(String groupId, String artifactId, DependencyType type) {
-		this.groupId = groupId;
-		this.artifactId = artifactId;
-		this.type = type;
-	}
+public enum DependencyType {
 
 	/**
-	 * The group ID of the dependency.
-	 * @return the group ID
+	 * A dependency that is used as an annotation processor when compiling a project.
 	 */
-	public String getGroupId() {
-		return this.groupId;
-	}
+	ANNOTATION_PROCESSOR,
 
 	/**
-	 * The artifact ID of the dependency.
-	 * @return the artifact ID
+	 * A dependency that is used to compile a project.
 	 */
-	public String getArtifactId() {
-		return this.artifactId;
-	}
+	COMPILE,
 
 	/**
-	 * The {@link DependencyType type} of the dependency.
-	 * @return the type
+	 * A dependency this is used to run a project.
 	 */
-	public DependencyType getType() {
-		return this.type;
-	}
+	RUNTIME,
+
+	/**
+	 * A dependency that is used to compile a project's tests.
+	 */
+	TEST_COMPILE,
+
+	/**
+	 * A dependency this is used to run a project's tests.
+	 */
+	TEST_RUNTIME
 
 }

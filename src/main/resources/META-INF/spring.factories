@@ -6,6 +6,7 @@ io.spring.initializr.generator.language.LanguageFactory=\
 io.spring.initializr.generator.language.java.JavaLanguageFactory
 
 io.spring.initializr.generator.ProjectGenerationConfiguration=\
+io.spring.initializr.generator.build.BuildProjectGenerationConfiguration,\
 io.spring.initializr.generator.build.gradle.GradleProjectGenerationConfiguration,\
 io.spring.initializr.generator.build.maven.MavenProjectGenerationConfiguration,\
 io.spring.initializr.generator.code.SourceCodeProjectGenerationConfiguration,\

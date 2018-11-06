@@ -56,6 +56,30 @@ public class ProjectGeneratorTests {
 	}
 
 	@Test
+	public void buildDotGradleIsContributedWhenGeneratingGradleProject()
+			throws IOException {
+		ProjectDescription description = new ProjectDescription();
+		description.setBuildSystem(new GradleBuildSystem());
+		description.setLanguage(new JavaLanguage());
+		description.setGroupId("com.example");
+		description.setArtifactId("demo");
+		File project = new ProjectGenerator().generate(description);
+		List<String> relativePaths = getRelativePathsOfProjectFiles(project);
+		assertThat(relativePaths).contains("build.gradle");
+		List<String> lines = Files
+				.readAllLines(new File(project, "build.gradle").toPath());
+		assertThat(lines).containsExactly("plugins {", "    id 'java'",
+				"    id 'org.springframework.boot' version '2.1.0.RELEASE'", "}", "",
+				"apply plugin: 'io.spring.dependency-management'", "",
+				"group = 'com.example'", "version = '0.0.1-SNAPSHOT'",
+				"sourceCompatibility = '1.8'", "", "repositories {", "    mavenCentral()",
+				"}", "", "dependencies {",
+				"    implementation 'org.springframework.boot:spring-boot-starter'",
+				"    testImplementation 'org.springframework.boot:spring-boot-starter-test'",
+				"}", "");
+	}
+
+	@Test
 	public void mavenWrapperIsContributedWhenGeneratingMavenProject() throws IOException {
 		ProjectDescription description = new ProjectDescription();
 		description.setBuildSystem(new MavenBuildSystem());
@@ -108,7 +132,7 @@ public class ProjectGeneratorTests {
 		description.setLanguage(new JavaLanguage());
 		description.setGroupId("com.example");
 		description.addDependency(new Dependency("org.springframework.cloud",
-				"spring-cloud-config-server"));
+				"spring-cloud-config-server", DependencyType.COMPILE));
 		File project = new ProjectGenerator().generate(description);
 		List<String> relativePaths = getRelativePathsOfProjectFiles(project);
 		assertThat(relativePaths)

@@ -16,9 +16,14 @@
 
 package io.spring.initializr.generator.build.gradle;
 
+import io.spring.initializr.generator.ProjectDescription;
+import io.spring.initializr.generator.build.BuildCustomizer;
 import io.spring.initializr.generator.buildsystem.gradle.ConditionalOnGradle;
+import io.spring.initializr.generator.buildsystem.gradle.GradleBuild;
 import io.spring.initializr.generator.git.GitIgnoreContributor;
+import io.spring.initializr.generator.language.java.ConditionalOnJavaLanguage;
 
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
@@ -43,6 +48,27 @@ public class GradleProjectGenerationConfiguration {
 	@Order(Ordered.HIGHEST_PRECEDENCE)
 	public GitIgnoreContributor gradleGitIgnoreContributor() {
 		return new GitIgnoreContributor("classpath:gradle/gitignore");
+	}
+
+	@Bean
+	public GradleBuildFileContributor gradleBuildFileContributor(
+			ProjectDescription projectDescription,
+			ObjectProvider<BuildCustomizer<?>> buildCustomizers) {
+		return new GradleBuildFileContributor(projectDescription, buildCustomizers);
+	}
+
+	@Bean
+	@ConditionalOnJavaLanguage
+	public BuildCustomizer<GradleBuild> javaPluginContributor() {
+		return (gradleBuild) -> gradleBuild.addPlugin("java");
+	}
+
+	@Bean
+	public BuildCustomizer<GradleBuild> springBootPluginContributor() {
+		return (gradleBuild) -> {
+			gradleBuild.addPlugin("org.springframework.boot", "2.1.0.RELEASE");
+			gradleBuild.applyPlugin("io.spring.dependency-management");
+		};
 	}
 
 }
