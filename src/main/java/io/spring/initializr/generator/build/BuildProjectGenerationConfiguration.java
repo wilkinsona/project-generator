@@ -18,6 +18,7 @@ package io.spring.initializr.generator.build;
 
 import io.spring.initializr.generator.Dependency;
 import io.spring.initializr.generator.DependencyType;
+import io.spring.initializr.generator.ProjectDescription;
 import io.spring.initializr.generator.ProjectGenerationConfiguration;
 import io.spring.initializr.generator.buildsystem.Build;
 
@@ -37,6 +38,14 @@ public class BuildProjectGenerationConfiguration {
 	public BuildCustomizer<Build> testStarterContributor() {
 		return (build) -> build.addDependency("org.springframework.boot",
 				"spring-boot-starter-test", DependencyType.TEST_COMPILE);
+	}
+
+	@Bean
+	@Order(0)
+	public BuildCustomizer<Build> projectDescriptionDependenciesContributor(
+			ProjectDescription projectDescription) {
+		return (build) -> projectDescription.getDependencies()
+				.forEach(build::addDependency);
 	}
 
 	@Bean
