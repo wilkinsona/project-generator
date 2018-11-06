@@ -22,6 +22,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import io.spring.initializr.generator.Dependency;
@@ -31,6 +32,8 @@ import io.spring.initializr.generator.ProjectDescription;
 import io.spring.initializr.generator.build.BuildCustomizer;
 import io.spring.initializr.generator.buildsystem.Build;
 import io.spring.initializr.generator.buildsystem.gradle.GradleBuild;
+import io.spring.initializr.generator.buildsystem.gradle.GradleBuild.TaskCustomization;
+import io.spring.initializr.generator.buildsystem.gradle.GradleBuild.TaskCustomization.Invocation;
 import io.spring.initializr.generator.buildsystem.gradle.GradlePlugin;
 import io.spring.initializr.generator.util.LambdaSafe;
 
@@ -90,6 +93,7 @@ class GradleBuildFileContributor implements FileContributor {
 			writer.println();
 			writeRepositories(writer);
 			writeDependencies(writer, build);
+			writeTaskCustomizations(writer, build);
 			writer.println();
 		}
 	}
@@ -117,6 +121,20 @@ class GradleBuildFileContributor implements FileContributor {
 		build.getDependencies().stream().sorted(this::compare)
 				.map(this::dependencyAsString).forEach(writer::println);
 		writer.println("}");
+		writer.println();
+	}
+
+	private void writeTaskCustomizations(PrintWriter writer, GradleBuild build) {
+		Map<String, List<TaskCustomization>> taskCustomizations = build
+				.getTaskCustomizations();
+		taskCustomizations.forEach((name, customizations) -> {
+			writer.println(name + " {");
+			customizations.stream()
+					.flatMap((customization) -> customization.getInvocations().stream())
+					.map(this::invocationAsString).forEach(writer::println);
+			writer.println("}");
+			writer.println();
+		});
 	}
 
 	private int compare(Dependency one, Dependency two) {
@@ -147,6 +165,11 @@ class GradleBuildFileContributor implements FileContributor {
 	private String dependencyAsString(Dependency dependency) {
 		return "    " + configurationForType(dependency.getType()) + " '"
 				+ dependency.getGroupId() + ":" + dependency.getArtifactId() + "'";
+	}
+
+	private String invocationAsString(Invocation invocation) {
+		return "    " + invocation.getTarget() + " "
+				+ String.join(", ", invocation.getArguments());
 	}
 
 	private String configurationForType(DependencyType type) {

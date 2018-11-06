@@ -17,8 +17,12 @@
 package io.spring.initializr.generator.buildsystem.gradle;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.function.Consumer;
 
 import io.spring.initializr.generator.buildsystem.Build;
 
@@ -32,6 +36,8 @@ public class GradleBuild extends Build {
 	private final List<GradlePlugin> plugins = new ArrayList<>();
 
 	private final List<String> additionalPluginApplications = new ArrayList<>();
+
+	private final Map<String, List<TaskCustomization>> taskCustomizations = new LinkedHashMap<>();
 
 	public GradlePlugin addPlugin(String id) {
 		return this.addPlugin(id, null);
@@ -53,6 +59,52 @@ public class GradleBuild extends Build {
 
 	public List<String> getAdditionalPluginApplications() {
 		return Collections.unmodifiableList(this.additionalPluginApplications);
+	}
+
+	public void customizeTask(String taskName, Consumer<TaskCustomization> customizer) {
+		TaskCustomization customization = new TaskCustomization();
+		customizer.accept(customization);
+		this.taskCustomizations.computeIfAbsent(taskName,
+				(name) -> new ArrayList<>(Arrays.asList(customization)));
+	}
+
+	public Map<String, List<TaskCustomization>> getTaskCustomizations() {
+		return Collections.unmodifiableMap(this.taskCustomizations);
+	}
+
+	public static class TaskCustomization {
+
+		private final List<Invocation> invocations = new ArrayList<>();
+
+		public void invoke(String target, String... arguments) {
+			this.invocations.add(new Invocation(target, Arrays.asList(arguments)));
+		}
+
+		public List<Invocation> getInvocations() {
+			return this.invocations;
+		}
+
+		public static class Invocation {
+
+			private final String target;
+
+			private final List<String> arguments;
+
+			Invocation(String target, List<String> arguments) {
+				this.target = target;
+				this.arguments = arguments;
+			}
+
+			public String getTarget() {
+				return this.target;
+			}
+
+			public List<String> getArguments() {
+				return this.arguments;
+			}
+
+		}
+
 	}
 
 }

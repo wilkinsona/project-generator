@@ -143,6 +143,23 @@ public class ProjectGeneratorTests {
 		assertThat(source).contains("@EnableConfigServer");
 	}
 
+	@Test
+	public void buildDotGradleIsCustomizedWhenGeneratingProjectThatDependsOnSpringRestDocs()
+			throws IOException {
+		ProjectDescription description = new ProjectDescription();
+		description.setBuildSystem(new GradleBuildSystem());
+		description.setLanguage(new JavaLanguage());
+		description.setGroupId("com.example");
+		description.addDependency(new Dependency("org.springframework.restdocs",
+				"spring-restdocs-mockmvc", DependencyType.TEST_COMPILE));
+		File project = new ProjectGenerator().generate(description);
+		List<String> relativePaths = getRelativePathsOfProjectFiles(project);
+		assertThat(relativePaths).contains("build.gradle");
+		List<String> source = Files
+				.readAllLines(new File(project, "build.gradle").toPath());
+		source.forEach(System.out::println);
+	}
+
 	private List<String> getRelativePathsOfProjectFiles(File project) throws IOException {
 		List<String> relativePaths = new ArrayList<>();
 		Path projectPath = project.toPath();
