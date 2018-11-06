@@ -26,9 +26,9 @@ import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
 import java.util.List;
 
-import io.spring.initializr.generator.gradle.GradleBuildSystem;
+import io.spring.initializr.generator.buildsystem.gradle.GradleBuildSystem;
+import io.spring.initializr.generator.buildsystem.maven.MavenBuildSystem;
 import io.spring.initializr.generator.language.java.JavaLanguage;
-import io.spring.initializr.generator.maven.MavenBuildSystem;
 import org.junit.Test;
 
 import org.springframework.util.FileSystemUtils;
@@ -113,9 +113,10 @@ public class ProjectGeneratorTests {
 		List<String> relativePaths = getRelativePathsOfProjectFiles(project);
 		assertThat(relativePaths)
 				.contains("src/main/java/com/example/DemoApplication.java");
-		assertThat(Files.readAllLines(
+		List<String> source = Files.readAllLines(
 				new File(project, "src/main/java/com/example/DemoApplication.java")
-						.toPath())).contains("@EnableConfigServer");
+						.toPath());
+		assertThat(source).contains("@EnableConfigServer");
 	}
 
 	private List<String> getRelativePathsOfProjectFiles(File project) throws IOException {

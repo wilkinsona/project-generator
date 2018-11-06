@@ -14,28 +14,21 @@
  * limitations under the License.
  */
 
-package io.spring.initializr.generator.build;
-
-import java.lang.annotation.Documented;
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
-
-import org.springframework.context.annotation.Conditional;
+package io.spring.initializr.generator.buildsystem;
 
 /**
- * Condition that matches when a generated project will use a particular
- * {@link BuildSystem}.
+ * A factory for creating a {@link BuildSystem}.
  *
  * @author Andy Wilkinson
  */
-@Retention(RetentionPolicy.RUNTIME)
-@Target({ ElementType.TYPE, ElementType.METHOD })
-@Documented
-@Conditional(OnBuildSystemCondition.class)
-public @interface ConditionalOnBuildSystem {
+public interface BuildSystemFactory {
 
-	String value();
+	/**
+	 * Creates and returns a {@link BuildSystem} for the given id. If the factory does not
+	 * recognise the given {@code id}, {@code null} should be returned.
+	 * @param id the id of the build system
+	 * @return the build system or {@code null}
+	 */
+	BuildSystem createBuildSystem(String id);
 
 }

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package io.spring.initializr.generator.build;
+package io.spring.initializr.generator.buildsystem;
 
 import java.io.File;
 import java.util.Objects;

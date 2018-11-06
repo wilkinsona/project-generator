@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package io.spring.initializr.generator.maven;
+package io.spring.initializr.generator.buildsystem.maven;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
@@ -22,7 +22,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import io.spring.initializr.generator.build.ConditionalOnBuildSystem;
+import io.spring.initializr.generator.buildsystem.ConditionalOnBuildSystem;
 
 /**
  * Condition that matches when a generated project will use Maven.

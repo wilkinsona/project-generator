@@ -14,23 +14,35 @@
  * limitations under the License.
  */
 
-package io.spring.initializr.generator.maven;
+package io.spring.initializr.generator.buildsystem.gradle;
 
-import io.spring.initializr.generator.build.BuildSystemFactory;
+import java.io.File;
+
+import io.spring.initializr.generator.buildsystem.BuildSystem;
+import io.spring.initializr.generator.language.Language;
 
 /**
- * {@link BuildSystemFactory Factory} for {@link MavenBuildSystem}.
+ * Gradle {@link BuildSystem}.
  *
  * @author Andy Wilkinson
  */
-class MavenBuildSystemFactory implements BuildSystemFactory {
+public class GradleBuildSystem implements BuildSystem {
+
+	static final String ID = "gradle";
 
 	@Override
-	public MavenBuildSystem createBuildSystem(String id) {
-		if (MavenBuildSystem.ID.equals(id)) {
-			return new MavenBuildSystem();
-		}
-		return null;
+	public String id() {
+		return ID;
+	}
+
+	@Override
+	public File getMainDirectory(File projectRoot, Language language) {
+		return new File(projectRoot, "src/main/" + language.id());
+	}
+
+	@Override
+	public File getTestDirectory(File projectRoot, Language language) {
+		return new File(projectRoot, "src/test" + language.id());
 	}
 
 }

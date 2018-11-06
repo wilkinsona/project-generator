@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-package io.spring.initializr.generator.gradle;
+package io.spring.initializr.generator.buildsystem.gradle;
 
-import io.spring.initializr.generator.build.BuildSystem;
-import io.spring.initializr.generator.build.BuildSystemFactory;
+import io.spring.initializr.generator.buildsystem.BuildSystem;
+import io.spring.initializr.generator.buildsystem.BuildSystemFactory;
 
 /**
  * {@link BuildSystemFactory Factory} for {@link GradleBuildSystem}.

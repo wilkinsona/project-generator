@@ -14,34 +14,35 @@
  * limitations under the License.
  */
 
-package io.spring.initializr.generator.gradle;
+package io.spring.initializr.generator.build.maven;
 
+import io.spring.initializr.generator.ProjectGenerationConfiguration;
+import io.spring.initializr.generator.buildsystem.maven.ConditionalOnMaven;
 import io.spring.initializr.generator.git.GitIgnoreContributor;
 
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 
 /**
  * Configuration for contributions specific to the generation of a project that will use
- * Gradle as its build system.
+ * Maven as its build system.
  *
  * @author Andy Wilkinson
  */
-@Configuration
-@ConditionalOnGradle
-public class GradleProjectGenerationConfiguration {
+@ProjectGenerationConfiguration
+@ConditionalOnMaven
+public class MavenProjectGenerationConfiguration {
 
 	@Bean
-	public GradleWrapperContributor gradleWrapperContributor() {
-		return new GradleWrapperContributor();
+	public MavenWrapperContributor mavenWrapperContributor() {
+		return new MavenWrapperContributor();
 	}
 
 	@Bean
 	@Order(Ordered.HIGHEST_PRECEDENCE)
-	public GitIgnoreContributor gradleGitIgnoreContributor() {
-		return new GitIgnoreContributor("classpath:gradle/gitignore");
+	public GitIgnoreContributor mavenGitIgnoreContributor() {
+		return new GitIgnoreContributor("classpath:maven/gitignore");
 	}
 
 }

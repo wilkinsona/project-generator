@@ -14,35 +14,20 @@
  * limitations under the License.
  */
 
-package io.spring.initializr.generator.maven;
+package io.spring.initializr.generator.build.maven;
 
-import java.io.File;
-
-import io.spring.initializr.generator.build.BuildSystem;
-import io.spring.initializr.generator.language.Language;
+import io.spring.initializr.generator.MultipleResourcesFileContributor;
 
 /**
- * Maven {@link BuildSystem}.
+ * A {@link MultipleResourcesFileContributor} that contributes Maven's wrapper to a
+ * project.
  *
  * @author Andy Wilkinson
  */
-public class MavenBuildSystem implements BuildSystem {
+class MavenWrapperContributor extends MultipleResourcesFileContributor {
 
-	static final String ID = "maven";
-
-	@Override
-	public String id() {
-		return ID;
-	}
-
-	@Override
-	public File getMainDirectory(File projectRoot, Language language) {
-		return new File(projectRoot, "src/main/" + language.id());
-	}
-
-	@Override
-	public File getTestDirectory(File projectRoot, Language language) {
-		return new File(projectRoot, "src/test" + language.id());
+	MavenWrapperContributor() {
+		super("classpath:maven/wrapper");
 	}
 
 }

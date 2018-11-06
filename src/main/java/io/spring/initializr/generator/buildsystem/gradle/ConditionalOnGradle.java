@@ -14,20 +14,25 @@
  * limitations under the License.
  */
 
-package io.spring.initializr.generator.maven;
+package io.spring.initializr.generator.buildsystem.gradle;
 
-import io.spring.initializr.generator.MultipleResourcesFileContributor;
+import java.lang.annotation.Documented;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+
+import io.spring.initializr.generator.buildsystem.ConditionalOnBuildSystem;
 
 /**
- * A {@link MultipleResourcesFileContributor} that contributes Maven's wrapper to a
- * project.
+ * Condition that matches when a generated project will use Gradle.
  *
  * @author Andy Wilkinson
  */
-class MavenWrapperContributor extends MultipleResourcesFileContributor {
-
-	MavenWrapperContributor() {
-		super("classpath:maven/wrapper");
-	}
+@Retention(RetentionPolicy.RUNTIME)
+@Target({ ElementType.TYPE, ElementType.METHOD })
+@Documented
+@ConditionalOnBuildSystem(GradleBuildSystem.ID)
+public @interface ConditionalOnGradle {
 
 }

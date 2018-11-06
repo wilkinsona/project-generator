@@ -14,25 +14,35 @@
  * limitations under the License.
  */
 
-package io.spring.initializr.generator.gradle;
+package io.spring.initializr.generator.buildsystem.maven;
 
-import java.lang.annotation.Documented;
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import java.io.File;
 
-import io.spring.initializr.generator.build.ConditionalOnBuildSystem;
+import io.spring.initializr.generator.buildsystem.BuildSystem;
+import io.spring.initializr.generator.language.Language;
 
 /**
- * Condition that matches when a generated project will use Gradle.
+ * Maven {@link BuildSystem}.
  *
  * @author Andy Wilkinson
  */
-@Retention(RetentionPolicy.RUNTIME)
-@Target({ ElementType.TYPE, ElementType.METHOD })
-@Documented
-@ConditionalOnBuildSystem(GradleBuildSystem.ID)
-public @interface ConditionalOnGradle {
+public class MavenBuildSystem implements BuildSystem {
+
+	static final String ID = "maven";
+
+	@Override
+	public String id() {
+		return ID;
+	}
+
+	@Override
+	public File getMainDirectory(File projectRoot, Language language) {
+		return new File(projectRoot, "src/main/" + language.id());
+	}
+
+	@Override
+	public File getTestDirectory(File projectRoot, Language language) {
+		return new File(projectRoot, "src/test" + language.id());
+	}
 
 }
