@@ -22,6 +22,7 @@ import java.util.List;
 
 import io.spring.initializr.generator.buildsystem.BuildSystem;
 import io.spring.initializr.generator.language.Language;
+import io.spring.initializr.generator.util.Version;
 
 /**
  * Description of a project that is being generated.
@@ -32,6 +33,8 @@ public class ProjectDescription {
 
 	private final List<Dependency> dependencies = new ArrayList<>();
 
+	private Version springBootVersion;
+
 	private BuildSystem buildSystem;
 
 	private Language language;
@@ -39,6 +42,14 @@ public class ProjectDescription {
 	private String groupId;
 
 	private String artifactId;
+
+	public Version getSpringBootVersion() {
+		return this.springBootVersion;
+	}
+
+	public void setSpringBootVersion(Version springBootVersion) {
+		this.springBootVersion = springBootVersion;
+	}
 
 	public BuildSystem getBuildSystem() {
 		return this.buildSystem;

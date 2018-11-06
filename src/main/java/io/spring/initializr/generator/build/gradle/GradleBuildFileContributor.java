@@ -94,7 +94,6 @@ class GradleBuildFileContributor implements FileContributor {
 			writeRepositories(writer);
 			writeDependencies(writer, build);
 			writeTaskCustomizations(writer, build);
-			writer.println();
 		}
 	}
 
@@ -127,6 +126,9 @@ class GradleBuildFileContributor implements FileContributor {
 	private void writeTaskCustomizations(PrintWriter writer, GradleBuild build) {
 		Map<String, List<TaskCustomization>> taskCustomizations = build
 				.getTaskCustomizations();
+		if (taskCustomizations.isEmpty()) {
+			return;
+		}
 		taskCustomizations.forEach((name, customizations) -> {
 			writer.println(name + " {");
 			customizations.stream()

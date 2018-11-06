@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,20 +14,22 @@
  * limitations under the License.
  */
 
-package io.spring.initializr.generator.build.gradle;
-
-import io.spring.initializr.generator.MultipleResourcesFileContributor;
+package io.spring.initializr.generator.util;
 
 /**
- * A {@link MultipleResourcesFileContributor} that contributes Gradle's wrapper to a
- * project.
+ * Thrown if a input represents an invalid version.
  *
- * @author Andy Wilkinson
+ * @author Stephane Nicoll
  */
-class GradleWrapperContributor extends MultipleResourcesFileContributor {
+@SuppressWarnings("serial")
+public class InvalidVersionException extends RuntimeException {
 
-	GradleWrapperContributor(String gradleVersion) {
-		super("classpath:gradle/" + gradleVersion + "/wrapper");
+	public InvalidVersionException(String message, Throwable cause) {
+		super(message, cause);
+	}
+
+	public InvalidVersionException(String message) {
+		super(message);
 	}
 
 }

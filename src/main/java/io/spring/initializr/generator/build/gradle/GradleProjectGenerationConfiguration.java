@@ -22,6 +22,7 @@ import io.spring.initializr.generator.buildsystem.gradle.ConditionalOnGradle;
 import io.spring.initializr.generator.buildsystem.gradle.GradleBuild;
 import io.spring.initializr.generator.git.GitIgnoreContributor;
 import io.spring.initializr.generator.language.java.ConditionalOnJavaLanguage;
+import io.spring.initializr.generator.springboot.ConditionalOnSpringBootVersion;
 
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.context.annotation.Bean;
@@ -40,8 +41,15 @@ import org.springframework.core.annotation.Order;
 public class GradleProjectGenerationConfiguration {
 
 	@Bean
-	public GradleWrapperContributor gradleWrapperContributor() {
-		return new GradleWrapperContributor();
+	@ConditionalOnSpringBootVersion("[1.5.0.M1, 2.0.0.M1)")
+	public GradleWrapperContributor gradle3WrapperContributor() {
+		return new GradleWrapperContributor("3");
+	}
+
+	@Bean
+	@ConditionalOnSpringBootVersion("2.0.0.M1")
+	public GradleWrapperContributor gradle4WrapperContributor() {
+		return new GradleWrapperContributor("4");
 	}
 
 	@Bean
@@ -64,9 +72,11 @@ public class GradleProjectGenerationConfiguration {
 	}
 
 	@Bean
-	public BuildCustomizer<GradleBuild> springBootPluginContributor() {
+	public BuildCustomizer<GradleBuild> springBootPluginContributor(
+			ProjectDescription projectDescription) {
 		return (gradleBuild) -> {
-			gradleBuild.addPlugin("org.springframework.boot", "2.1.0.RELEASE");
+			gradleBuild.addPlugin("org.springframework.boot",
+					projectDescription.getSpringBootVersion().toString());
 			gradleBuild.applyPlugin("io.spring.dependency-management");
 		};
 	}

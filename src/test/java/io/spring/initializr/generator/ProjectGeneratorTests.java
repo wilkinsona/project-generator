@@ -25,10 +25,12 @@ import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Stream;
 
 import io.spring.initializr.generator.buildsystem.gradle.GradleBuildSystem;
 import io.spring.initializr.generator.buildsystem.maven.MavenBuildSystem;
 import io.spring.initializr.generator.language.java.JavaLanguage;
+import io.spring.initializr.generator.util.Version;
 import org.junit.Test;
 
 import org.springframework.util.FileSystemUtils;
@@ -43,15 +45,40 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class ProjectGeneratorTests {
 
 	@Test
-	public void gradleWrapperIsContributedWhenGeneratingGradleProject()
+	public void gradle3WrapperIsContributedWhenGeneratingGradleProjectWithBoot15()
 			throws IOException {
 		ProjectDescription description = new ProjectDescription();
 		description.setBuildSystem(new GradleBuildSystem());
+		description.setSpringBootVersion(Version.parse("1.5.17.RELEASE"));
 		File project = new ProjectGenerator().generate(description);
 		List<String> relativePaths = getRelativePathsOfProjectFiles(project);
 		assertThat(relativePaths).contains("gradlew", "gradlew.bat",
 				"gradle/wrapper/gradle-wrapper.properties",
 				"gradle/wrapper/gradle-wrapper.jar");
+		try (Stream<String> lines = Files.lines(
+				new File(project, "gradle/wrapper/gradle-wrapper.properties").toPath())) {
+			assertThat(lines.filter((line) -> line.contains("gradle-3.5.1-bin.zip")))
+					.hasSize(1);
+		}
+		FileSystemUtils.deleteRecursively(project);
+	}
+
+	@Test
+	public void gradle4WrapperIsContributedWhenGeneratingGradleProjectWithBoot20()
+			throws IOException {
+		ProjectDescription description = new ProjectDescription();
+		description.setBuildSystem(new GradleBuildSystem());
+		description.setSpringBootVersion(Version.parse("2.0.6.RELEASE"));
+		File project = new ProjectGenerator().generate(description);
+		List<String> relativePaths = getRelativePathsOfProjectFiles(project);
+		assertThat(relativePaths).contains("gradlew", "gradlew.bat",
+				"gradle/wrapper/gradle-wrapper.properties",
+				"gradle/wrapper/gradle-wrapper.jar");
+		try (Stream<String> lines = Files.lines(
+				new File(project, "gradle/wrapper/gradle-wrapper.properties").toPath())) {
+			assertThat(lines.filter((line) -> line.contains("gradle-4.10.2-bin.zip")))
+					.hasSize(1);
+		}
 		FileSystemUtils.deleteRecursively(project);
 	}
 
@@ -60,6 +87,7 @@ public class ProjectGeneratorTests {
 			throws IOException {
 		ProjectDescription description = new ProjectDescription();
 		description.setBuildSystem(new GradleBuildSystem());
+		description.setSpringBootVersion(Version.parse("2.1.0.RELEASE"));
 		description.setLanguage(new JavaLanguage());
 		description.setGroupId("com.example");
 		description.setArtifactId("demo");
@@ -96,6 +124,7 @@ public class ProjectGeneratorTests {
 	public void gitIgnoreIsContributedWhenGeneratingGradleProject() throws IOException {
 		ProjectDescription description = new ProjectDescription();
 		description.setBuildSystem(new GradleBuildSystem());
+		description.setSpringBootVersion(Version.parse("2.1.0.RELEASE"));
 		File project = new ProjectGenerator().generate(description);
 		assertThat(Files.readAllLines(new File(project, ".gitignore").toPath()))
 				.contains(".gradle", "### STS ###");
@@ -147,6 +176,7 @@ public class ProjectGeneratorTests {
 	public void buildDotGradleIsCustomizedWhenGeneratingProjectThatDependsOnSpringRestDocs()
 			throws IOException {
 		ProjectDescription description = new ProjectDescription();
+		description.setSpringBootVersion(Version.parse("2.1.0.RELEASE"));
 		description.setBuildSystem(new GradleBuildSystem());
 		description.setLanguage(new JavaLanguage());
 		description.setGroupId("com.example");
