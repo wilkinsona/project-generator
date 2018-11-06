@@ -16,38 +16,21 @@
 
 package io.spring.initializr.generator.language.java;
 
-import java.util.Arrays;
-import java.util.List;
-
 /**
- * An invocation of a method.
+ * A statement that contains a single expression.
  *
  * @author Andy Wilkinson
  */
-public class JavaMethodInvocation extends JavaExpression {
+public class JavaExpressionStatement extends JavaStatement {
 
-	private final String target;
+	private final JavaExpression expression;
 
-	private final String name;
-
-	private final List<String> arguments;
-
-	public JavaMethodInvocation(String target, String name, String... arguments) {
-		this.target = target;
-		this.name = name;
-		this.arguments = Arrays.asList(arguments);
+	public JavaExpressionStatement(JavaExpression expression) {
+		this.expression = expression;
 	}
 
-	public String getTarget() {
-		return this.target;
-	}
-
-	public String getName() {
-		return this.name;
-	}
-
-	public List<String> getArguments() {
-		return this.arguments;
+	public JavaExpression getExpression() {
+		return this.expression;
 	}
 
 }

@@ -14,40 +14,22 @@
  * limitations under the License.
  */
 
-package io.spring.initializr.generator.language.java;
+package io.spring.initializr.generator.packaging.war;
 
-import java.util.Arrays;
-import java.util.List;
+import io.spring.initializr.generator.packaging.Packaging;
 
 /**
- * An invocation of a method.
+ * War {@link Packaging}.
  *
  * @author Andy Wilkinson
  */
-public class JavaMethodInvocation extends JavaExpression {
+public class WarPackaging implements Packaging {
 
-	private final String target;
+	static final String ID = "war";
 
-	private final String name;
-
-	private final List<String> arguments;
-
-	public JavaMethodInvocation(String target, String name, String... arguments) {
-		this.target = target;
-		this.name = name;
-		this.arguments = Arrays.asList(arguments);
-	}
-
-	public String getTarget() {
-		return this.target;
-	}
-
-	public String getName() {
-		return this.name;
-	}
-
-	public List<String> getArguments() {
-		return this.arguments;
+	@Override
+	public String id() {
+		return ID;
 	}
 
 }

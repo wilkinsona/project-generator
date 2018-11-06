@@ -19,19 +19,25 @@ package io.spring.initializr.generator.code.java;
 import io.spring.initializr.generator.ProjectDescription;
 import io.spring.initializr.generator.ProjectGenerationConfiguration;
 import io.spring.initializr.generator.code.MainApplicationTypeCustomizer;
+import io.spring.initializr.generator.code.MainSourceCodeCustomizer;
 import io.spring.initializr.generator.code.MainSourceCodeFileContributor;
+import io.spring.initializr.generator.code.ServletInitializerCustomizer;
+import io.spring.initializr.generator.language.Annotation;
 import io.spring.initializr.generator.language.Parameter;
-import io.spring.initializr.generator.language.TypeDeclaration;
 import io.spring.initializr.generator.language.java.ConditionalOnJavaLanguage;
 import io.spring.initializr.generator.language.java.JavaCompilationUnit;
+import io.spring.initializr.generator.language.java.JavaExpressionStatement;
 import io.spring.initializr.generator.language.java.JavaMethodDeclaration;
 import io.spring.initializr.generator.language.java.JavaMethodInvocation;
+import io.spring.initializr.generator.language.java.JavaReturnStatement;
 import io.spring.initializr.generator.language.java.JavaSourceCode;
 import io.spring.initializr.generator.language.java.JavaSourceCodeWriter;
 import io.spring.initializr.generator.language.java.JavaTypeDeclaration;
+import io.spring.initializr.generator.packaging.war.ConditionalOnWarPackaging;
 
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 
 /**
  * Project generation configuration for projects written in Java.
@@ -45,10 +51,11 @@ public class JavaSourceCodeProjectGenerationConfiguration {
 	@Bean
 	public MainSourceCodeFileContributor<JavaTypeDeclaration, JavaCompilationUnit, JavaSourceCode> mainJavaSourceCodeFileContributor(
 			ProjectDescription projectDescription,
-			ObjectProvider<MainApplicationTypeCustomizer<? extends TypeDeclaration>> mainApplicationTypeCustomizers) {
+			ObjectProvider<MainApplicationTypeCustomizer<?>> mainApplicationTypeCustomizers,
+			ObjectProvider<MainSourceCodeCustomizer<?, ?, ?>> mainSourceCodeCustomizers) {
 		return new MainSourceCodeFileContributor<JavaTypeDeclaration, JavaCompilationUnit, JavaSourceCode>(
 				projectDescription, JavaSourceCode::new, new JavaSourceCodeWriter(),
-				mainApplicationTypeCustomizers);
+				mainApplicationTypeCustomizers, mainSourceCodeCustomizers);
 	}
 
 	@Bean
@@ -57,10 +64,36 @@ public class JavaSourceCodeProjectGenerationConfiguration {
 			typeDeclaration.addMethodDeclaration(
 					JavaMethodDeclaration.staticMethod("main").returning("void")
 							.parameters(new Parameter("java.lang.String[]", "args"))
-							.body(new JavaMethodInvocation(
+							.body(new JavaExpressionStatement(new JavaMethodInvocation(
 									"org.springframework.boot.SpringApplication", "run",
-									typeDeclaration.getName() + ".class", "args")));
+									typeDeclaration.getName() + ".class", "args"))));
 		};
+	}
+
+	/**
+	 * Java source code contributions for projects using war packaging.
+	 */
+	@Configuration
+	@ConditionalOnWarPackaging
+	static class WarPackagingConfiguration {
+
+		@Bean
+		public ServletInitializerCustomizer<JavaTypeDeclaration> javaServletInitializerCustomizer() {
+			return (typeDeclaration) -> {
+				JavaMethodDeclaration configure = JavaMethodDeclaration
+						.method("configure")
+						.returning(
+								"org.springframework.boot.builder.SpringApplicationBuilder")
+						.parameters(new Parameter(
+								"org.springframework.boot.builder.SpringApplicationBuilder",
+								"application"))
+						.body(new JavaReturnStatement(new JavaMethodInvocation(
+								"application", "sources", "DemoApplication.class")));
+				configure.annotate(new Annotation("java.lang.Override"));
+				typeDeclaration.addMethodDeclaration(configure);
+			};
+		}
+
 	}
 
 }

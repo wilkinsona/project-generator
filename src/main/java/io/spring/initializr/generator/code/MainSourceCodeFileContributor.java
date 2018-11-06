@@ -51,13 +51,17 @@ public class MainSourceCodeFileContributor<T extends TypeDeclaration, C extends 
 
 	private final ObjectProvider<MainApplicationTypeCustomizer<? extends TypeDeclaration>> mainTypeCustomizers;
 
+	private final ObjectProvider<MainSourceCodeCustomizer<?, ?, ?>> mainSourceCodeCustomizers;
+
 	public MainSourceCodeFileContributor(ProjectDescription projectDescription,
 			Supplier<S> sourceFactory, SourceCodeWriter<S> sourceWriter,
-			ObjectProvider<MainApplicationTypeCustomizer<? extends TypeDeclaration>> mainTypeCustomizers) {
+			ObjectProvider<MainApplicationTypeCustomizer<?>> mainTypeCustomizers,
+			ObjectProvider<MainSourceCodeCustomizer<?, ?, ?>> mainSourceCodeCustomizers) {
 		this.projectDescription = projectDescription;
 		this.sourceFactory = sourceFactory;
 		this.sourceWriter = sourceWriter;
 		this.mainTypeCustomizers = mainTypeCustomizers;
+		this.mainSourceCodeCustomizers = mainSourceCodeCustomizers;
 	}
 
 	@Override
@@ -67,6 +71,7 @@ public class MainSourceCodeFileContributor<T extends TypeDeclaration, C extends 
 				this.projectDescription.getGroupId(), "DemoApplication");
 		T mainApplicationType = compilationUnit.createTypeDeclaration("DemoApplication");
 		customizeMainApplicationType(mainApplicationType);
+		customizeMainSourceCode(sourceCode);
 		this.sourceWriter
 				.writeTo(
 						this.projectDescription.getBuildSystem().getMainDirectory(
@@ -76,12 +81,20 @@ public class MainSourceCodeFileContributor<T extends TypeDeclaration, C extends 
 
 	@SuppressWarnings("unchecked")
 	private void customizeMainApplicationType(T mainApplicationType) {
-		List<MainApplicationTypeCustomizer<? extends TypeDeclaration>> customizers = this.mainTypeCustomizers
+		List<MainApplicationTypeCustomizer<?>> customizers = this.mainTypeCustomizers
 				.orderedStream().collect(Collectors.toList());
 		LambdaSafe
 				.callbacks(MainApplicationTypeCustomizer.class, customizers,
 						mainApplicationType)
 				.invoke((customizer) -> customizer.customize(mainApplicationType));
+	}
+
+	@SuppressWarnings("unchecked")
+	private void customizeMainSourceCode(S sourceCode) {
+		List<MainSourceCodeCustomizer<?, ?, ?>> customizers = this.mainSourceCodeCustomizers
+				.orderedStream().collect(Collectors.toList());
+		LambdaSafe.callbacks(MainSourceCodeCustomizer.class, customizers, sourceCode)
+				.invoke((customizer) -> customizer.customize(sourceCode));
 	}
 
 }

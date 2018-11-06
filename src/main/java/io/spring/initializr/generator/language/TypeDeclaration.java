@@ -31,8 +31,14 @@ public class TypeDeclaration implements Annotatable {
 
 	private final String name;
 
+	private String extendedClassName;
+
 	public TypeDeclaration(String name) {
 		this.name = name;
+	}
+
+	public void extend(String name) {
+		this.extendedClassName = name;
 	}
 
 	@Override
@@ -47,6 +53,10 @@ public class TypeDeclaration implements Annotatable {
 
 	public String getName() {
 		return this.name;
+	}
+
+	public String getExtends() {
+		return this.extendedClassName;
 	}
 
 }

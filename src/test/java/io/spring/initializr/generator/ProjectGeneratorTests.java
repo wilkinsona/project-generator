@@ -30,6 +30,7 @@ import java.util.stream.Stream;
 import io.spring.initializr.generator.buildsystem.gradle.GradleBuildSystem;
 import io.spring.initializr.generator.buildsystem.maven.MavenBuildSystem;
 import io.spring.initializr.generator.language.java.JavaLanguage;
+import io.spring.initializr.generator.packaging.war.WarPackaging;
 import io.spring.initializr.generator.util.Version;
 import org.junit.Test;
 
@@ -188,6 +189,42 @@ public class ProjectGeneratorTests {
 		List<String> source = Files
 				.readAllLines(new File(project, "build.gradle").toPath());
 		source.forEach(System.out::println);
+	}
+
+	@Test
+	public void servletInitializerIsContributedWhenGeneratingProjectThatUsesWarPackaging()
+			throws IOException {
+		ProjectDescription description = new ProjectDescription();
+		description.setSpringBootVersion(Version.parse("2.1.0.RELEASE"));
+		description.setBuildSystem(new MavenBuildSystem());
+		description.setLanguage(new JavaLanguage());
+		description.setPackaging(new WarPackaging());
+		description.setGroupId("com.example");
+		File project = new ProjectGenerator().generate(description);
+		List<String> relativePaths = getRelativePathsOfProjectFiles(project);
+		assertThat(relativePaths)
+				.contains("src/main/java/com/example/ServletInitializer.java");
+		Files.lines(new File(project, "src/main/java/com/example/ServletInitializer.java")
+				.toPath()).forEach(System.out::println);
+	}
+
+	@Test
+	public void warPluginIsAppliedWhenBuildingGradleProjectThatUsesWarPackaging()
+			throws IOException {
+		ProjectDescription description = new ProjectDescription();
+		description.setSpringBootVersion(Version.parse("2.1.0.RELEASE"));
+		description.setBuildSystem(new GradleBuildSystem());
+		description.setLanguage(new JavaLanguage());
+		description.setPackaging(new WarPackaging());
+		description.setGroupId("com.example");
+		File project = new ProjectGenerator().generate(description);
+		List<String> relativePaths = getRelativePathsOfProjectFiles(project);
+		assertThat(relativePaths).contains("build.gradle");
+		try (Stream<String> lines = Files
+				.lines(new File(project, "build.gradle").toPath())) {
+			assertThat(lines.filter((line) -> line.contains("    id 'war'"))).hasSize(1);
+		}
+		FileSystemUtils.deleteRecursively(project);
 	}
 
 	private List<String> getRelativePathsOfProjectFiles(File project) throws IOException {

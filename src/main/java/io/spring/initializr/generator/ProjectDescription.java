@@ -22,6 +22,7 @@ import java.util.List;
 
 import io.spring.initializr.generator.buildsystem.BuildSystem;
 import io.spring.initializr.generator.language.Language;
+import io.spring.initializr.generator.packaging.Packaging;
 import io.spring.initializr.generator.util.Version;
 
 /**
@@ -36,6 +37,8 @@ public class ProjectDescription {
 	private Version springBootVersion;
 
 	private BuildSystem buildSystem;
+
+	private Packaging packaging;
 
 	private Language language;
 
@@ -57,6 +60,14 @@ public class ProjectDescription {
 
 	public void setBuildSystem(BuildSystem buildSystem) {
 		this.buildSystem = buildSystem;
+	}
+
+	public Packaging getPackaging() {
+		return this.packaging;
+	}
+
+	public void setPackaging(Packaging packaging) {
+		this.packaging = packaging;
 	}
 
 	public Language getLanguage() {

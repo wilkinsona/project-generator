@@ -20,12 +20,14 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import io.spring.initializr.generator.language.Annotatable;
 import io.spring.initializr.generator.language.Annotation;
 import io.spring.initializr.generator.language.Parameter;
 import io.spring.initializr.generator.language.SourceCode;
@@ -58,7 +60,7 @@ public class JavaSourceCodeWriter implements SourceCodeWriter<JavaSourceCode> {
 		try (PrintWriter writer = new PrintWriter(new FileOutputStream(output))) {
 			writer.println("package " + compilationUnit.getPackageName() + ";");
 			writer.println();
-			List<String> imports = determineImports(compilationUnit);
+			Set<String> imports = determineImports(compilationUnit);
 			if (!imports.isEmpty()) {
 				for (String importedType : imports) {
 					writer.println("import " + importedType + ";");
@@ -66,21 +68,24 @@ public class JavaSourceCodeWriter implements SourceCodeWriter<JavaSourceCode> {
 				writer.println();
 			}
 			for (JavaTypeDeclaration type : compilationUnit.getTypeDeclarations()) {
-				for (Annotation annotation : type.getAnnotations()) {
-					writer.println("@" + getUnqualifiedName(annotation.getName()));
+				writeAnnotations(writer, type);
+				writer.print("public class " + type.getName());
+				if (type.getExtends() != null) {
+					writer.print(" extends " + getUnqualifiedName(type.getExtends()));
 				}
-				writer.println("public class " + type.getName() + " {");
+				writer.println(" {");
 				writer.println();
 				List<JavaMethodDeclaration> methodDeclarations = type
 						.getMethodDeclarations();
 				if (!methodDeclarations.isEmpty()) {
 					for (JavaMethodDeclaration methodDeclaration : methodDeclarations) {
+						writeAnnotations(writer, methodDeclaration, "    ");
 						writer.print("    public ");
 						if (methodDeclaration.isStatic()) {
 							writer.print("static ");
 						}
-						writer.print(methodDeclaration.getReturnType() + " "
-								+ methodDeclaration.getName() + "(");
+						writer.print(getUnqualifiedName(methodDeclaration.getReturnType())
+								+ " " + methodDeclaration.getName() + "(");
 						List<Parameter> parameters = methodDeclaration.getParameters();
 						if (!parameters.isEmpty()) {
 							writer.print(parameters.stream().map(
@@ -92,18 +97,17 @@ public class JavaSourceCodeWriter implements SourceCodeWriter<JavaSourceCode> {
 						List<JavaStatement> statements = methodDeclaration
 								.getStatements();
 						for (JavaStatement statement : statements) {
-							if (statement instanceof JavaMethodInvocation) {
-								JavaMethodInvocation methodInvocation = (JavaMethodInvocation) statement;
-								writer.println(
-										"        "
-												+ getUnqualifiedName(
-														methodInvocation.getTarget())
-												+ "." + methodInvocation.getName() + "("
-												+ String.join(", ",
-														methodInvocation.getArguments())
-												+ ");");
-
+							writer.print("        ");
+							if (statement instanceof JavaExpressionStatement) {
+								write(writer, ((JavaExpressionStatement) statement)
+										.getExpression());
 							}
+							else if (statement instanceof JavaReturnStatement) {
+								writer.print("return ");
+								write(writer, ((JavaReturnStatement) statement)
+										.getExpression());
+							}
+							writer.println(";");
 						}
 						writer.println("    }");
 						writer.println();
@@ -113,6 +117,29 @@ public class JavaSourceCodeWriter implements SourceCodeWriter<JavaSourceCode> {
 				writer.println("");
 			}
 		}
+	}
+
+	private void writeAnnotations(PrintWriter writer, Annotatable annotatable) {
+		this.writeAnnotations(writer, annotatable, "");
+	}
+
+	private void writeAnnotations(PrintWriter writer, Annotatable annotatable,
+			String prefix) {
+		for (Annotation annotation : annotatable.getAnnotations()) {
+			writer.println(prefix + "@" + getUnqualifiedName(annotation.getName()));
+		}
+	}
+
+	private void write(PrintWriter writer, JavaExpression expression) {
+		if (expression instanceof JavaMethodInvocation) {
+			write(writer, (JavaMethodInvocation) expression);
+		}
+	}
+
+	private void write(PrintWriter writer, JavaMethodInvocation methodInvocation) {
+		writer.print(getUnqualifiedName(methodInvocation.getTarget()) + "."
+				+ methodInvocation.getName() + "("
+				+ String.join(", ", methodInvocation.getArguments()) + ")");
 	}
 
 	private File fileForCompilationUnit(File directory,
@@ -125,10 +152,13 @@ public class JavaSourceCodeWriter implements SourceCodeWriter<JavaSourceCode> {
 		return new File(directory, packageName.replace('.', '/'));
 	}
 
-	private List<String> determineImports(JavaCompilationUnit compilationUnit) {
-		List<String> imports = new ArrayList<String>();
+	private Set<String> determineImports(JavaCompilationUnit compilationUnit) {
+		Set<String> imports = new LinkedHashSet<String>();
 		for (JavaTypeDeclaration typeDeclaration : compilationUnit
 				.getTypeDeclarations()) {
+			if (requiresImport(typeDeclaration.getExtends())) {
+				imports.add(typeDeclaration.getExtends());
+			}
 			imports.addAll(getRequiredImports(typeDeclaration.getAnnotations(),
 					Annotation::getName));
 			for (JavaMethodDeclaration methodDeclaration : typeDeclaration
@@ -167,7 +197,7 @@ public class JavaSourceCodeWriter implements SourceCodeWriter<JavaSourceCode> {
 	}
 
 	private boolean requiresImport(String name) {
-		if (!name.contains(".")) {
+		if (name == null || !name.contains(".")) {
 			return false;
 		}
 		String packageName = name.substring(0, name.lastIndexOf('.'));

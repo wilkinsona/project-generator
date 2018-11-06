@@ -18,8 +18,11 @@ package io.spring.initializr.generator.language.java;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
+import io.spring.initializr.generator.language.Annotatable;
+import io.spring.initializr.generator.language.Annotation;
 import io.spring.initializr.generator.language.Parameter;
 
 /**
@@ -27,7 +30,9 @@ import io.spring.initializr.generator.language.Parameter;
  *
  * @author Andy Wilkinson
  */
-public final class JavaMethodDeclaration {
+public final class JavaMethodDeclaration implements Annotatable {
+
+	private final List<Annotation> annotations = new ArrayList<Annotation>();
 
 	private final String name;
 
@@ -77,6 +82,16 @@ public final class JavaMethodDeclaration {
 		return this.statements;
 	}
 
+	@Override
+	public void annotate(Annotation annotation) {
+		this.annotations.add(annotation);
+	}
+
+	@Override
+	public List<Annotation> getAnnotations() {
+		return Collections.unmodifiableList(this.annotations);
+	}
+
 	/**
 	 * Builder for creating a {@link JavaMethodDeclaration}.
 	 */
@@ -109,7 +124,7 @@ public final class JavaMethodDeclaration {
 			return this;
 		}
 
-		public JavaMethodDeclaration body(JavaMethodInvocation... statements) {
+		public JavaMethodDeclaration body(JavaStatement... statements) {
 			return new JavaMethodDeclaration(this.name, this.returnType, this.parameters,
 					this.staticMethod, Arrays.asList(statements));
 		}

@@ -14,40 +14,21 @@
  * limitations under the License.
  */
 
-package io.spring.initializr.generator.language.java;
-
-import java.util.Arrays;
-import java.util.List;
+package io.spring.initializr.generator.packaging;
 
 /**
- * An invocation of a method.
+ * A factory for creating a {@link Packaging}.
  *
  * @author Andy Wilkinson
  */
-public class JavaMethodInvocation extends JavaExpression {
+public interface PackagingFactory {
 
-	private final String target;
-
-	private final String name;
-
-	private final List<String> arguments;
-
-	public JavaMethodInvocation(String target, String name, String... arguments) {
-		this.target = target;
-		this.name = name;
-		this.arguments = Arrays.asList(arguments);
-	}
-
-	public String getTarget() {
-		return this.target;
-	}
-
-	public String getName() {
-		return this.name;
-	}
-
-	public List<String> getArguments() {
-		return this.arguments;
-	}
+	/**
+	 * Creates and returns a {@link Packaging} for the given id. If the factory does not
+	 * recognise the given {@code id}, {@code null} should be returned.
+	 * @param id the id of the packaging
+	 * @return the packaging or {@code null}
+	 */
+	Packaging createPackaging(String id);
 
 }

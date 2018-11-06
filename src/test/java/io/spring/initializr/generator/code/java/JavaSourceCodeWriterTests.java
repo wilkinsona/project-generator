@@ -24,6 +24,7 @@ import java.util.List;
 import io.spring.initializr.generator.language.Annotation;
 import io.spring.initializr.generator.language.Parameter;
 import io.spring.initializr.generator.language.java.JavaCompilationUnit;
+import io.spring.initializr.generator.language.java.JavaExpressionStatement;
 import io.spring.initializr.generator.language.java.JavaMethodDeclaration;
 import io.spring.initializr.generator.language.java.JavaMethodInvocation;
 import io.spring.initializr.generator.language.java.JavaSourceCode;
@@ -82,9 +83,9 @@ public class JavaSourceCodeWriterTests {
 				"org.springframework.boot.autoconfigure.SpringBootApplication"));
 		test.addMethodDeclaration(JavaMethodDeclaration.staticMethod("main")
 				.returning("void").parameters(new Parameter("java.lang.String[]", "args"))
-				.body(new JavaMethodInvocation(
+				.body(new JavaExpressionStatement(new JavaMethodInvocation(
 						"org.springframework.boot.SpringApplication", "run", "Test.class",
-						"args")));
+						"args"))));
 		this.writer.writeTo(this.temp.getRoot(), sourceCode);
 		File testSource = new File(this.temp.getRoot(), "com/example/Test.java");
 		assertThat(testSource).isFile();

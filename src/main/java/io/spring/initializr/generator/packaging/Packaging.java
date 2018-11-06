@@ -14,40 +14,28 @@
  * limitations under the License.
  */
 
-package io.spring.initializr.generator.language.java;
+package io.spring.initializr.generator.packaging;
 
-import java.util.Arrays;
-import java.util.List;
+import java.util.Objects;
+
+import org.springframework.core.io.support.SpringFactoriesLoader;
 
 /**
- * An invocation of a method.
+ * Application packaging, such as a jar file or a war file.
  *
  * @author Andy Wilkinson
  */
-public class JavaMethodInvocation extends JavaExpression {
+public interface Packaging {
 
-	private final String target;
+	String id();
 
-	private final String name;
-
-	private final List<String> arguments;
-
-	public JavaMethodInvocation(String target, String name, String... arguments) {
-		this.target = target;
-		this.name = name;
-		this.arguments = Arrays.asList(arguments);
-	}
-
-	public String getTarget() {
-		return this.target;
-	}
-
-	public String getName() {
-		return this.name;
-	}
-
-	public List<String> getArguments() {
-		return this.arguments;
+	static Packaging forId(String id) {
+		return SpringFactoriesLoader
+				.loadFactories(PackagingFactory.class, Packaging.class.getClassLoader())
+				.stream().map((factory) -> factory.createPackaging(id))
+				.filter(Objects::nonNull).findFirst()
+				.orElseThrow(() -> new IllegalStateException(
+						"Unrecognized packaging id '" + id + "'"));
 	}
 
 }

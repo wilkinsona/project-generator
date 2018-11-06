@@ -14,40 +14,18 @@
  * limitations under the License.
  */
 
-package io.spring.initializr.generator.language.java;
+package io.spring.initializr.generator.code;
 
-import java.util.Arrays;
-import java.util.List;
+import io.spring.initializr.generator.language.TypeDeclaration;
 
 /**
- * An invocation of a method.
+ * Callback for configuring the generated project's servlet initializer.
  *
+ * @param <T> type declaration that this customizer can handle
  * @author Andy Wilkinson
  */
-public class JavaMethodInvocation extends JavaExpression {
+public interface ServletInitializerCustomizer<T extends TypeDeclaration> {
 
-	private final String target;
-
-	private final String name;
-
-	private final List<String> arguments;
-
-	public JavaMethodInvocation(String target, String name, String... arguments) {
-		this.target = target;
-		this.name = name;
-		this.arguments = Arrays.asList(arguments);
-	}
-
-	public String getTarget() {
-		return this.target;
-	}
-
-	public String getName() {
-		return this.name;
-	}
-
-	public List<String> getArguments() {
-		return this.arguments;
-	}
+	void customize(T typeDeclaration);
 
 }

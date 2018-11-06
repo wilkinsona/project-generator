@@ -36,6 +36,10 @@ public interface BuildSystem {
 	 */
 	String id();
 
+	File getMainDirectory(File projectRoot, Language language);
+
+	File getTestDirectory(File projectRoot, Language language);
+
 	static BuildSystem forId(String id) {
 		return SpringFactoriesLoader
 				.loadFactories(BuildSystemFactory.class,
@@ -45,9 +49,5 @@ public interface BuildSystem {
 				.orElseThrow(() -> new IllegalStateException(
 						"Unrecognized build system id '" + id + "'"));
 	}
-
-	File getMainDirectory(File projectRoot, Language language);
-
-	File getTestDirectory(File projectRoot, Language language);
 
 }
