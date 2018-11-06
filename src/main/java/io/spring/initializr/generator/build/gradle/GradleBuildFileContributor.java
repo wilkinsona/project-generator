@@ -180,6 +180,8 @@ class GradleBuildFileContributor implements FileContributor {
 			return "annotationProcessor";
 		case COMPILE:
 			return "implementation";
+		case PROVIDED_RUNTIME:
+			return "providedRuntime";
 		case RUNTIME:
 			return "runtimeOnly";
 		case TEST_COMPILE:

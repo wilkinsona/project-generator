@@ -21,6 +21,7 @@ import io.spring.initializr.generator.DependencyType;
 import io.spring.initializr.generator.ProjectDescription;
 import io.spring.initializr.generator.ProjectGenerationConfiguration;
 import io.spring.initializr.generator.buildsystem.Build;
+import io.spring.initializr.generator.packaging.war.ConditionalOnWarPackaging;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.core.Ordered;
@@ -56,6 +57,17 @@ public class BuildProjectGenerationConfiguration {
 				build.addDependency("org.springframework.boot", "spring-boot-starter",
 						DependencyType.COMPILE);
 			}
+		};
+	}
+
+	@Bean
+	@ConditionalOnWarPackaging
+	public BuildCustomizer<Build> webStarterContributor() {
+		return (build) -> {
+			build.addDependency("org.springframework.boot", "spring-boot-starter-web",
+					DependencyType.COMPILE);
+			build.addDependency("org.springframework.boot", "spring-boot-starter-tomcat",
+					DependencyType.PROVIDED_RUNTIME);
 		};
 	}
 

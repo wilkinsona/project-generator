@@ -170,6 +170,9 @@ public class JavaSourceCodeWriter implements SourceCodeWriter<JavaSourceCode> {
 						Parameter::getType));
 				imports.addAll(getRequiredImports(
 						methodDeclaration.getStatements().stream()
+								.filter(JavaExpressionStatement.class::isInstance)
+								.map(JavaExpressionStatement.class::cast)
+								.map(JavaExpressionStatement::getExpression)
 								.filter(JavaMethodInvocation.class::isInstance)
 								.map(JavaMethodInvocation.class::cast),
 						JavaMethodInvocation::getTarget));

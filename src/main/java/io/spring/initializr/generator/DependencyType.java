@@ -39,6 +39,11 @@ public enum DependencyType {
 	RUNTIME,
 
 	/**
+	 * A dependency that is provided and is used to run the project.
+	 */
+	PROVIDED_RUNTIME,
+
+	/**
 	 * A dependency that is used to compile a project's tests.
 	 */
 	TEST_COMPILE,
