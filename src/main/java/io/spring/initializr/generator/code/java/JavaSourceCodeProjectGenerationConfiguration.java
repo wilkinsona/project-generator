@@ -16,6 +16,8 @@
 
 package io.spring.initializr.generator.code.java;
 
+import java.lang.reflect.Modifier;
+
 import io.spring.initializr.generator.ProjectDescription;
 import io.spring.initializr.generator.ProjectGenerationConfiguration;
 import io.spring.initializr.generator.code.MainApplicationTypeCustomizer;
@@ -61,12 +63,12 @@ public class JavaSourceCodeProjectGenerationConfiguration {
 	@Bean
 	public MainApplicationTypeCustomizer<JavaTypeDeclaration> mainMethodContributor() {
 		return (typeDeclaration) -> {
-			typeDeclaration.addMethodDeclaration(
-					JavaMethodDeclaration.staticMethod("main").returning("void")
-							.parameters(new Parameter("java.lang.String[]", "args"))
-							.body(new JavaExpressionStatement(new JavaMethodInvocation(
-									"org.springframework.boot.SpringApplication", "run",
-									typeDeclaration.getName() + ".class", "args"))));
+			typeDeclaration.addMethodDeclaration(JavaMethodDeclaration.method("main")
+					.modifiers(Modifier.PUBLIC | Modifier.STATIC).returning("void")
+					.parameters(new Parameter("java.lang.String[]", "args"))
+					.body(new JavaExpressionStatement(new JavaMethodInvocation(
+							"org.springframework.boot.SpringApplication", "run",
+							typeDeclaration.getName() + ".class", "args"))));
 		};
 	}
 
@@ -81,7 +83,7 @@ public class JavaSourceCodeProjectGenerationConfiguration {
 		public ServletInitializerCustomizer<JavaTypeDeclaration> javaServletInitializerCustomizer() {
 			return (typeDeclaration) -> {
 				JavaMethodDeclaration configure = JavaMethodDeclaration
-						.method("configure")
+						.method("configure").modifiers(Modifier.PROTECTED)
 						.returning(
 								"org.springframework.boot.builder.SpringApplicationBuilder")
 						.parameters(new Parameter(

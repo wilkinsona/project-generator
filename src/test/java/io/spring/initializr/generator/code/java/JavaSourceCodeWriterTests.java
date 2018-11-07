@@ -18,6 +18,7 @@ package io.spring.initializr.generator.code.java;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.Modifier;
 import java.nio.file.Files;
 import java.util.List;
 
@@ -81,8 +82,9 @@ public class JavaSourceCodeWriterTests {
 		JavaTypeDeclaration test = compilationUnit.createTypeDeclaration("Test");
 		test.annotate(new Annotation(
 				"org.springframework.boot.autoconfigure.SpringBootApplication"));
-		test.addMethodDeclaration(JavaMethodDeclaration.staticMethod("main")
-				.returning("void").parameters(new Parameter("java.lang.String[]", "args"))
+		test.addMethodDeclaration(JavaMethodDeclaration.method("main")
+				.modifiers(Modifier.PUBLIC | Modifier.STATIC).returning("void")
+				.parameters(new Parameter("java.lang.String[]", "args"))
 				.body(new JavaExpressionStatement(new JavaMethodInvocation(
 						"org.springframework.boot.SpringApplication", "run", "Test.class",
 						"args"))));
@@ -93,7 +95,8 @@ public class JavaSourceCodeWriterTests {
 		lines.forEach(System.out::println);
 		assertThat(lines).containsExactly("package com.example;", "",
 				"import org.springframework.boot.autoconfigure.SpringBootApplication;",
-				"", "@SpringBootApplication", "public class Test {", "",
+				"import org.springframework.boot.SpringApplication;", "",
+				"@SpringBootApplication", "public class Test {", "",
 				"    public static void main(String[] args) {",
 				"        SpringApplication.run(Test.class, args);", "    }", "", "}", "");
 	}

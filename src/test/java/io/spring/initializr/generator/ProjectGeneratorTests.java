@@ -204,8 +204,17 @@ public class ProjectGeneratorTests {
 		List<String> relativePaths = getRelativePathsOfProjectFiles(project);
 		assertThat(relativePaths)
 				.contains("src/main/java/com/example/ServletInitializer.java");
-		Files.lines(new File(project, "src/main/java/com/example/ServletInitializer.java")
-				.toPath()).forEach(System.out::println);
+		List<String> lines = Files.readAllLines(
+				new File(project, "src/main/java/com/example/ServletInitializer.java")
+						.toPath());
+		assertThat(lines).containsExactly("package com.example;", "",
+				"import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;",
+				"import org.springframework.boot.builder.SpringApplicationBuilder;", "",
+				"public class ServletInitializer extends SpringBootServletInitializer {",
+				"", "    @Override",
+				"    protected SpringApplicationBuilder configure(SpringApplicationBuilder application) {",
+				"        return application.sources(DemoApplication.class);", "    }", "",
+				"}", "");
 	}
 
 	@Test

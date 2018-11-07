@@ -16,6 +16,7 @@
 
 package io.spring.initializr.generator.language.java;
 
+import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -38,28 +39,24 @@ public final class JavaMethodDeclaration implements Annotatable {
 
 	private final String returnType;
 
-	private final List<Parameter> parameters;
+	private final int modifiers;
 
-	private final boolean staticMethod;
+	private final List<Parameter> parameters;
 
 	private final List<JavaStatement> statements;
 
-	private JavaMethodDeclaration(String name, String returnType,
-			List<Parameter> parameters, boolean staticMethod,
-			List<JavaStatement> statements) {
+	private JavaMethodDeclaration(String name, String returnType, int modifiers,
+			List<Parameter> parameters, List<JavaStatement> statements) {
 		this.name = name;
 		this.returnType = returnType;
+		this.modifiers = modifiers;
 		this.parameters = parameters;
-		this.staticMethod = staticMethod;
 		this.statements = statements;
+
 	}
 
 	public static Builder method(String name) {
 		return new Builder(name);
-	}
-
-	public static Builder staticMethod(String name) {
-		return new Builder(name, true);
 	}
 
 	String getName() {
@@ -74,8 +71,8 @@ public final class JavaMethodDeclaration implements Annotatable {
 		return this.parameters;
 	}
 
-	boolean isStatic() {
-		return this.staticMethod;
+	int getModifiers() {
+		return this.modifiers;
 	}
 
 	public List<JavaStatement> getStatements() {
@@ -99,11 +96,11 @@ public final class JavaMethodDeclaration implements Annotatable {
 
 		private final String name;
 
-		private final boolean staticMethod;
-
 		private List<Parameter> parameters = new ArrayList<>();
 
 		private String returnType = "void";
+
+		private int modifiers = Modifier.PUBLIC;
 
 		private Builder(String name) {
 			this(name, false);
@@ -111,7 +108,11 @@ public final class JavaMethodDeclaration implements Annotatable {
 
 		private Builder(String name, boolean staticMethod) {
 			this.name = name;
-			this.staticMethod = staticMethod;
+		}
+
+		public Builder modifiers(int modifiers) {
+			this.modifiers = modifiers;
+			return this;
 		}
 
 		public Builder returning(String returnType) {
@@ -125,8 +126,8 @@ public final class JavaMethodDeclaration implements Annotatable {
 		}
 
 		public JavaMethodDeclaration body(JavaStatement... statements) {
-			return new JavaMethodDeclaration(this.name, this.returnType, this.parameters,
-					this.staticMethod, Arrays.asList(statements));
+			return new JavaMethodDeclaration(this.name, this.returnType, this.modifiers,
+					this.parameters, Arrays.asList(statements));
 		}
 
 	}

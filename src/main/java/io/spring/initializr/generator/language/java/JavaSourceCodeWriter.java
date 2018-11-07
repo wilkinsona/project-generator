@@ -20,10 +20,15 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.lang.reflect.Modifier;
+import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -39,6 +44,22 @@ import io.spring.initializr.generator.language.SourceCodeWriter;
  * @author Andy Wilkinson
  */
 public class JavaSourceCodeWriter implements SourceCodeWriter<JavaSourceCode> {
+
+	private static final Map<Predicate<Integer>, String> METHOD_MODIFIERS;
+
+	static {
+		Map<Predicate<Integer>, String> methodModifiers = new LinkedHashMap<>();
+		methodModifiers.put(Modifier::isPublic, "public");
+		methodModifiers.put(Modifier::isProtected, "protected");
+		methodModifiers.put(Modifier::isPrivate, "private");
+		methodModifiers.put(Modifier::isAbstract, "abstract");
+		methodModifiers.put(Modifier::isStatic, "static");
+		methodModifiers.put(Modifier::isFinal, "final");
+		methodModifiers.put(Modifier::isSynchronized, "synchronized");
+		methodModifiers.put(Modifier::isNative, "native");
+		methodModifiers.put(Modifier::isStrict, "strictfp");
+		METHOD_MODIFIERS = methodModifiers;
+	}
 
 	@Override
 	public void writeTo(File directory, JavaSourceCode sourceCode) throws IOException {
@@ -80,10 +101,8 @@ public class JavaSourceCodeWriter implements SourceCodeWriter<JavaSourceCode> {
 				if (!methodDeclarations.isEmpty()) {
 					for (JavaMethodDeclaration methodDeclaration : methodDeclarations) {
 						writeAnnotations(writer, methodDeclaration, "    ");
-						writer.print("    public ");
-						if (methodDeclaration.isStatic()) {
-							writer.print("static ");
-						}
+						writer.print("    ");
+						writeMethodModifiers(writer, methodDeclaration);
 						writer.print(getUnqualifiedName(methodDeclaration.getReturnType())
 								+ " " + methodDeclaration.getName() + "(");
 						List<Parameter> parameters = methodDeclaration.getParameters();
@@ -99,12 +118,13 @@ public class JavaSourceCodeWriter implements SourceCodeWriter<JavaSourceCode> {
 						for (JavaStatement statement : statements) {
 							writer.print("        ");
 							if (statement instanceof JavaExpressionStatement) {
-								write(writer, ((JavaExpressionStatement) statement)
-										.getExpression());
+								writeExpression(writer,
+										((JavaExpressionStatement) statement)
+												.getExpression());
 							}
 							else if (statement instanceof JavaReturnStatement) {
 								writer.print("return ");
-								write(writer, ((JavaReturnStatement) statement)
+								writeExpression(writer, ((JavaReturnStatement) statement)
 										.getExpression());
 							}
 							writer.println(";");
@@ -130,13 +150,25 @@ public class JavaSourceCodeWriter implements SourceCodeWriter<JavaSourceCode> {
 		}
 	}
 
-	private void write(PrintWriter writer, JavaExpression expression) {
-		if (expression instanceof JavaMethodInvocation) {
-			write(writer, (JavaMethodInvocation) expression);
+	private void writeMethodModifiers(PrintWriter writer,
+			JavaMethodDeclaration methodDeclaration) {
+		String modifiers = METHOD_MODIFIERS.entrySet().stream()
+				.filter((entry) -> entry.getKey().test(methodDeclaration.getModifiers()))
+				.map(Entry::getValue).collect(Collectors.joining(" "));
+		if (!modifiers.isEmpty()) {
+			writer.print(modifiers);
+			writer.print(" ");
 		}
 	}
 
-	private void write(PrintWriter writer, JavaMethodInvocation methodInvocation) {
+	private void writeExpression(PrintWriter writer, JavaExpression expression) {
+		if (expression instanceof JavaMethodInvocation) {
+			writeMethodInvocation(writer, (JavaMethodInvocation) expression);
+		}
+	}
+
+	private void writeMethodInvocation(PrintWriter writer,
+			JavaMethodInvocation methodInvocation) {
 		writer.print(getUnqualifiedName(methodInvocation.getTarget()) + "."
 				+ methodInvocation.getName() + "("
 				+ String.join(", ", methodInvocation.getArguments()) + ")");
