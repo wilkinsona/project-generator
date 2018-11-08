@@ -16,6 +16,12 @@
 
 package io.spring.initializr.generator.buildsystem.maven;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
+
 import io.spring.initializr.generator.buildsystem.Build;
 
 /**
@@ -24,5 +30,39 @@ import io.spring.initializr.generator.buildsystem.Build;
  * @author Andy Wilkinson
  */
 public class MavenBuild extends Build {
+
+	private final Map<String, String> properties = new TreeMap<>();
+
+	private final List<MavenPlugin> plugins = new ArrayList<>();
+
+	private String packaging;
+
+	public void setProperty(String key, String value) {
+		this.properties.put(key, value);
+	}
+
+	public Map<String, String> getProperties() {
+		return Collections.unmodifiableMap(this.properties);
+	}
+
+	public void addPlugin(String groupId, String artifactId) {
+		this.plugins.add(new MavenPlugin(groupId, artifactId));
+	}
+
+	public void addPlugin(String groupId, String artifactId, String version) {
+		this.plugins.add(new MavenPlugin(groupId, artifactId, version));
+	}
+
+	public List<MavenPlugin> getPlugins() {
+		return Collections.unmodifiableList(this.plugins);
+	}
+
+	public void setPackaging(String packaging) {
+		this.packaging = packaging;
+	}
+
+	public String getPackaging() {
+		return this.packaging;
+	}
 
 }

@@ -189,7 +189,8 @@ class GradleBuildFileContributor implements FileContributor {
 		case TEST_RUNTIME:
 			return "testRuntimeOnly";
 		default:
-			throw new IllegalStateException("Unrecognized dependenc type '" + type + "'");
+			throw new IllegalStateException(
+					"Unrecognized dependency type '" + type + "'");
 		}
 	}
 

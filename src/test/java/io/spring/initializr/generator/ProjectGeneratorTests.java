@@ -122,6 +122,17 @@ public class ProjectGeneratorTests {
 	}
 
 	@Test
+	public void mavenPomIsContributedWhenGeneratingMavenProject() throws IOException {
+		ProjectDescription description = new ProjectDescription();
+		description.setBuildSystem(new MavenBuildSystem());
+		File project = new ProjectGenerator().generate(description);
+		List<String> relativePaths = getRelativePathsOfProjectFiles(project);
+		assertThat(relativePaths).contains("pom.xml");
+		Files.lines(new File(project, "pom.xml").toPath()).forEach(System.out::println);
+		FileSystemUtils.deleteRecursively(project);
+	}
+
+	@Test
 	public void gitIgnoreIsContributedWhenGeneratingGradleProject() throws IOException {
 		ProjectDescription description = new ProjectDescription();
 		description.setBuildSystem(new GradleBuildSystem());
@@ -233,6 +244,27 @@ public class ProjectGeneratorTests {
 				.lines(new File(project, "build.gradle").toPath())) {
 			assertThat(lines.filter((line) -> line.contains("    id 'war'"))).hasSize(1);
 		}
+		FileSystemUtils.deleteRecursively(project);
+	}
+
+	@Test
+	public void warPackagingIsUsedWhenBuildingMavenProjectThatUsesWarPackaging()
+			throws IOException {
+		ProjectDescription description = new ProjectDescription();
+		description.setSpringBootVersion(Version.parse("2.1.0.RELEASE"));
+		description.setBuildSystem(new MavenBuildSystem());
+		description.setLanguage(new JavaLanguage());
+		description.setPackaging(new WarPackaging());
+		description.setGroupId("com.example");
+		File project = new ProjectGenerator().generate(description);
+		List<String> relativePaths = getRelativePathsOfProjectFiles(project);
+		assertThat(relativePaths).contains("pom.xml");
+		try (Stream<String> lines = Files.lines(new File(project, "pom.xml").toPath())) {
+			assertThat(lines
+					.filter((line) -> line.contains("    <packaging>war</packaging>")))
+							.hasSize(1);
+		}
+		Files.lines(new File(project, "pom.xml").toPath()).forEach(System.out::println);
 		FileSystemUtils.deleteRecursively(project);
 	}
 

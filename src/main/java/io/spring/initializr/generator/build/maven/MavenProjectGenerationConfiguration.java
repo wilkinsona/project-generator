@@ -16,10 +16,20 @@
 
 package io.spring.initializr.generator.build.maven;
 
-import io.spring.initializr.generator.ProjectGenerationConfiguration;
-import io.spring.initializr.generator.buildsystem.maven.ConditionalOnMaven;
-import io.spring.initializr.generator.git.GitIgnoreContributor;
+import java.util.List;
+import java.util.stream.Collectors;
 
+import io.spring.initializr.generator.ProjectDescription;
+import io.spring.initializr.generator.ProjectGenerationConfiguration;
+import io.spring.initializr.generator.build.BuildCustomizer;
+import io.spring.initializr.generator.buildsystem.Build;
+import io.spring.initializr.generator.buildsystem.maven.ConditionalOnMaven;
+import io.spring.initializr.generator.buildsystem.maven.MavenBuild;
+import io.spring.initializr.generator.git.GitIgnoreContributor;
+import io.spring.initializr.generator.packaging.war.ConditionalOnWarPackaging;
+import io.spring.initializr.generator.util.LambdaSafe;
+
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.context.annotation.Bean;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
@@ -43,6 +53,45 @@ public class MavenProjectGenerationConfiguration {
 	@Order(Ordered.HIGHEST_PRECEDENCE)
 	public GitIgnoreContributor mavenGitIgnoreContributor() {
 		return new GitIgnoreContributor("classpath:maven/gitignore");
+	}
+
+	@Bean
+	public BuildCustomizer<MavenBuild> defaultMavenConfigurationContributor() {
+		return (mavenBuild) -> {
+			mavenBuild.setProperty("project.build.sourceEncoding", "UTF-8");
+			mavenBuild.setProperty("project.reporting.outputEncoding", "UTF-8");
+			mavenBuild.setProperty("java.version", "1.8");
+			mavenBuild.addPlugin("org.springframework.boot", "spring-boot-maven-plugin");
+		};
+	}
+
+	@Bean
+	public MavenBuildFileContributor mavenBuildFileContributor(
+			ProjectDescription projectDescription,
+			ObjectProvider<BuildCustomizer<?>> buildCustomizers) {
+		MavenBuild mavenBuild = new MavenBuild();
+		mavenBuild.setGroup(projectDescription.getGroupId());
+		mavenBuild.setName(projectDescription.getArtifactId());
+		mavenBuild.setVersion("0.0.1-SNAPSHOT");
+		return customizeBuild(buildCustomizers, mavenBuild);
+	}
+
+	@SuppressWarnings("unchecked")
+	private MavenBuildFileContributor customizeBuild(
+			ObjectProvider<BuildCustomizer<?>> buildCustomizers, MavenBuild mavenBuild) {
+		List<BuildCustomizer<? extends Build>> customizers = buildCustomizers
+				.orderedStream().collect(Collectors.toList());
+		LambdaSafe.callbacks(BuildCustomizer.class, customizers, mavenBuild)
+				.invoke((customizer) -> customizer.customize(mavenBuild));
+		return new MavenBuildFileContributor(mavenBuild);
+	}
+
+	@Bean
+	@ConditionalOnWarPackaging
+	public BuildCustomizer<MavenBuild> mavenWarPackagingConfigurer() {
+		return (build) -> {
+			build.setPackaging("war");
+		};
 	}
 
 }

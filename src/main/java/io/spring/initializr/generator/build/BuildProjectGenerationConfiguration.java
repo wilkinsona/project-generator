@@ -61,6 +61,7 @@ public class BuildProjectGenerationConfiguration {
 	}
 
 	@Bean
+	@Order(0)
 	@ConditionalOnWarPackaging
 	public BuildCustomizer<Build> webStarterContributor() {
 		return (build) -> {
