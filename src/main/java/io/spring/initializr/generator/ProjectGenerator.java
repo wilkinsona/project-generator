@@ -38,7 +38,6 @@ import org.springframework.core.type.AnnotationMetadata;
 public class ProjectGenerator {
 
 	public File generate(ProjectDescription description) throws IOException {
-		long start = System.currentTimeMillis();
 		try (AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext()) {
 			context.registerBean(ProjectDescription.class, () -> description);
 			context.register(CoreConfiguration.class);
@@ -46,10 +45,6 @@ public class ProjectGenerator {
 			Path projectRoot = Files.createTempDirectory("project-");
 			context.getBean(FileContributors.class).contribute(projectRoot.toFile());
 			return projectRoot.toFile();
-		}
-		finally {
-			System.out.println("Generated project in "
-					+ (System.currentTimeMillis() - start) + "ms");
 		}
 	}
 

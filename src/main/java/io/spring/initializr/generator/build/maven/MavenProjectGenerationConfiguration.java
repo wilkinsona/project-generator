@@ -56,12 +56,15 @@ public class MavenProjectGenerationConfiguration {
 	}
 
 	@Bean
-	public BuildCustomizer<MavenBuild> defaultMavenConfigurationContributor() {
+	public BuildCustomizer<MavenBuild> defaultMavenConfigurationContributor(
+			ProjectDescription projectDescription) {
 		return (mavenBuild) -> {
 			mavenBuild.setProperty("project.build.sourceEncoding", "UTF-8");
 			mavenBuild.setProperty("project.reporting.outputEncoding", "UTF-8");
 			mavenBuild.setProperty("java.version", "1.8");
-			mavenBuild.addPlugin("org.springframework.boot", "spring-boot-maven-plugin");
+			mavenBuild.parent("org.springframework.boot", "spring-boot-starter-parent",
+					projectDescription.getSpringBootVersion().toString());
+			mavenBuild.plugin("org.springframework.boot", "spring-boot-maven-plugin");
 		};
 	}
 

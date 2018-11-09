@@ -21,6 +21,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.BiConsumer;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -37,6 +38,8 @@ import io.spring.initializr.generator.DependencyType;
 import io.spring.initializr.generator.FileContributor;
 import io.spring.initializr.generator.buildsystem.maven.MavenBuild;
 import io.spring.initializr.generator.buildsystem.maven.MavenPlugin;
+import io.spring.initializr.generator.buildsystem.maven.MavenPlugin.Execution;
+import io.spring.initializr.generator.buildsystem.maven.Parent;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -60,16 +63,10 @@ public class MavenBuildFileContributor implements FileContributor {
 		try {
 			DocumentBuilder builder = factory.newDocumentBuilder();
 			Document document = builder.newDocument();
-			Element project = document
-					.createElementNS("http://maven.apache.org/POM/4.0.0", "project");
-			project.setAttributeNS("http://www.w3.org/2001/XMLSchema-instance",
-					"xsi:schema-location",
-					"http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd");
-			document.appendChild(project);
-			appendChildWithText(project, "modelVersion", "4.0.0");
+			Element project = createProject(document);
+			addParent(project);
 			addCoordinates(project);
 			appendChildWithText(project, "packaging", this.mavenBuild.getPackaging());
-			addParent(project);
 			addProperties(project);
 			addDependencies(project);
 			addPlugins(project);
@@ -80,6 +77,17 @@ public class MavenBuildFileContributor implements FileContributor {
 		}
 	}
 
+	private Element createProject(Document document) {
+		Element project = document.createElementNS("http://maven.apache.org/POM/4.0.0",
+				"project");
+		project.setAttributeNS("http://www.w3.org/2001/XMLSchema-instance",
+				"xsi:schema-location",
+				"http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd");
+		document.appendChild(project);
+		appendChildWithText(project, "modelVersion", "4.0.0");
+		return project;
+	}
+
 	private void addCoordinates(Element project) {
 		appendChildWithText(project, "groupId", this.mavenBuild.getGroup());
 		appendChildWithText(project, "artifactId", this.mavenBuild.getName());
@@ -87,12 +95,16 @@ public class MavenBuildFileContributor implements FileContributor {
 	}
 
 	private void addParent(Element project) {
+		Parent parent = this.mavenBuild.getParent();
+		if (parent == null) {
+			return;
+		}
 		Document document = project.getOwnerDocument();
-		Node parent = project.appendChild(document.createElement("parent"));
-		appendChildWithText(parent, "groupId", "org.springframework.boot");
-		appendChildWithText(parent, "artifactId", "spring-boot-starter-parent");
-		appendChildWithText(parent, "version", "2.1.0.RELEASE");
-		parent.appendChild(document.createElement("relativePath"));
+		Node node = project.appendChild(document.createElement("parent"));
+		appendChildWithText(node, "groupId", parent.getGroupId());
+		appendChildWithText(node, "artifactId", parent.getArtifactId());
+		appendChildWithText(node, "version", parent.getVersion());
+		node.appendChild(document.createElement("relativePath"));
 	}
 
 	private void addProperties(Element project) {
@@ -110,22 +122,20 @@ public class MavenBuildFileContributor implements FileContributor {
 		if (this.mavenBuild.getDependencies().isEmpty()) {
 			return;
 		}
-		Document document = project.getOwnerDocument();
-		Node dependencies = project.appendChild(document.createElement("dependencies"));
 		List<Dependency> sortedDependencies = new ArrayList<>(
 				this.mavenBuild.getDependencies());
 		sortedDependencies.sort(this::compare);
-		for (Dependency dependency : sortedDependencies) {
-			Node dependencyNode = dependencies
-					.appendChild(document.createElement("dependency"));
-			appendChildWithText(dependencyNode, "groupId", dependency.getGroupId());
-			appendChildWithText(dependencyNode, "artifactId", dependency.getArtifactId());
-			appendChildWithText(dependencyNode, "scope",
-					scopeForType(dependency.getType()));
-			if (isOptional(dependency.getType())) {
-				appendChildWithText(dependencyNode, "optional", Boolean.toString(true));
-			}
-		}
+		addChildren(project, "dependencies", "dependency", sortedDependencies,
+				(node, dependency) -> {
+					appendChildWithText(node, "groupId", dependency.getGroupId());
+					appendChildWithText(node, "artifactId", dependency.getArtifactId());
+					appendChildWithText(node, "scope",
+							scopeForType(dependency.getType()));
+					if (isOptional(dependency.getType())) {
+						appendChildWithText(node, "optional", Boolean.toString(true));
+					}
+
+				});
 	}
 
 	private int compare(Dependency one, Dependency two) {
@@ -147,12 +157,63 @@ public class MavenBuildFileContributor implements FileContributor {
 		}
 		Document document = project.getOwnerDocument();
 		Node build = project.appendChild(document.createElement("build"));
-		Node plugins = build.appendChild(document.createElement("plugins"));
-		for (MavenPlugin plugin : this.mavenBuild.getPlugins()) {
-			Node pluginNode = plugins.appendChild(document.createElement("plugin"));
-			appendChildWithText(pluginNode, "groupId", plugin.getGroupId());
-			appendChildWithText(pluginNode, "artifactId", plugin.getArtifactId());
-			appendChildWithText(pluginNode, "version", plugin.getVersion());
+		addChildren(build, "plugins", "plugin", this.mavenBuild.getPlugins(),
+				(node, plugin) -> {
+					appendChildWithText(node, "groupId", plugin.getGroupId());
+					appendChildWithText(node, "artifactId", plugin.getArtifactId());
+					appendChildWithText(node, "version", plugin.getVersion());
+					addExecutions(node, plugin);
+					addDependencies(node, plugin);
+				});
+	}
+
+	private void addExecutions(Node pluginNode, MavenPlugin plugin) {
+		addChildren(pluginNode, "executions", "execution", plugin.getExecutions(),
+				(node, execution) -> {
+					appendChildWithText(node, "id", execution.getId());
+					appendChildWithText(node, "phase", execution.getPhase());
+					addGoals(node, execution);
+					addConfigurations(node, execution);
+				});
+	}
+
+	private void addGoals(Node executionNode, Execution execution) {
+		addChildren(executionNode, "goals", "goal", execution.getGoals(),
+				(node, goal) -> {
+					node.appendChild(node.getOwnerDocument().createTextNode(goal));
+				});
+	}
+
+	private void addConfigurations(Node executionNode, Execution execution) {
+		addChildren(executionNode, "configurations", "configuration",
+				execution.getConfigurations(), (node, configuration) -> {
+					configuration.asMap().forEach((key, value) -> {
+						if (value instanceof String) {
+							appendChildWithText(node, key, (String) value);
+						}
+					});
+				});
+	}
+
+	private void addDependencies(Node pluginNode, MavenPlugin plugin) {
+		addChildren(pluginNode, "dependencies", "dependency", plugin.getDependencies(),
+				(node, dependency) -> {
+					appendChildWithText(node, "groupId", dependency.getGroupId());
+					appendChildWithText(node, "artifactId", dependency.getArtifactId());
+					appendChildWithText(node, "version", dependency.getVersion());
+				});
+	}
+
+	private <T> void addChildren(Node parentNode, String containerName, String childName,
+			List<T> children, BiConsumer<Node, T> childHandler) {
+		if (children.isEmpty()) {
+			return;
+		}
+		Document document = parentNode.getOwnerDocument();
+		Node container = parentNode.appendChild(document.createElement(containerName));
+		for (T child : children) {
+			Node childNode = container.appendChild(document.createElement(childName));
+			childHandler.accept(childNode, child);
 		}
 	}
 

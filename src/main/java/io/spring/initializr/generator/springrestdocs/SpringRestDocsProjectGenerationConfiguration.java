@@ -17,9 +17,8 @@
 package io.spring.initializr.generator.springrestdocs;
 
 import io.spring.initializr.generator.ProjectGenerationConfiguration;
-import io.spring.initializr.generator.build.BuildCustomizer;
 import io.spring.initializr.generator.buildsystem.gradle.ConditionalOnGradle;
-import io.spring.initializr.generator.buildsystem.gradle.GradleBuild;
+import io.spring.initializr.generator.buildsystem.maven.ConditionalOnMaven;
 import io.spring.initializr.generator.condition.ConditionalOnDependency;
 
 import org.springframework.context.annotation.Bean;
@@ -35,17 +34,14 @@ public class SpringRestDocsProjectGenerationConfiguration {
 
 	@Bean
 	@ConditionalOnGradle
-	public BuildCustomizer<GradleBuild> restDocsGradleBuildCustomizer() {
-		return (build) -> {
-			build.addPlugin("org.asciidoctor.convert", "1.5.3");
-			build.customizeTask("test", (task) -> {
-				task.invoke("outputs.dir", "snippetsDir");
-			});
-			build.customizeTask("asciidoctor", (task) -> {
-				task.invoke("inputs.dir", "snippetsDir");
-				task.invoke("dependsOn", "test");
-			});
-		};
+	public SpringRestDocsGradleBuildCustomizer restDocsGradleBuildCustomizer() {
+		return new SpringRestDocsGradleBuildCustomizer();
+	}
+
+	@Bean
+	@ConditionalOnMaven
+	public SpringRestDocsMavenBuildCustomizer restDocsMavenBuildCustomizer() {
+		return new SpringRestDocsMavenBuildCustomizer();
 	}
 
 }

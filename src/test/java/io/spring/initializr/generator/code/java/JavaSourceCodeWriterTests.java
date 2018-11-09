@@ -92,7 +92,6 @@ public class JavaSourceCodeWriterTests {
 		File testSource = new File(this.temp.getRoot(), "com/example/Test.java");
 		assertThat(testSource).isFile();
 		List<String> lines = Files.readAllLines(testSource.toPath());
-		lines.forEach(System.out::println);
 		assertThat(lines).containsExactly("package com.example;", "",
 				"import org.springframework.boot.autoconfigure.SpringBootApplication;",
 				"import org.springframework.boot.SpringApplication;", "",

@@ -31,11 +31,22 @@ import io.spring.initializr.generator.buildsystem.Build;
  */
 public class MavenBuild extends Build {
 
+	private Parent parent;
+
 	private final Map<String, String> properties = new TreeMap<>();
 
 	private final List<MavenPlugin> plugins = new ArrayList<>();
 
 	private String packaging;
+
+	public Parent parent(String groupId, String artifactId, String version) {
+		this.parent = new Parent(groupId, artifactId, version);
+		return this.parent;
+	}
+
+	public Parent getParent() {
+		return this.parent;
+	}
 
 	public void setProperty(String key, String value) {
 		this.properties.put(key, value);
@@ -45,12 +56,16 @@ public class MavenBuild extends Build {
 		return Collections.unmodifiableMap(this.properties);
 	}
 
-	public void addPlugin(String groupId, String artifactId) {
-		this.plugins.add(new MavenPlugin(groupId, artifactId));
+	public MavenPlugin plugin(String groupId, String artifactId) {
+		MavenPlugin plugin = new MavenPlugin(groupId, artifactId);
+		this.plugins.add(plugin);
+		return plugin;
 	}
 
-	public void addPlugin(String groupId, String artifactId, String version) {
-		this.plugins.add(new MavenPlugin(groupId, artifactId, version));
+	public MavenPlugin plugin(String groupId, String artifactId, String version) {
+		MavenPlugin plugin = new MavenPlugin(groupId, artifactId, version);
+		this.plugins.add(plugin);
+		return plugin;
 	}
 
 	public List<MavenPlugin> getPlugins() {

@@ -31,6 +31,7 @@ import io.spring.initializr.generator.buildsystem.gradle.GradleBuildSystem;
 import io.spring.initializr.generator.buildsystem.maven.MavenBuildSystem;
 import io.spring.initializr.generator.language.java.JavaLanguage;
 import io.spring.initializr.generator.packaging.war.WarPackaging;
+import io.spring.initializr.generator.test.assertj.NodeAssert;
 import io.spring.initializr.generator.util.Version;
 import org.junit.Test;
 
@@ -112,6 +113,7 @@ public class ProjectGeneratorTests {
 	public void mavenWrapperIsContributedWhenGeneratingMavenProject() throws IOException {
 		ProjectDescription description = new ProjectDescription();
 		description.setBuildSystem(new MavenBuildSystem());
+		description.setSpringBootVersion(Version.parse("2.1.0.RELEASE"));
 		File project = new ProjectGenerator().generate(description);
 		List<String> relativePaths = getRelativePathsOfProjectFiles(project);
 		assertThat(relativePaths).contains("mvnw", "mvnw.cmd",
@@ -125,10 +127,10 @@ public class ProjectGeneratorTests {
 	public void mavenPomIsContributedWhenGeneratingMavenProject() throws IOException {
 		ProjectDescription description = new ProjectDescription();
 		description.setBuildSystem(new MavenBuildSystem());
+		description.setSpringBootVersion(Version.parse("2.1.0.RELEASE"));
 		File project = new ProjectGenerator().generate(description);
 		List<String> relativePaths = getRelativePathsOfProjectFiles(project);
 		assertThat(relativePaths).contains("pom.xml");
-		Files.lines(new File(project, "pom.xml").toPath()).forEach(System.out::println);
 		FileSystemUtils.deleteRecursively(project);
 	}
 
@@ -140,37 +142,42 @@ public class ProjectGeneratorTests {
 		File project = new ProjectGenerator().generate(description);
 		assertThat(Files.readAllLines(new File(project, ".gitignore").toPath()))
 				.contains(".gradle", "### STS ###");
+		FileSystemUtils.deleteRecursively(project);
 	}
 
 	@Test
 	public void gitIgnoreIsContributedWhenGeneratingMavenProject() throws IOException {
 		ProjectDescription description = new ProjectDescription();
 		description.setBuildSystem(new MavenBuildSystem());
+		description.setSpringBootVersion(Version.parse("2.1.0.RELEASE"));
 		File project = new ProjectGenerator().generate(description);
 		assertThat(Files.readAllLines(new File(project, ".gitignore").toPath()))
 				.contains("/target/", "### STS ###");
+		FileSystemUtils.deleteRecursively(project);
+
 	}
 
 	@Test
 	public void mainJavaClassIsContributedWhenGeneratingJavaProject() throws IOException {
 		ProjectDescription description = new ProjectDescription();
 		description.setBuildSystem(new MavenBuildSystem());
+		description.setSpringBootVersion(Version.parse("2.1.0.RELEASE"));
 		description.setLanguage(new JavaLanguage());
 		description.setGroupId("com.example");
 		File project = new ProjectGenerator().generate(description);
 		List<String> relativePaths = getRelativePathsOfProjectFiles(project);
 		assertThat(relativePaths)
 				.contains("src/main/java/com/example/DemoApplication.java");
-		Files.lines(new File(project, "src/main/java/com/example/DemoApplication.java")
-				.toPath()).forEach(System.out::println);
+		FileSystemUtils.deleteRecursively(project);
 	}
 
 	@Test
 	public void mainClassIsAnnotatedWithEnableConfigServerWhenGeneratingProjectThatDependsUponSpringCloudConfigServer()
 			throws IOException {
 		ProjectDescription description = new ProjectDescription();
-		description.setBuildSystem(new MavenBuildSystem());
 		description.setLanguage(new JavaLanguage());
+		description.setBuildSystem(new MavenBuildSystem());
+		description.setSpringBootVersion(Version.parse("2.1.0.RELEASE"));
 		description.setGroupId("com.example");
 		description.addDependency(new Dependency("org.springframework.cloud",
 				"spring-cloud-config-server", DependencyType.COMPILE));
@@ -182,6 +189,7 @@ public class ProjectGeneratorTests {
 				new File(project, "src/main/java/com/example/DemoApplication.java")
 						.toPath());
 		assertThat(source).contains("@EnableConfigServer");
+		FileSystemUtils.deleteRecursively(project);
 	}
 
 	@Test
@@ -199,7 +207,23 @@ public class ProjectGeneratorTests {
 		assertThat(relativePaths).contains("build.gradle");
 		List<String> source = Files
 				.readAllLines(new File(project, "build.gradle").toPath());
-		source.forEach(System.out::println);
+		assertThat(source).contains("    id 'org.asciidoctor.convert' version '1.5.3'");
+		FileSystemUtils.deleteRecursively(project);
+	}
+
+	@Test
+	public void pomIsCustomizedWhenGeneratingProjectThatDependsOnSpringRestDocs()
+			throws IOException {
+		ProjectDescription description = new ProjectDescription();
+		description.setSpringBootVersion(Version.parse("2.1.0.RELEASE"));
+		description.setBuildSystem(new MavenBuildSystem());
+		description.addDependency(new Dependency("org.springframework.restdocs",
+				"spring-restdocs-mockmvc", DependencyType.TEST_COMPILE));
+		File project = new ProjectGenerator().generate(description);
+		NodeAssert pom = new NodeAssert(new File(project, "pom.xml"));
+		assertThat(pom).textAtPath("/project/build/plugins/plugin[2]/groupId")
+				.isEqualTo("org.asciidoctor");
+		FileSystemUtils.deleteRecursively(project);
 	}
 
 	@Test
@@ -226,6 +250,7 @@ public class ProjectGeneratorTests {
 				"    protected SpringApplicationBuilder configure(SpringApplicationBuilder application) {",
 				"        return application.sources(DemoApplication.class);", "    }", "",
 				"}", "");
+		FileSystemUtils.deleteRecursively(project);
 	}
 
 	@Test
@@ -264,7 +289,6 @@ public class ProjectGeneratorTests {
 					.filter((line) -> line.contains("    <packaging>war</packaging>")))
 							.hasSize(1);
 		}
-		Files.lines(new File(project, "pom.xml").toPath()).forEach(System.out::println);
 		FileSystemUtils.deleteRecursively(project);
 	}
 
