@@ -147,7 +147,7 @@ public class MavenPlugin {
 	 */
 	public static class Configuration {
 
-		private Map<String, Object> configuration = new HashMap<>();
+		private Map<String, Object> configuration;
 
 		public Configuration(Map<String, Object> configuration) {
 			this.configuration = configuration;

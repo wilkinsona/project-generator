@@ -65,7 +65,7 @@ public class GradleBuild extends Build {
 		TaskCustomization customization = new TaskCustomization();
 		customizer.accept(customization);
 		this.taskCustomizations.computeIfAbsent(taskName,
-				(name) -> new ArrayList<>(Arrays.asList(customization)));
+				(name) -> new ArrayList<>(Collections.singletonList(customization)));
 	}
 
 	public Map<String, List<TaskCustomization>> getTaskCustomizations() {

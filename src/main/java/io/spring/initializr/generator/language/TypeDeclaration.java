@@ -27,7 +27,7 @@ import java.util.List;
  */
 public class TypeDeclaration implements Annotatable {
 
-	private final List<Annotation> annotations = new ArrayList<Annotation>();
+	private final List<Annotation> annotations = new ArrayList<>();
 
 	private final String name;
 

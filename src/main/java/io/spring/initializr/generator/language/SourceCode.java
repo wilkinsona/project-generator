@@ -30,7 +30,7 @@ import java.util.function.BiFunction;
  */
 public abstract class SourceCode<T extends TypeDeclaration, C extends CompilationUnit<T>> {
 
-	private final List<C> compilationUnits = new ArrayList<C>();
+	private final List<C> compilationUnits = new ArrayList<>();
 
 	private final BiFunction<String, String, C> compilationUnitFactory;
 

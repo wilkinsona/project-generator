@@ -92,9 +92,7 @@ public class MavenProjectGenerationConfiguration {
 	@Bean
 	@ConditionalOnWarPackaging
 	public BuildCustomizer<MavenBuild> mavenWarPackagingConfigurer() {
-		return (build) -> {
-			build.setPackaging("war");
-		};
+		return (build) -> build.setPackaging("war");
 	}
 
 }

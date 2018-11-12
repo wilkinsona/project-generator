@@ -33,7 +33,7 @@ import io.spring.initializr.generator.language.Parameter;
  */
 public final class JavaMethodDeclaration implements Annotatable {
 
-	private final List<Annotation> annotations = new ArrayList<Annotation>();
+	private final List<Annotation> annotations = new ArrayList<>();
 
 	private final String name;
 
@@ -103,10 +103,6 @@ public final class JavaMethodDeclaration implements Annotatable {
 		private int modifiers = Modifier.PUBLIC;
 
 		private Builder(String name) {
-			this(name, false);
-		}
-
-		private Builder(String name, boolean staticMethod) {
 			this.name = name;
 		}
 

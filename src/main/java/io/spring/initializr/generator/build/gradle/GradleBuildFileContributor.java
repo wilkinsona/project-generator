@@ -117,8 +117,8 @@ class GradleBuildFileContributor implements FileContributor {
 
 	private void writeDependencies(PrintWriter writer, GradleBuild build) {
 		writer.println("dependencies {");
-		build.getDependencies().stream().sorted(this::compare)
-				.map(this::dependencyAsString).forEach(writer::println);
+		build.getDependencies().stream().sorted().map(this::dependencyAsString)
+				.forEach(writer::println);
 		writer.println("}");
 		writer.println();
 	}
@@ -137,19 +137,6 @@ class GradleBuildFileContributor implements FileContributor {
 			writer.println("}");
 			writer.println();
 		});
-	}
-
-	private int compare(Dependency one, Dependency two) {
-		int typeComparison = Integer.compare(one.getType().ordinal(),
-				two.getType().ordinal());
-		if (typeComparison != 0) {
-			return typeComparison;
-		}
-		int groupComparison = one.getGroupId().compareTo(two.getGroupId());
-		if (groupComparison != 0) {
-			return groupComparison;
-		}
-		return one.getArtifactId().compareTo(two.getArtifactId());
 	}
 
 	private String pluginAsString(GradlePlugin plugin) {
