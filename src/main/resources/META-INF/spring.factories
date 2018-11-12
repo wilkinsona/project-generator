@@ -7,7 +7,8 @@ io.spring.initializr.generator.packaging.jar.JarPackagingFactory,\
 io.spring.initializr.generator.packaging.war.WarPackagingFactory
 
 io.spring.initializr.generator.language.LanguageFactory=\
-io.spring.initializr.generator.language.java.JavaLanguageFactory
+io.spring.initializr.generator.language.java.JavaLanguageFactory,\
+io.spring.initializr.generator.language.kotlin.KotlinLanguageFactory
 
 io.spring.initializr.generator.ProjectGenerationConfiguration=\
 io.spring.initializr.generator.build.BuildProjectGenerationConfiguration,\
