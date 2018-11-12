@@ -16,10 +16,7 @@
 
 package io.spring.initializr.generator.buildsystem.gradle;
 
-import java.io.File;
-
 import io.spring.initializr.generator.buildsystem.BuildSystem;
-import io.spring.initializr.generator.language.Language;
 
 /**
  * Gradle {@link BuildSystem}.
@@ -33,16 +30,6 @@ public class GradleBuildSystem implements BuildSystem {
 	@Override
 	public String id() {
 		return ID;
-	}
-
-	@Override
-	public File getMainDirectory(File projectRoot, Language language) {
-		return new File(projectRoot, "src/main/" + language.id());
-	}
-
-	@Override
-	public File getTestDirectory(File projectRoot, Language language) {
-		return new File(projectRoot, "src/test" + language.id());
 	}
 
 }

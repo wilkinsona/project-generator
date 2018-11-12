@@ -36,9 +36,13 @@ public interface BuildSystem {
 	 */
 	String id();
 
-	File getMainDirectory(File projectRoot, Language language);
+	default File getMainDirectory(File projectRoot, Language language) {
+		return new File(projectRoot, "src/main/" + language.id());
+	}
 
-	File getTestDirectory(File projectRoot, Language language);
+	default File getTestDirectory(File projectRoot, Language language) {
+		return new File(projectRoot, "src/test/" + language.id());
+	}
 
 	static BuildSystem forId(String id) {
 		return SpringFactoriesLoader
