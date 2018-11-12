@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.function.BiConsumer;
+import java.util.stream.Collectors;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -37,6 +38,7 @@ import javax.xml.transform.stream.StreamResult;
 import io.spring.initializr.generator.Dependency;
 import io.spring.initializr.generator.DependencyType;
 import io.spring.initializr.generator.FileContributor;
+import io.spring.initializr.generator.buildsystem.MavenRepository;
 import io.spring.initializr.generator.buildsystem.maven.MavenBuild;
 import io.spring.initializr.generator.buildsystem.maven.MavenPlugin;
 import io.spring.initializr.generator.buildsystem.maven.MavenPlugin.Execution;
@@ -71,6 +73,7 @@ public class MavenBuildFileContributor implements FileContributor {
 			addProperties(project);
 			addDependencies(project);
 			addPlugins(project);
+			addRepositories(project);
 			write(document, new File(projectRoot, "pom.xml"));
 		}
 		catch (ParserConfigurationException | TransformerException ex) {
@@ -185,6 +188,33 @@ public class MavenBuildFileContributor implements FileContributor {
 					appendChildWithText(node, "groupId", dependency.getGroupId());
 					appendChildWithText(node, "artifactId", dependency.getArtifactId());
 					appendChildWithText(node, "version", dependency.getVersion());
+				});
+	}
+
+	private void addRepositories(Node project) {
+		List<MavenRepository> repositories = this.mavenBuild.getMavenRepositories()
+				.stream()
+				.filter((repository) -> !MavenRepository.MAVEN_CENTRAL.equals(repository))
+				.collect(Collectors.toList());
+		if (repositories.isEmpty()) {
+			return;
+		}
+		addRepositories(project, "repositories", "repository", repositories);
+		addRepositories(project, "pluginRepositories", "pluginRepository", repositories);
+	}
+
+	private void addRepositories(Node project, String containerName, String childName,
+			List<MavenRepository> repositories) {
+		addChildren(project, containerName, childName, repositories,
+				(node, repository) -> {
+					appendChildWithText(node, "id", repository.getId());
+					appendChildWithText(node, "name", repository.getName());
+					appendChildWithText(node, "url", repository.getUrl());
+					if (repository.isSnapshotsEnabled()) {
+						Node snapshots = node.appendChild(
+								(node.getOwnerDocument().createElement("snapshots")));
+						appendChildWithText(snapshots, "enabled", Boolean.toString(true));
+					}
 				});
 	}
 

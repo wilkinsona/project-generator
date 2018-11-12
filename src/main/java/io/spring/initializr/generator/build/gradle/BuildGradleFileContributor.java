@@ -17,92 +17,56 @@
 package io.spring.initializr.generator.build.gradle;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import io.spring.initializr.generator.Dependency;
 import io.spring.initializr.generator.DependencyType;
 import io.spring.initializr.generator.FileContributor;
-import io.spring.initializr.generator.ProjectDescription;
-import io.spring.initializr.generator.build.BuildCustomizer;
-import io.spring.initializr.generator.buildsystem.Build;
+import io.spring.initializr.generator.buildsystem.MavenRepository;
 import io.spring.initializr.generator.buildsystem.gradle.GradleBuild;
 import io.spring.initializr.generator.buildsystem.gradle.GradleBuild.TaskCustomization;
 import io.spring.initializr.generator.buildsystem.gradle.GradleBuild.TaskCustomization.Invocation;
 import io.spring.initializr.generator.buildsystem.gradle.GradlePlugin;
-import io.spring.initializr.generator.util.LambdaSafe;
-
-import org.springframework.beans.factory.ObjectProvider;
 
 /**
- * {@link FileContributor} to contribute the files for a {@link GradleBuild}.
+ * {@link FileContributor} for the project's {@code build.gradle} file.
  *
  * @author Andy Wilkinson
  */
-class GradleBuildFileContributor implements FileContributor {
+class BuildGradleFileContributor implements FileContributor {
 
-	private final ProjectDescription projectDescription;
+	private final GradleBuild build;
 
-	private final ObjectProvider<BuildCustomizer<?>> buildCustomizers;
-
-	GradleBuildFileContributor(ProjectDescription projectDescription,
-			ObjectProvider<BuildCustomizer<?>> buildCustomizers) {
-		this.projectDescription = projectDescription;
-		this.buildCustomizers = buildCustomizers;
+	BuildGradleFileContributor(GradleBuild build) {
+		this.build = build;
 	}
 
 	@Override
 	public void contribute(File projectRoot) throws IOException {
-		GradleBuild build = new GradleBuild();
-		build.setGroup(this.projectDescription.getGroupId());
-		build.setName(this.projectDescription.getArtifactId());
-		customizeBuild(build);
-		writeSettingsDotGradle(projectRoot, build);
-		writeBuildDotGradle(projectRoot, build);
-	}
-
-	@SuppressWarnings("unchecked")
-	private void customizeBuild(GradleBuild gradleBuild) {
-		List<BuildCustomizer<? extends Build>> customizers = this.buildCustomizers
-				.orderedStream().collect(Collectors.toList());
-		LambdaSafe.callbacks(BuildCustomizer.class, customizers, gradleBuild)
-				.invoke((customizer) -> customizer.customize(gradleBuild));
-	}
-
-	private void writeSettingsDotGradle(File projectRoot, GradleBuild build)
-			throws FileNotFoundException {
-		File file = new File(projectRoot, "settings.gradle");
-		try (PrintWriter writer = new PrintWriter(new FileOutputStream(file))) {
-			writer.println("rootProject.name = '" + build.getName() + "'");
-		}
-	}
-
-	private void writeBuildDotGradle(File projectRoot, GradleBuild build)
-			throws FileNotFoundException {
 		File file = new File(projectRoot, "build.gradle");
 		try (PrintWriter writer = new PrintWriter(new FileOutputStream(file))) {
-			writePlugins(writer, build);
-			writer.println("group = '" + build.getGroup() + "'");
-			writer.println("version = '" + build.getVersion() + "'");
-			writer.println("sourceCompatibility = '" + build.getJavaVersion() + "'");
+			writePlugins(writer);
+			writer.println("group = '" + this.build.getGroup() + "'");
+			writer.println("version = '" + this.build.getVersion() + "'");
+			writer.println("sourceCompatibility = '" + this.build.getJavaVersion() + "'");
 			writer.println();
 			writeRepositories(writer);
-			writeDependencies(writer, build);
-			writeTaskCustomizations(writer, build);
+			writeDependencies(writer);
+			writeTaskCustomizations(writer);
 		}
 	}
 
-	private void writePlugins(PrintWriter writer, GradleBuild build) {
+	private void writePlugins(PrintWriter writer) {
 		writer.println("plugins {");
-		build.getPlugins().stream().map(this::pluginAsString).forEach(writer::println);
+		this.build.getPlugins().stream().map(this::pluginAsString)
+				.forEach(writer::println);
 		writer.println("}");
 		writer.println("");
-		build.getAdditionalPluginApplications().stream()
+		this.build.getAdditionalPluginApplications().stream()
 				.map((plugin) -> "apply plugin: '" + plugin + "'")
 				.forEach(writer::println);
 		writer.println();
@@ -110,21 +74,22 @@ class GradleBuildFileContributor implements FileContributor {
 
 	private void writeRepositories(PrintWriter writer) {
 		writer.println("repositories {");
-		writer.println("    mavenCentral()");
-		writer.println("}");
-		writer.println();
-	}
-
-	private void writeDependencies(PrintWriter writer, GradleBuild build) {
-		writer.println("dependencies {");
-		build.getDependencies().stream().sorted().map(this::dependencyAsString)
+		this.build.getMavenRepositories().stream().map(this::repositoryAsString)
 				.forEach(writer::println);
 		writer.println("}");
 		writer.println();
 	}
 
-	private void writeTaskCustomizations(PrintWriter writer, GradleBuild build) {
-		Map<String, List<TaskCustomization>> taskCustomizations = build
+	private void writeDependencies(PrintWriter writer) {
+		writer.println("dependencies {");
+		this.build.getDependencies().stream().sorted().map(this::dependencyAsString)
+				.forEach(writer::println);
+		writer.println("}");
+		writer.println();
+	}
+
+	private void writeTaskCustomizations(PrintWriter writer) {
+		Map<String, List<TaskCustomization>> taskCustomizations = this.build
 				.getTaskCustomizations();
 		if (taskCustomizations.isEmpty()) {
 			return;
@@ -159,6 +124,13 @@ class GradleBuildFileContributor implements FileContributor {
 	private String invocationAsString(Invocation invocation) {
 		return "    " + invocation.getTarget() + " "
 				+ String.join(", ", invocation.getArguments());
+	}
+
+	private String repositoryAsString(MavenRepository repository) {
+		if (MavenRepository.MAVEN_CENTRAL.equals(repository)) {
+			return "    mavenCentral()";
+		}
+		return "    maven { url '" + repository.getUrl() + "' }";
 	}
 
 	private String configurationForType(DependencyType type) {

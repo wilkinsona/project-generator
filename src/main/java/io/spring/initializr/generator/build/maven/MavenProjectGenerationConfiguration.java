@@ -76,17 +76,17 @@ public class MavenProjectGenerationConfiguration {
 		mavenBuild.setGroup(projectDescription.getGroupId());
 		mavenBuild.setName(projectDescription.getArtifactId());
 		mavenBuild.setVersion("0.0.1-SNAPSHOT");
-		return customizeBuild(buildCustomizers, mavenBuild);
+		customizeBuild(buildCustomizers, mavenBuild);
+		return new MavenBuildFileContributor(mavenBuild);
 	}
 
 	@SuppressWarnings("unchecked")
-	private MavenBuildFileContributor customizeBuild(
-			ObjectProvider<BuildCustomizer<?>> buildCustomizers, MavenBuild mavenBuild) {
+	private void customizeBuild(ObjectProvider<BuildCustomizer<?>> buildCustomizers,
+			MavenBuild mavenBuild) {
 		List<BuildCustomizer<? extends Build>> customizers = buildCustomizers
 				.orderedStream().collect(Collectors.toList());
 		LambdaSafe.callbacks(BuildCustomizer.class, customizers, mavenBuild)
 				.invoke((customizer) -> customizer.customize(mavenBuild));
-		return new MavenBuildFileContributor(mavenBuild);
 	}
 
 	@Bean

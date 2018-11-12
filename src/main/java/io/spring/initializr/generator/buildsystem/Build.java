@@ -30,13 +30,15 @@ import io.spring.initializr.generator.DependencyType;
  */
 public abstract class Build {
 
-	private final List<Dependency> dependencies = new ArrayList<>();
-
 	private String group;
 
 	private String name;
 
 	private String version = "0.0.1-SNAPSHOT";
+
+	private final List<Dependency> dependencies = new ArrayList<>();
+
+	private final List<MavenRepository> mavenRepositories = new ArrayList<>();
 
 	public String getGroup() {
 		return this.group;
@@ -75,6 +77,27 @@ public abstract class Build {
 
 	public List<Dependency> getDependencies() {
 		return Collections.unmodifiableList(this.dependencies);
+	}
+
+	public void addMavenRepository(MavenRepository mavenRepository) {
+		this.mavenRepositories.add(mavenRepository);
+	}
+
+	public MavenRepository addMavenRepository(String id, String name, String url) {
+		MavenRepository repository = new MavenRepository(id, name, url, false);
+		this.mavenRepositories.add(repository);
+		return repository;
+	}
+
+	public MavenRepository addSnapshotMavenRepository(String id, String name,
+			String url) {
+		MavenRepository repository = new MavenRepository(id, name, url, true);
+		this.mavenRepositories.add(repository);
+		return repository;
+	}
+
+	public List<MavenRepository> getMavenRepositories() {
+		return Collections.unmodifiableList(this.mavenRepositories);
 	}
 
 	public String getJavaVersion() {

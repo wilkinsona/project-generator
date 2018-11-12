@@ -20,6 +20,7 @@ import java.io.File;
 import java.util.function.Consumer;
 
 import io.spring.initializr.generator.DependencyType;
+import io.spring.initializr.generator.buildsystem.MavenRepository;
 import io.spring.initializr.generator.buildsystem.maven.MavenBuild;
 import io.spring.initializr.generator.buildsystem.maven.MavenPlugin;
 import io.spring.initializr.generator.test.assertj.NodeAssert;
@@ -237,6 +238,76 @@ public class MavenBuildFileContributorTests {
 					.nodeAtPath("configurations/configuration");
 			assertThat(configuration).textAtPath("doctype").isEqualTo("book");
 			assertThat(configuration).textAtPath("backend").isEqualTo("html");
+		});
+	}
+
+	@Test
+	public void pomWithMavenCentral() throws Exception {
+		MavenBuild build = new MavenBuild();
+		build.setGroup("com.example.demo");
+		build.setName("demo");
+		build.addMavenRepository(MavenRepository.MAVEN_CENTRAL);
+		generatePom(build, (pom) -> {
+			assertThat(pom).nodeAtPath("/project/repositories").isNull();
+			assertThat(pom).nodeAtPath("/project/pluginRepositories").isNull();
+		});
+	}
+
+	@Test
+	public void pomWithRepository() throws Exception {
+		MavenBuild build = new MavenBuild();
+		build.setGroup("com.example.demo");
+		build.setName("demo");
+		build.addMavenRepository("spring-milestones", "Spring Milestones",
+				"https://repo.spring.io/milestone");
+		generatePom(build, (pom) -> {
+			assertThat(pom).textAtPath("/project/repositories/repository/id")
+					.isEqualTo("spring-milestones");
+			assertThat(pom).textAtPath("/project/repositories/repository/name")
+					.isEqualTo("Spring Milestones");
+			assertThat(pom).textAtPath("/project/repositories/repository/url")
+					.isEqualTo("https://repo.spring.io/milestone");
+			assertThat(pom).nodeAtPath("/project/repositories/repository/snapshots")
+					.isNull();
+			assertThat(pom).textAtPath("/project/pluginRepositories/pluginRepository/id")
+					.isEqualTo("spring-milestones");
+			assertThat(pom)
+					.textAtPath("/project/pluginRepositories/pluginRepository/name")
+					.isEqualTo("Spring Milestones");
+			assertThat(pom).textAtPath("/project/pluginRepositories/pluginRepository/url")
+					.isEqualTo("https://repo.spring.io/milestone");
+			assertThat(pom).nodeAtPath("/project/repositories/repository/snapshots")
+					.isNull();
+		});
+	}
+
+	@Test
+	public void pomWithSnapshotRepository() throws Exception {
+		MavenBuild build = new MavenBuild();
+		build.setGroup("com.example.demo");
+		build.setName("demo");
+		build.addSnapshotMavenRepository("spring-snapshots", "Spring Snapshots",
+				"https://repo.spring.io/snapshot");
+		generatePom(build, (pom) -> {
+			assertThat(pom).textAtPath("/project/repositories/repository/id")
+					.isEqualTo("spring-snapshots");
+			assertThat(pom).textAtPath("/project/repositories/repository/name")
+					.isEqualTo("Spring Snapshots");
+			assertThat(pom).textAtPath("/project/repositories/repository/url")
+					.isEqualTo("https://repo.spring.io/snapshot");
+			assertThat(pom)
+					.textAtPath("/project/repositories/repository/snapshots/enabled")
+					.isEqualTo("true");
+			assertThat(pom).textAtPath("/project/pluginRepositories/pluginRepository/id")
+					.isEqualTo("spring-snapshots");
+			assertThat(pom)
+					.textAtPath("/project/pluginRepositories/pluginRepository/name")
+					.isEqualTo("Spring Snapshots");
+			assertThat(pom).textAtPath("/project/pluginRepositories/pluginRepository/url")
+					.isEqualTo("https://repo.spring.io/snapshot");
+			assertThat(pom).textAtPath(
+					"/project/pluginRepositories/pluginRepository/snapshots/enabled")
+					.isEqualTo("true");
 		});
 	}
 

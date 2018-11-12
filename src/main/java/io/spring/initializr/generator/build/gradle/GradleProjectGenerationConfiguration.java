@@ -16,8 +16,13 @@
 
 package io.spring.initializr.generator.build.gradle;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
+import io.spring.initializr.generator.FileContributor;
 import io.spring.initializr.generator.ProjectDescription;
 import io.spring.initializr.generator.build.BuildCustomizer;
+import io.spring.initializr.generator.buildsystem.Build;
 import io.spring.initializr.generator.buildsystem.gradle.ConditionalOnGradle;
 import io.spring.initializr.generator.buildsystem.gradle.ConditionalOnGradleVersion;
 import io.spring.initializr.generator.buildsystem.gradle.GradleBuild;
@@ -25,6 +30,7 @@ import io.spring.initializr.generator.git.GitIgnoreContributor;
 import io.spring.initializr.generator.language.java.ConditionalOnJavaLanguage;
 import io.spring.initializr.generator.packaging.war.ConditionalOnWarPackaging;
 import io.spring.initializr.generator.springboot.ConditionalOnSpringBootVersion;
+import io.spring.initializr.generator.util.LambdaSafe;
 
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.context.annotation.Bean;
@@ -61,10 +67,18 @@ public class GradleProjectGenerationConfiguration {
 	}
 
 	@Bean
-	public GradleBuildFileContributor gradleBuildFileContributor(
+	public FileContributor gradleBuildFileContributor(
 			ProjectDescription projectDescription,
 			ObjectProvider<BuildCustomizer<?>> buildCustomizers) {
-		return new GradleBuildFileContributor(projectDescription, buildCustomizers);
+		GradleBuild gradleBuild = new GradleBuild();
+		gradleBuild.setGroup(projectDescription.getGroupId());
+		gradleBuild.setName(projectDescription.getArtifactId());
+		gradleBuild.setVersion("0.0.1-SNAPSHOT");
+		customizeBuild(buildCustomizers, gradleBuild);
+		return (file) -> {
+			new BuildGradleFileContributor(gradleBuild).contribute(file);
+			new SettingsGradleFileContributor(gradleBuild).contribute(file);
+		};
 	}
 
 	@Bean
@@ -91,6 +105,15 @@ public class GradleProjectGenerationConfiguration {
 	public BuildCustomizer<GradleBuild> applyDependencyManagementPluginContributor() {
 		return (gradleBuild) -> gradleBuild
 				.applyPlugin("io.spring.dependency-management");
+	}
+
+	@SuppressWarnings("unchecked")
+	private void customizeBuild(ObjectProvider<BuildCustomizer<?>> buildCustomizers,
+			GradleBuild gradleBuild) {
+		List<BuildCustomizer<? extends Build>> customizers = buildCustomizers
+				.orderedStream().collect(Collectors.toList());
+		LambdaSafe.callbacks(BuildCustomizer.class, customizers, gradleBuild)
+				.invoke((customizer) -> customizer.customize(gradleBuild));
 	}
 
 }
