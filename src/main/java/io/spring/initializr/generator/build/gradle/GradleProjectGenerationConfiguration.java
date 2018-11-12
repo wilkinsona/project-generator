@@ -82,18 +82,15 @@ public class GradleProjectGenerationConfiguration {
 	@Bean
 	public BuildCustomizer<GradleBuild> springBootPluginContributor(
 			ProjectDescription projectDescription) {
-		return (gradleBuild) -> {
-			gradleBuild.addPlugin("org.springframework.boot",
-					projectDescription.getSpringBootVersion().toString());
-		};
+		return (gradleBuild) -> gradleBuild.addPlugin("org.springframework.boot",
+				projectDescription.getSpringBootVersion().toString());
 	}
 
 	@Bean
 	@ConditionalOnSpringBootVersion("2.0.0.M1")
 	public BuildCustomizer<GradleBuild> applyDependencyManagementPluginContributor() {
-		return (gradleBuild) -> {
-			gradleBuild.applyPlugin("io.spring.dependency-management");
-		};
+		return (gradleBuild) -> gradleBuild
+				.applyPlugin("io.spring.dependency-management");
 	}
 
 }

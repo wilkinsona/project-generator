@@ -28,7 +28,7 @@ import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 
 /**
- * Project generation configuration for projects using any build sysytem.
+ * Project generation configuration for projects using any build system.
  *
  * @author Andy Wilkinson
  */

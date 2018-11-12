@@ -20,6 +20,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.function.BiConsumer;
 
@@ -113,9 +114,8 @@ public class MavenBuildFileContributor implements FileContributor {
 		}
 		Node properties = project
 				.appendChild(project.getOwnerDocument().createElement("properties"));
-		this.mavenBuild.getProperties().forEach((key, value) -> {
-			appendChildWithText(properties, key, value);
-		});
+		this.mavenBuild.getProperties()
+				.forEach((key, value) -> appendChildWithText(properties, key, value));
 	}
 
 	private void addDependencies(Element project) {
@@ -124,7 +124,7 @@ public class MavenBuildFileContributor implements FileContributor {
 		}
 		List<Dependency> sortedDependencies = new ArrayList<>(
 				this.mavenBuild.getDependencies());
-		sortedDependencies.sort(this::compare);
+		Collections.sort(sortedDependencies);
 		addChildren(project, "dependencies", "dependency", sortedDependencies,
 				(node, dependency) -> {
 					appendChildWithText(node, "groupId", dependency.getGroupId());
@@ -136,19 +136,6 @@ public class MavenBuildFileContributor implements FileContributor {
 					}
 
 				});
-	}
-
-	private int compare(Dependency one, Dependency two) {
-		int typeComparison = Integer.compare(one.getType().ordinal(),
-				two.getType().ordinal());
-		if (typeComparison != 0) {
-			return typeComparison;
-		}
-		int groupComparison = one.getGroupId().compareTo(two.getGroupId());
-		if (groupComparison != 0) {
-			return groupComparison;
-		}
-		return one.getArtifactId().compareTo(two.getArtifactId());
 	}
 
 	private void addPlugins(Element project) {
@@ -178,21 +165,18 @@ public class MavenBuildFileContributor implements FileContributor {
 	}
 
 	private void addGoals(Node executionNode, Execution execution) {
-		addChildren(executionNode, "goals", "goal", execution.getGoals(),
-				(node, goal) -> {
-					node.appendChild(node.getOwnerDocument().createTextNode(goal));
-				});
+		addChildren(executionNode, "goals", "goal", execution.getGoals(), (node,
+				goal) -> node.appendChild(node.getOwnerDocument().createTextNode(goal)));
 	}
 
 	private void addConfigurations(Node executionNode, Execution execution) {
 		addChildren(executionNode, "configurations", "configuration",
-				execution.getConfigurations(), (node, configuration) -> {
-					configuration.asMap().forEach((key, value) -> {
-						if (value instanceof String) {
-							appendChildWithText(node, key, (String) value);
-						}
-					});
-				});
+				execution.getConfigurations(),
+				(node, configuration) -> configuration.asMap().forEach((key, value) -> {
+					if (value instanceof String) {
+						appendChildWithText(node, key, (String) value);
+					}
+				}));
 	}
 
 	private void addDependencies(Node pluginNode, MavenPlugin plugin) {

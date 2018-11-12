@@ -185,7 +185,7 @@ public class JavaSourceCodeWriter implements SourceCodeWriter<JavaSourceCode> {
 	}
 
 	private Set<String> determineImports(JavaCompilationUnit compilationUnit) {
-		Set<String> imports = new LinkedHashSet<String>();
+		Set<String> imports = new LinkedHashSet<>();
 		for (JavaTypeDeclaration typeDeclaration : compilationUnit
 				.getTypeDeclarations()) {
 			if (requiresImport(typeDeclaration.getExtends())) {
