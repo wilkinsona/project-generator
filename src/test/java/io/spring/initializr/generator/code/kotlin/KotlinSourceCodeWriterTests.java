@@ -27,6 +27,7 @@ import io.spring.initializr.generator.language.kotlin.KotlinCompilationUnit;
 import io.spring.initializr.generator.language.kotlin.KotlinExpressionStatement;
 import io.spring.initializr.generator.language.kotlin.KotlinFunctionDeclaration;
 import io.spring.initializr.generator.language.kotlin.KotlinFunctionInvocation;
+import io.spring.initializr.generator.language.kotlin.KotlinModifier;
 import io.spring.initializr.generator.language.kotlin.KotlinReifiedFunctionInvocation;
 import io.spring.initializr.generator.language.kotlin.KotlinReturnStatement;
 import io.spring.initializr.generator.language.kotlin.KotlinSourceCode;
@@ -92,6 +93,26 @@ public class KotlinSourceCodeWriterTests {
 		assertThat(lines).containsExactly("package com.example", "", "class Test {", "",
 				"    fun reverse(echo: String): String {",
 				"        return echo.reversed()", "    }", "", "}", "");
+	}
+
+	@Test
+	public void functionModifiers() throws IOException {
+		KotlinSourceCode sourceCode = new KotlinSourceCode();
+		KotlinCompilationUnit compilationUnit = sourceCode
+				.createCompilationUnit("com.example", "Test");
+		KotlinTypeDeclaration test = compilationUnit.createTypeDeclaration("Test");
+		test.addFunctionDeclaration(KotlinFunctionDeclaration.function("toString")
+				.modifiers(KotlinModifier.OVERRIDE, KotlinModifier.PUBLIC,
+						KotlinModifier.OPEN)
+				.returning("java.lang.String").body(new KotlinReturnStatement(
+						new KotlinFunctionInvocation("super", "toString"))));
+		this.writer.writeTo(this.temp.getRoot(), sourceCode);
+		File testSource = new File(this.temp.getRoot(), "com/example/Test.kt");
+		assertThat(testSource).isFile();
+		List<String> lines = Files.readAllLines(testSource.toPath());
+		assertThat(lines).containsExactly("package com.example", "", "class Test {", "",
+				"    open override fun toString(): String {",
+				"        return super.toString()", "    }", "", "}", "");
 	}
 
 	@Test

@@ -38,14 +38,15 @@ public final class KotlinFunctionDeclaration implements Annotatable {
 
 	private final String returnType;
 
-	private final int modifiers;
+	private final List<KotlinModifier> modifiers;
 
 	private final List<Parameter> parameters;
 
 	private final List<KotlinStatement> statements;
 
-	private KotlinFunctionDeclaration(String name, String returnType, int modifiers,
-			List<Parameter> parameters, List<KotlinStatement> statements) {
+	private KotlinFunctionDeclaration(String name, String returnType,
+			List<KotlinModifier> modifiers, List<Parameter> parameters,
+			List<KotlinStatement> statements) {
 		this.name = name;
 		this.returnType = returnType;
 		this.modifiers = modifiers;
@@ -69,7 +70,7 @@ public final class KotlinFunctionDeclaration implements Annotatable {
 		return this.parameters;
 	}
 
-	int getModifiers() {
+	List<KotlinModifier> getModifiers() {
 		return this.modifiers;
 	}
 
@@ -96,10 +97,17 @@ public final class KotlinFunctionDeclaration implements Annotatable {
 
 		private List<Parameter> parameters = new ArrayList<>();
 
+		private List<KotlinModifier> modifiers = new ArrayList<>();
+
 		private String returnType;
 
 		private Builder(String name) {
 			this.name = name;
+		}
+
+		public Builder modifiers(KotlinModifier... modifiers) {
+			this.modifiers = Arrays.asList(modifiers);
+			return this;
 		}
 
 		public Builder returning(String returnType) {
@@ -113,8 +121,8 @@ public final class KotlinFunctionDeclaration implements Annotatable {
 		}
 
 		public KotlinFunctionDeclaration body(KotlinStatement... statements) {
-			return new KotlinFunctionDeclaration(this.name, this.returnType, 0,
-					this.parameters, Arrays.asList(statements));
+			return new KotlinFunctionDeclaration(this.name, this.returnType,
+					this.modifiers, this.parameters, Arrays.asList(statements));
 		}
 
 	}

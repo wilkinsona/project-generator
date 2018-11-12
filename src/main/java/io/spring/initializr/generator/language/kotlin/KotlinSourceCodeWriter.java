@@ -22,6 +22,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -149,7 +150,14 @@ public class KotlinSourceCodeWriter implements SourceCodeWriter<KotlinSourceCode
 
 	private void writeMethodModifiers(PrintWriter writer,
 			KotlinFunctionDeclaration functionDeclaration) {
-		// TODO
+		String modifiers = functionDeclaration.getModifiers().stream()
+				.filter((entry) -> !entry.equals(KotlinModifier.PUBLIC)).sorted()
+				.map((entry) -> entry.toString().toLowerCase(Locale.ENGLISH))
+				.collect(Collectors.joining(" "));
+		if (!modifiers.isEmpty()) {
+			writer.print(modifiers);
+			writer.print(" ");
+		}
 	}
 
 	private void writeExpression(PrintWriter writer, KotlinExpression expression) {
