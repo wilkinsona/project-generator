@@ -55,21 +55,20 @@ public class JavaSourceCodeProjectGenerationConfiguration {
 			ProjectDescription projectDescription,
 			ObjectProvider<MainApplicationTypeCustomizer<?>> mainApplicationTypeCustomizers,
 			ObjectProvider<MainSourceCodeCustomizer<?, ?, ?>> mainSourceCodeCustomizers) {
-		return new MainSourceCodeFileContributor<JavaTypeDeclaration, JavaCompilationUnit, JavaSourceCode>(
-				projectDescription, JavaSourceCode::new, new JavaSourceCodeWriter(),
+		return new MainSourceCodeFileContributor<>(projectDescription,
+				JavaSourceCode::new, new JavaSourceCodeWriter(),
 				mainApplicationTypeCustomizers, mainSourceCodeCustomizers);
 	}
 
 	@Bean
 	public MainApplicationTypeCustomizer<JavaTypeDeclaration> mainMethodContributor() {
-		return (typeDeclaration) -> {
-			typeDeclaration.addMethodDeclaration(JavaMethodDeclaration.method("main")
-					.modifiers(Modifier.PUBLIC | Modifier.STATIC).returning("void")
-					.parameters(new Parameter("java.lang.String[]", "args"))
-					.body(new JavaExpressionStatement(new JavaMethodInvocation(
-							"org.springframework.boot.SpringApplication", "run",
-							typeDeclaration.getName() + ".class", "args"))));
-		};
+		return (typeDeclaration) -> typeDeclaration
+				.addMethodDeclaration(JavaMethodDeclaration.method("main")
+						.modifiers(Modifier.PUBLIC | Modifier.STATIC).returning("void")
+						.parameters(new Parameter("java.lang.String[]", "args"))
+						.body(new JavaExpressionStatement(new JavaMethodInvocation(
+								"org.springframework.boot.SpringApplication", "run",
+								typeDeclaration.getName() + ".class", "args"))));
 	}
 
 	/**

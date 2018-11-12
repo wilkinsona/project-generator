@@ -21,7 +21,7 @@ package io.spring.initializr.generator;
  *
  * @author Andy Wilkinson
  */
-public class Dependency {
+public class Dependency implements Comparable<Dependency> {
 
 	private final String groupId;
 
@@ -57,6 +57,20 @@ public class Dependency {
 	 */
 	public DependencyType getType() {
 		return this.type;
+	}
+
+	@Override
+	public int compareTo(Dependency another) {
+		int typeComparison = Integer.compare(getType().ordinal(),
+				another.getType().ordinal());
+		if (typeComparison != 0) {
+			return typeComparison;
+		}
+		int groupComparison = getGroupId().compareTo(another.getGroupId());
+		if (groupComparison != 0) {
+			return groupComparison;
+		}
+		return getArtifactId().compareTo(another.getArtifactId());
 	}
 
 }

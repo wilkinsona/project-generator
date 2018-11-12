@@ -43,7 +43,7 @@ public class OnGradleVersionCondition extends ProjectGenerationCondition {
 	protected boolean matches(ProjectDescription projectDescription,
 			ConditionContext context, AnnotatedTypeMetadata metadata) {
 		Version springBootVersion = projectDescription.getSpringBootVersion();
-		String gradleVersion = null;
+		String gradleVersion;
 		if (GRADLE_3_BOOT_VERSION_RANGE.match(springBootVersion)) {
 			gradleVersion = "3";
 		}
