@@ -14,9 +14,7 @@
  * limitations under the License.
  */
 
-package io.spring.initializr.generator.code.java;
-
-import java.lang.reflect.Modifier;
+package io.spring.initializr.generator.code.kotlin;
 
 import io.spring.initializr.generator.ProjectDescription;
 import io.spring.initializr.generator.ProjectGenerationConfiguration;
@@ -25,17 +23,18 @@ import io.spring.initializr.generator.code.MainCompilationUnitCustomizer;
 import io.spring.initializr.generator.code.MainSourceCodeCustomizer;
 import io.spring.initializr.generator.code.MainSourceCodeFileContributor;
 import io.spring.initializr.generator.code.ServletInitializerCustomizer;
-import io.spring.initializr.generator.language.Annotation;
 import io.spring.initializr.generator.language.Parameter;
-import io.spring.initializr.generator.language.java.ConditionalOnJavaLanguage;
-import io.spring.initializr.generator.language.java.JavaCompilationUnit;
-import io.spring.initializr.generator.language.java.JavaExpressionStatement;
-import io.spring.initializr.generator.language.java.JavaMethodDeclaration;
-import io.spring.initializr.generator.language.java.JavaMethodInvocation;
-import io.spring.initializr.generator.language.java.JavaReturnStatement;
-import io.spring.initializr.generator.language.java.JavaSourceCode;
-import io.spring.initializr.generator.language.java.JavaSourceCodeWriter;
-import io.spring.initializr.generator.language.java.JavaTypeDeclaration;
+import io.spring.initializr.generator.language.kotlin.ConditionalOnKotlinLanguage;
+import io.spring.initializr.generator.language.kotlin.KotlinCompilationUnit;
+import io.spring.initializr.generator.language.kotlin.KotlinExpressionStatement;
+import io.spring.initializr.generator.language.kotlin.KotlinFunctionDeclaration;
+import io.spring.initializr.generator.language.kotlin.KotlinFunctionInvocation;
+import io.spring.initializr.generator.language.kotlin.KotlinModifier;
+import io.spring.initializr.generator.language.kotlin.KotlinReifiedFunctionInvocation;
+import io.spring.initializr.generator.language.kotlin.KotlinReturnStatement;
+import io.spring.initializr.generator.language.kotlin.KotlinSourceCode;
+import io.spring.initializr.generator.language.kotlin.KotlinSourceCodeWriter;
+import io.spring.initializr.generator.language.kotlin.KotlinTypeDeclaration;
 import io.spring.initializr.generator.packaging.war.ConditionalOnWarPackaging;
 
 import org.springframework.beans.factory.ObjectProvider;
@@ -43,58 +42,59 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 /**
- * Project generation configuration for projects written in Java.
+ * Project generation configuration for projects written in Kotlin.
  *
- * @author Andy Wilkinson
+ * @author Stephane Nicoll
  */
 @ProjectGenerationConfiguration
-@ConditionalOnJavaLanguage
-public class JavaSourceCodeProjectGenerationConfiguration {
+@ConditionalOnKotlinLanguage
+public class KotlinSourceCodeProjectGenerationConfiguration {
 
 	@Bean
-	public MainSourceCodeFileContributor<JavaTypeDeclaration, JavaCompilationUnit, JavaSourceCode> mainJavaSourceCodeFileContributor(
+	public MainSourceCodeFileContributor<KotlinTypeDeclaration, KotlinCompilationUnit, KotlinSourceCode> mainKotlinSourceCodeFileContributor(
 			ProjectDescription projectDescription,
 			ObjectProvider<MainApplicationTypeCustomizer<?>> mainApplicationTypeCustomizers,
 			ObjectProvider<MainCompilationUnitCustomizer<?, ?>> mainCompilationUnitCustomizers,
 			ObjectProvider<MainSourceCodeCustomizer<?, ?, ?>> mainSourceCodeCustomizers) {
 		return new MainSourceCodeFileContributor<>(projectDescription,
-				JavaSourceCode::new, new JavaSourceCodeWriter(),
+				KotlinSourceCode::new, new KotlinSourceCodeWriter(),
 				mainApplicationTypeCustomizers, mainCompilationUnitCustomizers,
 				mainSourceCodeCustomizers);
 	}
 
 	@Bean
-	public MainApplicationTypeCustomizer<JavaTypeDeclaration> mainMethodContributor() {
-		return (typeDeclaration) -> typeDeclaration
-				.addMethodDeclaration(JavaMethodDeclaration.method("main")
-						.modifiers(Modifier.PUBLIC | Modifier.STATIC).returning("void")
-						.parameters(new Parameter("java.lang.String[]", "args"))
-						.body(new JavaExpressionStatement(new JavaMethodInvocation(
-								"org.springframework.boot.SpringApplication", "run",
-								typeDeclaration.getName() + ".class", "args"))));
+	public MainCompilationUnitCustomizer<KotlinTypeDeclaration, KotlinCompilationUnit> mainFunctionContributor() {
+		return (compilationUnit) -> {
+			compilationUnit.addTopLevelFunction(KotlinFunctionDeclaration.function("main")
+					.parameters(new Parameter("Array<String>", "args"))
+					.body(new KotlinExpressionStatement(
+							new KotlinReifiedFunctionInvocation(
+									"org.springframework.boot.runApplication", "Yolo",
+									"*args"))));
+		};
 	}
 
 	/**
-	 * Java source code contributions for projects using war packaging.
+	 * Kotlin source code contributions for projects using war packaging.
 	 */
 	@Configuration
 	@ConditionalOnWarPackaging
 	static class WarPackagingConfiguration {
 
 		@Bean
-		public ServletInitializerCustomizer<JavaTypeDeclaration> javaServletInitializerCustomizer() {
+		public ServletInitializerCustomizer<KotlinTypeDeclaration> javaServletInitializerCustomizer() {
 			return (typeDeclaration) -> {
-				JavaMethodDeclaration configure = JavaMethodDeclaration
-						.method("configure").modifiers(Modifier.PROTECTED)
+				KotlinFunctionDeclaration configure = KotlinFunctionDeclaration
+						.function("configure").modifiers(KotlinModifier.OVERRIDE)
 						.returning(
 								"org.springframework.boot.builder.SpringApplicationBuilder")
 						.parameters(new Parameter(
 								"org.springframework.boot.builder.SpringApplicationBuilder",
 								"application"))
-						.body(new JavaReturnStatement(new JavaMethodInvocation(
-								"application", "sources", "DemoApplication.class")));
-				configure.annotate(new Annotation("java.lang.Override"));
-				typeDeclaration.addMethodDeclaration(configure);
+						.body(new KotlinReturnStatement(
+								new KotlinFunctionInvocation("application", "sources",
+										"DemoApplication::class.java")));
+				typeDeclaration.addFunctionDeclaration(configure);
 			};
 		}
 

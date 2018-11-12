@@ -16,6 +16,7 @@ io.spring.initializr.generator.build.gradle.GradleProjectGenerationConfiguration
 io.spring.initializr.generator.build.maven.MavenProjectGenerationConfiguration,\
 io.spring.initializr.generator.code.SourceCodeProjectGenerationConfiguration,\
 io.spring.initializr.generator.code.java.JavaSourceCodeProjectGenerationConfiguration,\
+io.spring.initializr.generator.code.kotlin.KotlinSourceCodeProjectGenerationConfiguration,\
 io.spring.initializr.generator.git.GitProjectGenerationConfiguration,\
 io.spring.initializr.generator.springcloud.SpringCloudProjectGenerationConfiguration,\
 io.spring.initializr.generator.springrestdocs.SpringRestDocsProjectGenerationConfiguration

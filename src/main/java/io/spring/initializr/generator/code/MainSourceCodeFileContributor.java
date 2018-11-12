@@ -39,6 +39,7 @@ import org.springframework.beans.factory.ObjectProvider;
  * @param <C> language-specific compilation unit
  * @param <S> language-specific source code
  * @author Andy Wilkinson
+ * @author Stephane Nicoll
  */
 public class MainSourceCodeFileContributor<T extends TypeDeclaration, C extends CompilationUnit<T>, S extends SourceCode<T, C>>
 		implements FileContributor {
@@ -51,16 +52,20 @@ public class MainSourceCodeFileContributor<T extends TypeDeclaration, C extends 
 
 	private final ObjectProvider<MainApplicationTypeCustomizer<? extends TypeDeclaration>> mainTypeCustomizers;
 
+	private final ObjectProvider<MainCompilationUnitCustomizer<?, ?>> mainCompilationUnitCustomizers;
+
 	private final ObjectProvider<MainSourceCodeCustomizer<?, ?, ?>> mainSourceCodeCustomizers;
 
 	public MainSourceCodeFileContributor(ProjectDescription projectDescription,
 			Supplier<S> sourceFactory, SourceCodeWriter<S> sourceWriter,
 			ObjectProvider<MainApplicationTypeCustomizer<?>> mainTypeCustomizers,
+			ObjectProvider<MainCompilationUnitCustomizer<?, ?>> mainCompilationUnitCustomizers,
 			ObjectProvider<MainSourceCodeCustomizer<?, ?, ?>> mainSourceCodeCustomizers) {
 		this.projectDescription = projectDescription;
 		this.sourceFactory = sourceFactory;
 		this.sourceWriter = sourceWriter;
 		this.mainTypeCustomizers = mainTypeCustomizers;
+		this.mainCompilationUnitCustomizers = mainCompilationUnitCustomizers;
 		this.mainSourceCodeCustomizers = mainSourceCodeCustomizers;
 	}
 
@@ -71,6 +76,7 @@ public class MainSourceCodeFileContributor<T extends TypeDeclaration, C extends 
 				this.projectDescription.getGroupId(), "DemoApplication");
 		T mainApplicationType = compilationUnit.createTypeDeclaration("DemoApplication");
 		customizeMainApplicationType(mainApplicationType);
+		customizeMainCompilationUnit(compilationUnit);
 		customizeMainSourceCode(sourceCode);
 		this.sourceWriter
 				.writeTo(
@@ -87,6 +93,16 @@ public class MainSourceCodeFileContributor<T extends TypeDeclaration, C extends 
 				.callbacks(MainApplicationTypeCustomizer.class, customizers,
 						mainApplicationType)
 				.invoke((customizer) -> customizer.customize(mainApplicationType));
+	}
+
+	@SuppressWarnings("unchecked")
+	private void customizeMainCompilationUnit(C compilationUnit) {
+		List<MainCompilationUnitCustomizer<?, ?>> customizers = this.mainCompilationUnitCustomizers
+				.orderedStream().collect(Collectors.toList());
+		LambdaSafe
+				.callbacks(MainCompilationUnitCustomizer.class, customizers,
+						compilationUnit)
+				.invoke((customizer) -> customizer.customize(compilationUnit));
 	}
 
 	@SuppressWarnings("unchecked")

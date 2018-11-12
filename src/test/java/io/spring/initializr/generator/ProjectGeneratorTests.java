@@ -30,6 +30,7 @@ import java.util.stream.Stream;
 import io.spring.initializr.generator.buildsystem.gradle.GradleBuildSystem;
 import io.spring.initializr.generator.buildsystem.maven.MavenBuildSystem;
 import io.spring.initializr.generator.language.java.JavaLanguage;
+import io.spring.initializr.generator.language.kotlin.KotlinLanguage;
 import io.spring.initializr.generator.packaging.war.WarPackaging;
 import io.spring.initializr.generator.test.assertj.NodeAssert;
 import io.spring.initializr.generator.util.Version;
@@ -172,6 +173,21 @@ public class ProjectGeneratorTests {
 	}
 
 	@Test
+	public void mainKotlinClassIsContributedWhenGeneratingKotlinProject()
+			throws IOException {
+		ProjectDescription description = new ProjectDescription();
+		description.setBuildSystem(new MavenBuildSystem());
+		description.setSpringBootVersion(Version.parse("2.1.0.RELEASE"));
+		description.setLanguage(new KotlinLanguage());
+		description.setGroupId("com.example");
+		File project = new ProjectGenerator().generate(description);
+		List<String> relativePaths = getRelativePathsOfProjectFiles(project);
+		assertThat(relativePaths)
+				.contains("src/main/kotlin/com/example/DemoApplication.kt");
+		FileSystemUtils.deleteRecursively(project);
+	}
+
+	@Test
 	public void mainClassIsAnnotatedWithEnableConfigServerWhenGeneratingProjectThatDependsUponSpringCloudConfigServer()
 			throws IOException {
 		ProjectDescription description = new ProjectDescription();
@@ -227,7 +243,7 @@ public class ProjectGeneratorTests {
 	}
 
 	@Test
-	public void servletInitializerIsContributedWhenGeneratingProjectThatUsesWarPackaging()
+	public void servletInitializerIsContributedWhenGeneratingJavaProjectThatUsesWarPackaging()
 			throws IOException {
 		ProjectDescription description = new ProjectDescription();
 		description.setSpringBootVersion(Version.parse("2.1.0.RELEASE"));
@@ -250,6 +266,32 @@ public class ProjectGeneratorTests {
 				"    protected SpringApplicationBuilder configure(SpringApplicationBuilder application) {",
 				"        return application.sources(DemoApplication.class);", "    }", "",
 				"}", "");
+		FileSystemUtils.deleteRecursively(project);
+	}
+
+	@Test
+	public void servletInitializerIsContributedWhenGeneratingKotlinProjectThatUsesWarPackaging()
+			throws IOException {
+		ProjectDescription description = new ProjectDescription();
+		description.setSpringBootVersion(Version.parse("2.1.0.RELEASE"));
+		description.setBuildSystem(new MavenBuildSystem());
+		description.setLanguage(new KotlinLanguage());
+		description.setPackaging(new WarPackaging());
+		description.setGroupId("com.example");
+		File project = new ProjectGenerator().generate(description);
+		List<String> relativePaths = getRelativePathsOfProjectFiles(project);
+		assertThat(relativePaths)
+				.contains("src/main/kotlin/com/example/ServletInitializer.kt");
+		List<String> lines = Files.readAllLines(
+				new File(project, "src/main/kotlin/com/example/ServletInitializer.kt")
+						.toPath());
+		assertThat(lines).containsExactly("package com.example", "",
+				"import org.springframework.boot.web.servlet.support.SpringBootServletInitializer",
+				"import org.springframework.boot.builder.SpringApplicationBuilder", "",
+				"class ServletInitializer extends SpringBootServletInitializer {", "",
+				"    override fun configure(application: SpringApplicationBuilder): SpringApplicationBuilder {",
+				"        return application.sources(DemoApplication::class.java)",
+				"    }", "", "}", "");
 		FileSystemUtils.deleteRecursively(project);
 	}
 
