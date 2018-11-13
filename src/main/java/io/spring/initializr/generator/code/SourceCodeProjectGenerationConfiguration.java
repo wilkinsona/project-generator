@@ -41,6 +41,17 @@ public class SourceCodeProjectGenerationConfiguration {
 				.name("org.springframework.boot.autoconfigure.SpringBootApplication"));
 	}
 
+	@Bean
+	public TestApplicationTypeCustomizer<TypeDeclaration> springBootTestAnnotator() {
+		return (typeDeclaration) -> {
+			typeDeclaration.annotate(Annotation.name("org.junit.runner.RunWith",
+					(annotation) -> annotation.attribute("value", Class.class,
+							"org.springframework.test.context.junit4.SpringRunner")));
+			typeDeclaration.annotate(Annotation
+					.name("org.springframework.boot.test.context.SpringBootTest"));
+		};
+	}
+
 	/**
 	 * Language-agnostic source code contributions for projects using war packaging.
 	 */

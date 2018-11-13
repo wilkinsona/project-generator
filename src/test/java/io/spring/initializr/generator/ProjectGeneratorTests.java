@@ -335,6 +335,55 @@ public class ProjectGeneratorTests {
 		FileSystemUtils.deleteRecursively(project);
 	}
 
+	@Test
+	public void testJavaClassIsContributedWhenGeneratingJavaProject() throws IOException {
+		ProjectDescription description = new ProjectDescription();
+		description.setBuildSystem(new MavenBuildSystem());
+		description.setSpringBootVersion(Version.parse("2.1.0.RELEASE"));
+		description.setLanguage(new JavaLanguage());
+		description.setGroupId("com.example");
+		File project = new ProjectGenerator().generate(description);
+		List<String> relativePaths = getRelativePathsOfProjectFiles(project);
+		assertThat(relativePaths)
+				.contains("src/test/java/com/example/DemoApplicationTests.java");
+		List<String> lines = Files.readAllLines(
+				new File(project, "src/test/java/com/example/DemoApplicationTests.java")
+						.toPath());
+		assertThat(lines).containsExactly("package com.example;", "",
+				"import org.junit.runner.RunWith;",
+				"import org.springframework.test.context.junit4.SpringRunner;",
+				"import org.springframework.boot.test.context.SpringBootTest;",
+				"import org.junit.Test;", "", "@RunWith(SpringRunner.class)",
+				"@SpringBootTest", "public class DemoApplicationTests {", "", "    @Test",
+				"    public void contextLoads() {", "    }", "", "}", "");
+		FileSystemUtils.deleteRecursively(project);
+	}
+
+	@Test
+	public void testKotlinClassIsContributedWhenGeneratingKotlinProject()
+			throws IOException {
+		ProjectDescription description = new ProjectDescription();
+		description.setBuildSystem(new MavenBuildSystem());
+		description.setSpringBootVersion(Version.parse("2.1.0.RELEASE"));
+		description.setLanguage(new KotlinLanguage());
+		description.setGroupId("com.example");
+		File project = new ProjectGenerator().generate(description);
+		List<String> relativePaths = getRelativePathsOfProjectFiles(project);
+		assertThat(relativePaths)
+				.contains("src/test/kotlin/com/example/DemoApplicationTests.kt");
+		List<String> lines = Files.readAllLines(
+				new File(project, "src/test/kotlin/com/example/DemoApplicationTests.kt")
+						.toPath());
+		assertThat(lines).containsExactly("package com.example", "",
+				"import org.junit.runner.RunWith",
+				"import org.springframework.test.context.junit4.SpringRunner",
+				"import org.springframework.boot.test.context.SpringBootTest",
+				"import org.junit.Test", "", "@RunWith(SpringRunner::class)",
+				"@SpringBootTest", "class DemoApplicationTests {", "", "    @Test",
+				"    fun contextLoads() {", "    }", "", "}", "");
+		FileSystemUtils.deleteRecursively(project);
+	}
+
 	private List<String> getRelativePathsOfProjectFiles(File project) throws IOException {
 		List<String> relativePaths = new ArrayList<>();
 		Path projectPath = project.toPath();

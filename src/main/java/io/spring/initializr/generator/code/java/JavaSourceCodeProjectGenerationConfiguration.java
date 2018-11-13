@@ -25,6 +25,9 @@ import io.spring.initializr.generator.code.MainCompilationUnitCustomizer;
 import io.spring.initializr.generator.code.MainSourceCodeCustomizer;
 import io.spring.initializr.generator.code.MainSourceCodeFileContributor;
 import io.spring.initializr.generator.code.ServletInitializerCustomizer;
+import io.spring.initializr.generator.code.TestApplicationTypeCustomizer;
+import io.spring.initializr.generator.code.TestSourceCodeCustomizer;
+import io.spring.initializr.generator.code.TestSourceCodeFileContributor;
 import io.spring.initializr.generator.language.Annotation;
 import io.spring.initializr.generator.language.Parameter;
 import io.spring.initializr.generator.language.java.ConditionalOnJavaLanguage;
@@ -72,6 +75,26 @@ public class JavaSourceCodeProjectGenerationConfiguration {
 						.body(new JavaExpressionStatement(new JavaMethodInvocation(
 								"org.springframework.boot.SpringApplication", "run",
 								typeDeclaration.getName() + ".class", "args"))));
+	}
+
+	@Bean
+	public TestSourceCodeFileContributor<JavaTypeDeclaration, JavaCompilationUnit, JavaSourceCode> testJavaSourceCodeFileContributor(
+			ProjectDescription projectDescription,
+			ObjectProvider<TestApplicationTypeCustomizer<?>> testApplicationTypeCustomizers,
+			ObjectProvider<TestSourceCodeCustomizer<?, ?, ?>> testSourceCodeCustomizers) {
+		return new TestSourceCodeFileContributor<>(projectDescription,
+				JavaSourceCode::new, new JavaSourceCodeWriter(),
+				testApplicationTypeCustomizers, testSourceCodeCustomizers);
+	}
+
+	@Bean
+	public TestApplicationTypeCustomizer<JavaTypeDeclaration> testMethodContributor() {
+		return (typeDeclaration) -> {
+			JavaMethodDeclaration method = JavaMethodDeclaration.method("contextLoads")
+					.modifiers(Modifier.PUBLIC).returning("void").body();
+			method.annotate(Annotation.name("org.junit.Test"));
+			typeDeclaration.addMethodDeclaration(method);
+		};
 	}
 
 	/**

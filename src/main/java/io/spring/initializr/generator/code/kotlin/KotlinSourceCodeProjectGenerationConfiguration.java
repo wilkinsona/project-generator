@@ -23,6 +23,10 @@ import io.spring.initializr.generator.code.MainCompilationUnitCustomizer;
 import io.spring.initializr.generator.code.MainSourceCodeCustomizer;
 import io.spring.initializr.generator.code.MainSourceCodeFileContributor;
 import io.spring.initializr.generator.code.ServletInitializerCustomizer;
+import io.spring.initializr.generator.code.TestApplicationTypeCustomizer;
+import io.spring.initializr.generator.code.TestSourceCodeCustomizer;
+import io.spring.initializr.generator.code.TestSourceCodeFileContributor;
+import io.spring.initializr.generator.language.Annotation;
 import io.spring.initializr.generator.language.Parameter;
 import io.spring.initializr.generator.language.kotlin.ConditionalOnKotlinLanguage;
 import io.spring.initializr.generator.language.kotlin.KotlinCompilationUnit;
@@ -71,6 +75,26 @@ public class KotlinSourceCodeProjectGenerationConfiguration {
 							new KotlinReifiedFunctionInvocation(
 									"org.springframework.boot.runApplication", "Yolo",
 									"*args"))));
+		};
+	}
+
+	@Bean
+	public TestSourceCodeFileContributor<KotlinTypeDeclaration, KotlinCompilationUnit, KotlinSourceCode> testKotlinSourceCodeFileContributor(
+			ProjectDescription projectDescription,
+			ObjectProvider<TestApplicationTypeCustomizer<?>> testApplicationTypeCustomizers,
+			ObjectProvider<TestSourceCodeCustomizer<?, ?, ?>> testSourceCodeCustomizers) {
+		return new TestSourceCodeFileContributor<>(projectDescription,
+				KotlinSourceCode::new, new KotlinSourceCodeWriter(),
+				testApplicationTypeCustomizers, testSourceCodeCustomizers);
+	}
+
+	@Bean
+	public TestApplicationTypeCustomizer<KotlinTypeDeclaration> testMethodContributor() {
+		return (typeDeclaration) -> {
+			KotlinFunctionDeclaration function = KotlinFunctionDeclaration
+					.function("contextLoads").body();
+			function.annotate(Annotation.name("org.junit.Test"));
+			typeDeclaration.addFunctionDeclaration(function);
 		};
 	}
 
