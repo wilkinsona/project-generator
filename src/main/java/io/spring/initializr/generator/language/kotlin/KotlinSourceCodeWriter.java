@@ -265,6 +265,8 @@ public class KotlinSourceCodeWriter implements SourceCodeWriter<KotlinSourceCode
 		if (requiresImport(functionDeclaration.getReturnType())) {
 			imports.add(functionDeclaration.getReturnType());
 		}
+		imports.addAll(getRequiredImports(functionDeclaration.getAnnotations(),
+				this::determineImports));
 		imports.addAll(getRequiredImports(functionDeclaration.getParameters(),
 				(parameter) -> Collections.singleton(parameter.getType())));
 		imports.addAll(getRequiredImports(

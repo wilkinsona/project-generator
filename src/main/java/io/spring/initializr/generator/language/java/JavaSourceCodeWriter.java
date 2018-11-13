@@ -244,6 +244,8 @@ public class JavaSourceCodeWriter implements SourceCodeWriter<JavaSourceCode> {
 				if (requiresImport(methodDeclaration.getReturnType())) {
 					imports.add(methodDeclaration.getReturnType());
 				}
+				imports.addAll(getRequiredImports(methodDeclaration.getAnnotations(),
+						this::determineImports));
 				imports.addAll(getRequiredImports(methodDeclaration.getParameters(),
 						(parameter) -> Collections.singletonList(parameter.getType())));
 				imports.addAll(getRequiredImports(

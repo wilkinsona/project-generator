@@ -173,4 +173,24 @@ public class JavaSourceCodeWriterTests {
 		return Files.readAllLines(testSource.toPath());
 	}
 
+	@Test
+	public void methodWithSimpleAnnotation() throws IOException {
+		JavaSourceCode sourceCode = new JavaSourceCode();
+		JavaCompilationUnit compilationUnit = sourceCode
+				.createCompilationUnit("com.example", "Test");
+		JavaTypeDeclaration test = compilationUnit.createTypeDeclaration("Test");
+		JavaMethodDeclaration method = JavaMethodDeclaration.method("something")
+				.returning("void").parameters().body();
+		method.annotate(Annotation.name("com.example.test.TestAnnotation"));
+		test.addMethodDeclaration(method);
+		this.writer.writeTo(this.temp.getRoot(), sourceCode);
+		File testSource = new File(this.temp.getRoot(), "com/example/Test.java");
+		assertThat(testSource).isFile();
+		List<String> lines = Files.readAllLines(testSource.toPath());
+		assertThat(lines).containsExactly("package com.example;", "",
+				"import com.example.test.TestAnnotation;", "", "public class Test {", "",
+				"    @TestAnnotation", "    public void something() {", "    }", "", "}",
+				"");
+	}
+
 }

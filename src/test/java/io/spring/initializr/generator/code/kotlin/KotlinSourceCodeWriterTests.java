@@ -210,4 +210,23 @@ public class KotlinSourceCodeWriterTests {
 		return Files.readAllLines(testSource.toPath());
 	}
 
+	@Test
+	public void functionWithSimpleAnnotation() throws IOException {
+		KotlinSourceCode sourceCode = new KotlinSourceCode();
+		KotlinCompilationUnit compilationUnit = sourceCode
+				.createCompilationUnit("com.example", "Test");
+		KotlinTypeDeclaration test = compilationUnit.createTypeDeclaration("Test");
+		KotlinFunctionDeclaration function = KotlinFunctionDeclaration
+				.function("something").body();
+		function.annotate(Annotation.name("com.example.test.TestAnnotation"));
+		test.addFunctionDeclaration(function);
+		this.writer.writeTo(this.temp.getRoot(), sourceCode);
+		File testSource = new File(this.temp.getRoot(), "com/example/Test.kt");
+		assertThat(testSource).isFile();
+		List<String> lines = Files.readAllLines(testSource.toPath());
+		assertThat(lines).containsExactly("package com.example", "",
+				"import com.example.test.TestAnnotation", "", "class Test {", "",
+				"    @TestAnnotation", "    fun something() {", "    }", "", "}", "");
+	}
+
 }
