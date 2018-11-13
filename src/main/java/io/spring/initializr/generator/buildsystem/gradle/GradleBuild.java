@@ -91,13 +91,24 @@ public class GradleBuild extends Build {
 
 		private final List<String> dependencies = new ArrayList<>();
 
+		private final Map<String, String> ext = new LinkedHashMap<>();
+
 		public Buildscript dependency(String coordinates) {
 			this.dependencies.add(coordinates);
 			return this;
 		}
 
+		public Buildscript ext(String key, String value) {
+			this.ext.put(key, value);
+			return this;
+		}
+
 		public List<String> getDependencies() {
 			return Collections.unmodifiableList(this.dependencies);
+		}
+
+		public Map<String, String> getExt() {
+			return Collections.unmodifiableMap(this.ext);
 		}
 
 	}

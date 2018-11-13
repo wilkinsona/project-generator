@@ -57,6 +57,20 @@ public class BuildGradleFileContributorTests {
 	}
 
 	@Test
+	public void gradleBuildWithBuildscriptExtProperty() throws IOException {
+		GradleBuild build = new GradleBuild();
+		build.addMavenRepository(MavenRepository.MAVEN_CENTRAL);
+		build.buildscript((buildscript) -> buildscript.ext("kotlinVersion", "'1.2.51'"));
+		BuildGradleFileContributor contributor = new BuildGradleFileContributor(build);
+		contributor.contribute(this.temp.getRoot());
+		File buildGradle = new File(this.temp.getRoot(), "build.gradle");
+		assertThat(buildGradle).isFile();
+		List<String> lines = Files.readAllLines(buildGradle.toPath());
+		assertThat(lines).containsSequence("buildscript {", "    ext {",
+				"        kotlinVersion = '1.2.51'", "    }", "}");
+	}
+
+	@Test
 	public void gradleBuildWithMavenCentralRepository() throws IOException {
 		GradleBuild build = new GradleBuild();
 		build.addMavenRepository(MavenRepository.MAVEN_CENTRAL);

@@ -63,21 +63,48 @@ class BuildGradleFileContributor implements FileContributor {
 
 	private void writeBuildscript(PrintWriter writer) {
 		List<String> dependencies = this.build.getBuildscript().getDependencies();
-		if (dependencies.isEmpty()) {
+		Map<String, String> ext = this.build.getBuildscript().getExt();
+		if (dependencies.isEmpty() && ext.isEmpty()) {
 			return;
 		}
 		writer.println("buildscript {");
+		writeBuildscriptExt(writer);
+		writeBuildscriptRepositories(writer);
+		writeBuildscriptDependencies(writer);
+		writer.println("}");
+		writer.println("");
+	}
+
+	private void writeBuildscriptExt(PrintWriter writer) {
+		if (this.build.getBuildscript().getExt().isEmpty()) {
+			return;
+		}
+		writer.println("    ext {");
+		this.build.getBuildscript().getExt().forEach(
+				(key, value) -> writer.println("        " + key + " = " + value));
+		writer.println("    }");
+	}
+
+	private void writeBuildscriptRepositories(PrintWriter writer) {
+		if (this.build.getBuildscript().getDependencies().isEmpty()
+				|| this.build.getMavenRepositories().isEmpty()) {
+			return;
+		}
 		writer.println("    repositories {");
 		this.build.getMavenRepositories().stream().map(this::repositoryAsString)
 				.map((repository) -> "    " + repository).forEach(writer::println);
 		writer.println("    }");
+	}
+
+	private void writeBuildscriptDependencies(PrintWriter writer) {
+		if (this.build.getBuildscript().getDependencies().isEmpty()) {
+			return;
+		}
 		writer.println("    dependencies {");
-		dependencies.stream()
+		this.build.getBuildscript().getDependencies().stream()
 				.map((dependency) -> "        classpath \"" + dependency + "\"")
 				.forEach(writer::println);
 		writer.println("    }");
-		writer.println("}");
-		writer.println("");
 	}
 
 	private void writePlugins(PrintWriter writer) {
