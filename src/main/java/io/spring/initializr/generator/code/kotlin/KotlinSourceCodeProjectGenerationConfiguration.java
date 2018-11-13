@@ -40,6 +40,7 @@ import io.spring.initializr.generator.language.kotlin.KotlinSourceCode;
 import io.spring.initializr.generator.language.kotlin.KotlinSourceCodeWriter;
 import io.spring.initializr.generator.language.kotlin.KotlinTypeDeclaration;
 import io.spring.initializr.generator.packaging.war.ConditionalOnWarPackaging;
+import io.spring.initializr.generator.springboot.ConditionalOnSpringBootVersion;
 
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.context.annotation.Bean;
@@ -67,14 +68,27 @@ public class KotlinSourceCodeProjectGenerationConfiguration {
 	}
 
 	@Bean
+	@ConditionalOnSpringBootVersion("2.0.0.M1")
 	public MainCompilationUnitCustomizer<KotlinTypeDeclaration, KotlinCompilationUnit> mainFunctionContributor() {
 		return (compilationUnit) -> {
 			compilationUnit.addTopLevelFunction(KotlinFunctionDeclaration.function("main")
 					.parameters(new Parameter("Array<String>", "args"))
 					.body(new KotlinExpressionStatement(
 							new KotlinReifiedFunctionInvocation(
-									"org.springframework.boot.runApplication", "Yolo",
-									"*args"))));
+									"org.springframework.boot.runApplication",
+									"DemoApplication", "*args"))));
+		};
+	}
+
+	@Bean
+	@ConditionalOnSpringBootVersion("[1.5.0.M1, 2.0.0.M1)")
+	public MainCompilationUnitCustomizer<KotlinTypeDeclaration, KotlinCompilationUnit> boot15MainFunctionContributor() {
+		return (compilationUnit) -> {
+			compilationUnit.addTopLevelFunction(KotlinFunctionDeclaration.function("main")
+					.parameters(new Parameter("Array<String>", "args"))
+					.body(new KotlinExpressionStatement(new KotlinFunctionInvocation(
+							"org.springframework.boot.SpringApplication", "run",
+							"DemoApplication::class.java", "*args"))));
 		};
 	}
 
