@@ -16,8 +16,6 @@
 
 package io.spring.initializr.generator.springrestdocs;
 
-import java.util.List;
-
 import io.spring.initializr.generator.buildsystem.gradle.GradleBuild;
 import io.spring.initializr.generator.buildsystem.gradle.GradleBuild.TaskCustomization;
 import io.spring.initializr.generator.buildsystem.gradle.GradleBuild.TaskCustomization.Invocation;
@@ -44,18 +42,13 @@ public class SpringRestDocsGradleBuildCustomizerTests {
 		assertThat(plugin.getId()).isEqualTo("org.asciidoctor.convert");
 		assertThat(plugin.getVersion()).isEqualTo("1.5.3");
 		assertThat(build.getTaskCustomizations()).containsKey("test");
-		List<TaskCustomization> testCustomizations = build.getTaskCustomizations()
-				.get("test");
-		assertThat(testCustomizations).hasSize(1);
-		TaskCustomization testCustomization = testCustomizations.get(0);
+		TaskCustomization testCustomization = build.getTaskCustomizations().get("test");
 		assertThat(testCustomization.getInvocations()).hasSize(1);
 		Invocation invocation = testCustomization.getInvocations().get(0);
 		assertThat(invocation.getTarget()).isEqualTo("outputs.dir");
 		assertThat(invocation.getArguments()).containsExactly("snippetsDir");
-		List<TaskCustomization> asciidoctorCustomizations = build.getTaskCustomizations()
+		TaskCustomization asciidoctorCustomization = build.getTaskCustomizations()
 				.get("asciidoctor");
-		assertThat(asciidoctorCustomizations).hasSize(1);
-		TaskCustomization asciidoctorCustomization = asciidoctorCustomizations.get(0);
 		assertThat(asciidoctorCustomization.getInvocations()).hasSize(2);
 		Invocation inputsDir = asciidoctorCustomization.getInvocations().get(0);
 		assertThat(inputsDir.getTarget()).isEqualTo("inputs.dir");

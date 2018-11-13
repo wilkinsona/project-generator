@@ -29,7 +29,6 @@ import io.spring.initializr.generator.FileContributor;
 import io.spring.initializr.generator.buildsystem.MavenRepository;
 import io.spring.initializr.generator.buildsystem.gradle.GradleBuild;
 import io.spring.initializr.generator.buildsystem.gradle.GradleBuild.TaskCustomization;
-import io.spring.initializr.generator.buildsystem.gradle.GradleBuild.TaskCustomization.Invocation;
 import io.spring.initializr.generator.buildsystem.gradle.GradlePlugin;
 
 /**
@@ -145,18 +144,30 @@ class BuildGradleFileContributor implements FileContributor {
 	}
 
 	private void writeTaskCustomizations(PrintWriter writer) {
-		Map<String, List<TaskCustomization>> taskCustomizations = this.build
+		Map<String, TaskCustomization> taskCustomizations = this.build
 				.getTaskCustomizations();
 		if (taskCustomizations.isEmpty()) {
 			return;
 		}
-		taskCustomizations.forEach((name, customizations) -> {
+		taskCustomizations.forEach((name, customization) -> {
 			writer.println(name + " {");
-			customizations.stream()
-					.flatMap((customization) -> customization.getInvocations().stream())
-					.map(this::invocationAsString).forEach(writer::println);
+			writeTaskCustomization(writer, customization, "    ");
 			writer.println("}");
 			writer.println();
+		});
+	}
+
+	private void writeTaskCustomization(PrintWriter writer,
+			TaskCustomization customization, String indent) {
+		customization.getInvocations()
+				.forEach((invocation) -> writer.println(indent + invocation.getTarget()
+						+ " " + String.join(", ", invocation.getArguments())));
+		customization.getAssignments()
+				.forEach((key, value) -> writer.println(indent + key + " = " + value));
+		customization.getNested().forEach((property, nestedCustomization) -> {
+			writer.println(indent + property + " {");
+			writeTaskCustomization(writer, nestedCustomization, indent + "    ");
+			writer.println(indent + "}");
 		});
 	}
 
@@ -175,11 +186,6 @@ class BuildGradleFileContributor implements FileContributor {
 	private String dependencyAsString(Dependency dependency) {
 		return "    " + configurationForType(dependency.getType()) + " '"
 				+ dependency.getGroupId() + ":" + dependency.getArtifactId() + "'";
-	}
-
-	private String invocationAsString(Invocation invocation) {
-		return "    " + invocation.getTarget() + " "
-				+ String.join(", ", invocation.getArguments());
 	}
 
 	private String repositoryAsString(MavenRepository repository) {

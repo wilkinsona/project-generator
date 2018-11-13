@@ -37,7 +37,7 @@ public class GradleBuild extends Build {
 
 	private final List<String> appliedPlugins = new ArrayList<>();
 
-	private final Map<String, List<TaskCustomization>> taskCustomizations = new LinkedHashMap<>();
+	private final Map<String, TaskCustomization> taskCustomizations = new LinkedHashMap<>();
 
 	private final Buildscript buildscript = new Buildscript();
 
@@ -72,13 +72,11 @@ public class GradleBuild extends Build {
 	}
 
 	public void customizeTask(String taskName, Consumer<TaskCustomization> customizer) {
-		TaskCustomization customization = new TaskCustomization();
-		customizer.accept(customization);
-		this.taskCustomizations.computeIfAbsent(taskName,
-				(name) -> new ArrayList<>(Collections.singletonList(customization)));
+		customizer.accept(this.taskCustomizations.computeIfAbsent(taskName,
+				(name) -> new TaskCustomization()));
 	}
 
-	public Map<String, List<TaskCustomization>> getTaskCustomizations() {
+	public Map<String, TaskCustomization> getTaskCustomizations() {
 		return Collections.unmodifiableMap(this.taskCustomizations);
 	}
 
@@ -121,12 +119,33 @@ public class GradleBuild extends Build {
 
 		private final List<Invocation> invocations = new ArrayList<>();
 
+		private final Map<String, String> assignments = new LinkedHashMap<String, String>();
+
+		private final Map<String, TaskCustomization> nested = new LinkedHashMap<>();
+
+		public void nested(String property, Consumer<TaskCustomization> customizer) {
+			customizer.accept(this.nested.computeIfAbsent(property,
+					(name) -> new TaskCustomization()));
+		}
+
+		public Map<String, TaskCustomization> getNested() {
+			return this.nested;
+		}
+
 		public void invoke(String target, String... arguments) {
 			this.invocations.add(new Invocation(target, Arrays.asList(arguments)));
 		}
 
 		public List<Invocation> getInvocations() {
-			return this.invocations;
+			return Collections.unmodifiableList(this.invocations);
+		}
+
+		public void set(String target, String value) {
+			this.assignments.put(target, value);
+		}
+
+		public Map<String, String> getAssignments() {
+			return Collections.unmodifiableMap(this.assignments);
 		}
 
 		/**

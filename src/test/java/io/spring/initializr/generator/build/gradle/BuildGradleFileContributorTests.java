@@ -110,4 +110,57 @@ public class BuildGradleFileContributorTests {
 				"    maven { url 'https://repo.spring.io/snapshot' }", "}");
 	}
 
+	@Test
+	public void gradleBuildWithTaskCustomizedWithInvocations() throws IOException {
+		GradleBuild build = new GradleBuild();
+		build.customizeTask("asciidoctor", (task) -> {
+			task.invoke("inputs.dir", "snippetsDir");
+			task.invoke("dependsOn", "test");
+		});
+		BuildGradleFileContributor contributor = new BuildGradleFileContributor(build);
+		contributor.contribute(this.temp.getRoot());
+		File buildGradle = new File(this.temp.getRoot(), "build.gradle");
+		assertThat(buildGradle).isFile();
+		List<String> lines = Files.readAllLines(buildGradle.toPath());
+		assertThat(lines).containsSequence("asciidoctor {", "    inputs.dir snippetsDir",
+				"    dependsOn test", "}");
+	}
+
+	@Test
+	public void gradleBuildWithTaskCustomizedWithAssignments() throws IOException {
+		GradleBuild build = new GradleBuild();
+		build.customizeTask("compileKotlin", (task) -> {
+			task.set("kotlinOptions.freeCompilerArgs", "['-Xjsr305=strict']");
+			task.set("kotlinOptions.jvmTarget", "'1.8'");
+		});
+		BuildGradleFileContributor contributor = new BuildGradleFileContributor(build);
+		contributor.contribute(this.temp.getRoot());
+		File buildGradle = new File(this.temp.getRoot(), "build.gradle");
+		assertThat(buildGradle).isFile();
+		List<String> lines = Files.readAllLines(buildGradle.toPath());
+		assertThat(lines).containsSequence("compileKotlin {",
+				"    kotlinOptions.freeCompilerArgs = ['-Xjsr305=strict']",
+				"    kotlinOptions.jvmTarget = '1.8'", "}");
+	}
+
+	@Test
+	public void gradleBuildWithTaskCustomizedWithNestedCustomization()
+			throws IOException {
+		GradleBuild build = new GradleBuild();
+		build.customizeTask("compileKotlin", (compileKotlin) -> {
+			compileKotlin.nested("kotlinOptions", (kotlinOptions) -> {
+				kotlinOptions.set("freeCompilerArgs", "['-Xjsr305=strict']");
+				kotlinOptions.set("jvmTarget", "'1.8'");
+			});
+		});
+		BuildGradleFileContributor contributor = new BuildGradleFileContributor(build);
+		contributor.contribute(this.temp.getRoot());
+		File buildGradle = new File(this.temp.getRoot(), "build.gradle");
+		assertThat(buildGradle).isFile();
+		List<String> lines = Files.readAllLines(buildGradle.toPath());
+		assertThat(lines).containsSequence("compileKotlin {", "    kotlinOptions {",
+				"        freeCompilerArgs = ['-Xjsr305=strict']",
+				"        jvmTarget = '1.8'", "    }", "}");
+	}
+
 }
