@@ -93,7 +93,7 @@ public class JavaSourceCodeProjectGenerationConfiguration {
 								"application"))
 						.body(new JavaReturnStatement(new JavaMethodInvocation(
 								"application", "sources", "DemoApplication.class")));
-				configure.annotate(new Annotation("java.lang.Override"));
+				configure.annotate(Annotation.name("java.lang.Override"));
 				typeDeclaration.addMethodDeclaration(configure);
 			};
 		}

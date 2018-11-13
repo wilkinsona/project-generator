@@ -37,8 +37,8 @@ public class SourceCodeProjectGenerationConfiguration {
 
 	@Bean
 	public MainApplicationTypeCustomizer<TypeDeclaration> springBootApplicationAnnotator() {
-		return (typeDeclaration) -> typeDeclaration.annotate(new Annotation(
-				"org.springframework.boot.autoconfigure.SpringBootApplication"));
+		return (typeDeclaration) -> typeDeclaration.annotate(Annotation
+				.name("org.springframework.boot.autoconfigure.SpringBootApplication"));
 	}
 
 	/**

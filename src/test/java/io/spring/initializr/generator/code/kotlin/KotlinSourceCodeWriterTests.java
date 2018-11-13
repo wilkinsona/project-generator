@@ -19,6 +19,7 @@ package io.spring.initializr.generator.code.kotlin;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 
 import io.spring.initializr.generator.language.Annotation;
@@ -121,8 +122,8 @@ public class KotlinSourceCodeWriterTests {
 		KotlinCompilationUnit compilationUnit = sourceCode
 				.createCompilationUnit("com.example", "Test");
 		KotlinTypeDeclaration test = compilationUnit.createTypeDeclaration("Test");
-		test.annotate(new Annotation(
-				"org.springframework.boot.autoconfigure.SpringBootApplication"));
+		test.annotate(Annotation
+				.name("org.springframework.boot.autoconfigure.SpringBootApplication"));
 		compilationUnit.addTopLevelFunction(KotlinFunctionDeclaration.function("main")
 				.parameters(new Parameter("Array<String>", "args"))
 				.body(new KotlinExpressionStatement(new KotlinReifiedFunctionInvocation(
@@ -137,6 +138,66 @@ public class KotlinSourceCodeWriterTests {
 				"@SpringBootApplication", "class Test", "",
 				"fun main(args: Array<String>) {", "    runApplication<Test>(*args)", "}",
 				"");
+	}
+
+	@Test
+	public void annotationWithSimpleStringAttribute() throws IOException {
+		List<String> lines = writeClassAnnotation(
+				Annotation.name("org.springframework.test.TestApplication",
+						(builder) -> builder.attribute("name", String.class, "test")));
+		assertThat(lines).containsExactly("package com.example", "",
+				"import org.springframework.test.TestApplication", "",
+				"@TestApplication(name = \"test\")", "class Test", "");
+	}
+
+	@Test
+	public void annotationWithSimpleEnumAttribute() throws IOException {
+		List<String> lines = writeClassAnnotation(
+				Annotation.name("org.springframework.test.TestApplication",
+						(builder) -> builder.attribute("unit", Enum.class,
+								"java.time.temporal.ChronoUnit.SECONDS")));
+		assertThat(lines).containsExactly("package com.example", "",
+				"import org.springframework.test.TestApplication",
+				"import java.time.temporal.ChronoUnit", "",
+				"@TestApplication(unit = ChronoUnit.SECONDS)", "class Test", "");
+	}
+
+	@Test
+	public void annotationWithClassArrayAttribute() throws IOException {
+		List<String> lines = writeClassAnnotation(
+				Annotation.name("org.springframework.test.TestApplication",
+						(builder) -> builder.attribute("target", Class.class,
+								"com.example.One", "com.example.Two")));
+		assertThat(lines).containsExactly("package com.example", "",
+				"import org.springframework.test.TestApplication",
+				"import com.example.One", "import com.example.Two", "",
+				"@TestApplication(target = [One::class, Two::class])", "class Test", "");
+	}
+
+	@Test
+	public void annotationWithSeveralAttributes() throws IOException {
+		List<String> lines = writeClassAnnotation(Annotation.name(
+				"org.springframework.test.TestApplication",
+				(builder) -> builder.attribute("target", Class.class, "com.example.One")
+						.attribute("unit", ChronoUnit.class,
+								"java.time.temporal.ChronoUnit.NANOS")));
+		assertThat(lines).containsExactly("package com.example", "",
+				"import org.springframework.test.TestApplication",
+				"import com.example.One", "import java.time.temporal.ChronoUnit", "",
+				"@TestApplication(target = One::class, unit = ChronoUnit.NANOS)",
+				"class Test", "");
+	}
+
+	private List<String> writeClassAnnotation(Annotation annotation) throws IOException {
+		KotlinSourceCode sourceCode = new KotlinSourceCode();
+		KotlinCompilationUnit compilationUnit = sourceCode
+				.createCompilationUnit("com.example", "Test");
+		KotlinTypeDeclaration test = compilationUnit.createTypeDeclaration("Test");
+		test.annotate(annotation);
+		this.writer.writeTo(this.temp.getRoot(), sourceCode);
+		File testSource = new File(this.temp.getRoot(), "com/example/Test.kt");
+		assertThat(testSource).isFile();
+		return Files.readAllLines(testSource.toPath());
 	}
 
 }

@@ -20,6 +20,9 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
@@ -144,8 +147,46 @@ public class KotlinSourceCodeWriter implements SourceCodeWriter<KotlinSourceCode
 	private void writeAnnotations(PrintWriter writer, Annotatable annotatable,
 			String prefix) {
 		for (Annotation annotation : annotatable.getAnnotations()) {
-			writer.println(prefix + "@" + getUnqualifiedName(annotation.getName()));
+			writeAnnotation(writer, annotation, prefix);
 		}
+	}
+
+	private void writeAnnotation(PrintWriter writer, Annotation annotation,
+			String prefix) {
+		writer.print(prefix + "@" + getUnqualifiedName(annotation.getName()));
+		if (!annotation.getAttributes().isEmpty()) {
+			writer.print("(");
+			writer.print(annotation.getAttributes().stream()
+					.map((attribute) -> attribute.getName() + " = "
+							+ formatAnnotationAttribute(attribute))
+					.collect(Collectors.joining(", ")));
+			writer.print(")");
+		}
+		writer.println();
+	}
+
+	private String formatAnnotationAttribute(Annotation.Attribute attribute) {
+		List<String> values = attribute.getValues();
+		if (attribute.getType().equals(Class.class)) {
+			return formatValues(values,
+					(value) -> String.format("%s::class", getUnqualifiedName(value)));
+		}
+		if (Enum.class.isAssignableFrom(attribute.getType())) {
+			return formatValues(values, (value) -> {
+				String enumValue = value.substring(value.lastIndexOf(".") + 1);
+				String enumClass = value.substring(0, value.lastIndexOf("."));
+				return String.format("%s.%s", getUnqualifiedName(enumClass), enumValue);
+			});
+		}
+		if (attribute.getType().equals(String.class)) {
+			return formatValues(values, (value) -> String.format("\"%s\"", value));
+		}
+		return formatValues(values, (value) -> String.format("%s", value));
+	}
+
+	private String formatValues(List<String> values, Function<String, String> formatter) {
+		String result = values.stream().map(formatter).collect(Collectors.joining(", "));
+		return (values.size() > 1) ? "[" + result + "]" : result;
 	}
 
 	private void writeMethodModifiers(PrintWriter writer,
@@ -202,7 +243,7 @@ public class KotlinSourceCodeWriter implements SourceCodeWriter<KotlinSourceCode
 				imports.add(typeDeclaration.getExtends());
 			}
 			imports.addAll(getRequiredImports(typeDeclaration.getAnnotations(),
-					Annotation::getName));
+					this::determineImports));
 			typeDeclaration.getFunctionDeclarations()
 					.forEach((functionDeclaration) -> imports
 							.addAll(determineFunctionImports(functionDeclaration)));
@@ -219,17 +260,33 @@ public class KotlinSourceCodeWriter implements SourceCodeWriter<KotlinSourceCode
 			imports.add(functionDeclaration.getReturnType());
 		}
 		imports.addAll(getRequiredImports(functionDeclaration.getParameters(),
-				Parameter::getType));
+				(parameter) -> Collections.singleton(parameter.getType())));
 		imports.addAll(getRequiredImports(
 				getKotlinExpressions(functionDeclaration)
 						.filter(KotlinFunctionInvocation.class::isInstance)
 						.map(KotlinFunctionInvocation.class::cast),
-				KotlinFunctionInvocation::getTarget));
+				(invocation) -> Collections.singleton(invocation.getTarget())));
 		imports.addAll(getRequiredImports(
 				getKotlinExpressions(functionDeclaration)
 						.filter(KotlinReifiedFunctionInvocation.class::isInstance)
 						.map(KotlinReifiedFunctionInvocation.class::cast),
-				KotlinReifiedFunctionInvocation::getName));
+				(invocation) -> Collections.singleton(invocation.getName())));
+		return imports;
+	}
+
+	private Collection<String> determineImports(Annotation annotation) {
+		List<String> imports = new ArrayList<>();
+		imports.add(annotation.getName());
+		annotation.getAttributes().forEach((attribute) -> {
+			if (attribute.getType() == Class.class) {
+				imports.addAll(attribute.getValues());
+			}
+			if (Enum.class.isAssignableFrom(attribute.getType())) {
+				imports.addAll(attribute.getValues().stream()
+						.map((value) -> value.substring(0, value.lastIndexOf(".")))
+						.collect(Collectors.toList()));
+			}
+		});
 		return imports;
 	}
 
@@ -242,14 +299,14 @@ public class KotlinSourceCodeWriter implements SourceCodeWriter<KotlinSourceCode
 	}
 
 	private <T> List<String> getRequiredImports(List<T> candidates,
-			Function<T, String> mapping) {
+			Function<T, Collection<String>> mapping) {
 		return getRequiredImports(candidates.stream(), mapping);
 	}
 
 	private <T> List<String> getRequiredImports(Stream<T> candidates,
-			Function<T, String> mapping) {
-		return candidates.map(mapping).filter(this::requiresImport)
-				.collect(Collectors.toList());
+			Function<T, Collection<String>> mapping) {
+		return candidates.map(mapping).flatMap(Collection::stream)
+				.filter(this::requiresImport).collect(Collectors.toList());
 	}
 
 	private String getUnqualifiedName(String name) {

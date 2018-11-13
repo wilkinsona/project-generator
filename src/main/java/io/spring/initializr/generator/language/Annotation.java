@@ -16,21 +16,101 @@
 
 package io.spring.initializr.generator.language;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.function.Consumer;
+
 /**
  * An annotation.
  *
  * @author Andy Wilkinson
+ * @author Stephane Nicoll
  */
-public class Annotation {
+public final class Annotation {
 
 	private final String name;
 
-	public Annotation(String name) {
-		this.name = name;
+	private final List<Attribute> attributes;
+
+	private Annotation(Builder builder) {
+		this.name = builder.name;
+		this.attributes = Collections
+				.unmodifiableList(new ArrayList<>(builder.attributes.values()));
 	}
 
 	public String getName() {
 		return this.name;
+	}
+
+	public List<Attribute> getAttributes() {
+		return this.attributes;
+	}
+
+	public static Annotation name(String name) {
+		return name(name, null);
+	}
+
+	public static Annotation name(String name, Consumer<Builder> annotation) {
+		Builder builder = new Builder(name);
+		if (annotation != null) {
+			annotation.accept(builder);
+		}
+		return new Annotation(builder);
+	}
+
+	/**
+	 * Builder for creating an {@link Annotation}.
+	 */
+	public static final class Builder {
+
+		private final String name;
+
+		private final Map<String, Attribute> attributes = new LinkedHashMap<>();
+
+		private Builder(String name) {
+			this.name = name;
+		}
+
+		public Builder attribute(String name, Class<?> type, String... values) {
+			this.attributes.put(name, new Attribute(name, type, values));
+			return this;
+		}
+
+	}
+
+	/**
+	 * Define an attribute of an annotation.
+	 */
+	public static final class Attribute {
+
+		private final String name;
+
+		private final Class<?> type;
+
+		private final List<String> values;
+
+		private Attribute(String name, Class<?> type, String... values) {
+			this.name = name;
+			this.type = type;
+			this.values = Arrays.asList(values);
+		}
+
+		public String getName() {
+			return this.name;
+		}
+
+		public Class<?> getType() {
+			return this.type;
+		}
+
+		public List<String> getValues() {
+			return this.values;
+		}
+
 	}
 
 }
