@@ -35,9 +35,11 @@ public class GradleBuild extends Build {
 
 	private final List<GradlePlugin> plugins = new ArrayList<>();
 
-	private final List<String> additionalPluginApplications = new ArrayList<>();
+	private final List<String> appliedPlugins = new ArrayList<>();
 
 	private final Map<String, List<TaskCustomization>> taskCustomizations = new LinkedHashMap<>();
+
+	private final Buildscript buildscript = new Buildscript();
 
 	public GradlePlugin addPlugin(String id) {
 		return this.addPlugin(id, null);
@@ -50,15 +52,23 @@ public class GradleBuild extends Build {
 	}
 
 	public void applyPlugin(String id) {
-		this.additionalPluginApplications.add(id);
+		this.appliedPlugins.add(id);
 	}
 
 	public List<GradlePlugin> getPlugins() {
 		return Collections.unmodifiableList(this.plugins);
 	}
 
-	public List<String> getAdditionalPluginApplications() {
-		return Collections.unmodifiableList(this.additionalPluginApplications);
+	public List<String> getAppliedPlugins() {
+		return Collections.unmodifiableList(this.appliedPlugins);
+	}
+
+	public void buildscript(Consumer<Buildscript> customizer) {
+		customizer.accept(this.buildscript);
+	}
+
+	public Buildscript getBuildscript() {
+		return this.buildscript;
 	}
 
 	public void customizeTask(String taskName, Consumer<TaskCustomization> customizer) {
@@ -70,6 +80,26 @@ public class GradleBuild extends Build {
 
 	public Map<String, List<TaskCustomization>> getTaskCustomizations() {
 		return Collections.unmodifiableMap(this.taskCustomizations);
+	}
+
+	/**
+	 * The {@code buildscript} block in the {@code build.gradle} file.
+	 *
+	 * @author Andy Wilkinson
+	 */
+	public static class Buildscript {
+
+		private final List<String> dependencies = new ArrayList<>();
+
+		public Buildscript dependency(String coordinates) {
+			this.dependencies.add(coordinates);
+			return this;
+		}
+
+		public List<String> getDependencies() {
+			return Collections.unmodifiableList(this.dependencies);
+		}
+
 	}
 
 	/**

@@ -49,6 +49,7 @@ class BuildGradleFileContributor implements FileContributor {
 	public void contribute(File projectRoot) throws IOException {
 		File file = new File(projectRoot, "build.gradle");
 		try (PrintWriter writer = new PrintWriter(new FileOutputStream(file))) {
+			writeBuildscript(writer);
 			writePlugins(writer);
 			writer.println("group = '" + this.build.getGroup() + "'");
 			writer.println("version = '" + this.build.getVersion() + "'");
@@ -60,19 +61,44 @@ class BuildGradleFileContributor implements FileContributor {
 		}
 	}
 
+	private void writeBuildscript(PrintWriter writer) {
+		List<String> dependencies = this.build.getBuildscript().getDependencies();
+		if (dependencies.isEmpty()) {
+			return;
+		}
+		writer.println("buildscript {");
+		writer.println("    repositories {");
+		this.build.getMavenRepositories().stream().map(this::repositoryAsString)
+				.map((repository) -> "    " + repository).forEach(writer::println);
+		writer.println("    }");
+		writer.println("    dependencies {");
+		dependencies.stream()
+				.map((dependency) -> "        classpath \"" + dependency + "\"")
+				.forEach(writer::println);
+		writer.println("    }");
+		writer.println("}");
+		writer.println("");
+	}
+
 	private void writePlugins(PrintWriter writer) {
+		if (this.build.getPlugins().isEmpty()) {
+			return;
+		}
 		writer.println("plugins {");
 		this.build.getPlugins().stream().map(this::pluginAsString)
 				.forEach(writer::println);
 		writer.println("}");
 		writer.println("");
-		this.build.getAdditionalPluginApplications().stream()
+		this.build.getAppliedPlugins().stream()
 				.map((plugin) -> "apply plugin: '" + plugin + "'")
 				.forEach(writer::println);
 		writer.println();
 	}
 
 	private void writeRepositories(PrintWriter writer) {
+		if (this.build.getMavenRepositories().isEmpty()) {
+			return;
+		}
 		writer.println("repositories {");
 		this.build.getMavenRepositories().stream().map(this::repositoryAsString)
 				.forEach(writer::println);
@@ -81,6 +107,9 @@ class BuildGradleFileContributor implements FileContributor {
 	}
 
 	private void writeDependencies(PrintWriter writer) {
+		if (this.build.getDependencies().isEmpty()) {
+			return;
+		}
 		writer.println("dependencies {");
 		this.build.getDependencies().stream().sorted().map(this::dependencyAsString)
 				.forEach(writer::println);

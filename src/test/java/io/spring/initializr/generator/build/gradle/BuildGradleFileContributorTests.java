@@ -40,6 +40,23 @@ public class BuildGradleFileContributorTests {
 	public final TemporaryFolder temp = new TemporaryFolder();
 
 	@Test
+	public void gradleBuildWithBuildscriptDependency() throws IOException {
+		GradleBuild build = new GradleBuild();
+		build.addMavenRepository(MavenRepository.MAVEN_CENTRAL);
+		build.buildscript((buildscript) -> buildscript.dependency(
+				"org.springframework.boot:spring-boot-gradle-plugin:2.1.0.RELEASE"));
+		BuildGradleFileContributor contributor = new BuildGradleFileContributor(build);
+		contributor.contribute(this.temp.getRoot());
+		File buildGradle = new File(this.temp.getRoot(), "build.gradle");
+		assertThat(buildGradle).isFile();
+		List<String> lines = Files.readAllLines(buildGradle.toPath());
+		assertThat(lines).containsSequence("buildscript {", "    repositories {",
+				"        mavenCentral()", "    }", "    dependencies {",
+				"        classpath \"org.springframework.boot:spring-boot-gradle-plugin:2.1.0.RELEASE\"",
+				"    }", "}");
+	}
+
+	@Test
 	public void gradleBuildWithMavenCentralRepository() throws IOException {
 		GradleBuild build = new GradleBuild();
 		build.addMavenRepository(MavenRepository.MAVEN_CENTRAL);

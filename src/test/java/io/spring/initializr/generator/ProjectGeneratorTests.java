@@ -99,8 +99,10 @@ public class ProjectGeneratorTests {
 		assertThat(relativePaths).contains("build.gradle");
 		List<String> lines = Files
 				.readAllLines(new File(project, "build.gradle").toPath());
-		assertThat(lines).containsExactly("plugins {", "    id 'java'",
-				"    id 'org.springframework.boot' version '2.1.0.RELEASE'", "}", "",
+		lines.forEach(System.out::println);
+		assertThat(lines).containsExactly("plugins {",
+				"    id 'org.springframework.boot' version '2.1.0.RELEASE'",
+				"    id 'java'", "}", "",
 				"apply plugin: 'io.spring.dependency-management'", "",
 				"group = 'com.example'", "version = '0.0.1-SNAPSHOT'",
 				"sourceCompatibility = '1.8'", "", "repositories {", "    mavenCentral()",

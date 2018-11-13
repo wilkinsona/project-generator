@@ -19,7 +19,6 @@ package io.spring.initializr.generator.build.gradle;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import io.spring.initializr.generator.FileContributor;
 import io.spring.initializr.generator.ProjectDescription;
 import io.spring.initializr.generator.build.BuildCustomizer;
 import io.spring.initializr.generator.buildsystem.Build;
@@ -49,36 +48,20 @@ import org.springframework.core.annotation.Order;
 public class GradleProjectGenerationConfiguration {
 
 	@Bean
-	@ConditionalOnGradleVersion("3")
-	public GradleWrapperContributor gradle3WrapperContributor() {
-		return new GradleWrapperContributor("3");
-	}
-
-	@Bean
-	@ConditionalOnGradleVersion("4")
-	public GradleWrapperContributor gradle4WrapperContributor() {
-		return new GradleWrapperContributor("4");
-	}
-
-	@Bean
 	@Order(Ordered.HIGHEST_PRECEDENCE)
 	public GitIgnoreContributor gradleGitIgnoreContributor() {
 		return new GitIgnoreContributor("classpath:gradle/gitignore");
 	}
 
 	@Bean
-	public FileContributor gradleBuildFileContributor(
-			ProjectDescription projectDescription,
+	public GradleBuild gradleBuild(ProjectDescription projectDescription,
 			ObjectProvider<BuildCustomizer<?>> buildCustomizers) {
 		GradleBuild gradleBuild = new GradleBuild();
 		gradleBuild.setGroup(projectDescription.getGroupId());
 		gradleBuild.setName(projectDescription.getArtifactId());
 		gradleBuild.setVersion("0.0.1-SNAPSHOT");
 		customizeBuild(buildCustomizers, gradleBuild);
-		return (file) -> {
-			new BuildGradleFileContributor(gradleBuild).contribute(file);
-			new SettingsGradleFileContributor(gradleBuild).contribute(file);
-		};
+		return gradleBuild;
 	}
 
 	@Bean
@@ -91,13 +74,6 @@ public class GradleProjectGenerationConfiguration {
 	@ConditionalOnWarPackaging
 	public BuildCustomizer<GradleBuild> warPluginContributor() {
 		return (gradleBuild) -> gradleBuild.addPlugin("war");
-	}
-
-	@Bean
-	public BuildCustomizer<GradleBuild> springBootPluginContributor(
-			ProjectDescription projectDescription) {
-		return (gradleBuild) -> gradleBuild.addPlugin("org.springframework.boot",
-				projectDescription.getSpringBootVersion().toString());
 	}
 
 	@Bean
@@ -114,6 +90,70 @@ public class GradleProjectGenerationConfiguration {
 				.orderedStream().collect(Collectors.toList());
 		LambdaSafe.callbacks(BuildCustomizer.class, customizers, gradleBuild)
 				.invoke((customizer) -> customizer.customize(gradleBuild));
+	}
+
+	@Bean
+	public BuildGradleFileContributor gradleBuildFileContributor(
+			GradleBuild gradleBuild) {
+		return new BuildGradleFileContributor(gradleBuild);
+	}
+
+	/**
+	 * Configuration specific to projects using Gradle 3.
+	 */
+	@Configuration
+	@ConditionalOnGradleVersion("3")
+	static class Gradle3ProjectGenerationConfiguration {
+
+		@Bean
+		public GradleWrapperContributor gradle3WrapperContributor() {
+			return new GradleWrapperContributor("3");
+		}
+
+		@Bean
+		public Gradle3SettingsGradleFileContributor settingsGradleFileContributor(
+				GradleBuild gradleBuild) {
+			return new Gradle3SettingsGradleFileContributor(gradleBuild);
+		}
+
+		@Bean
+		public BuildCustomizer<GradleBuild> springBootPluginContributor(
+				ProjectDescription projectDescription) {
+			return (gradleBuild) -> {
+				gradleBuild.buildscript((buildscript) -> buildscript
+						.dependency("org.springframework.boot:spring-boot-gradle-plugin:"
+								+ projectDescription.getSpringBootVersion()));
+				gradleBuild.applyPlugin("org.springframework.boot");
+			};
+		}
+
+	}
+
+	/**
+	 * Configuration specific to projects using Gradle 4.
+	 */
+	@Configuration
+	@ConditionalOnGradleVersion("4")
+	static class Gradle4ProjectGenerationConfiguration {
+
+		@Bean
+		public GradleWrapperContributor gradle4WrapperContributor() {
+			return new GradleWrapperContributor("4");
+		}
+
+		@Bean
+		public SettingsGradleFileContributor settingsGradleFileContributor(
+				GradleBuild gradleBuild) {
+			return new SettingsGradleFileContributor(gradleBuild);
+		}
+
+		@Bean
+		public BuildCustomizer<GradleBuild> springBootPluginContributor(
+				ProjectDescription projectDescription) {
+			return (gradleBuild) -> gradleBuild.addPlugin("org.springframework.boot",
+					projectDescription.getSpringBootVersion().toString());
+		}
+
 	}
 
 }
