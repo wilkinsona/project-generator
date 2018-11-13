@@ -112,6 +112,16 @@ public class JavaSourceCodeWriterTests {
 	}
 
 	@Test
+	public void annotationWithOnlyValueAttribute() throws IOException {
+		List<String> lines = writeClassAnnotation(
+				Annotation.name("org.springframework.test.TestApplication",
+						(builder) -> builder.attribute("value", String.class, "test")));
+		assertThat(lines).containsExactly("package com.example;", "",
+				"import org.springframework.test.TestApplication;", "",
+				"@TestApplication(\"test\")", "public class Test {", "", "}", "");
+	}
+
+	@Test
 	public void annotationWithSimpleEnumAttribute() throws IOException {
 		List<String> lines = writeClassAnnotation(
 				Annotation.name("org.springframework.test.TestApplication",

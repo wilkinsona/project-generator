@@ -154,12 +154,18 @@ public class KotlinSourceCodeWriter implements SourceCodeWriter<KotlinSourceCode
 	private void writeAnnotation(PrintWriter writer, Annotation annotation,
 			String prefix) {
 		writer.print(prefix + "@" + getUnqualifiedName(annotation.getName()));
-		if (!annotation.getAttributes().isEmpty()) {
+		List<Annotation.Attribute> attributes = annotation.getAttributes();
+		if (!attributes.isEmpty()) {
 			writer.print("(");
-			writer.print(annotation.getAttributes().stream()
-					.map((attribute) -> attribute.getName() + " = "
-							+ formatAnnotationAttribute(attribute))
-					.collect(Collectors.joining(", ")));
+			if (attributes.size() == 1 && attributes.get(0).getName().equals("value")) {
+				writer.print(formatAnnotationAttribute(attributes.get(0)));
+			}
+			else {
+				writer.print(attributes.stream()
+						.map((attribute) -> attribute.getName() + " = "
+								+ formatAnnotationAttribute(attribute))
+						.collect(Collectors.joining(", ")));
+			}
 			writer.print(")");
 		}
 		writer.println();
