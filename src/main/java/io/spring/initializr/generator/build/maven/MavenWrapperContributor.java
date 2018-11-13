@@ -27,7 +27,8 @@ import io.spring.initializr.generator.MultipleResourcesFileContributor;
 class MavenWrapperContributor extends MultipleResourcesFileContributor {
 
 	MavenWrapperContributor() {
-		super("classpath:maven/wrapper");
+		super("classpath:maven/wrapper",
+				(filename) -> filename.equals("mvnw") || filename.equals("mvnw.cmd"));
 	}
 
 }

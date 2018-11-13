@@ -19,6 +19,7 @@ package io.spring.initializr.generator;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.function.Predicate;
 
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
@@ -37,8 +38,16 @@ public class MultipleResourcesFileContributor implements FileContributor {
 
 	private final String rootResource;
 
+	private final Predicate<String> executable;
+
 	public MultipleResourcesFileContributor(String rootResource) {
+		this(rootResource, (filename) -> false);
+	}
+
+	public MultipleResourcesFileContributor(String rootResource,
+			Predicate<String> executable) {
 		this.rootResource = rootResource;
+		this.executable = executable;
 	}
 
 	@Override
@@ -47,12 +56,13 @@ public class MultipleResourcesFileContributor implements FileContributor {
 		Resource[] resources = this.resolver.getResources(this.rootResource + "/**");
 		for (Resource resource : resources) {
 			String filename = resource.getURI().getPath()
-					.substring(root.getURI().getPath().length());
+					.substring(root.getURI().getPath().length() + 1);
 			if (resource.isReadable()) {
 				File output = new File(projectRoot, filename);
 				output.getParentFile().mkdirs();
 				FileCopyUtils.copy(resource.getInputStream(),
 						new FileOutputStream(output));
+				output.setExecutable(this.executable.test(filename));
 			}
 		}
 	}

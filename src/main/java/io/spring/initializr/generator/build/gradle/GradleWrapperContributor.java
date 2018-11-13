@@ -27,7 +27,9 @@ import io.spring.initializr.generator.MultipleResourcesFileContributor;
 class GradleWrapperContributor extends MultipleResourcesFileContributor {
 
 	GradleWrapperContributor(String gradleVersion) {
-		super("classpath:gradle/" + gradleVersion + "/wrapper");
+		super("classpath:gradle/" + gradleVersion + "/wrapper",
+				(filename) -> filename.equals("gradlew")
+						|| filename.equals("gradlew.bat"));
 	}
 
 }
