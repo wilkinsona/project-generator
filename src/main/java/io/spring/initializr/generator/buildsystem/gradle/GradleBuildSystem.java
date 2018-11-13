@@ -32,4 +32,9 @@ public class GradleBuildSystem implements BuildSystem {
 		return ID;
 	}
 
+	@Override
+	public String toString() {
+		return id();
+	}
+
 }

@@ -32,4 +32,9 @@ public class JavaLanguage implements Language {
 		return ID;
 	}
 
+	@Override
+	public String toString() {
+		return id();
+	}
+
 }

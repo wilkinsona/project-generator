@@ -32,4 +32,9 @@ public class WarPackaging implements Packaging {
 		return ID;
 	}
 
+	@Override
+	public String toString() {
+		return id();
+	}
+
 }
