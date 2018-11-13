@@ -32,7 +32,7 @@ import io.spring.initializr.generator.buildsystem.ConditionalOnBuildSystem;
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ ElementType.TYPE, ElementType.METHOD })
 @Documented
-@ConditionalOnBuildSystem(MavenBuildSystem.ID)
+@ConditionalOnBuildSystem("maven")
 public @interface ConditionalOnMaven {
 
 }

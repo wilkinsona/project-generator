@@ -32,7 +32,7 @@ import io.spring.initializr.generator.buildsystem.ConditionalOnBuildSystem;
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ ElementType.TYPE, ElementType.METHOD })
 @Documented
-@ConditionalOnBuildSystem(GradleBuildSystem.ID)
+@ConditionalOnBuildSystem("gradle")
 public @interface ConditionalOnGradle {
 
 }

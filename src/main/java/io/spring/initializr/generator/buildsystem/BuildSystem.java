@@ -17,11 +17,8 @@
 package io.spring.initializr.generator.buildsystem;
 
 import java.io.File;
-import java.util.Objects;
 
 import io.spring.initializr.generator.language.Language;
-
-import org.springframework.core.io.support.SpringFactoriesLoader;
 
 /**
  * A build system that can be used by a generated project.
@@ -45,13 +42,7 @@ public interface BuildSystem {
 	}
 
 	static BuildSystem forId(String id) {
-		return SpringFactoriesLoader
-				.loadFactories(BuildSystemFactory.class,
-						BuildSystem.class.getClassLoader())
-				.stream().map((factory) -> factory.createBuildSystem(id))
-				.filter(Objects::nonNull).findFirst()
-				.orElseThrow(() -> new IllegalStateException(
-						"Unrecognized build system id '" + id + "'"));
+		return BuildSystemResolver.resolve(id);
 	}
 
 }

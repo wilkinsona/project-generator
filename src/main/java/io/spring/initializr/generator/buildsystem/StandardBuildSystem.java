@@ -14,23 +14,34 @@
  * limitations under the License.
  */
 
-package io.spring.initializr.generator.buildsystem.maven;
-
-import io.spring.initializr.generator.buildsystem.BuildSystemFactory;
+package io.spring.initializr.generator.buildsystem;
 
 /**
- * {@link BuildSystemFactory Factory} for {@link MavenBuildSystem}.
+ * Standard {@link BuildSystem BuildSystems}.
  *
  * @author Andy Wilkinson
  */
-class MavenBuildSystemFactory implements BuildSystemFactory {
+public enum StandardBuildSystem implements BuildSystem {
+
+	/**
+	 * Gradle build system.
+	 */
+	GRADLE("gradle"),
+
+	/**
+	 * Maven build system.
+	 */
+	MAVEN("maven");
+
+	private final String id;
+
+	private StandardBuildSystem(String id) {
+		this.id = id;
+	}
 
 	@Override
-	public MavenBuildSystem createBuildSystem(String id) {
-		if (MavenBuildSystem.ID.equals(id)) {
-			return new MavenBuildSystem();
-		}
-		return null;
+	public String id() {
+		return this.id;
 	}
 
 }
