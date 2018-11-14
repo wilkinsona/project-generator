@@ -107,18 +107,19 @@ class BuildGradleFileContributor implements FileContributor {
 	}
 
 	private void writePlugins(PrintWriter writer) {
-		if (this.build.getPlugins().isEmpty()) {
-			return;
+		if (!this.build.getPlugins().isEmpty()) {
+			writer.println("plugins {");
+			this.build.getPlugins().stream().map(this::pluginAsString)
+					.forEach(writer::println);
+			writer.println("}");
+			writer.println("");
 		}
-		writer.println("plugins {");
-		this.build.getPlugins().stream().map(this::pluginAsString)
-				.forEach(writer::println);
-		writer.println("}");
-		writer.println("");
-		this.build.getAppliedPlugins().stream()
-				.map((plugin) -> "apply plugin: '" + plugin + "'")
-				.forEach(writer::println);
-		writer.println();
+		if (!this.build.getAppliedPlugins().isEmpty()) {
+			this.build.getAppliedPlugins().stream()
+					.map((plugin) -> "apply plugin: '" + plugin + "'")
+					.forEach(writer::println);
+			writer.println();
+		}
 	}
 
 	private void writeRepositories(PrintWriter writer) {
@@ -184,8 +185,10 @@ class BuildGradleFileContributor implements FileContributor {
 	}
 
 	private String dependencyAsString(Dependency dependency) {
-		return "    " + configurationForType(dependency.getType()) + " '"
-				+ dependency.getGroupId() + ":" + dependency.getArtifactId() + "'";
+		return "    " + configurationForType(dependency.getType()) + " \""
+				+ dependency.getGroupId() + ":" + dependency.getArtifactId()
+				+ ((dependency.getVersion() == null) ? "" : ":" + dependency.getVersion())
+				+ "\"";
 	}
 
 	private String repositoryAsString(MavenRepository repository) {

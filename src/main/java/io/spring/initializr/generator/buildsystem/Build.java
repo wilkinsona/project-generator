@@ -75,6 +75,14 @@ public abstract class Build {
 		return dependency;
 	}
 
+	public Dependency addDependency(String groupId, String artifactId, String version,
+			DependencyType dependencyType) {
+		Dependency dependency = new Dependency(groupId, artifactId, version,
+				dependencyType);
+		this.dependencies.add(dependency);
+		return dependency;
+	}
+
 	public List<Dependency> getDependencies() {
 		return Collections.unmodifiableList(this.dependencies);
 	}

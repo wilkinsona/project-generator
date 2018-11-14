@@ -27,11 +27,19 @@ public class Dependency implements Comparable<Dependency> {
 
 	private final String artifactId;
 
+	private final String version;
+
 	private final DependencyType type;
 
 	public Dependency(String groupId, String artifactId, DependencyType type) {
+		this(groupId, artifactId, null, type);
+	}
+
+	public Dependency(String groupId, String artifactId, String version,
+			DependencyType type) {
 		this.groupId = groupId;
 		this.artifactId = artifactId;
+		this.version = version;
 		this.type = type;
 	}
 
@@ -49,6 +57,15 @@ public class Dependency implements Comparable<Dependency> {
 	 */
 	public String getArtifactId() {
 		return this.artifactId;
+	}
+
+	/**
+	 * The version of the dependency. May be {@code null} for a dependency whose version
+	 * is expected to be provided by dependency management.
+	 * @return the version or {@code null}
+	 */
+	public String getVersion() {
+		return this.version;
 	}
 
 	/**

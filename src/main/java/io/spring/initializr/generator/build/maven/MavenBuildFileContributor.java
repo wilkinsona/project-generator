@@ -134,6 +134,7 @@ public class MavenBuildFileContributor implements FileContributor {
 				(node, dependency) -> {
 					appendChildWithText(node, "groupId", dependency.getGroupId());
 					appendChildWithText(node, "artifactId", dependency.getArtifactId());
+					appendChildWithText(node, "version", dependency.getVersion());
 					appendChildWithText(node, "scope",
 							scopeForType(dependency.getType()));
 					if (isOptional(dependency.getType())) {
