@@ -231,7 +231,7 @@ public class JavaSourceCodeWriter implements SourceCodeWriter<JavaSourceCode> {
 	}
 
 	private Set<String> determineImports(JavaCompilationUnit compilationUnit) {
-		Set<String> imports = new LinkedHashSet<>();
+		List<String> imports = new ArrayList<>();
 		for (JavaTypeDeclaration typeDeclaration : compilationUnit
 				.getTypeDeclarations()) {
 			if (requiresImport(typeDeclaration.getExtends())) {
@@ -259,7 +259,8 @@ public class JavaSourceCodeWriter implements SourceCodeWriter<JavaSourceCode> {
 								.singleton(methodInvocation.getTarget())));
 			}
 		}
-		return imports;
+		Collections.sort(imports);
+		return new LinkedHashSet<>(imports);
 	}
 
 	private Collection<String> determineImports(Annotation annotation) {

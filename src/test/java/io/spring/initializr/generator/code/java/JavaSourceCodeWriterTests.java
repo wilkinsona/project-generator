@@ -94,9 +94,9 @@ public class JavaSourceCodeWriterTests {
 		assertThat(testSource).isFile();
 		List<String> lines = Files.readAllLines(testSource.toPath());
 		assertThat(lines).containsExactly("package com.example;", "",
+				"import org.springframework.boot.SpringApplication;",
 				"import org.springframework.boot.autoconfigure.SpringBootApplication;",
-				"import org.springframework.boot.SpringApplication;", "",
-				"@SpringBootApplication", "public class Test {", "",
+				"", "@SpringBootApplication", "public class Test {", "",
 				"    public static void main(String[] args) {",
 				"        SpringApplication.run(Test.class, args);", "    }", "", "}", "");
 	}
@@ -128,8 +128,8 @@ public class JavaSourceCodeWriterTests {
 						(builder) -> builder.attribute("unit", Enum.class,
 								"java.time.temporal.ChronoUnit.SECONDS")));
 		assertThat(lines).containsExactly("package com.example;", "",
-				"import org.springframework.test.TestApplication;",
-				"import java.time.temporal.ChronoUnit;", "",
+				"import java.time.temporal.ChronoUnit;",
+				"import org.springframework.test.TestApplication;", "",
 				"@TestApplication(unit = ChronoUnit.SECONDS)", "public class Test {", "",
 				"}", "");
 	}
@@ -141,8 +141,8 @@ public class JavaSourceCodeWriterTests {
 						(builder) -> builder.attribute("target", Class.class,
 								"com.example.One", "com.example.Two")));
 		assertThat(lines).containsExactly("package com.example;", "",
-				"import org.springframework.test.TestApplication;",
-				"import com.example.One;", "import com.example.Two;", "",
+				"import com.example.One;", "import com.example.Two;",
+				"import org.springframework.test.TestApplication;", "",
 				"@TestApplication(target = { One.class, Two.class })",
 				"public class Test {", "", "}", "");
 	}
@@ -155,8 +155,8 @@ public class JavaSourceCodeWriterTests {
 						.attribute("unit", ChronoUnit.class,
 								"java.time.temporal.ChronoUnit.NANOS")));
 		assertThat(lines).containsExactly("package com.example;", "",
-				"import org.springframework.test.TestApplication;",
-				"import com.example.One;", "import java.time.temporal.ChronoUnit;", "",
+				"import com.example.One;", "import java.time.temporal.ChronoUnit;",
+				"import org.springframework.test.TestApplication;", "",
 				"@TestApplication(target = One.class, unit = ChronoUnit.NANOS)",
 				"public class Test {", "", "}", "");
 	}

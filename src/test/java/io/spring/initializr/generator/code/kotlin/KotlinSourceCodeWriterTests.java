@@ -167,8 +167,8 @@ public class KotlinSourceCodeWriterTests {
 						(builder) -> builder.attribute("unit", Enum.class,
 								"java.time.temporal.ChronoUnit.SECONDS")));
 		assertThat(lines).containsExactly("package com.example", "",
-				"import org.springframework.test.TestApplication",
-				"import java.time.temporal.ChronoUnit", "",
+				"import java.time.temporal.ChronoUnit",
+				"import org.springframework.test.TestApplication", "",
 				"@TestApplication(unit = ChronoUnit.SECONDS)", "class Test", "");
 	}
 
@@ -179,8 +179,8 @@ public class KotlinSourceCodeWriterTests {
 						(builder) -> builder.attribute("target", Class.class,
 								"com.example.One", "com.example.Two")));
 		assertThat(lines).containsExactly("package com.example", "",
-				"import org.springframework.test.TestApplication",
-				"import com.example.One", "import com.example.Two", "",
+				"import com.example.One", "import com.example.Two",
+				"import org.springframework.test.TestApplication", "",
 				"@TestApplication(target = [One::class, Two::class])", "class Test", "");
 	}
 
@@ -192,8 +192,8 @@ public class KotlinSourceCodeWriterTests {
 						.attribute("unit", ChronoUnit.class,
 								"java.time.temporal.ChronoUnit.NANOS")));
 		assertThat(lines).containsExactly("package com.example", "",
-				"import org.springframework.test.TestApplication",
-				"import com.example.One", "import java.time.temporal.ChronoUnit", "",
+				"import com.example.One", "import java.time.temporal.ChronoUnit",
+				"import org.springframework.test.TestApplication", "",
 				"@TestApplication(target = One::class, unit = ChronoUnit.NANOS)",
 				"class Test", "");
 	}

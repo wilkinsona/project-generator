@@ -242,7 +242,7 @@ public class KotlinSourceCodeWriter implements SourceCodeWriter<KotlinSourceCode
 	}
 
 	private Set<String> determineImports(KotlinCompilationUnit compilationUnit) {
-		Set<String> imports = new LinkedHashSet<String>();
+		List<String> imports = new ArrayList<>();
 		for (KotlinTypeDeclaration typeDeclaration : compilationUnit
 				.getTypeDeclarations()) {
 			if (requiresImport(typeDeclaration.getExtends())) {
@@ -256,7 +256,8 @@ public class KotlinSourceCodeWriter implements SourceCodeWriter<KotlinSourceCode
 		}
 		compilationUnit.getTopLevelFunctions().forEach((functionDeclaration) -> imports
 				.addAll(determineFunctionImports(functionDeclaration)));
-		return imports;
+		Collections.sort(imports);
+		return new LinkedHashSet<>(imports);
 	}
 
 	private Set<String> determineFunctionImports(

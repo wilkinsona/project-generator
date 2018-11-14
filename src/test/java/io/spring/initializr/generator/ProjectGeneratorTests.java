@@ -260,8 +260,9 @@ public class ProjectGeneratorTests {
 				new File(project, "src/main/java/com/example/ServletInitializer.java")
 						.toPath());
 		assertThat(lines).containsExactly("package com.example;", "",
+				"import org.springframework.boot.builder.SpringApplicationBuilder;",
 				"import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;",
-				"import org.springframework.boot.builder.SpringApplicationBuilder;", "",
+				"",
 				"public class ServletInitializer extends SpringBootServletInitializer {",
 				"", "    @Override",
 				"    protected SpringApplicationBuilder configure(SpringApplicationBuilder application) {",
@@ -287,9 +288,9 @@ public class ProjectGeneratorTests {
 				new File(project, "src/main/kotlin/com/example/ServletInitializer.kt")
 						.toPath());
 		assertThat(lines).containsExactly("package com.example", "",
+				"import org.springframework.boot.builder.SpringApplicationBuilder",
 				"import org.springframework.boot.web.servlet.support.SpringBootServletInitializer",
-				"import org.springframework.boot.builder.SpringApplicationBuilder", "",
-				"class ServletInitializer extends SpringBootServletInitializer {", "",
+				"", "class ServletInitializer extends SpringBootServletInitializer {", "",
 				"    override fun configure(application: SpringApplicationBuilder): SpringApplicationBuilder {",
 				"        return application.sources(DemoApplication::class.java)",
 				"    }", "", "}", "");
@@ -350,11 +351,11 @@ public class ProjectGeneratorTests {
 				new File(project, "src/test/java/com/example/DemoApplicationTests.java")
 						.toPath());
 		assertThat(lines).containsExactly("package com.example;", "",
-				"import org.junit.runner.RunWith;",
-				"import org.springframework.test.context.junit4.SpringRunner;",
+				"import org.junit.Test;", "import org.junit.runner.RunWith;",
 				"import org.springframework.boot.test.context.SpringBootTest;",
-				"import org.junit.Test;", "", "@RunWith(SpringRunner.class)",
-				"@SpringBootTest", "public class DemoApplicationTests {", "", "    @Test",
+				"import org.springframework.test.context.junit4.SpringRunner;", "",
+				"@RunWith(SpringRunner.class)", "@SpringBootTest",
+				"public class DemoApplicationTests {", "", "    @Test",
 				"    public void contextLoads() {", "    }", "", "}", "");
 		FileSystemUtils.deleteRecursively(project);
 	}
@@ -375,11 +376,11 @@ public class ProjectGeneratorTests {
 				new File(project, "src/test/kotlin/com/example/DemoApplicationTests.kt")
 						.toPath());
 		assertThat(lines).containsExactly("package com.example", "",
-				"import org.junit.runner.RunWith",
-				"import org.springframework.test.context.junit4.SpringRunner",
+				"import org.junit.Test", "import org.junit.runner.RunWith",
 				"import org.springframework.boot.test.context.SpringBootTest",
-				"import org.junit.Test", "", "@RunWith(SpringRunner::class)",
-				"@SpringBootTest", "class DemoApplicationTests {", "", "    @Test",
+				"import org.springframework.test.context.junit4.SpringRunner", "",
+				"@RunWith(SpringRunner::class)", "@SpringBootTest",
+				"class DemoApplicationTests {", "", "    @Test",
 				"    fun contextLoads() {", "    }", "", "}", "");
 		FileSystemUtils.deleteRecursively(project);
 	}
