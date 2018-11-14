@@ -33,6 +33,10 @@ public class MavenBuild extends Build {
 
 	private Parent parent;
 
+	private String sourceDirectory;
+
+	private String testSourceDirectory;
+
 	private final Map<String, String> properties = new TreeMap<>();
 
 	private final List<MavenPlugin> plugins = new ArrayList<>();
@@ -54,6 +58,22 @@ public class MavenBuild extends Build {
 
 	public Map<String, String> getProperties() {
 		return Collections.unmodifiableMap(this.properties);
+	}
+
+	public String getSourceDirectory() {
+		return this.sourceDirectory;
+	}
+
+	public void setSourceDirectory(String sourceDirectory) {
+		this.sourceDirectory = sourceDirectory;
+	}
+
+	public String getTestSourceDirectory() {
+		return this.testSourceDirectory;
+	}
+
+	public void setTestSourceDirectory(String testSourceDirectory) {
+		this.testSourceDirectory = testSourceDirectory;
 	}
 
 	public MavenPlugin plugin(String groupId, String artifactId) {

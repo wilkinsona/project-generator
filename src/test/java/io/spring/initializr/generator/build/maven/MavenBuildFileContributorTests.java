@@ -336,6 +336,21 @@ public class MavenBuildFileContributorTests {
 		});
 	}
 
+	@Test
+	public void pomWithCustomSourceDirectories() throws Exception {
+		MavenBuild build = new MavenBuild();
+		build.setGroup("com.example.demo");
+		build.setName("demo");
+		build.setSourceDirectory("${project.basedir}/src/main/kotlin");
+		build.setTestSourceDirectory("${project.basedir}/src/test/kotlin");
+		generatePom(build, (pom) -> {
+			assertThat(pom).textAtPath("/project/build/sourceDirectory")
+					.isEqualTo("${project.basedir}/src/main/kotlin");
+			assertThat(pom).textAtPath("/project/build/testSourceDirectory")
+					.isEqualTo("${project.basedir}/src/test/kotlin");
+		});
+	}
+
 	private void generatePom(MavenBuild mavenBuild, Consumer<NodeAssert> consumer)
 			throws Exception {
 		File projectRoot = this.temp.getRoot();

@@ -74,7 +74,7 @@ public class MavenBuildFileContributor implements FileContributor {
 			appendChildWithText(project, "packaging", this.mavenBuild.getPackaging());
 			addProperties(project);
 			addDependencies(project);
-			addPlugins(project);
+			addBuild(project);
 			addRepositories(project);
 			write(document, new File(projectRoot, "pom.xml"));
 		}
@@ -143,12 +143,25 @@ public class MavenBuildFileContributor implements FileContributor {
 				});
 	}
 
-	private void addPlugins(Element project) {
+	private void addBuild(Element project) {
+		if (this.mavenBuild.getSourceDirectory() == null
+				&& this.mavenBuild.getTestSourceDirectory() == null
+				&& this.mavenBuild.getPlugins().isEmpty()) {
+			return;
+		}
+		Node build = project
+				.appendChild(project.getOwnerDocument().createElement("build"));
+		appendChildWithText(build, "sourceDirectory",
+				this.mavenBuild.getSourceDirectory());
+		appendChildWithText(build, "testSourceDirectory",
+				this.mavenBuild.getTestSourceDirectory());
+		addPlugins(build);
+	}
+
+	private void addPlugins(Node build) {
 		if (this.mavenBuild.getPlugins().isEmpty()) {
 			return;
 		}
-		Document document = project.getOwnerDocument();
-		Node build = project.appendChild(document.createElement("build"));
 		addChildren(build, "plugins", "plugin", this.mavenBuild.getPlugins(),
 				(node, plugin) -> {
 					appendChildWithText(node, "groupId", plugin.getGroupId());
