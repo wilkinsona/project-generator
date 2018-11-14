@@ -21,6 +21,7 @@ import io.spring.initializr.generator.buildsystem.maven.MavenPlugin;
 import io.spring.initializr.generator.buildsystem.maven.MavenPlugin.Configuration;
 import io.spring.initializr.generator.buildsystem.maven.MavenPlugin.Dependency;
 import io.spring.initializr.generator.buildsystem.maven.MavenPlugin.Execution;
+import io.spring.initializr.generator.buildsystem.maven.MavenPlugin.Setting;
 import org.junit.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -48,10 +49,15 @@ public class SpringRestDocsMavenBuildCustomizerTests {
 		assertThat(execution.getId()).isEqualTo("generate-docs");
 		assertThat(execution.getGoals()).containsExactly("process-asciidoc");
 		assertThat(execution.getPhase()).isEqualTo("prepare-package");
-		assertThat(execution.getConfigurations()).hasSize(1);
-		Configuration configuration = execution.getConfigurations().get(0);
-		assertThat(configuration.asMap()).containsEntry("backend", "html")
-				.containsEntry("doctype", "book");
+		assertThat(execution.getConfiguration()).isNotNull();
+		Configuration configuration = execution.getConfiguration();
+		assertThat(configuration.getSettings()).hasSize(2);
+		Setting backend = configuration.getSettings().get(0);
+		assertThat(backend.getName()).isEqualTo("backend");
+		assertThat(backend.getValue()).isEqualTo("html");
+		Setting doctype = configuration.getSettings().get(1);
+		assertThat(doctype.getName()).isEqualTo("doctype");
+		assertThat(doctype.getValue()).isEqualTo("book");
 		assertThat(plugin.getDependencies()).hasSize(1);
 		Dependency dependency = plugin.getDependencies().get(0);
 		assertThat(dependency.getGroupId()).isEqualTo("org.springframework.restdocs");

@@ -36,8 +36,8 @@ class SpringRestDocsMavenBuildCustomizer implements BuildCustomizer<MavenBuild> 
 			execution.phase("prepare-package");
 			execution.goal("process-asciidoc");
 			execution.configuration((configuration) -> {
-				configuration.set("backend", "html");
-				configuration.set("doctype", "book");
+				configuration.add("backend", "html");
+				configuration.add("doctype", "book");
 			});
 		});
 		plugin.dependency("org.springframework.restdocs", "spring-restdocs-asciidoctor",

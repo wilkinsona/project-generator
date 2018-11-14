@@ -41,7 +41,9 @@ import io.spring.initializr.generator.FileContributor;
 import io.spring.initializr.generator.buildsystem.MavenRepository;
 import io.spring.initializr.generator.buildsystem.maven.MavenBuild;
 import io.spring.initializr.generator.buildsystem.maven.MavenPlugin;
+import io.spring.initializr.generator.buildsystem.maven.MavenPlugin.Configuration;
 import io.spring.initializr.generator.buildsystem.maven.MavenPlugin.Execution;
+import io.spring.initializr.generator.buildsystem.maven.MavenPlugin.Setting;
 import io.spring.initializr.generator.buildsystem.maven.Parent;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -152,6 +154,7 @@ public class MavenBuildFileContributor implements FileContributor {
 					appendChildWithText(node, "groupId", plugin.getGroupId());
 					appendChildWithText(node, "artifactId", plugin.getArtifactId());
 					appendChildWithText(node, "version", plugin.getVersion());
+					addConfiguration(node, plugin.getConfiguration());
 					addExecutions(node, plugin);
 					addDependencies(node, plugin);
 				});
@@ -163,7 +166,7 @@ public class MavenBuildFileContributor implements FileContributor {
 					appendChildWithText(node, "id", execution.getId());
 					appendChildWithText(node, "phase", execution.getPhase());
 					addGoals(node, execution);
-					addConfigurations(node, execution);
+					addConfiguration(node, execution.getConfiguration());
 				});
 	}
 
@@ -172,14 +175,29 @@ public class MavenBuildFileContributor implements FileContributor {
 				goal) -> node.appendChild(node.getOwnerDocument().createTextNode(goal)));
 	}
 
-	private void addConfigurations(Node executionNode, Execution execution) {
-		addChildren(executionNode, "configurations", "configuration",
-				execution.getConfigurations(),
-				(node, configuration) -> configuration.asMap().forEach((key, value) -> {
-					if (value instanceof String) {
-						appendChildWithText(node, key, (String) value);
-					}
-				}));
+	private void addConfiguration(Node parent, Configuration configuration) {
+		if (configuration == null || configuration.getSettings().isEmpty()) {
+			return;
+		}
+		Node configurationNode = parent
+				.appendChild(parent.getOwnerDocument().createElement("configuration"));
+		addSettings(configurationNode, configuration.getSettings());
+	}
+
+	@SuppressWarnings("unchecked")
+	private void addSettings(Node parent, List<Setting> settings) {
+		settings.forEach((setting) -> {
+			if (setting.getValue() instanceof String) {
+				appendChildWithText(parent, setting.getName(),
+						(String) setting.getValue());
+			}
+			else if (setting.getValue() instanceof List) {
+				addSettings(
+						parent.appendChild(parent.getOwnerDocument()
+								.createElement(setting.getName())),
+						(List<Setting>) setting.getValue());
+			}
+		});
 	}
 
 	private void addDependencies(Node pluginNode, MavenPlugin plugin) {

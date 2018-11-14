@@ -212,6 +212,32 @@ public class MavenBuildFileContributorTests {
 	}
 
 	@Test
+	public void pomWithPluginWithConfiguration() throws Exception {
+		MavenBuild build = new MavenBuild();
+		build.setGroup("com.example.demo");
+		build.setName("demo");
+		MavenPlugin kotlin = build.plugin("org.jetbrains.kotlin", "kotlin-maven-plugin");
+		kotlin.configuration((configuration) -> {
+			configuration.add("args", (args) -> {
+				args.add("arg", "-Xjsr305=strict");
+			});
+			configuration.add("compilerPlugins", (compilerPlugins) -> {
+				compilerPlugins.add("plugin", "spring");
+			});
+		});
+		generatePom(build, (pom) -> {
+			NodeAssert plugin = pom.nodeAtPath("/project/build/plugins/plugin");
+			assertThat(plugin).textAtPath("groupId").isEqualTo("org.jetbrains.kotlin");
+			assertThat(plugin).textAtPath("artifactId").isEqualTo("kotlin-maven-plugin");
+			assertThat(plugin).textAtPath("version").isNullOrEmpty();
+			NodeAssert configuration = plugin.nodeAtPath("configuration");
+			assertThat(configuration).textAtPath("args/arg").isEqualTo("-Xjsr305=strict");
+			assertThat(configuration).textAtPath("compilerPlugins/plugin")
+					.isEqualTo("spring");
+		});
+	}
+
+	@Test
 	public void pomWithPluginWithExecution() throws Exception {
 		MavenBuild build = new MavenBuild();
 		build.setGroup("com.example.demo");
@@ -221,8 +247,8 @@ public class MavenBuildFileContributorTests {
 		asciidoctor.execution("generate-docs", (execution) -> {
 			execution.goal("process-asciidoc");
 			execution.configuration((configuration) -> {
-				configuration.set("doctype", "book");
-				configuration.set("backend", "html");
+				configuration.add("doctype", "book");
+				configuration.add("backend", "html");
 			});
 		});
 		generatePom(build, (pom) -> {
@@ -234,8 +260,7 @@ public class MavenBuildFileContributorTests {
 			NodeAssert execution = plugin.nodeAtPath("executions/execution");
 			assertThat(execution).textAtPath("id").isEqualTo("generate-docs");
 			assertThat(execution).textAtPath("goals/goal").isEqualTo("process-asciidoc");
-			NodeAssert configuration = execution
-					.nodeAtPath("configurations/configuration");
+			NodeAssert configuration = execution.nodeAtPath("configuration");
 			assertThat(configuration).textAtPath("doctype").isEqualTo("book");
 			assertThat(configuration).textAtPath("backend").isEqualTo("html");
 		});

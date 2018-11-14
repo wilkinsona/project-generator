@@ -18,9 +18,7 @@ package io.spring.initializr.generator.buildsystem.maven;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.function.Consumer;
 
 /**
@@ -39,6 +37,8 @@ public class MavenPlugin {
 	private final List<Execution> executions = new ArrayList<>();
 
 	private final List<Dependency> dependencies = new ArrayList<>();
+
+	private ConfigurationCustomization configurationCustomization = null;
 
 	public MavenPlugin(String groupId, String artifactId) {
 		this(groupId, artifactId, null);
@@ -62,6 +62,13 @@ public class MavenPlugin {
 		return this.version;
 	}
 
+	public void configuration(Consumer<ConfigurationCustomization> consumer) {
+		if (this.configurationCustomization == null) {
+			this.configurationCustomization = new ConfigurationCustomization();
+		}
+		consumer.accept(this.configurationCustomization);
+	}
+
 	public void execution(String id, Consumer<ExecutionBuilder> customizer) {
 		ExecutionBuilder builder = new ExecutionBuilder(id);
 		customizer.accept(builder);
@@ -80,6 +87,11 @@ public class MavenPlugin {
 		return Collections.unmodifiableList(this.dependencies);
 	}
 
+	public Configuration getConfiguration() {
+		return (this.configurationCustomization == null) ? null
+				: this.configurationCustomization.build();
+	}
+
 	/**
 	 * Builder for creation an {@link Execution}.
 	 */
@@ -91,14 +103,16 @@ public class MavenPlugin {
 
 		private List<String> goals = new ArrayList<>();
 
-		private List<Configuration> configurations = new ArrayList<>();
+		private ConfigurationCustomization configurationCustomization = null;
 
 		public ExecutionBuilder(String id) {
 			this.id = id;
 		}
 
 		Execution build() {
-			return new Execution(this.id, this.phase, this.goals, this.configurations);
+			return new Execution(this.id, this.phase, this.goals,
+					(this.configurationCustomization == null) ? null
+							: this.configurationCustomization.build());
 		}
 
 		public ExecutionBuilder phase(String phase) {
@@ -111,50 +125,78 @@ public class MavenPlugin {
 			return this;
 		}
 
-		public void configuration(Consumer<ConfigurationBuilder> consumer) {
-			ConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
-			consumer.accept(configurationBuilder);
-			this.configurations.add(configurationBuilder.build());
+		public void configuration(Consumer<ConfigurationCustomization> consumer) {
+			if (this.configurationCustomization == null) {
+				this.configurationCustomization = new ConfigurationCustomization();
+			}
+			consumer.accept(this.configurationCustomization);
 		}
 
 	}
 
 	/**
-	 * Builder for creating a {@link Configuration}.
+	 * Customization of a {@link Configuration}.
 	 */
-	public static class ConfigurationBuilder {
+	public static class ConfigurationCustomization {
 
-		private Map<String, Object> configuration = new HashMap<>();
+		private final List<Setting> settings = new ArrayList<>();
 
-		public ConfigurationBuilder set(String key, String value) {
-			this.configuration.put(key, value);
+		public ConfigurationCustomization add(String key, String value) {
+			this.settings.add(new Setting(key, value));
 			return this;
 		}
 
-		public ConfigurationBuilder set(String key, List<String> value) {
-			this.configuration.put(key, value);
+		public ConfigurationCustomization add(String key,
+				Consumer<ConfigurationCustomization> consumer) {
+			ConfigurationCustomization nestedConfiguration = new ConfigurationCustomization();
+			consumer.accept(nestedConfiguration);
+			this.settings.add(new Setting(key, nestedConfiguration.settings));
 			return this;
 		}
 
 		Configuration build() {
-			return new Configuration(this.configuration);
+			return new Configuration(this.settings);
 		}
 
 	}
 
 	/**
-	 * A {@code <configuration>} on an {@link Execution}.
+	 * A {@code <configuration>} on an {@link Execution} or {@link MavenPlugin}.
 	 */
-	public static class Configuration {
+	public static final class Configuration {
 
-		private Map<String, Object> configuration;
+		private List<Setting> settings = new ArrayList<Setting>();
 
-		public Configuration(Map<String, Object> configuration) {
-			this.configuration = configuration;
+		private Configuration(List<Setting> settings) {
+			this.settings = settings;
 		}
 
-		public Map<String, Object> asMap() {
-			return Collections.unmodifiableMap(this.configuration);
+		public List<Setting> getSettings() {
+			return Collections.unmodifiableList(this.settings);
+		}
+
+	}
+
+	/**
+	 * A setting in a {@link Configuration}.
+	 */
+	public static final class Setting {
+
+		private final String name;
+
+		private final Object value;
+
+		private Setting(String name, Object value) {
+			this.name = name;
+			this.value = value;
+		}
+
+		public String getName() {
+			return this.name;
+		}
+
+		public Object getValue() {
+			return this.value;
 		}
 
 	}
@@ -162,7 +204,7 @@ public class MavenPlugin {
 	/**
 	 * An {@code <execution>} of a {@link MavenPlugin}.
 	 */
-	public static class Execution {
+	public static final class Execution {
 
 		private final String id;
 
@@ -170,14 +212,14 @@ public class MavenPlugin {
 
 		private final List<String> goals;
 
-		private final List<Configuration> configurations;
+		private final Configuration configuration;
 
-		public Execution(String id, String phase, List<String> goals,
-				List<Configuration> configurations) {
+		private Execution(String id, String phase, List<String> goals,
+				Configuration configuration) {
 			this.id = id;
 			this.phase = phase;
 			this.goals = goals;
-			this.configurations = configurations;
+			this.configuration = configuration;
 		}
 
 		public String getId() {
@@ -192,8 +234,8 @@ public class MavenPlugin {
 			return this.goals;
 		}
 
-		public List<Configuration> getConfigurations() {
-			return this.configurations;
+		public Configuration getConfiguration() {
+			return this.configuration;
 		}
 
 	}
@@ -201,7 +243,7 @@ public class MavenPlugin {
 	/**
 	 * A {@code <dependency>} of a {@link MavenPlugin}.
 	 */
-	public static class Dependency {
+	public static final class Dependency {
 
 		private final String groupId;
 
@@ -209,7 +251,7 @@ public class MavenPlugin {
 
 		private final String version;
 
-		Dependency(String groupId, String artifactId, String version) {
+		private Dependency(String groupId, String artifactId, String version) {
 			this.groupId = groupId;
 			this.artifactId = artifactId;
 			this.version = version;
