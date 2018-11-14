@@ -21,6 +21,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.util.List;
 
+import io.spring.initializr.generator.DependencyType;
 import io.spring.initializr.generator.buildsystem.MavenRepository;
 import io.spring.initializr.generator.buildsystem.gradle.GradleBuild;
 import org.junit.Rule;
@@ -161,6 +162,36 @@ public class BuildGradleFileContributorTests {
 		assertThat(lines).containsSequence("compileKotlin {", "    kotlinOptions {",
 				"        freeCompilerArgs = ['-Xjsr305=strict']",
 				"        jvmTarget = '1.8'", "    }", "}");
+	}
+
+	@Test
+	public void gradleBuildWithVersionedDependency() throws IOException {
+		GradleBuild build = new GradleBuild();
+		BuildGradleFileContributor contributor = new BuildGradleFileContributor(build);
+		build.addDependency("org.jetbrains.kotlin", "kotlin-stdlib-jdk8",
+				"${kotlinVersion}", DependencyType.COMPILE);
+		contributor.contribute(this.temp.getRoot());
+		File buildGradle = new File(this.temp.getRoot(), "build.gradle");
+		assertThat(buildGradle).isFile();
+		List<String> lines = Files.readAllLines(buildGradle.toPath());
+		assertThat(lines).containsSequence("dependencies {",
+				"    implementation \"org.jetbrains.kotlin:kotlin-stdlib-jdk8:${kotlinVersion}\"",
+				"}");
+	}
+
+	@Test
+	public void gradleBuildWithDependency() throws IOException {
+		GradleBuild build = new GradleBuild();
+		BuildGradleFileContributor contributor = new BuildGradleFileContributor(build);
+		build.addDependency("org.springframework.boot", "spring-boot-starter",
+				DependencyType.COMPILE);
+		contributor.contribute(this.temp.getRoot());
+		File buildGradle = new File(this.temp.getRoot(), "build.gradle");
+		assertThat(buildGradle).isFile();
+		List<String> lines = Files.readAllLines(buildGradle.toPath());
+		assertThat(lines).containsSequence("dependencies {",
+				"    implementation \"org.springframework.boot:spring-boot-starter\"",
+				"}");
 	}
 
 }

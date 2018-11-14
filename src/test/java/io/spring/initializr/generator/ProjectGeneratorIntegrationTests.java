@@ -30,6 +30,7 @@ import io.spring.initializr.generator.buildsystem.gradle.GradleBuildSystem;
 import io.spring.initializr.generator.buildsystem.maven.MavenBuildSystem;
 import io.spring.initializr.generator.language.Language;
 import io.spring.initializr.generator.language.java.JavaLanguage;
+import io.spring.initializr.generator.language.kotlin.KotlinLanguage;
 import io.spring.initializr.generator.packaging.Packaging;
 import io.spring.initializr.generator.packaging.jar.JarPackaging;
 import io.spring.initializr.generator.packaging.war.WarPackaging;
@@ -78,7 +79,8 @@ public class ProjectGeneratorIntegrationTests {
 				.map(Version::parse).collect(Collectors.toList());
 		List<Packaging> packagings = Arrays.asList(new JarPackaging(),
 				new WarPackaging());
-		List<Language> languages = Arrays.asList(new JavaLanguage());
+		List<Language> languages = Arrays.asList(new KotlinLanguage(),
+				new JavaLanguage());
 		List<BuildSystem> buildSystems = Arrays.asList(new GradleBuildSystem(),
 				new MavenBuildSystem());
 		List<Object[]> configurations = new ArrayList<>();

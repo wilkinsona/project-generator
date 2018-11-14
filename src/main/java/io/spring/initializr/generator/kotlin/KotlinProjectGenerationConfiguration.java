@@ -14,10 +14,13 @@
  * limitations under the License.
  */
 
-package io.spring.initializr.generator.code.kotlin;
+package io.spring.initializr.generator.kotlin;
 
 import io.spring.initializr.generator.ProjectDescription;
-import io.spring.initializr.generator.ProjectGenerationConfiguration;
+import io.spring.initializr.generator.build.BuildCustomizer;
+import io.spring.initializr.generator.buildsystem.Build;
+import io.spring.initializr.generator.buildsystem.gradle.ConditionalOnGradle;
+import io.spring.initializr.generator.buildsystem.maven.ConditionalOnMaven;
 import io.spring.initializr.generator.code.MainApplicationTypeCustomizer;
 import io.spring.initializr.generator.code.MainCompilationUnitCustomizer;
 import io.spring.initializr.generator.code.MainSourceCodeCustomizer;
@@ -47,13 +50,15 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 /**
- * Project generation configuration for projects written in Kotlin.
+ * Configuration for contributions specific to the generation of a project that will use
+ * Kotlin as its language.
  *
+ * @author Andy Wilkinson
  * @author Stephane Nicoll
  */
-@ProjectGenerationConfiguration
+@Configuration
 @ConditionalOnKotlinLanguage
-public class KotlinSourceCodeProjectGenerationConfiguration {
+public class KotlinProjectGenerationConfiguration {
 
 	@Bean
 	public MainSourceCodeFileContributor<KotlinTypeDeclaration, KotlinCompilationUnit, KotlinSourceCode> mainKotlinSourceCodeFileContributor(
@@ -65,31 +70,6 @@ public class KotlinSourceCodeProjectGenerationConfiguration {
 				KotlinSourceCode::new, new KotlinSourceCodeWriter(),
 				mainApplicationTypeCustomizers, mainCompilationUnitCustomizers,
 				mainSourceCodeCustomizers);
-	}
-
-	@Bean
-	@ConditionalOnSpringBootVersion("2.0.0.M1")
-	public MainCompilationUnitCustomizer<KotlinTypeDeclaration, KotlinCompilationUnit> mainFunctionContributor() {
-		return (compilationUnit) -> {
-			compilationUnit.addTopLevelFunction(KotlinFunctionDeclaration.function("main")
-					.parameters(new Parameter("Array<String>", "args"))
-					.body(new KotlinExpressionStatement(
-							new KotlinReifiedFunctionInvocation(
-									"org.springframework.boot.runApplication",
-									"DemoApplication", "*args"))));
-		};
-	}
-
-	@Bean
-	@ConditionalOnSpringBootVersion("[1.5.0.M1, 2.0.0.M1)")
-	public MainCompilationUnitCustomizer<KotlinTypeDeclaration, KotlinCompilationUnit> boot15MainFunctionContributor() {
-		return (compilationUnit) -> {
-			compilationUnit.addTopLevelFunction(KotlinFunctionDeclaration.function("main")
-					.parameters(new Parameter("Array<String>", "args"))
-					.body(new KotlinExpressionStatement(new KotlinFunctionInvocation(
-							"org.springframework.boot.SpringApplication", "run",
-							"DemoApplication::class.java", "*args"))));
-		};
 	}
 
 	@Bean
@@ -110,6 +90,65 @@ public class KotlinSourceCodeProjectGenerationConfiguration {
 			function.annotate(Annotation.name("org.junit.Test"));
 			typeDeclaration.addFunctionDeclaration(function);
 		};
+	}
+
+	@Bean
+	public BuildCustomizer<Build> kotlinDependenciesConfigurer(
+			ProjectDescription project) {
+		return new KotlinDependenciesConfigurer(project.getSpringBootVersion());
+	}
+
+	/**
+	 * Configuration for Kotlin projects using Spring Boot 1.5.
+	 */
+	@Configuration
+	@ConditionalOnSpringBootVersion("[1.5.0.M1, 2.0.0.M1)")
+	class Boot15KotlinProjectGenerationConfiguration {
+
+		@Bean
+		public KotlinProjectSettings kotlinProjectSettings() {
+			return new KotlinProjectSettings("1.2.51");
+		}
+
+		@Bean
+		public MainCompilationUnitCustomizer<KotlinTypeDeclaration, KotlinCompilationUnit> boot15MainFunctionContributor() {
+			return (compilationUnit) -> {
+				compilationUnit.addTopLevelFunction(KotlinFunctionDeclaration
+						.function("main")
+						.parameters(new Parameter("Array<String>", "args"))
+						.body(new KotlinExpressionStatement(new KotlinFunctionInvocation(
+								"org.springframework.boot.SpringApplication", "run",
+								"DemoApplication::class.java", "*args"))));
+			};
+		}
+
+	}
+
+	/**
+	 * Configuration for Kotlin projects using Spring Boot 2.0 and later.
+	 */
+	@Configuration
+	@ConditionalOnSpringBootVersion("2.0.0.M1")
+	class Boot2AndLaterKotlinProjectGenerationConfiguration {
+
+		@Bean
+		public KotlinProjectSettings kotlinProjectSettings() {
+			return new KotlinProjectSettings("1.2.70");
+		}
+
+		@Bean
+		public MainCompilationUnitCustomizer<KotlinTypeDeclaration, KotlinCompilationUnit> mainFunctionContributor() {
+			return (compilationUnit) -> {
+				compilationUnit
+						.addTopLevelFunction(KotlinFunctionDeclaration.function("main")
+								.parameters(new Parameter("Array<String>", "args"))
+								.body(new KotlinExpressionStatement(
+										new KotlinReifiedFunctionInvocation(
+												"org.springframework.boot.runApplication",
+												"DemoApplication", "*args"))));
+			};
+		}
+
 	}
 
 	/**
@@ -134,6 +173,38 @@ public class KotlinSourceCodeProjectGenerationConfiguration {
 										"DemoApplication::class.java")));
 				typeDeclaration.addFunctionDeclaration(configure);
 			};
+		}
+
+	}
+
+	/**
+	 * Configuration for Kotlin projects built with Maven.
+	 */
+	@Configuration
+	@ConditionalOnMaven
+	class KotlinMavenProjectConfiguration {
+
+		@Bean
+		public KotlinMavenBuildCustomizer kotlinBuildCustomizer(
+				KotlinProjectSettings kotlinProjectSettings) {
+			return new KotlinMavenBuildCustomizer(kotlinProjectSettings);
+		}
+
+	}
+
+	/**
+	 * Configuration for Kotlin projects built with Gradle.
+	 *
+	 * @author Andy Wilkinson
+	 */
+	@Configuration
+	@ConditionalOnGradle
+	class KotlinGradleProjectConfiguration {
+
+		@Bean
+		public KotlinGradleBuildCustomizer kotlinBuildCustomizer(
+				KotlinProjectSettings kotlinProjectSettings) {
+			return new KotlinGradleBuildCustomizer(kotlinProjectSettings);
 		}
 
 	}

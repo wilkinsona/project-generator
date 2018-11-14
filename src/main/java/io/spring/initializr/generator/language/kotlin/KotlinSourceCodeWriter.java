@@ -75,7 +75,7 @@ public class KotlinSourceCodeWriter implements SourceCodeWriter<KotlinSourceCode
 				writeAnnotations(writer, type);
 				writer.print("class " + type.getName());
 				if (type.getExtends() != null) {
-					writer.print(" extends " + getUnqualifiedName(type.getExtends()));
+					writer.print(" : " + getUnqualifiedName(type.getExtends()) + "()");
 				}
 				List<KotlinFunctionDeclaration> functionDeclarations = type
 						.getFunctionDeclarations();

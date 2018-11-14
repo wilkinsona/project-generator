@@ -14,27 +14,38 @@
  * limitations under the License.
  */
 
-package io.spring.initializr.generator.language.kotlin;
+package io.spring.initializr.generator.kotlin;
 
-import io.spring.initializr.generator.language.Language;
+import java.util.Arrays;
+import java.util.List;
 
 /**
- * Kotlin {@link Language}.
+ * Commons settings for Kotlin projects.
  *
- * @author Stephane Nicoll
+ * @author Andy Wilkinson
  */
-public class KotlinLanguage implements Language {
+class KotlinProjectSettings {
 
-	static final String ID = "kotlin";
+	private final String jvmTarget = "1.8";
 
-	@Override
-	public String id() {
-		return ID;
+	private final List<String> compilerArgs = Arrays.asList("-Xjsr305=strict");
+
+	private final String version;
+
+	KotlinProjectSettings(String version) {
+		this.version = version;
 	}
 
-	@Override
-	public String toString() {
-		return id();
+	public String getJvmTarget() {
+		return this.jvmTarget;
+	}
+
+	public List<String> getCompilerArgs() {
+		return this.compilerArgs;
+	}
+
+	public String getVersion() {
+		return this.version;
 	}
 
 }
