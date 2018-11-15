@@ -122,7 +122,7 @@ public class ProjectGeneratorIntegrationTests {
 			return new ProcessBuilder("./mvnw", "package");
 		}
 		if (this.buildSystem.id().equals(new GradleBuildSystem().id())) {
-			return new ProcessBuilder("./gradlew", "build");
+			return new ProcessBuilder("./gradlew", "--no-daemon", "build");
 		}
 		throw new IllegalStateException();
 	}
