@@ -65,7 +65,7 @@ class BuildGradleProjectContributorTests {
 		build.buildscript((buildscript) -> buildscript.ext("kotlinVersion", "'1.2.51'"));
 		List<String> lines = generateBuild(build);
 		assertThat(lines).containsSequence("buildscript {", "    ext {",
-				"        kotlinVersion = '1.2.51'", "    }", "}");
+				"        kotlinVersion = '1.2.51'", "    }");
 	}
 
 	@Test

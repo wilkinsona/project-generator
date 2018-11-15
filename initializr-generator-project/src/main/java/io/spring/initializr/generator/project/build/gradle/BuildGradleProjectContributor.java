@@ -17,11 +17,14 @@
 package io.spring.initializr.generator.project.build.gradle;
 
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeSet;
+import java.util.function.BiFunction;
+import java.util.function.Function;
 
 import io.spring.initializr.generator.Dependency;
 import io.spring.initializr.generator.DependencyType;
@@ -30,6 +33,7 @@ import io.spring.initializr.generator.buildsystem.MavenRepository;
 import io.spring.initializr.generator.buildsystem.gradle.GradleBuild;
 import io.spring.initializr.generator.buildsystem.gradle.GradleBuild.TaskCustomization;
 import io.spring.initializr.generator.buildsystem.gradle.GradlePlugin;
+import io.spring.initializr.generator.io.IndentingWriter;
 
 /**
  * {@link ProjectContributor} for the project's {@code build.gradle} file.
@@ -46,156 +50,167 @@ class BuildGradleProjectContributor implements ProjectContributor {
 
 	@Override
 	public void contribute(Path projectRoot) throws IOException {
-		Path file = Files.createFile(projectRoot.resolve("build.gradle"));
-		try (PrintWriter writer = new PrintWriter(Files.newOutputStream(file))) {
+		Path buildGradle = Files.createFile(projectRoot.resolve("build.gradle"));
+		try (IndentingWriter writer = new IndentingWriter(
+				Files.newBufferedWriter(buildGradle))) {
 			writeBuildscript(writer);
 			writePlugins(writer);
 			writer.println("group = '" + this.build.getGroup() + "'");
 			writer.println("version = '" + this.build.getVersion() + "'");
 			writer.println("sourceCompatibility = '" + this.build.getJavaVersion() + "'");
 			writer.println();
-			writeRepositories(writer);
+			writeRepositories(writer, writer::println);
 			writeDependencies(writer);
 			writeTaskCustomizations(writer);
 		}
 	}
 
-	private void writeBuildscript(PrintWriter writer) {
+	private void writeBuildscript(IndentingWriter writer) {
 		List<String> dependencies = this.build.getBuildscript().getDependencies();
 		Map<String, String> ext = this.build.getBuildscript().getExt();
 		if (dependencies.isEmpty() && ext.isEmpty()) {
 			return;
 		}
 		writer.println("buildscript {");
-		writeBuildscriptExt(writer);
-		writeBuildscriptRepositories(writer);
-		writeBuildscriptDependencies(writer);
+		writer.indented(() -> {
+			writeBuildscriptExt(writer);
+			writeBuildscriptRepositories(writer);
+			writeBuildscriptDependencies(writer);
+		});
 		writer.println("}");
 		writer.println("");
 	}
 
-	private void writeBuildscriptExt(PrintWriter writer) {
-		if (this.build.getBuildscript().getExt().isEmpty()) {
-			return;
-		}
-		writer.println("    ext {");
-		this.build.getBuildscript().getExt().forEach(
-				(key, value) -> writer.println("        " + key + " = " + value));
-		writer.println("    }");
+	private void writeBuildscriptExt(IndentingWriter writer) {
+		writeNestedMap(writer, "ext", this.build.getBuildscript().getExt(),
+				(key, value) -> key + " = " + value);
 	}
 
-	private void writeBuildscriptRepositories(PrintWriter writer) {
-		if (this.build.getBuildscript().getDependencies().isEmpty()
-				|| this.build.getMavenRepositories().isEmpty()) {
-			return;
-		}
-		writer.println("    repositories {");
-		this.build.getMavenRepositories().stream().map(this::repositoryAsString)
-				.map((repository) -> "    " + repository).forEach(writer::println);
-		writer.println("    }");
+	private void writeBuildscriptRepositories(IndentingWriter writer) {
+		writeRepositories(writer);
 	}
 
-	private void writeBuildscriptDependencies(PrintWriter writer) {
-		if (this.build.getBuildscript().getDependencies().isEmpty()) {
-			return;
-		}
-		writer.println("    dependencies {");
-		this.build.getBuildscript().getDependencies().stream()
-				.map((dependency) -> "        classpath \"" + dependency + "\"")
-				.forEach(writer::println);
-		writer.println("    }");
+	private void writeBuildscriptDependencies(IndentingWriter writer) {
+		writeNestedCollection(writer, "dependencies",
+				this.build.getBuildscript().getDependencies(),
+				(dependency) -> "classpath \"" + dependency + "\"");
 	}
 
-	private void writePlugins(PrintWriter writer) {
-		if (!this.build.getPlugins().isEmpty()) {
-			writer.println("plugins {");
-			this.build.getPlugins().stream().map(this::pluginAsString)
-					.forEach(writer::println);
-			writer.println("}");
-			writer.println("");
-		}
-		if (!this.build.getAppliedPlugins().isEmpty()) {
-			this.build.getAppliedPlugins().stream()
-					.map((plugin) -> "apply plugin: '" + plugin + "'")
-					.forEach(writer::println);
-			writer.println();
-		}
-	}
-
-	private void writeRepositories(PrintWriter writer) {
-		if (this.build.getMavenRepositories().isEmpty()) {
-			return;
-		}
-		writer.println("repositories {");
-		this.build.getMavenRepositories().stream().map(this::repositoryAsString)
-				.forEach(writer::println);
-		writer.println("}");
-		writer.println();
-	}
-
-	private void writeDependencies(PrintWriter writer) {
-		if (this.build.getDependencies().isEmpty()) {
-			return;
-		}
-		writer.println("dependencies {");
-		this.build.getDependencies().stream().sorted().map(this::dependencyAsString)
-				.forEach(writer::println);
-		writer.println("}");
-		writer.println();
-	}
-
-	private void writeTaskCustomizations(PrintWriter writer) {
-		Map<String, TaskCustomization> taskCustomizations = this.build
-				.getTaskCustomizations();
-		if (taskCustomizations.isEmpty()) {
-			return;
-		}
-		taskCustomizations.forEach((name, customization) -> {
-			writer.println(name + " {");
-			writeTaskCustomization(writer, customization, "    ");
-			writer.println("}");
-			writer.println();
-		});
-	}
-
-	private void writeTaskCustomization(PrintWriter writer,
-			TaskCustomization customization, String indent) {
-		customization.getInvocations()
-				.forEach((invocation) -> writer.println(indent + invocation.getTarget()
-						+ " " + String.join(", ", invocation.getArguments())));
-		customization.getAssignments()
-				.forEach((key, value) -> writer.println(indent + key + " = " + value));
-		customization.getNested().forEach((property, nestedCustomization) -> {
-			writer.println(indent + property + " {");
-			writeTaskCustomization(writer, nestedCustomization, indent + "    ");
-			writer.println(indent + "}");
-		});
+	private void writePlugins(IndentingWriter writer) {
+		writeNestedCollection(writer, "plugins", this.build.getPlugins(),
+				this::pluginAsString, writer::println);
+		writeCollection(writer, this.build.getAppliedPlugins(),
+				(plugin) -> "apply plugin: '" + plugin + "'", writer::println);
 	}
 
 	private String pluginAsString(GradlePlugin plugin) {
-		StringBuilder builder = new StringBuilder("    id '");
-		builder.append(plugin.getId());
-		builder.append("'");
+		String string = "id '" + plugin.getId() + "'";
 		if (plugin.getVersion() != null) {
-			builder.append(" version '");
-			builder.append(plugin.getVersion());
-			builder.append("'");
+			string += " version '" + plugin.getVersion() + "'";
 		}
-		return builder.toString();
+		return string;
+	}
+
+	private void writeRepositories(IndentingWriter writer) {
+		writeRepositories(writer, null);
+	}
+
+	private void writeRepositories(IndentingWriter writer, Runnable whenWritten) {
+		writeNestedCollection(writer, "repositories", this.build.getMavenRepositories(),
+				this::repositoryAsString, whenWritten);
+	}
+
+	private String repositoryAsString(MavenRepository repository) {
+		if (MavenRepository.MAVEN_CENTRAL.equals(repository)) {
+			return "mavenCentral()";
+		}
+		return "maven { url '" + repository.getUrl() + "' }";
+	}
+
+	private void writeDependencies(IndentingWriter writer) {
+		writeNestedCollection(writer, "dependencies",
+				new TreeSet<>(this.build.getDependencies()), this::dependencyAsString,
+				writer::println);
 	}
 
 	private String dependencyAsString(Dependency dependency) {
-		return "    " + configurationForType(dependency.getType()) + " \""
+		return configurationForType(dependency.getType()) + " \""
 				+ dependency.getGroupId() + ":" + dependency.getArtifactId()
 				+ ((dependency.getVersion() == null) ? "" : ":" + dependency.getVersion())
 				+ "\"";
 	}
 
-	private String repositoryAsString(MavenRepository repository) {
-		if (MavenRepository.MAVEN_CENTRAL.equals(repository)) {
-			return "    mavenCentral()";
+	private void writeTaskCustomizations(IndentingWriter writer) {
+		Map<String, TaskCustomization> taskCustomizations = this.build
+				.getTaskCustomizations();
+		taskCustomizations.forEach((name, customization) -> {
+			writer.println(name + " {");
+			writer.indented(() -> writeTaskCustomization(writer, customization));
+			writer.println("}");
+			writer.println();
+		});
+	}
+
+	private void writeTaskCustomization(IndentingWriter writer,
+			TaskCustomization customization) {
+		writeCollection(writer, customization.getInvocations(),
+				(invocation) -> invocation.getTarget() + " "
+						+ String.join(", ", invocation.getArguments()));
+		writeMap(writer, customization.getAssignments(),
+				(key, value) -> key + " = " + value);
+		customization.getNested().forEach((property, nestedCustomization) -> {
+			writer.println(property + " {");
+			writer.indented(() -> writeTaskCustomization(writer, nestedCustomization));
+			writer.println("}");
+		});
+	}
+
+	private <T> void writeNestedCollection(IndentingWriter writer, String name,
+			Collection<T> collection, Function<T, String> itemToStringConverter) {
+		this.writeNestedCollection(writer, name, collection, itemToStringConverter, null);
+	}
+
+	private <T> void writeNestedCollection(IndentingWriter writer, String name,
+			Collection<T> collection, Function<T, String> converter,
+			Runnable whenWritten) {
+		if (!collection.isEmpty()) {
+			writer.println(name + " {");
+			writer.indented(() -> writeCollection(writer, collection, converter));
+			writer.println("}");
+			if (whenWritten != null) {
+				whenWritten.run();
+
+			}
 		}
-		return "    maven { url '" + repository.getUrl() + "' }";
+	}
+
+	private <T> void writeCollection(IndentingWriter writer, Collection<T> collection,
+			Function<T, String> converter) {
+		writeCollection(writer, collection, converter, null);
+	}
+
+	private <T> void writeCollection(IndentingWriter writer, Collection<T> collection,
+			Function<T, String> itemToStringConverter, Runnable whenWritten) {
+		if (!collection.isEmpty()) {
+			collection.stream().map(itemToStringConverter).forEach(writer::println);
+			if (whenWritten != null) {
+				whenWritten.run();
+			}
+		}
+	}
+
+	private <T, U> void writeNestedMap(IndentingWriter writer, String name, Map<T, U> map,
+			BiFunction<T, U, String> converter) {
+		if (!map.isEmpty()) {
+			writer.println(name + " {");
+			writer.indented(() -> writeMap(writer, map, converter));
+			writer.println("}");
+		}
+	}
+
+	private <T, U> void writeMap(IndentingWriter writer, Map<T, U> map,
+			BiFunction<T, U, String> converter) {
+		map.forEach((key, value) -> writer.println(converter.apply(key, value)));
 	}
 
 	private String configurationForType(DependencyType type) {
