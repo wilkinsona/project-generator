@@ -1,0 +1,3 @@
+io.spring.initializr.generator.project.ProjectGenerationConfiguration=\
+io.spring.start.extension.springcloud.SpringCloudProjectGenerationConfiguration,\
+io.spring.start.extension.springrestdocs.SpringRestDocsProjectGenerationConfiguration

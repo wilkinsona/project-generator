@@ -1,15 +1,25 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+		 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-	<groupId>io.spring.initializr</groupId>
+	<groupId>io.spring.initializr.experimental</groupId>
 	<artifactId>project-generator</artifactId>
 	<version>0.1.0.BUILD-SNAPSHOT</version>
+	<packaging>pom</packaging>
 
 	<properties>
 		<java.version>1.8</java.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<spring-javaformat.version>0.0.6</spring-javaformat.version>
 	</properties>
+
+	<modules>
+		<module>initializr-generator</module>
+		<module>initializr-generator-project</module>
+
+		<module>start-site</module>
+	</modules>
 
 	<dependencyManagement>
 		<dependencies>
@@ -20,25 +30,24 @@
 				<type>pom</type>
 				<scope>import</scope>
 			</dependency>
+			<dependency>
+				<groupId>io.spring.initializr.experimental</groupId>
+				<artifactId>initializr-generator</artifactId>
+				<version>0.1.0.BUILD-SNAPSHOT</version>
+			</dependency>
+			<dependency>
+				<groupId>io.spring.initializr.experimental</groupId>
+				<artifactId>initializr-generator-project</artifactId>
+				<version>0.1.0.BUILD-SNAPSHOT</version>
+			</dependency>
+			<dependency>
+				<groupId>io.spring.initializr.experimental</groupId>
+				<artifactId>initializr-generator-project</artifactId>
+				<version>0.1.0.BUILD-SNAPSHOT</version>
+				<type>test-jar</type>
+			</dependency>
 		</dependencies>
 	</dependencyManagement>
-
-	<dependencies>
-		<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring-context</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>junit</groupId>
-			<artifactId>junit</artifactId>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.assertj</groupId>
-			<artifactId>assertj-core</artifactId>
-			<scope>test</scope>
-		</dependency>
-	</dependencies>
 
 	<build>
 		<plugins>
@@ -76,7 +85,9 @@
 						<id>checkstyle-validation</id>
 						<phase>validate</phase>
 						<configuration>
-							<configLocation>io/spring/javaformat/checkstyle/checkstyle.xml</configLocation>
+							<configLocation>
+								io/spring/javaformat/checkstyle/checkstyle.xml
+							</configLocation>
 							<includeTestSourceDirectory>true</includeTestSourceDirectory>
 						</configuration>
 						<goals>
@@ -88,7 +99,6 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
-				<version>3.8.0</version>
 				<configuration>
 					<source>${java.version}</source>
 					<target>${java.version}</target>
@@ -97,11 +107,25 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-surefire-plugin</artifactId>
-				<version>2.22.1</version>
 			</plugin>
 		</plugins>
 		<pluginManagement>
 			<plugins>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-compiler-plugin</artifactId>
+					<version>3.8.0</version>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-jar-plugin</artifactId>
+					<version>3.1.0</version>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-surefire-plugin</artifactId>
+					<version>2.22.1</version>
+				</plugin>
 				<!--This plugin's configuration is used to store Eclipse m2e settings only. It has no influence on the Maven build itself.-->
 				<plugin>
 					<groupId>org.eclipse.m2e</groupId>

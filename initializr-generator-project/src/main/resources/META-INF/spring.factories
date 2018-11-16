@@ -1,0 +1,8 @@
+io.spring.initializr.generator.project.ProjectGenerationConfiguration=\
+io.spring.initializr.generator.project.build.BuildProjectGenerationConfiguration,\
+io.spring.initializr.generator.project.build.gradle.GradleProjectGenerationConfiguration,\
+io.spring.initializr.generator.project.build.maven.MavenProjectGenerationConfiguration,\
+io.spring.initializr.generator.project.code.SourceCodeProjectGenerationConfiguration,\
+io.spring.initializr.generator.project.code.java.JavaSourceCodeProjectGenerationConfiguration,\
+io.spring.initializr.generator.project.code.kotlin.KotlinProjectGenerationConfiguration,\
+io.spring.initializr.generator.project.scm.git.GitProjectGenerationConfiguration
