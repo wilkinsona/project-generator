@@ -55,8 +55,8 @@ public class MultipleResourcesFileContributor implements FileContributor {
 		Resource root = this.resolver.getResource(this.rootResource);
 		Resource[] resources = this.resolver.getResources(this.rootResource + "/**");
 		for (Resource resource : resources) {
-			String filename = resource.getURI().getPath()
-					.substring(root.getURI().getPath().length() + 1);
+			String filename = resource.getURI().toString()
+					.substring(root.getURI().toString().length() + 1);
 			if (resource.isReadable()) {
 				File output = new File(projectRoot, filename);
 				output.getParentFile().mkdirs();
