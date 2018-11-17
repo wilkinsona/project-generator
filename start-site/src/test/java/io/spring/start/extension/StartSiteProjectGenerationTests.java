@@ -75,7 +75,7 @@ public class StartSiteProjectGenerationTests {
 				"spring-restdocs-mockmvc", DependencyType.TEST_COMPILE));
 		File project = new ProjectGenerator().generate(description);
 		NodeAssert pom = new NodeAssert(new File(project, "pom.xml"));
-		assertThat(pom).textAtPath("/project/build/plugins/plugin[2]/groupId")
+		assertThat(pom).textAtPath("/project/build/plugins/plugin[1]/groupId")
 				.isEqualTo("org.asciidoctor");
 		FileSystemUtils.deleteRecursively(project);
 	}
