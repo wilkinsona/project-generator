@@ -49,7 +49,7 @@ public class StartSiteProjectGenerationTests {
 	@Test
 	public void buildDotGradleIsCustomizedWhenGeneratingProjectThatDependsOnSpringRestDocs()
 			throws IOException {
-		ProjectDescription description = new ProjectDescription();
+		ProjectDescription description = newProjectDescription();
 		description.setSpringBootVersion(Version.parse("2.1.0.RELEASE"));
 		description.setBuildSystem(new GradleBuildSystem());
 		description.setLanguage(new JavaLanguage());
@@ -65,10 +65,18 @@ public class StartSiteProjectGenerationTests {
 		FileSystemUtils.deleteRecursively(project);
 	}
 
+	private ProjectDescription newProjectDescription() {
+		ProjectDescription description = new ProjectDescription();
+		description.setGroupId("com.example");
+		description.setArtifactId("demo");
+		description.setApplicationName("DemoApplication");
+		return description;
+	}
+
 	@Test
 	public void pomIsCustomizedWhenGeneratingProjectThatDependsOnSpringRestDocs()
 			throws IOException {
-		ProjectDescription description = new ProjectDescription();
+		ProjectDescription description = newProjectDescription();
 		description.setSpringBootVersion(Version.parse("2.1.0.RELEASE"));
 		description.setBuildSystem(new MavenBuildSystem());
 		description.addDependency(new Dependency("org.springframework.restdocs",
@@ -83,11 +91,10 @@ public class StartSiteProjectGenerationTests {
 	@Test
 	public void mainClassIsAnnotatedWithEnableConfigServerWhenGeneratingProjectThatDependsUponSpringCloudConfigServer()
 			throws IOException {
-		ProjectDescription description = new ProjectDescription();
+		ProjectDescription description = newProjectDescription();
 		description.setLanguage(new JavaLanguage());
 		description.setBuildSystem(new MavenBuildSystem());
 		description.setSpringBootVersion(Version.parse("2.1.0.RELEASE"));
-		description.setGroupId("com.example");
 		description.addDependency(new Dependency("org.springframework.cloud",
 				"spring-cloud-config-server", DependencyType.COMPILE));
 		File project = new ProjectGenerator().generate(description);

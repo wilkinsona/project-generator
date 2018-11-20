@@ -107,6 +107,7 @@ public class ProjectGeneratorIntegrationTests {
 		description.setBuildSystem(this.buildSystem);
 		description.setGroupId("com.example");
 		description.setArtifactId("demo");
+		description.setApplicationName("DemoApplication");
 		File project = new ProjectGenerator().generate(description);
 		ProcessBuilder processBuilder = createProcessBuilder(project);
 		processBuilder.directory(project);

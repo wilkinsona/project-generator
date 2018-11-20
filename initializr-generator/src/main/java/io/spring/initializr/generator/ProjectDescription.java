@@ -46,6 +46,8 @@ public class ProjectDescription {
 
 	private String artifactId;
 
+	private String applicationName;
+
 	private String packageName;
 
 	public Version getSpringBootVersion() {
@@ -102,6 +104,14 @@ public class ProjectDescription {
 
 	public List<Dependency> getDependencies() {
 		return Collections.unmodifiableList(this.dependencies);
+	}
+
+	public String getApplicationName() {
+		return this.applicationName;
+	}
+
+	public void setApplicationName(String applicationName) {
+		this.applicationName = applicationName;
 	}
 
 	public String getPackageName() {
