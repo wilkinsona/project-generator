@@ -50,6 +50,8 @@ public class ProjectDescription {
 
 	private String packageName;
 
+	private String baseDirectory;
+
 	public Version getSpringBootVersion() {
 		return this.springBootVersion;
 	}
@@ -120,6 +122,14 @@ public class ProjectDescription {
 
 	public void setPackageName(String packageName) {
 		this.packageName = packageName;
+	}
+
+	public String getBaseDirectory() {
+		return this.baseDirectory;
+	}
+
+	public void setBaseDirectory(String baseDirectory) {
+		this.baseDirectory = baseDirectory;
 	}
 
 }

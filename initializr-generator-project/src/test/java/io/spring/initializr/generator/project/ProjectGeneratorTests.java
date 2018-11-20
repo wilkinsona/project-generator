@@ -362,6 +362,26 @@ public class ProjectGeneratorTests {
 		FileSystemUtils.deleteRecursively(project);
 	}
 
+	@Test
+	public void customBaseDirectionIsUsedWhenGeneratingProject() throws IOException {
+		ProjectDescription description = initProjectDescription();
+		description.setBuildSystem(new MavenBuildSystem());
+		description.setSpringBootVersion(Version.parse("2.1.0.RELEASE"));
+		description.setLanguage(new JavaLanguage());
+		description.setGroupId("com.example");
+		description.setBaseDirectory("test/demo-app");
+		File project = new ProjectGenerator().generate(description);
+		List<String> relativePaths = getRelativePathsOfProjectFiles(project);
+		assertThat(relativePaths).containsOnly("test/demo-app/.gitignore",
+				"test/demo-app/pom.xml", "test/demo-app/mvnw", "test/demo-app/mvnw.cmd",
+				"test/demo-app/.mvn/wrapper/MavenWrapperDownloader.java",
+				"test/demo-app/.mvn/wrapper/maven-wrapper.properties",
+				"test/demo-app/.mvn/wrapper/maven-wrapper.jar",
+				"test/demo-app/src/main/java/com/example/DemoApplication.java",
+				"test/demo-app/src/test/java/com/example/DemoApplicationTests.java");
+		FileSystemUtils.deleteRecursively(project);
+	}
+
 	private ProjectDescription initProjectDescription() {
 		ProjectDescription description = new ProjectDescription();
 		description.setApplicationName("DemoApplication");

@@ -46,8 +46,21 @@ public class ProjectGenerator {
 			context.register(CoreConfiguration.class);
 			context.refresh();
 			Path projectRoot = Files.createTempDirectory("project-");
-			context.getBean(FileContributors.class).contribute(projectRoot.toFile());
+			Path projectDirectory = initializerProjectDirectory(projectRoot, description);
+			context.getBean(FileContributors.class).contribute(projectDirectory.toFile());
 			return projectRoot.toFile();
+		}
+	}
+
+	private Path initializerProjectDirectory(Path rootDir, ProjectDescription description)
+			throws IOException {
+		if (description.getBaseDirectory() != null) {
+			Path dir = rootDir.resolve(description.getBaseDirectory());
+			Files.createDirectories(dir);
+			return dir;
+		}
+		else {
+			return rootDir;
 		}
 	}
 
