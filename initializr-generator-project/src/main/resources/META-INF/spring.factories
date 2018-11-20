@@ -5,4 +5,5 @@ io.spring.initializr.generator.project.build.maven.MavenProjectGenerationConfigu
 io.spring.initializr.generator.project.code.SourceCodeProjectGenerationConfiguration,\
 io.spring.initializr.generator.project.code.java.JavaProjectGenerationConfiguration,\
 io.spring.initializr.generator.project.code.kotlin.KotlinProjectGenerationConfiguration,\
+io.spring.initializr.generator.project.configuration.ApplicationConfigurationProjectGenerationConfiguration,\
 io.spring.initializr.generator.project.scm.git.GitProjectGenerationConfiguration
