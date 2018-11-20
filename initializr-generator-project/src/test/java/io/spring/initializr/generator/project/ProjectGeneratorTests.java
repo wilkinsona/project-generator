@@ -330,6 +330,22 @@ public class ProjectGeneratorTests {
 		FileSystemUtils.deleteRecursively(project);
 	}
 
+	@Test
+	public void customPackageNameIsUsedWhenGeneratingJavaProject() throws IOException {
+		ProjectDescription description = new ProjectDescription();
+		description.setBuildSystem(new MavenBuildSystem());
+		description.setSpringBootVersion(Version.parse("2.1.0.RELEASE"));
+		description.setLanguage(new JavaLanguage());
+		description.setGroupId("com.example");
+		description.setPackageName("com.example.demo");
+		File project = new ProjectGenerator().generate(description);
+		List<String> relativePaths = getRelativePathsOfProjectFiles(project);
+		assertThat(relativePaths).contains(
+				"src/main/java/com/example/demo/DemoApplication.java",
+				"src/test/java/com/example/demo/DemoApplicationTests.java");
+		FileSystemUtils.deleteRecursively(project);
+	}
+
 	private List<String> getRelativePathsOfProjectFiles(File project) throws IOException {
 		List<String> relativePaths = new ArrayList<>();
 		Path projectPath = project.toPath();

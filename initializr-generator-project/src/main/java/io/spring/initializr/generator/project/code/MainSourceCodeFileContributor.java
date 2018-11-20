@@ -73,7 +73,7 @@ public class MainSourceCodeFileContributor<T extends TypeDeclaration, C extends 
 	public void contribute(File projectRoot) throws IOException {
 		S sourceCode = this.sourceFactory.get();
 		C compilationUnit = sourceCode.createCompilationUnit(
-				this.projectDescription.getGroupId(), "DemoApplication");
+				this.projectDescription.getPackageName(), "DemoApplication");
 		T mainApplicationType = compilationUnit.createTypeDeclaration("DemoApplication");
 		customizeMainApplicationType(mainApplicationType);
 		customizeMainCompilationUnit(compilationUnit);

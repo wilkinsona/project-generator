@@ -46,6 +46,8 @@ public class ProjectDescription {
 
 	private String artifactId;
 
+	private String packageName;
+
 	public Version getSpringBootVersion() {
 		return this.springBootVersion;
 	}
@@ -100,6 +102,14 @@ public class ProjectDescription {
 
 	public List<Dependency> getDependencies() {
 		return Collections.unmodifiableList(this.dependencies);
+	}
+
+	public String getPackageName() {
+		return (this.packageName != null) ? this.packageName : this.groupId;
+	}
+
+	public void setPackageName(String packageName) {
+		this.packageName = packageName;
 	}
 
 }

@@ -68,7 +68,7 @@ public class TestSourceCodeFileContributor<T extends TypeDeclaration, C extends 
 	public void contribute(File projectRoot) throws IOException {
 		S sourceCode = this.sourceFactory.get();
 		C compilationUnit = sourceCode.createCompilationUnit(
-				this.projectDescription.getGroupId(), "DemoApplicationTests");
+				this.projectDescription.getPackageName(), "DemoApplicationTests");
 		T testApplicationType = compilationUnit
 				.createTypeDeclaration("DemoApplicationTests");
 		customizeTestApplicationType(testApplicationType);
