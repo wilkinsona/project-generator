@@ -331,7 +331,7 @@ public class ProjectGeneratorTests {
 	}
 
 	@Test
-	public void customPackageNameIsUsedWhenGeneratingJavaProject() throws IOException {
+	public void customPackageNameIsUsedWhenGeneratingProject() throws IOException {
 		ProjectDescription description = initProjectDescription();
 		description.setBuildSystem(new MavenBuildSystem());
 		description.setSpringBootVersion(Version.parse("2.1.0.RELEASE"));
@@ -347,7 +347,7 @@ public class ProjectGeneratorTests {
 	}
 
 	@Test
-	public void customApplicationNameIsUsedWhenGeneratingJavaProject()
+	public void customApplicationNameIsUsedWhenGeneratingProject()
 			throws IOException {
 		ProjectDescription description = initProjectDescription();
 		description.setBuildSystem(new MavenBuildSystem());
