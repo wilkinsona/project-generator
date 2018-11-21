@@ -22,7 +22,6 @@ import java.util.stream.Collectors;
 import io.spring.initializr.generator.ProjectDescription;
 import io.spring.initializr.generator.buildsystem.Build;
 import io.spring.initializr.generator.buildsystem.gradle.ConditionalOnGradle;
-import io.spring.initializr.generator.buildsystem.gradle.ConditionalOnGradleVersion;
 import io.spring.initializr.generator.buildsystem.gradle.GradleBuild;
 import io.spring.initializr.generator.language.java.ConditionalOnJavaLanguage;
 import io.spring.initializr.generator.packaging.war.ConditionalOnWarPackaging;

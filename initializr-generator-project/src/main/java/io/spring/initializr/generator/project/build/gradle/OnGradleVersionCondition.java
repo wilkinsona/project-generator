@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package io.spring.initializr.generator.buildsystem.gradle;
+package io.spring.initializr.generator.project.build.gradle;
 
 import io.spring.initializr.generator.ProjectDescription;
 import io.spring.initializr.generator.condition.ProjectGenerationCondition;

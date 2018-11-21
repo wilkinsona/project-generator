@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package io.spring.initializr.generator.buildsystem.gradle;
+package io.spring.initializr.generator.project.build.gradle;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
