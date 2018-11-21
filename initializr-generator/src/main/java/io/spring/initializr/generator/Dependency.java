@@ -16,6 +16,10 @@
 
 package io.spring.initializr.generator;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+
 /**
  * A dependency to be declared in a project's build configuration.
  *
@@ -31,16 +35,20 @@ public class Dependency implements Comparable<Dependency> {
 
 	private final DependencyType type;
 
+	private final Collection<String> facets;
+
 	public Dependency(String groupId, String artifactId, DependencyType type) {
-		this(groupId, artifactId, null, type);
+		this(groupId, artifactId, null, type, null);
 	}
 
 	public Dependency(String groupId, String artifactId, String version,
-			DependencyType type) {
+			DependencyType type, Collection<String> facets) {
 		this.groupId = groupId;
 		this.artifactId = artifactId;
 		this.version = version;
 		this.type = type;
+		this.facets = (facets != null) ? new ArrayList<>(facets)
+				: Collections.emptyList();
 	}
 
 	/**
@@ -74,6 +82,14 @@ public class Dependency implements Comparable<Dependency> {
 	 */
 	public DependencyType getType() {
 		return this.type;
+	}
+
+	/**
+	 * The {@code facets} of the dependency.
+	 * @return the facets or an empty collection
+	 */
+	public Collection<String> getFacets() {
+		return this.facets;
 	}
 
 	@Override
