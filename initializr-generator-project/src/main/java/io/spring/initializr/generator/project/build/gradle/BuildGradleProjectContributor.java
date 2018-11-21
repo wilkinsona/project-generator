@@ -25,22 +25,22 @@ import java.util.Map;
 
 import io.spring.initializr.generator.Dependency;
 import io.spring.initializr.generator.DependencyType;
-import io.spring.initializr.generator.FileContributor;
+import io.spring.initializr.generator.ProjectContributor;
 import io.spring.initializr.generator.buildsystem.MavenRepository;
 import io.spring.initializr.generator.buildsystem.gradle.GradleBuild;
 import io.spring.initializr.generator.buildsystem.gradle.GradleBuild.TaskCustomization;
 import io.spring.initializr.generator.buildsystem.gradle.GradlePlugin;
 
 /**
- * {@link FileContributor} for the project's {@code build.gradle} file.
+ * {@link ProjectContributor} for the project's {@code build.gradle} file.
  *
  * @author Andy Wilkinson
  */
-class BuildGradleFileContributor implements FileContributor {
+class BuildGradleProjectContributor implements ProjectContributor {
 
 	private final GradleBuild build;
 
-	BuildGradleFileContributor(GradleBuild build) {
+	BuildGradleProjectContributor(GradleBuild build) {
 		this.build = build;
 	}
 

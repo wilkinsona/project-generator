@@ -31,11 +31,11 @@ import org.junit.rules.TemporaryFolder;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for {@link BuildGradleFileContributor}.
+ * Tests for {@link BuildGradleProjectContributor}.
  *
  * @author Andy Wilkinson
  */
-public class BuildGradleFileContributorTests {
+public class BuildGradleProjectContributorTests {
 
 	@Rule
 	public final TemporaryFolder temp = new TemporaryFolder();
@@ -46,7 +46,8 @@ public class BuildGradleFileContributorTests {
 		build.addMavenRepository(MavenRepository.MAVEN_CENTRAL);
 		build.buildscript((buildscript) -> buildscript.dependency(
 				"org.springframework.boot:spring-boot-gradle-plugin:2.1.0.RELEASE"));
-		BuildGradleFileContributor contributor = new BuildGradleFileContributor(build);
+		BuildGradleProjectContributor contributor = new BuildGradleProjectContributor(
+				build);
 		contributor.contribute(this.temp.getRoot());
 		File buildGradle = new File(this.temp.getRoot(), "build.gradle");
 		assertThat(buildGradle).isFile();
@@ -62,7 +63,8 @@ public class BuildGradleFileContributorTests {
 		GradleBuild build = new GradleBuild();
 		build.addMavenRepository(MavenRepository.MAVEN_CENTRAL);
 		build.buildscript((buildscript) -> buildscript.ext("kotlinVersion", "'1.2.51'"));
-		BuildGradleFileContributor contributor = new BuildGradleFileContributor(build);
+		BuildGradleProjectContributor contributor = new BuildGradleProjectContributor(
+				build);
 		contributor.contribute(this.temp.getRoot());
 		File buildGradle = new File(this.temp.getRoot(), "build.gradle");
 		assertThat(buildGradle).isFile();
@@ -75,7 +77,8 @@ public class BuildGradleFileContributorTests {
 	public void gradleBuildWithMavenCentralRepository() throws IOException {
 		GradleBuild build = new GradleBuild();
 		build.addMavenRepository(MavenRepository.MAVEN_CENTRAL);
-		BuildGradleFileContributor contributor = new BuildGradleFileContributor(build);
+		BuildGradleProjectContributor contributor = new BuildGradleProjectContributor(
+				build);
 		contributor.contribute(this.temp.getRoot());
 		File buildGradle = new File(this.temp.getRoot(), "build.gradle");
 		assertThat(buildGradle).isFile();
@@ -88,7 +91,8 @@ public class BuildGradleFileContributorTests {
 		GradleBuild build = new GradleBuild();
 		build.addMavenRepository("spring-milestones", "Spring Milestones",
 				"https://repo.spring.io/milestone");
-		BuildGradleFileContributor contributor = new BuildGradleFileContributor(build);
+		BuildGradleProjectContributor contributor = new BuildGradleProjectContributor(
+				build);
 		contributor.contribute(this.temp.getRoot());
 		File buildGradle = new File(this.temp.getRoot(), "build.gradle");
 		assertThat(buildGradle).isFile();
@@ -102,7 +106,8 @@ public class BuildGradleFileContributorTests {
 		GradleBuild build = new GradleBuild();
 		build.addSnapshotMavenRepository("spring-snapshots", "Spring Snapshots",
 				"https://repo.spring.io/snapshot");
-		BuildGradleFileContributor contributor = new BuildGradleFileContributor(build);
+		BuildGradleProjectContributor contributor = new BuildGradleProjectContributor(
+				build);
 		contributor.contribute(this.temp.getRoot());
 		File buildGradle = new File(this.temp.getRoot(), "build.gradle");
 		assertThat(buildGradle).isFile();
@@ -118,7 +123,8 @@ public class BuildGradleFileContributorTests {
 			task.invoke("inputs.dir", "snippetsDir");
 			task.invoke("dependsOn", "test");
 		});
-		BuildGradleFileContributor contributor = new BuildGradleFileContributor(build);
+		BuildGradleProjectContributor contributor = new BuildGradleProjectContributor(
+				build);
 		contributor.contribute(this.temp.getRoot());
 		File buildGradle = new File(this.temp.getRoot(), "build.gradle");
 		assertThat(buildGradle).isFile();
@@ -134,7 +140,8 @@ public class BuildGradleFileContributorTests {
 			task.set("kotlinOptions.freeCompilerArgs", "['-Xjsr305=strict']");
 			task.set("kotlinOptions.jvmTarget", "'1.8'");
 		});
-		BuildGradleFileContributor contributor = new BuildGradleFileContributor(build);
+		BuildGradleProjectContributor contributor = new BuildGradleProjectContributor(
+				build);
 		contributor.contribute(this.temp.getRoot());
 		File buildGradle = new File(this.temp.getRoot(), "build.gradle");
 		assertThat(buildGradle).isFile();
@@ -154,7 +161,8 @@ public class BuildGradleFileContributorTests {
 				kotlinOptions.set("jvmTarget", "'1.8'");
 			});
 		});
-		BuildGradleFileContributor contributor = new BuildGradleFileContributor(build);
+		BuildGradleProjectContributor contributor = new BuildGradleProjectContributor(
+				build);
 		contributor.contribute(this.temp.getRoot());
 		File buildGradle = new File(this.temp.getRoot(), "build.gradle");
 		assertThat(buildGradle).isFile();
@@ -167,7 +175,8 @@ public class BuildGradleFileContributorTests {
 	@Test
 	public void gradleBuildWithVersionedDependency() throws IOException {
 		GradleBuild build = new GradleBuild();
-		BuildGradleFileContributor contributor = new BuildGradleFileContributor(build);
+		BuildGradleProjectContributor contributor = new BuildGradleProjectContributor(
+				build);
 		build.addDependency("org.jetbrains.kotlin", "kotlin-stdlib-jdk8",
 				"${kotlinVersion}", DependencyType.COMPILE);
 		contributor.contribute(this.temp.getRoot());
@@ -182,7 +191,8 @@ public class BuildGradleFileContributorTests {
 	@Test
 	public void gradleBuildWithDependency() throws IOException {
 		GradleBuild build = new GradleBuild();
-		BuildGradleFileContributor contributor = new BuildGradleFileContributor(build);
+		BuildGradleProjectContributor contributor = new BuildGradleProjectContributor(
+				build);
 		build.addDependency("org.springframework.boot", "spring-boot-starter",
 				DependencyType.COMPILE);
 		contributor.contribute(this.temp.getRoot());

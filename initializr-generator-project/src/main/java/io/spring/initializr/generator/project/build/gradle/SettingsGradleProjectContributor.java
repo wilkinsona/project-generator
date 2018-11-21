@@ -21,20 +21,20 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
 
-import io.spring.initializr.generator.FileContributor;
+import io.spring.initializr.generator.ProjectContributor;
 import io.spring.initializr.generator.buildsystem.MavenRepository;
 import io.spring.initializr.generator.buildsystem.gradle.GradleBuild;
 
 /**
- * {@link FileContributor} for the project's {@code settings.gradle} file.
+ * {@link ProjectContributor} for the project's {@code settings.gradle} file.
  *
  * @author Andy Wilkinson
  */
-class SettingsGradleFileContributor implements FileContributor {
+class SettingsGradleProjectContributor implements ProjectContributor {
 
 	private final GradleBuild build;
 
-	SettingsGradleFileContributor(GradleBuild build) {
+	SettingsGradleProjectContributor(GradleBuild build) {
 		this.build = build;
 	}
 

@@ -30,11 +30,11 @@ import org.junit.rules.TemporaryFolder;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for {@link SettingsGradleFileContributor}.
+ * Tests for {@link SettingsGradleProjectContributor}.
  *
  * @author Andy Wilkinson
  */
-public class SettingsGradleFileContributorTests {
+public class SettingsGradleProjectContributorTests {
 
 	@Rule
 	public final TemporaryFolder temp = new TemporaryFolder();
@@ -43,7 +43,7 @@ public class SettingsGradleFileContributorTests {
 	public void gradleBuildWithMavenCentralRepository() throws IOException {
 		GradleBuild build = new GradleBuild();
 		build.addMavenRepository(MavenRepository.MAVEN_CENTRAL);
-		SettingsGradleFileContributor contributor = new SettingsGradleFileContributor(
+		SettingsGradleProjectContributor contributor = new SettingsGradleProjectContributor(
 				build);
 		contributor.contribute(this.temp.getRoot());
 		File settingsGradle = new File(this.temp.getRoot(), "settings.gradle");
@@ -58,7 +58,7 @@ public class SettingsGradleFileContributorTests {
 		GradleBuild build = new GradleBuild();
 		build.addMavenRepository("spring-milestones", "Spring Milestones",
 				"https://repo.spring.io/milestone");
-		SettingsGradleFileContributor contributor = new SettingsGradleFileContributor(
+		SettingsGradleProjectContributor contributor = new SettingsGradleProjectContributor(
 				build);
 		contributor.contribute(this.temp.getRoot());
 		File settingsGradle = new File(this.temp.getRoot(), "settings.gradle");
@@ -78,7 +78,7 @@ public class SettingsGradleFileContributorTests {
 		GradleBuild build = new GradleBuild();
 		build.addSnapshotMavenRepository("spring-snapshots", "Spring Snapshots",
 				"https://repo.spring.io/snapshot");
-		SettingsGradleFileContributor contributor = new SettingsGradleFileContributor(
+		SettingsGradleProjectContributor contributor = new SettingsGradleProjectContributor(
 				build);
 		contributor.contribute(this.temp.getRoot());
 		File settingsGradle = new File(this.temp.getRoot(), "settings.gradle");

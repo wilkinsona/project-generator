@@ -37,7 +37,7 @@ import javax.xml.transform.stream.StreamResult;
 
 import io.spring.initializr.generator.Dependency;
 import io.spring.initializr.generator.DependencyType;
-import io.spring.initializr.generator.FileContributor;
+import io.spring.initializr.generator.ProjectContributor;
 import io.spring.initializr.generator.buildsystem.MavenRepository;
 import io.spring.initializr.generator.buildsystem.maven.MavenBuild;
 import io.spring.initializr.generator.buildsystem.maven.MavenPlugin;
@@ -50,15 +50,15 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
 /**
- * {@link FileContributor} to contribute the files for a {@link MavenBuild}.
+ * {@link ProjectContributor} to contribute the files for a {@link MavenBuild}.
  *
  * @author Andy Wilkinson
  */
-public class MavenBuildFileContributor implements FileContributor {
+public class MavenBuildProjectContributor implements ProjectContributor {
 
 	private final MavenBuild mavenBuild;
 
-	public MavenBuildFileContributor(MavenBuild mavenBuild) {
+	public MavenBuildProjectContributor(MavenBuild mavenBuild) {
 		this.mavenBuild = mavenBuild;
 	}
 

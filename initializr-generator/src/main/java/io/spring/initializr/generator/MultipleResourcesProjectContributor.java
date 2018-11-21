@@ -26,13 +26,13 @@ import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.springframework.util.FileCopyUtils;
 
 /**
- * A {@link FileContributor} that contributes all of the resources found beneath a root
+ * A {@link ProjectContributor} that contributes all of the resources found beneath a root
  * location to a generated project.
  *
  * @author Andy Wilkinson
  * @see PathMatchingResourcePatternResolver
  */
-public class MultipleResourcesFileContributor implements FileContributor {
+public class MultipleResourcesProjectContributor implements ProjectContributor {
 
 	private final PathMatchingResourcePatternResolver resolver = new PathMatchingResourcePatternResolver();
 
@@ -40,11 +40,11 @@ public class MultipleResourcesFileContributor implements FileContributor {
 
 	private final Predicate<String> executable;
 
-	public MultipleResourcesFileContributor(String rootResource) {
+	public MultipleResourcesProjectContributor(String rootResource) {
 		this(rootResource, (filename) -> false);
 	}
 
-	public MultipleResourcesFileContributor(String rootResource,
+	public MultipleResourcesProjectContributor(String rootResource,
 			Predicate<String> executable) {
 		this.rootResource = rootResource;
 		this.executable = executable;

@@ -26,10 +26,10 @@ import io.spring.initializr.generator.project.ProjectGenerationConfiguration;
 import io.spring.initializr.generator.project.code.MainApplicationTypeCustomizer;
 import io.spring.initializr.generator.project.code.MainCompilationUnitCustomizer;
 import io.spring.initializr.generator.project.code.MainSourceCodeCustomizer;
-import io.spring.initializr.generator.project.code.MainSourceCodeFileContributor;
+import io.spring.initializr.generator.project.code.MainSourceCodeProjectContributor;
 import io.spring.initializr.generator.project.code.TestApplicationTypeCustomizer;
 import io.spring.initializr.generator.project.code.TestSourceCodeCustomizer;
-import io.spring.initializr.generator.project.code.TestSourceCodeFileContributor;
+import io.spring.initializr.generator.project.code.TestSourceCodeProjectContributor;
 
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.context.annotation.Bean;
@@ -48,23 +48,23 @@ import org.springframework.context.annotation.Import;
 public class KotlinProjectGenerationConfiguration {
 
 	@Bean
-	public MainSourceCodeFileContributor<KotlinTypeDeclaration, KotlinCompilationUnit, KotlinSourceCode> mainKotlinSourceCodeFileContributor(
+	public MainSourceCodeProjectContributor<KotlinTypeDeclaration, KotlinCompilationUnit, KotlinSourceCode> mainKotlinSourceCodeProjectContributor(
 			ProjectDescription projectDescription,
 			ObjectProvider<MainApplicationTypeCustomizer<?>> mainApplicationTypeCustomizers,
 			ObjectProvider<MainCompilationUnitCustomizer<?, ?>> mainCompilationUnitCustomizers,
 			ObjectProvider<MainSourceCodeCustomizer<?, ?, ?>> mainSourceCodeCustomizers) {
-		return new MainSourceCodeFileContributor<>(projectDescription,
+		return new MainSourceCodeProjectContributor<>(projectDescription,
 				KotlinSourceCode::new, new KotlinSourceCodeWriter(),
 				mainApplicationTypeCustomizers, mainCompilationUnitCustomizers,
 				mainSourceCodeCustomizers);
 	}
 
 	@Bean
-	public TestSourceCodeFileContributor<KotlinTypeDeclaration, KotlinCompilationUnit, KotlinSourceCode> testKotlinSourceCodeFileContributor(
+	public TestSourceCodeProjectContributor<KotlinTypeDeclaration, KotlinCompilationUnit, KotlinSourceCode> testKotlinSourceCodeProjectContributor(
 			ProjectDescription projectDescription,
 			ObjectProvider<TestApplicationTypeCustomizer<?>> testApplicationTypeCustomizers,
 			ObjectProvider<TestSourceCodeCustomizer<?, ?, ?>> testSourceCodeCustomizers) {
-		return new TestSourceCodeFileContributor<>(projectDescription,
+		return new TestSourceCodeProjectContributor<>(projectDescription,
 				KotlinSourceCode::new, new KotlinSourceCodeWriter(),
 				testApplicationTypeCustomizers, testSourceCodeCustomizers);
 	}

@@ -14,18 +14,31 @@
  * limitations under the License.
  */
 
-package io.spring.initializr.generator;
+package io.spring.initializr.generator.project;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
+
+import io.spring.initializr.generator.ProjectContributor;
 
 /**
- * A callback for contributing on or more files to a generated project.
+ * A collection of {@link ProjectContributor project contributors}.
  *
  * @author Andy Wilkinson
  */
-public interface FileContributor {
+class ProjectContributors {
 
-	void contribute(File projectRoot) throws IOException;
+	private final List<ProjectContributor> contributors;
+
+	ProjectContributors(List<ProjectContributor> contributors) {
+		this.contributors = contributors;
+	}
+
+	void contribute(File projectRoot) throws IOException {
+		for (ProjectContributor contributor : this.contributors) {
+			contributor.contribute(projectRoot);
+		}
+	}
 
 }

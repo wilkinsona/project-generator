@@ -25,13 +25,13 @@ import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.springframework.util.FileCopyUtils;
 
 /**
- * {@link FileContributor} that contributes a single file, identified by a resource
+ * {@link ProjectContributor} that contributes a single file, identified by a resource
  * pattern, to a generated project.
  *
  * @author Andy Wilkinson
  * @see PathMatchingResourcePatternResolver
  */
-public class SingleResourceFileContributor implements FileContributor {
+public class SingleResourceProjectContributor implements ProjectContributor {
 
 	private final PathMatchingResourcePatternResolver resolver = new PathMatchingResourcePatternResolver();
 
@@ -39,7 +39,7 @@ public class SingleResourceFileContributor implements FileContributor {
 
 	private final String resourcePattern;
 
-	public SingleResourceFileContributor(String filename, String resourcePattern) {
+	public SingleResourceProjectContributor(String filename, String resourcePattern) {
 		this.filename = filename;
 		this.resourcePattern = resourcePattern;
 	}

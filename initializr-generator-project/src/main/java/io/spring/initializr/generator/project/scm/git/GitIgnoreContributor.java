@@ -16,15 +16,15 @@
 
 package io.spring.initializr.generator.project.scm.git;
 
-import io.spring.initializr.generator.SingleResourceFileContributor;
+import io.spring.initializr.generator.SingleResourceProjectContributor;
 
 /**
- * A {@link SingleResourceFileContributor} that contributes a {@code .gitignore} file to a
- * project.
+ * A {@link SingleResourceProjectContributor} that contributes a {@code .gitignore} file
+ * to a project.
  *
  * @author Andy Wilkinson
  */
-public class GitIgnoreContributor extends SingleResourceFileContributor {
+public class GitIgnoreContributor extends SingleResourceProjectContributor {
 
 	public GitIgnoreContributor() {
 		this("classpath:git/gitignore");

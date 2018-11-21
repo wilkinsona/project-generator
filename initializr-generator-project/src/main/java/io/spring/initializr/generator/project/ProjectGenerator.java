@@ -22,7 +22,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
 
-import io.spring.initializr.generator.FileContributor;
+import io.spring.initializr.generator.ProjectContributor;
 import io.spring.initializr.generator.ProjectDescription;
 
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
@@ -47,7 +47,8 @@ public class ProjectGenerator {
 			context.refresh();
 			Path projectRoot = Files.createTempDirectory("project-");
 			Path projectDirectory = initializerProjectDirectory(projectRoot, description);
-			context.getBean(FileContributors.class).contribute(projectDirectory.toFile());
+			context.getBean(ProjectContributors.class)
+					.contribute(projectDirectory.toFile());
 			return projectRoot.toFile();
 		}
 	}
@@ -73,8 +74,9 @@ public class ProjectGenerator {
 	static class CoreConfiguration {
 
 		@Bean
-		public FileContributors fileContributors(List<FileContributor> fileContributors) {
-			return new FileContributors(fileContributors);
+		public ProjectContributors projectContributors(
+				List<ProjectContributor> projectContributors) {
+			return new ProjectContributors(projectContributors);
 		}
 
 	}

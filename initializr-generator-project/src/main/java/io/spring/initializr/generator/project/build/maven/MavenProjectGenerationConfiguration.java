@@ -69,7 +69,7 @@ public class MavenProjectGenerationConfiguration {
 	}
 
 	@Bean
-	public MavenBuildFileContributor mavenBuildFileContributor(
+	public MavenBuildProjectContributor mavenBuildProjectContributor(
 			ProjectDescription projectDescription,
 			ObjectProvider<BuildCustomizer<?>> buildCustomizers) {
 		MavenBuild mavenBuild = new MavenBuild();
@@ -77,7 +77,7 @@ public class MavenProjectGenerationConfiguration {
 		mavenBuild.setName(projectDescription.getArtifactId());
 		mavenBuild.setVersion("0.0.1-SNAPSHOT");
 		customizeBuild(buildCustomizers, mavenBuild);
-		return new MavenBuildFileContributor(mavenBuild);
+		return new MavenBuildProjectContributor(mavenBuild);
 	}
 
 	@SuppressWarnings("unchecked")

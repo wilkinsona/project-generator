@@ -16,15 +16,15 @@
 
 package io.spring.initializr.generator.project.configuration;
 
-import io.spring.initializr.generator.SingleResourceFileContributor;
+import io.spring.initializr.generator.SingleResourceProjectContributor;
 
 /**
- * A {@link SingleResourceFileContributor} that contributes a
+ * A {@link SingleResourceProjectContributor} that contributes a
  * {@code application.properties} file to a project.
  *
  * @author Stephane Nicoll
  */
-public class ApplicationPropertiesContributor extends SingleResourceFileContributor {
+public class ApplicationPropertiesContributor extends SingleResourceProjectContributor {
 
 	public ApplicationPropertiesContributor() {
 		this("classpath:configuration/application.properties");

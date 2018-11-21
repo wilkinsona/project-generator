@@ -22,7 +22,7 @@ import java.util.List;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
-import io.spring.initializr.generator.FileContributor;
+import io.spring.initializr.generator.ProjectContributor;
 import io.spring.initializr.generator.ProjectDescription;
 import io.spring.initializr.generator.language.CompilationUnit;
 import io.spring.initializr.generator.language.SourceCode;
@@ -33,7 +33,7 @@ import io.spring.initializr.generator.util.LambdaSafe;
 import org.springframework.beans.factory.ObjectProvider;
 
 /**
- * {@link FileContributor} for the application's main source code.
+ * {@link ProjectContributor} for the application's main source code.
  *
  * @param <T> language-specific type declaration
  * @param <C> language-specific compilation unit
@@ -41,8 +41,8 @@ import org.springframework.beans.factory.ObjectProvider;
  * @author Andy Wilkinson
  * @author Stephane Nicoll
  */
-public class MainSourceCodeFileContributor<T extends TypeDeclaration, C extends CompilationUnit<T>, S extends SourceCode<T, C>>
-		implements FileContributor {
+public class MainSourceCodeProjectContributor<T extends TypeDeclaration, C extends CompilationUnit<T>, S extends SourceCode<T, C>>
+		implements ProjectContributor {
 
 	private final ProjectDescription projectDescription;
 
@@ -56,7 +56,7 @@ public class MainSourceCodeFileContributor<T extends TypeDeclaration, C extends 
 
 	private final ObjectProvider<MainSourceCodeCustomizer<?, ?, ?>> mainSourceCodeCustomizers;
 
-	public MainSourceCodeFileContributor(ProjectDescription projectDescription,
+	public MainSourceCodeProjectContributor(ProjectDescription projectDescription,
 			Supplier<S> sourceFactory, SourceCodeWriter<S> sourceWriter,
 			ObjectProvider<MainApplicationTypeCustomizer<?>> mainTypeCustomizers,
 			ObjectProvider<MainCompilationUnitCustomizer<?, ?>> mainCompilationUnitCustomizers,

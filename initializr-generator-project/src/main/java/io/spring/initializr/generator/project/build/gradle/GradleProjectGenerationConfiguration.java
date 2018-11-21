@@ -92,9 +92,9 @@ public class GradleProjectGenerationConfiguration {
 	}
 
 	@Bean
-	public BuildGradleFileContributor gradleBuildFileContributor(
+	public BuildGradleProjectContributor gradleBuildProjectContributor(
 			GradleBuild gradleBuild) {
-		return new BuildGradleFileContributor(gradleBuild);
+		return new BuildGradleProjectContributor(gradleBuild);
 	}
 
 	/**
@@ -110,9 +110,9 @@ public class GradleProjectGenerationConfiguration {
 		}
 
 		@Bean
-		public Gradle3SettingsGradleFileContributor settingsGradleFileContributor(
+		public Gradle3SettingsGradleProjectContributor settingsGradleProjectContributor(
 				GradleBuild gradleBuild) {
-			return new Gradle3SettingsGradleFileContributor(gradleBuild);
+			return new Gradle3SettingsGradleProjectContributor(gradleBuild);
 		}
 
 		@Bean
@@ -141,9 +141,9 @@ public class GradleProjectGenerationConfiguration {
 		}
 
 		@Bean
-		public SettingsGradleFileContributor settingsGradleFileContributor(
+		public SettingsGradleProjectContributor settingsGradleProjectContributor(
 				GradleBuild gradleBuild) {
-			return new SettingsGradleFileContributor(gradleBuild);
+			return new SettingsGradleProjectContributor(gradleBuild);
 		}
 
 		@Bean

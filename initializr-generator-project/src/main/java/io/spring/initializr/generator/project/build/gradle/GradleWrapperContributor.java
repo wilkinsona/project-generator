@@ -16,15 +16,15 @@
 
 package io.spring.initializr.generator.project.build.gradle;
 
-import io.spring.initializr.generator.MultipleResourcesFileContributor;
+import io.spring.initializr.generator.MultipleResourcesProjectContributor;
 
 /**
- * A {@link MultipleResourcesFileContributor} that contributes Gradle's wrapper to a
+ * A {@link MultipleResourcesProjectContributor} that contributes Gradle's wrapper to a
  * project.
  *
  * @author Andy Wilkinson
  */
-class GradleWrapperContributor extends MultipleResourcesFileContributor {
+class GradleWrapperContributor extends MultipleResourcesProjectContributor {
 
 	GradleWrapperContributor(String gradleVersion) {
 		super("classpath:gradle/" + gradleVersion + "/wrapper",

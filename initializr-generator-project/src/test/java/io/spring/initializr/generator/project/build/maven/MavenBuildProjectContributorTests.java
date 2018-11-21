@@ -31,11 +31,11 @@ import org.junit.rules.TemporaryFolder;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for {@link MavenBuildFileContributor}.
+ * Tests for {@link MavenBuildProjectContributor}.
  *
  * @author Andy Wilkinson
  */
-public class MavenBuildFileContributorTests {
+public class MavenBuildProjectContributorTests {
 
 	@Rule
 	public final TemporaryFolder temp = new TemporaryFolder();
@@ -354,7 +354,7 @@ public class MavenBuildFileContributorTests {
 	private void generatePom(MavenBuild mavenBuild, Consumer<NodeAssert> consumer)
 			throws Exception {
 		File projectRoot = this.temp.getRoot();
-		new MavenBuildFileContributor(mavenBuild).contribute(projectRoot);
+		new MavenBuildProjectContributor(mavenBuild).contribute(projectRoot);
 		File pomFile = new File(projectRoot, "pom.xml");
 		assertThat(pomFile).exists();
 		consumer.accept(new NodeAssert(pomFile));

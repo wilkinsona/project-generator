@@ -22,7 +22,7 @@ import java.util.List;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
-import io.spring.initializr.generator.FileContributor;
+import io.spring.initializr.generator.ProjectContributor;
 import io.spring.initializr.generator.ProjectDescription;
 import io.spring.initializr.generator.language.CompilationUnit;
 import io.spring.initializr.generator.language.SourceCode;
@@ -33,15 +33,15 @@ import io.spring.initializr.generator.util.LambdaSafe;
 import org.springframework.beans.factory.ObjectProvider;
 
 /**
- * {@link FileContributor} for the application's test source code.
+ * {@link ProjectContributor} for the application's test source code.
  *
  * @param <T> language-specific type declaration
  * @param <C> language-specific compilation unit
  * @param <S> language-specific source code
  * @author Stephane Nicoll
  */
-public class TestSourceCodeFileContributor<T extends TypeDeclaration, C extends CompilationUnit<T>, S extends SourceCode<T, C>>
-		implements FileContributor {
+public class TestSourceCodeProjectContributor<T extends TypeDeclaration, C extends CompilationUnit<T>, S extends SourceCode<T, C>>
+		implements ProjectContributor {
 
 	private final ProjectDescription projectDescription;
 
@@ -53,7 +53,7 @@ public class TestSourceCodeFileContributor<T extends TypeDeclaration, C extends 
 
 	private final ObjectProvider<TestSourceCodeCustomizer<?, ?, ?>> testSourceCodeCustomizers;
 
-	public TestSourceCodeFileContributor(ProjectDescription projectDescription,
+	public TestSourceCodeProjectContributor(ProjectDescription projectDescription,
 			Supplier<S> sourceFactory, SourceCodeWriter<S> sourceWriter,
 			ObjectProvider<TestApplicationTypeCustomizer<?>> testApplicationTypeCustomizers,
 			ObjectProvider<TestSourceCodeCustomizer<?, ?, ?>> testSourceCodeCustomizers) {

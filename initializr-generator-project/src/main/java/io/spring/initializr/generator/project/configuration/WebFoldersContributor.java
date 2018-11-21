@@ -18,16 +18,16 @@ package io.spring.initializr.generator.project.configuration;
 
 import java.io.File;
 
-import io.spring.initializr.generator.FileContributor;
+import io.spring.initializr.generator.ProjectContributor;
 import io.spring.initializr.generator.ProjectDescription;
 
 /**
- * A {@link FileContributor} that creates web-specific directories when a web-related
+ * A {@link ProjectContributor} that creates web-specific directories when a web-related
  * project is detected.
  *
  * @author Stephane Nicoll
  */
-public class WebFoldersContributor implements FileContributor {
+public class WebFoldersContributor implements ProjectContributor {
 
 	private final ProjectDescription projectDescription;
 

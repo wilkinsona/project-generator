@@ -16,15 +16,15 @@
 
 package io.spring.initializr.generator.project.build.maven;
 
-import io.spring.initializr.generator.MultipleResourcesFileContributor;
+import io.spring.initializr.generator.MultipleResourcesProjectContributor;
 
 /**
- * A {@link MultipleResourcesFileContributor} that contributes Maven's wrapper to a
+ * A {@link MultipleResourcesProjectContributor} that contributes Maven's wrapper to a
  * project.
  *
  * @author Andy Wilkinson
  */
-class MavenWrapperContributor extends MultipleResourcesFileContributor {
+class MavenWrapperContributor extends MultipleResourcesProjectContributor {
 
 	MavenWrapperContributor() {
 		super("classpath:maven/wrapper",
