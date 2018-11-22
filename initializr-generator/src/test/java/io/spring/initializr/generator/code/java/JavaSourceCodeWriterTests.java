@@ -16,10 +16,10 @@
 
 package io.spring.initializr.generator.code.java;
 
-import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Modifier;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
 
@@ -32,9 +32,10 @@ import io.spring.initializr.generator.language.java.JavaMethodInvocation;
 import io.spring.initializr.generator.language.java.JavaSourceCode;
 import io.spring.initializr.generator.language.java.JavaSourceCodeWriter;
 import io.spring.initializr.generator.language.java.JavaTypeDeclaration;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.junitpioneer.jupiter.TempDirectory;
+import org.junitpioneer.jupiter.TempDirectory.TempDir;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -43,40 +44,38 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Andy Wilkinson
  */
-public class JavaSourceCodeWriterTests {
+@ExtendWith(TempDirectory.class)
+class JavaSourceCodeWriterTests {
 
-	@Rule
-	public final TemporaryFolder temp = new TemporaryFolder();
+	private final Path directory;
 
 	private final JavaSourceCodeWriter writer = new JavaSourceCodeWriter();
 
+	JavaSourceCodeWriterTests(@TempDir Path directory) {
+		this.directory = directory;
+	}
+
 	@Test
-	public void emptyCompilationUnit() throws IOException {
+	void emptyCompilationUnit() throws IOException {
 		JavaSourceCode sourceCode = new JavaSourceCode();
 		sourceCode.createCompilationUnit("com.example", "Test");
-		this.writer.writeTo(this.temp.getRoot(), sourceCode);
-		File testSource = new File(this.temp.getRoot(), "com/example/Test.java");
-		assertThat(testSource).isFile();
-		List<String> lines = Files.readAllLines(testSource.toPath());
+		List<String> lines = writeSingleType(sourceCode, "com/example/Test.java");
 		assertThat(lines).containsExactly("package com.example;", "");
 	}
 
 	@Test
-	public void emptyTypeDeclaration() throws IOException {
+	void emptyTypeDeclaration(@TempDir Path directory) throws IOException {
 		JavaSourceCode sourceCode = new JavaSourceCode();
 		JavaCompilationUnit compilationUnit = sourceCode
 				.createCompilationUnit("com.example", "Test");
 		compilationUnit.createTypeDeclaration("Test");
-		this.writer.writeTo(this.temp.getRoot(), sourceCode);
-		File testSource = new File(this.temp.getRoot(), "com/example/Test.java");
-		assertThat(testSource).isFile();
-		List<String> lines = Files.readAllLines(testSource.toPath());
+		List<String> lines = writeSingleType(sourceCode, "com/example/Test.java");
 		assertThat(lines).containsExactly("package com.example;", "",
 				"public class Test {", "", "}", "");
 	}
 
 	@Test
-	public void springBootApplication() throws IOException {
+	void springBootApplication(@TempDir Path directory) throws IOException {
 		JavaSourceCode sourceCode = new JavaSourceCode();
 		JavaCompilationUnit compilationUnit = sourceCode
 				.createCompilationUnit("com.example", "Test");
@@ -89,10 +88,7 @@ public class JavaSourceCodeWriterTests {
 				.body(new JavaExpressionStatement(new JavaMethodInvocation(
 						"org.springframework.boot.SpringApplication", "run", "Test.class",
 						"args"))));
-		this.writer.writeTo(this.temp.getRoot(), sourceCode);
-		File testSource = new File(this.temp.getRoot(), "com/example/Test.java");
-		assertThat(testSource).isFile();
-		List<String> lines = Files.readAllLines(testSource.toPath());
+		List<String> lines = writeSingleType(sourceCode, "com/example/Test.java");
 		assertThat(lines).containsExactly("package com.example;", "",
 				"import org.springframework.boot.SpringApplication;",
 				"import org.springframework.boot.autoconfigure.SpringBootApplication;",
@@ -102,7 +98,7 @@ public class JavaSourceCodeWriterTests {
 	}
 
 	@Test
-	public void annotationWithSimpleStringAttribute() throws IOException {
+	void annotationWithSimpleStringAttribute() throws IOException {
 		List<String> lines = writeClassAnnotation(
 				Annotation.name("org.springframework.test.TestApplication",
 						(builder) -> builder.attribute("name", String.class, "test")));
@@ -112,7 +108,7 @@ public class JavaSourceCodeWriterTests {
 	}
 
 	@Test
-	public void annotationWithOnlyValueAttribute() throws IOException {
+	void annotationWithOnlyValueAttribute() throws IOException {
 		List<String> lines = writeClassAnnotation(
 				Annotation.name("org.springframework.test.TestApplication",
 						(builder) -> builder.attribute("value", String.class, "test")));
@@ -122,7 +118,7 @@ public class JavaSourceCodeWriterTests {
 	}
 
 	@Test
-	public void annotationWithSimpleEnumAttribute() throws IOException {
+	void annotationWithSimpleEnumAttribute() throws IOException {
 		List<String> lines = writeClassAnnotation(
 				Annotation.name("org.springframework.test.TestApplication",
 						(builder) -> builder.attribute("unit", Enum.class,
@@ -135,7 +131,7 @@ public class JavaSourceCodeWriterTests {
 	}
 
 	@Test
-	public void annotationWithClassArrayAttribute() throws IOException {
+	void annotationWithClassArrayAttribute() throws IOException {
 		List<String> lines = writeClassAnnotation(
 				Annotation.name("org.springframework.test.TestApplication",
 						(builder) -> builder.attribute("target", Class.class,
@@ -148,7 +144,7 @@ public class JavaSourceCodeWriterTests {
 	}
 
 	@Test
-	public void annotationWithSeveralAttributes() throws IOException {
+	void annotationWithSeveralAttributes() throws IOException {
 		List<String> lines = writeClassAnnotation(Annotation.name(
 				"org.springframework.test.TestApplication",
 				(builder) -> builder.attribute("target", Class.class, "com.example.One")
@@ -167,14 +163,11 @@ public class JavaSourceCodeWriterTests {
 				.createCompilationUnit("com.example", "Test");
 		JavaTypeDeclaration test = compilationUnit.createTypeDeclaration("Test");
 		test.annotate(annotation);
-		this.writer.writeTo(this.temp.getRoot(), sourceCode);
-		File testSource = new File(this.temp.getRoot(), "com/example/Test.java");
-		assertThat(testSource).isFile();
-		return Files.readAllLines(testSource.toPath());
+		return writeSingleType(sourceCode, "com/example/Test.java");
 	}
 
 	@Test
-	public void methodWithSimpleAnnotation() throws IOException {
+	void methodWithSimpleAnnotation() throws IOException {
 		JavaSourceCode sourceCode = new JavaSourceCode();
 		JavaCompilationUnit compilationUnit = sourceCode
 				.createCompilationUnit("com.example", "Test");
@@ -183,14 +176,24 @@ public class JavaSourceCodeWriterTests {
 				.returning("void").parameters().body();
 		method.annotate(Annotation.name("com.example.test.TestAnnotation"));
 		test.addMethodDeclaration(method);
-		this.writer.writeTo(this.temp.getRoot(), sourceCode);
-		File testSource = new File(this.temp.getRoot(), "com/example/Test.java");
-		assertThat(testSource).isFile();
-		List<String> lines = Files.readAllLines(testSource.toPath());
+		List<String> lines = writeSingleType(sourceCode, "com/example/Test.java");
 		assertThat(lines).containsExactly("package com.example;", "",
 				"import com.example.test.TestAnnotation;", "", "public class Test {", "",
 				"    @TestAnnotation", "    public void something() {", "    }", "", "}",
 				"");
+	}
+
+	private List<String> writeSingleType(JavaSourceCode sourceCode, String location)
+			throws IOException {
+		Path source = writeSourceCode(sourceCode).resolve(location);
+		assertThat(source).isRegularFile();
+		return Files.readAllLines(source);
+	}
+
+	private Path writeSourceCode(JavaSourceCode sourceCode) throws IOException {
+		Path projectDirectory = Files.createTempDirectory(this.directory, "project-");
+		this.writer.writeTo(projectDirectory.toFile(), sourceCode);
+		return projectDirectory;
 	}
 
 }

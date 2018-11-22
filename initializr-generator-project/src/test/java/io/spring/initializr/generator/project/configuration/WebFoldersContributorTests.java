@@ -16,15 +16,18 @@
 
 package io.spring.initializr.generator.project.configuration;
 
-import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Collections;
 
 import io.spring.initializr.generator.Dependency;
 import io.spring.initializr.generator.DependencyType;
 import io.spring.initializr.generator.ProjectDescription;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.junitpioneer.jupiter.TempDirectory;
+import org.junitpioneer.jupiter.TempDirectory.TempDir;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -33,38 +36,43 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Stephane Nicoll
  */
-public class WebFoldersContributorTests {
+@ExtendWith(TempDirectory.class)
+class WebFoldersContributorTests {
 
-	@Rule
-	public final TemporaryFolder temp = new TemporaryFolder();
+	private final Path directory;
+
+	WebFoldersContributorTests(@TempDir Path directory) {
+		this.directory = directory;
+	}
 
 	@Test
-	public void webFoldersCreatedWithWebDependency() {
+	void webFoldersCreatedWithWebDependency() throws IOException {
 		ProjectDescription description = new ProjectDescription();
 		description.addDependency(new Dependency("com.example", "simple", null,
 				DependencyType.COMPILE, null));
 		description.addDependency(new Dependency("com.example", "web", null,
 				DependencyType.COMPILE, Collections.singleton("web")));
-		new WebFoldersContributor(description).contribute(this.temp.getRoot());
-		assertThat(new File(this.temp.getRoot(), "src/main/resources/templates"))
-				.isDirectory();
-		assertThat(new File(this.temp.getRoot(), "src/main/resources/static"))
-				.isDirectory();
-
+		Path projectDir = contribute(description);
+		assertThat(projectDir.resolve("src/main/resources/templates")).isDirectory();
+		assertThat(projectDir.resolve("src/main/resources/static")).isDirectory();
 	}
 
 	@Test
-	public void webFoldersNotCreatedWithoutWebDependency() {
+	void webFoldersNotCreatedWithoutWebDependency() throws IOException {
 		ProjectDescription description = new ProjectDescription();
 		description.addDependency(new Dependency("com.example", "simple", null,
 				DependencyType.COMPILE, null));
 		description.addDependency(new Dependency("com.example", "another", null,
 				DependencyType.COMPILE, Collections.singleton("test")));
-		new WebFoldersContributor(description).contribute(this.temp.getRoot());
-		assertThat(new File(this.temp.getRoot(), "src/main/resources/templates"))
-				.doesNotExist();
-		assertThat(new File(this.temp.getRoot(), "src/main/resources/static"))
-				.doesNotExist();
+		Path projectDir = contribute(description);
+		assertThat(projectDir.resolve("src/main/resources/templates")).doesNotExist();
+		assertThat(projectDir.resolve("src/main/resources/static")).doesNotExist();
+	}
+
+	private Path contribute(ProjectDescription description) throws IOException {
+		Path projectDir = Files.createTempDirectory(this.directory, "project-");
+		new WebFoldersContributor(description).contribute(projectDir.toFile());
+		return projectDir;
 	}
 
 }

@@ -16,16 +16,17 @@
 
 package io.spring.initializr.generator.project.build.gradle;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.List;
 
 import io.spring.initializr.generator.buildsystem.MavenRepository;
 import io.spring.initializr.generator.buildsystem.gradle.GradleBuild;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.junitpioneer.jupiter.TempDirectory;
+import org.junitpioneer.jupiter.TempDirectory.TempDir;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -34,36 +35,30 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Andy Wilkinson
  */
-public class SettingsGradleProjectContributorTests {
+@ExtendWith(TempDirectory.class)
+class SettingsGradleProjectContributorTests {
 
-	@Rule
-	public final TemporaryFolder temp = new TemporaryFolder();
+	private final Path directory;
+
+	SettingsGradleProjectContributorTests(@TempDir Path directory) {
+		this.directory = directory;
+	}
 
 	@Test
-	public void gradleBuildWithMavenCentralRepository() throws IOException {
+	void gradleBuildWithMavenCentralRepository() throws IOException {
 		GradleBuild build = new GradleBuild();
 		build.addMavenRepository(MavenRepository.MAVEN_CENTRAL);
-		SettingsGradleProjectContributor contributor = new SettingsGradleProjectContributor(
-				build);
-		contributor.contribute(this.temp.getRoot());
-		File settingsGradle = new File(this.temp.getRoot(), "settings.gradle");
-		assertThat(settingsGradle).isFile();
-		List<String> lines = Files.readAllLines(settingsGradle.toPath());
+		List<String> lines = generateSettings(build);
 		assertThat(lines).containsSequence("pluginManagement {", "    repositories {",
 				"        mavenCentral()", "        gradlePluginPortal()", "    }", "}");
 	}
 
 	@Test
-	public void gradleBuildWithMavenRepository() throws IOException {
+	void gradleBuildWithMavenRepository() throws IOException {
 		GradleBuild build = new GradleBuild();
 		build.addMavenRepository("spring-milestones", "Spring Milestones",
 				"https://repo.spring.io/milestone");
-		SettingsGradleProjectContributor contributor = new SettingsGradleProjectContributor(
-				build);
-		contributor.contribute(this.temp.getRoot());
-		File settingsGradle = new File(this.temp.getRoot(), "settings.gradle");
-		assertThat(settingsGradle).isFile();
-		List<String> lines = Files.readAllLines(settingsGradle.toPath());
+		List<String> lines = generateSettings(build);
 		assertThat(lines).containsSequence("pluginManagement {", "    repositories {",
 				"        maven { url 'https://repo.spring.io/milestone' }",
 				"        gradlePluginPortal()", "    }", "    resolutionStrategy {",
@@ -74,16 +69,11 @@ public class SettingsGradleProjectContributorTests {
 	}
 
 	@Test
-	public void gradleBuildWithSnapshotMavenRepository() throws IOException {
+	void gradleBuildWithSnapshotMavenRepository() throws IOException {
 		GradleBuild build = new GradleBuild();
 		build.addSnapshotMavenRepository("spring-snapshots", "Spring Snapshots",
 				"https://repo.spring.io/snapshot");
-		SettingsGradleProjectContributor contributor = new SettingsGradleProjectContributor(
-				build);
-		contributor.contribute(this.temp.getRoot());
-		File settingsGradle = new File(this.temp.getRoot(), "settings.gradle");
-		assertThat(settingsGradle).isFile();
-		List<String> lines = Files.readAllLines(settingsGradle.toPath());
+		List<String> lines = generateSettings(build);
 		assertThat(lines).containsSequence("pluginManagement {", "    repositories {",
 				"        maven { url 'https://repo.spring.io/snapshot' }",
 				"        gradlePluginPortal()", "    }", "    resolutionStrategy {",
@@ -91,6 +81,14 @@ public class SettingsGradleProjectContributorTests {
 				"            if(requested.id.id == 'org.springframework.boot') {",
 				"                useModule(\"org.springframework.boot:spring-boot-gradle-plugin:${requested.version}\")",
 				"            }", "        }", "    }", "}");
+	}
+
+	private List<String> generateSettings(GradleBuild build) throws IOException {
+		Path projectDir = Files.createTempDirectory(this.directory, "project-");
+		new SettingsGradleProjectContributor(build).contribute(projectDir.toFile());
+		Path settingsGradle = projectDir.resolve("settings.gradle");
+		assertThat(settingsGradle).isRegularFile();
+		return Files.readAllLines(settingsGradle);
 	}
 
 }

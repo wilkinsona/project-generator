@@ -18,7 +18,7 @@ package io.spring.initializr.generator.project.code.kotlin;
 
 import io.spring.initializr.generator.buildsystem.gradle.GradleBuild;
 import io.spring.initializr.generator.buildsystem.gradle.GradleBuild.TaskCustomization;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -27,10 +27,10 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Andy Wilkinson
  */
-public class KotlinGradleBuildCustomizerTests {
+class KotlinGradleBuildCustomizerTests {
 
 	@Test
-	public void kotlinPluginsAreConfigured() {
+	void kotlinPluginsAreConfigured() {
 		GradleBuild build = new GradleBuild();
 		new KotlinGradleBuildCustomizer(new KotlinProjectSettings("1.2.70"))
 				.customize(build);
@@ -44,7 +44,7 @@ public class KotlinGradleBuildCustomizerTests {
 	}
 
 	@Test
-	public void kotlinCompilationTasksAreCustomized() {
+	void kotlinCompilationTasksAreCustomized() {
 		GradleBuild build = new GradleBuild();
 		new KotlinGradleBuildCustomizer(new KotlinProjectSettings("1.2.70"))
 				.customize(build);

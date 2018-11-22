@@ -16,7 +16,8 @@
 
 package io.spring.initializr.generator.project.build.maven;
 
-import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.function.Consumer;
 
 import io.spring.initializr.generator.DependencyType;
@@ -24,9 +25,10 @@ import io.spring.initializr.generator.buildsystem.MavenRepository;
 import io.spring.initializr.generator.buildsystem.maven.MavenBuild;
 import io.spring.initializr.generator.buildsystem.maven.MavenPlugin;
 import io.spring.initializr.generator.project.test.assertj.NodeAssert;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.junitpioneer.jupiter.TempDirectory;
+import org.junitpioneer.jupiter.TempDirectory.TempDir;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -35,13 +37,17 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Andy Wilkinson
  */
-public class MavenBuildProjectContributorTests {
+@ExtendWith(TempDirectory.class)
+class MavenBuildProjectContributorTests {
 
-	@Rule
-	public final TemporaryFolder temp = new TemporaryFolder();
+	private final Path directory;
+
+	MavenBuildProjectContributorTests(@TempDir Path directory) {
+		this.directory = directory;
+	}
 
 	@Test
-	public void basicPom() throws Exception {
+	void basicPom() throws Exception {
 		MavenBuild build = new MavenBuild();
 		build.setGroup("com.example.demo");
 		build.setName("demo");
@@ -54,7 +60,7 @@ public class MavenBuildProjectContributorTests {
 	}
 
 	@Test
-	public void pomWithParent() throws Exception {
+	void pomWithParent() throws Exception {
 		MavenBuild build = new MavenBuild();
 		build.setGroup("com.example.demo");
 		build.setName("demo");
@@ -71,7 +77,7 @@ public class MavenBuildProjectContributorTests {
 	}
 
 	@Test
-	public void pomWithProperties() throws Exception {
+	void pomWithProperties() throws Exception {
 		MavenBuild build = new MavenBuild();
 		build.setGroup("com.example.demo");
 		build.setName("demo");
@@ -85,7 +91,7 @@ public class MavenBuildProjectContributorTests {
 	}
 
 	@Test
-	public void pomWithAnnotationProcessorDependency() throws Exception {
+	void pomWithAnnotationProcessorDependency() throws Exception {
 		MavenBuild build = new MavenBuild();
 		build.setGroup("com.example.demo");
 		build.setName("demo");
@@ -105,7 +111,7 @@ public class MavenBuildProjectContributorTests {
 	}
 
 	@Test
-	public void pomWithCompileDependency() throws Exception {
+	void pomWithCompileDependency() throws Exception {
 		MavenBuild build = new MavenBuild();
 		build.setGroup("com.example.demo");
 		build.setName("demo");
@@ -124,7 +130,7 @@ public class MavenBuildProjectContributorTests {
 	}
 
 	@Test
-	public void pomWithProvidedRuntimeDependency() throws Exception {
+	void pomWithProvidedRuntimeDependency() throws Exception {
 		MavenBuild build = new MavenBuild();
 		build.setGroup("com.example.demo");
 		build.setName("demo");
@@ -143,7 +149,7 @@ public class MavenBuildProjectContributorTests {
 	}
 
 	@Test
-	public void pomWithRuntimeDependency() throws Exception {
+	void pomWithRuntimeDependency() throws Exception {
 		MavenBuild build = new MavenBuild();
 		build.setGroup("com.example.demo");
 		build.setName("demo");
@@ -159,7 +165,7 @@ public class MavenBuildProjectContributorTests {
 	}
 
 	@Test
-	public void pomWithTestCompileDependency() throws Exception {
+	void pomWithTestCompileDependency() throws Exception {
 		MavenBuild build = new MavenBuild();
 		build.setGroup("com.example.demo");
 		build.setName("demo");
@@ -178,7 +184,7 @@ public class MavenBuildProjectContributorTests {
 	}
 
 	@Test
-	public void pomWithTestRuntimeDependency() throws Exception {
+	void pomWithTestRuntimeDependency() throws Exception {
 		MavenBuild build = new MavenBuild();
 		build.setGroup("com.example.demo");
 		build.setName("demo");
@@ -196,7 +202,7 @@ public class MavenBuildProjectContributorTests {
 	}
 
 	@Test
-	public void pomWithPlugin() throws Exception {
+	void pomWithPlugin() throws Exception {
 		MavenBuild build = new MavenBuild();
 		build.setGroup("com.example.demo");
 		build.setName("demo");
@@ -212,7 +218,7 @@ public class MavenBuildProjectContributorTests {
 	}
 
 	@Test
-	public void pomWithPluginWithConfiguration() throws Exception {
+	void pomWithPluginWithConfiguration() throws Exception {
 		MavenBuild build = new MavenBuild();
 		build.setGroup("com.example.demo");
 		build.setName("demo");
@@ -238,7 +244,7 @@ public class MavenBuildProjectContributorTests {
 	}
 
 	@Test
-	public void pomWithPluginWithExecution() throws Exception {
+	void pomWithPluginWithExecution() throws Exception {
 		MavenBuild build = new MavenBuild();
 		build.setGroup("com.example.demo");
 		build.setName("demo");
@@ -267,7 +273,7 @@ public class MavenBuildProjectContributorTests {
 	}
 
 	@Test
-	public void pomWithMavenCentral() throws Exception {
+	void pomWithMavenCentral() throws Exception {
 		MavenBuild build = new MavenBuild();
 		build.setGroup("com.example.demo");
 		build.setName("demo");
@@ -279,7 +285,7 @@ public class MavenBuildProjectContributorTests {
 	}
 
 	@Test
-	public void pomWithRepository() throws Exception {
+	void pomWithRepository() throws Exception {
 		MavenBuild build = new MavenBuild();
 		build.setGroup("com.example.demo");
 		build.setName("demo");
@@ -307,7 +313,7 @@ public class MavenBuildProjectContributorTests {
 	}
 
 	@Test
-	public void pomWithSnapshotRepository() throws Exception {
+	void pomWithSnapshotRepository() throws Exception {
 		MavenBuild build = new MavenBuild();
 		build.setGroup("com.example.demo");
 		build.setName("demo");
@@ -337,7 +343,7 @@ public class MavenBuildProjectContributorTests {
 	}
 
 	@Test
-	public void pomWithCustomSourceDirectories() throws Exception {
+	void pomWithCustomSourceDirectories() throws Exception {
 		MavenBuild build = new MavenBuild();
 		build.setGroup("com.example.demo");
 		build.setName("demo");
@@ -353,11 +359,11 @@ public class MavenBuildProjectContributorTests {
 
 	private void generatePom(MavenBuild mavenBuild, Consumer<NodeAssert> consumer)
 			throws Exception {
-		File projectRoot = this.temp.getRoot();
-		new MavenBuildProjectContributor(mavenBuild).contribute(projectRoot);
-		File pomFile = new File(projectRoot, "pom.xml");
-		assertThat(pomFile).exists();
-		consumer.accept(new NodeAssert(pomFile));
+		Path projectDir = Files.createTempDirectory(this.directory, "project-");
+		new MavenBuildProjectContributor(mavenBuild).contribute(projectDir.toFile());
+		Path pomFile = projectDir.resolve("pom.xml");
+		assertThat(pomFile).isRegularFile();
+		consumer.accept(new NodeAssert(pomFile.toFile()));
 	}
 
 }

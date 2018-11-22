@@ -22,7 +22,7 @@ import io.spring.initializr.generator.buildsystem.maven.MavenPlugin.Configuratio
 import io.spring.initializr.generator.buildsystem.maven.MavenPlugin.Dependency;
 import io.spring.initializr.generator.buildsystem.maven.MavenPlugin.Execution;
 import io.spring.initializr.generator.buildsystem.maven.MavenPlugin.Setting;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -31,10 +31,10 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Andy Wilkinson
  */
-public class KotlinMavenBuildCustomizerTests {
+class KotlinMavenBuildCustomizerTests {
 
 	@Test
-	public void kotlinVersionPropertyIsConfigured() {
+	void kotlinVersionPropertyIsConfigured() {
 		MavenBuild build = new MavenBuild();
 		new KotlinMavenBuildCustomizer(new KotlinProjectSettings("1.2.70"))
 				.customize(build);
@@ -43,7 +43,7 @@ public class KotlinMavenBuildCustomizerTests {
 	}
 
 	@Test
-	public void buildSourceDirectoriesAreConfigured() {
+	void buildSourceDirectoriesAreConfigured() {
 		MavenBuild build = new MavenBuild();
 		new KotlinMavenBuildCustomizer(new KotlinProjectSettings("1.2.70"))
 				.customize(build);
@@ -54,7 +54,7 @@ public class KotlinMavenBuildCustomizerTests {
 	}
 
 	@Test
-	public void kotlinMavenPluginIsConfigured() {
+	void kotlinMavenPluginIsConfigured() {
 		MavenBuild build = new MavenBuild();
 		new KotlinMavenBuildCustomizer(new KotlinProjectSettings("1.2.70"))
 				.customize(build);

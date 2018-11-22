@@ -35,7 +35,7 @@ import io.spring.initializr.generator.language.java.JavaLanguage;
 import io.spring.initializr.generator.project.ProjectGenerator;
 import io.spring.initializr.generator.project.test.assertj.NodeAssert;
 import io.spring.initializr.generator.util.Version;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.util.FileSystemUtils;
 
@@ -44,10 +44,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 /**
  * @author Stephane Nicoll
  */
-public class StartSiteProjectGenerationTests {
+class StartSiteProjectGenerationTests {
 
 	@Test
-	public void buildDotGradleIsCustomizedWhenGeneratingProjectThatDependsOnSpringRestDocs()
+	void buildDotGradleIsCustomizedWhenGeneratingProjectThatDependsOnSpringRestDocs()
 			throws IOException {
 		ProjectDescription description = newProjectDescription();
 		description.setSpringBootVersion(Version.parse("2.1.0.RELEASE"));
@@ -65,16 +65,8 @@ public class StartSiteProjectGenerationTests {
 		FileSystemUtils.deleteRecursively(project);
 	}
 
-	private ProjectDescription newProjectDescription() {
-		ProjectDescription description = new ProjectDescription();
-		description.setGroupId("com.example");
-		description.setArtifactId("demo");
-		description.setApplicationName("DemoApplication");
-		return description;
-	}
-
 	@Test
-	public void pomIsCustomizedWhenGeneratingProjectThatDependsOnSpringRestDocs()
+	void pomIsCustomizedWhenGeneratingProjectThatDependsOnSpringRestDocs()
 			throws IOException {
 		ProjectDescription description = newProjectDescription();
 		description.setSpringBootVersion(Version.parse("2.1.0.RELEASE"));
@@ -89,7 +81,7 @@ public class StartSiteProjectGenerationTests {
 	}
 
 	@Test
-	public void mainClassIsAnnotatedWithEnableConfigServerWhenGeneratingProjectThatDependsUponSpringCloudConfigServer()
+	void mainClassIsAnnotatedWithEnableConfigServerWhenGeneratingProjectThatDependsUponSpringCloudConfigServer()
 			throws IOException {
 		ProjectDescription description = newProjectDescription();
 		description.setLanguage(new JavaLanguage());
@@ -122,6 +114,14 @@ public class StartSiteProjectGenerationTests {
 
 		});
 		return relativePaths;
+	}
+
+	private ProjectDescription newProjectDescription() {
+		ProjectDescription description = new ProjectDescription();
+		description.setGroupId("com.example");
+		description.setArtifactId("demo");
+		description.setApplicationName("DemoApplication");
+		return description;
 	}
 
 }

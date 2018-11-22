@@ -20,61 +20,57 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
+import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 /**
  * Tests for {@link VersionParser}.
  *
  * @author Stephane Nicoll
  */
-public class VersionParserTests {
-
-	@Rule
-	public final ExpectedException thrown = ExpectedException.none();
+class VersionParserTests {
 
 	private VersionParser parser = new VersionParser(Collections.emptyList());
 
 	@Test
-	public void noQualifierString() {
+	void noQualifierString() {
 		Version version = this.parser.parse("1.2.0");
 		assertThat(version.toString()).isEqualTo("1.2.0");
 	}
 
 	@Test
-	public void withQualifierString() {
+	void withQualifierString() {
 		Version version = this.parser.parse("1.2.0.RELEASE");
 		assertThat(version.toString()).isEqualTo("1.2.0.RELEASE");
 	}
 
 	@Test
-	public void withQualifierAndVersionString() {
+	void withQualifierAndVersionString() {
 		Version version = this.parser.parse("1.2.0.RC2");
 		assertThat(version.toString()).isEqualTo("1.2.0.RC2");
 	}
 
 	@Test
-	public void parseInvalidVersion() {
-		this.thrown.expect(InvalidVersionException.class);
-		this.parser.parse("foo");
+	void parseInvalidVersion() {
+		assertThatExceptionOfType(InvalidVersionException.class)
+				.isThrownBy(() -> this.parser.parse("foo"));
 	}
 
 	@Test
-	public void safeParseInvalidVersion() {
+	void safeParseInvalidVersion() {
 		assertThat(this.parser.safeParse("foo")).isNull();
 	}
 
 	@Test
-	public void parseVersionWithSpaces() {
+	void parseVersionWithSpaces() {
 		assertThat(this.parser.parse("    1.2.0.RC3  "))
 				.isLessThan(this.parser.parse("1.3.0.RELEASE"));
 	}
 
 	@Test
-	public void parseVariableVersionMatch() {
+	void parseVariableVersionMatch() {
 		List<Version> currentVersions = Arrays.asList(this.parser.parse("1.3.8.RELEASE"),
 				this.parser.parse("1.3.9.BUILD-SNAPSHOT"));
 		this.parser = new VersionParser(currentVersions);
@@ -83,7 +79,7 @@ public class VersionParserTests {
 	}
 
 	@Test
-	public void parseVariableVersionNoPatchMatch() {
+	void parseVariableVersionNoPatchMatch() {
 		List<Version> currentVersions = Arrays.asList(this.parser.parse("1.3.8.RELEASE"),
 				this.parser.parse("1.3.9.BUILD-SNAPSHOT"));
 		this.parser = new VersionParser(currentVersions);
@@ -92,7 +88,7 @@ public class VersionParserTests {
 	}
 
 	@Test
-	public void parseVariableVersionNoQualifierMatch() {
+	void parseVariableVersionNoQualifierMatch() {
 		List<Version> currentVersions = Arrays.asList(this.parser.parse("1.3.8.RELEASE"),
 				this.parser.parse("1.4.0.BUILD-SNAPSHOT"));
 		this.parser = new VersionParser(currentVersions);
@@ -101,7 +97,7 @@ public class VersionParserTests {
 	}
 
 	@Test
-	public void parseVariableVersionNoMatch() {
+	void parseVariableVersionNoMatch() {
 		List<Version> currentVersions = Arrays.asList(this.parser.parse("1.3.8.RELEASE"),
 				this.parser.parse("1.3.9.BUILD-SNAPSHOT"));
 		this.parser = new VersionParser(currentVersions);
@@ -110,7 +106,7 @@ public class VersionParserTests {
 	}
 
 	@Test
-	public void parseVariableVersionNoPatchNoMatch() {
+	void parseVariableVersionNoPatchNoMatch() {
 		List<Version> currentVersions = Arrays.asList(this.parser.parse("1.3.8.RELEASE"),
 				this.parser.parse("1.3.9.BUILD-SNAPSHOT"));
 		this.parser = new VersionParser(currentVersions);
@@ -119,7 +115,7 @@ public class VersionParserTests {
 	}
 
 	@Test
-	public void parseVariableVersionNoQualifierNoMatch() {
+	void parseVariableVersionNoQualifierNoMatch() {
 		List<Version> currentVersions = Arrays.asList(this.parser.parse("1.3.8.RELEASE"),
 				this.parser.parse("1.4.0.BUILD-SNAPSHOT"));
 		this.parser = new VersionParser(currentVersions);
@@ -127,9 +123,9 @@ public class VersionParserTests {
 	}
 
 	@Test
-	public void invalidRange() {
-		this.thrown.expect(InvalidVersionException.class);
-		this.parser.parseRange("foo-bar");
+	void invalidRange() {
+		assertThatExceptionOfType(InvalidVersionException.class)
+				.isThrownBy(() -> this.parser.parseRange("foo-bar"));
 	}
 
 }

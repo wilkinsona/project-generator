@@ -34,7 +34,7 @@ import io.spring.initializr.generator.language.java.JavaLanguage;
 import io.spring.initializr.generator.language.kotlin.KotlinLanguage;
 import io.spring.initializr.generator.packaging.war.WarPackaging;
 import io.spring.initializr.generator.util.Version;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.util.FileSystemUtils;
 
@@ -45,10 +45,10 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Andy Wilkinson
  */
-public class ProjectGeneratorTests {
+class ProjectGeneratorTests {
 
 	@Test
-	public void gradle3WrapperIsContributedWhenGeneratingGradleProjectWithBoot15()
+	void gradle3WrapperIsContributedWhenGeneratingGradleProjectWithBoot15()
 			throws IOException {
 		ProjectDescription description = initProjectDescription();
 		description.setBuildSystem(new GradleBuildSystem());
@@ -67,7 +67,7 @@ public class ProjectGeneratorTests {
 	}
 
 	@Test
-	public void gradle4WrapperIsContributedWhenGeneratingGradleProjectWithBoot20()
+	void gradle4WrapperIsContributedWhenGeneratingGradleProjectWithBoot20()
 			throws IOException {
 		ProjectDescription description = initProjectDescription();
 		description.setBuildSystem(new GradleBuildSystem());
@@ -86,8 +86,7 @@ public class ProjectGeneratorTests {
 	}
 
 	@Test
-	public void buildDotGradleIsContributedWhenGeneratingGradleProject()
-			throws IOException {
+	void buildDotGradleIsContributedWhenGeneratingGradleProject() throws IOException {
 		ProjectDescription description = initProjectDescription();
 		description.setBuildSystem(new GradleBuildSystem());
 		description.setSpringBootVersion(Version.parse("2.1.0.RELEASE"));
@@ -112,7 +111,7 @@ public class ProjectGeneratorTests {
 	}
 
 	@Test
-	public void mavenWrapperIsContributedWhenGeneratingMavenProject() throws IOException {
+	void mavenWrapperIsContributedWhenGeneratingMavenProject() throws IOException {
 		ProjectDescription description = initProjectDescription();
 		description.setBuildSystem(new MavenBuildSystem());
 		description.setSpringBootVersion(Version.parse("2.1.0.RELEASE"));
@@ -126,7 +125,7 @@ public class ProjectGeneratorTests {
 	}
 
 	@Test
-	public void mavenPomIsContributedWhenGeneratingMavenProject() throws IOException {
+	void mavenPomIsContributedWhenGeneratingMavenProject() throws IOException {
 		ProjectDescription description = initProjectDescription();
 		description.setBuildSystem(new MavenBuildSystem());
 		description.setSpringBootVersion(Version.parse("2.1.0.RELEASE"));
@@ -137,7 +136,7 @@ public class ProjectGeneratorTests {
 	}
 
 	@Test
-	public void gitIgnoreIsContributedWhenGeneratingGradleProject() throws IOException {
+	void gitIgnoreIsContributedWhenGeneratingGradleProject() throws IOException {
 		ProjectDescription description = initProjectDescription();
 		description.setBuildSystem(new GradleBuildSystem());
 		description.setSpringBootVersion(Version.parse("2.1.0.RELEASE"));
@@ -148,7 +147,7 @@ public class ProjectGeneratorTests {
 	}
 
 	@Test
-	public void gitIgnoreIsContributedWhenGeneratingMavenProject() throws IOException {
+	void gitIgnoreIsContributedWhenGeneratingMavenProject() throws IOException {
 		ProjectDescription description = initProjectDescription();
 		description.setBuildSystem(new MavenBuildSystem());
 		description.setSpringBootVersion(Version.parse("2.1.0.RELEASE"));
@@ -160,7 +159,7 @@ public class ProjectGeneratorTests {
 	}
 
 	@Test
-	public void mainJavaClassIsContributedWhenGeneratingJavaProject() throws IOException {
+	void mainJavaClassIsContributedWhenGeneratingJavaProject() throws IOException {
 		ProjectDescription description = initProjectDescription();
 		description.setBuildSystem(new MavenBuildSystem());
 		description.setSpringBootVersion(Version.parse("2.1.0.RELEASE"));
@@ -174,8 +173,7 @@ public class ProjectGeneratorTests {
 	}
 
 	@Test
-	public void mainKotlinClassIsContributedWhenGeneratingKotlinProject()
-			throws IOException {
+	void mainKotlinClassIsContributedWhenGeneratingKotlinProject() throws IOException {
 		ProjectDescription description = initProjectDescription();
 		description.setBuildSystem(new MavenBuildSystem());
 		description.setSpringBootVersion(Version.parse("2.1.0.RELEASE"));
@@ -189,7 +187,7 @@ public class ProjectGeneratorTests {
 	}
 
 	@Test
-	public void servletInitializerIsContributedWhenGeneratingJavaProjectThatUsesWarPackaging()
+	void servletInitializerIsContributedWhenGeneratingJavaProjectThatUsesWarPackaging()
 			throws IOException {
 		ProjectDescription description = initProjectDescription();
 		description.setSpringBootVersion(Version.parse("2.1.0.RELEASE"));
@@ -217,7 +215,7 @@ public class ProjectGeneratorTests {
 	}
 
 	@Test
-	public void servletInitializerIsContributedWhenGeneratingKotlinProjectThatUsesWarPackaging()
+	void servletInitializerIsContributedWhenGeneratingKotlinProjectThatUsesWarPackaging()
 			throws IOException {
 		ProjectDescription description = initProjectDescription();
 		description.setSpringBootVersion(Version.parse("2.1.0.RELEASE"));
@@ -243,7 +241,7 @@ public class ProjectGeneratorTests {
 	}
 
 	@Test
-	public void warPluginIsAppliedWhenBuildingGradleProjectThatUsesWarPackaging()
+	void warPluginIsAppliedWhenBuildingGradleProjectThatUsesWarPackaging()
 			throws IOException {
 		ProjectDescription description = initProjectDescription();
 		description.setSpringBootVersion(Version.parse("2.1.0.RELEASE"));
@@ -262,7 +260,7 @@ public class ProjectGeneratorTests {
 	}
 
 	@Test
-	public void warPackagingIsUsedWhenBuildingMavenProjectThatUsesWarPackaging()
+	void warPackagingIsUsedWhenBuildingMavenProjectThatUsesWarPackaging()
 			throws IOException {
 		ProjectDescription description = initProjectDescription();
 		description.setSpringBootVersion(Version.parse("2.1.0.RELEASE"));
@@ -282,7 +280,7 @@ public class ProjectGeneratorTests {
 	}
 
 	@Test
-	public void testJavaClassIsContributedWhenGeneratingJavaProject() throws IOException {
+	void testJavaClassIsContributedWhenGeneratingJavaProject() throws IOException {
 		ProjectDescription description = initProjectDescription();
 		description.setBuildSystem(new MavenBuildSystem());
 		description.setSpringBootVersion(Version.parse("2.1.0.RELEASE"));
@@ -306,8 +304,7 @@ public class ProjectGeneratorTests {
 	}
 
 	@Test
-	public void testKotlinClassIsContributedWhenGeneratingKotlinProject()
-			throws IOException {
+	void testKotlinClassIsContributedWhenGeneratingKotlinProject() throws IOException {
 		ProjectDescription description = initProjectDescription();
 		description.setBuildSystem(new MavenBuildSystem());
 		description.setSpringBootVersion(Version.parse("2.1.0.RELEASE"));
@@ -331,7 +328,7 @@ public class ProjectGeneratorTests {
 	}
 
 	@Test
-	public void customPackageNameIsUsedWhenGeneratingProject() throws IOException {
+	void customPackageNameIsUsedWhenGeneratingProject() throws IOException {
 		ProjectDescription description = initProjectDescription();
 		description.setBuildSystem(new MavenBuildSystem());
 		description.setSpringBootVersion(Version.parse("2.1.0.RELEASE"));
@@ -347,7 +344,7 @@ public class ProjectGeneratorTests {
 	}
 
 	@Test
-	public void customApplicationNameIsUsedWhenGeneratingProject() throws IOException {
+	void customApplicationNameIsUsedWhenGeneratingProject() throws IOException {
 		ProjectDescription description = initProjectDescription();
 		description.setBuildSystem(new MavenBuildSystem());
 		description.setSpringBootVersion(Version.parse("2.1.0.RELEASE"));
@@ -362,7 +359,7 @@ public class ProjectGeneratorTests {
 	}
 
 	@Test
-	public void customBaseDirectionIsUsedWhenGeneratingProject() throws IOException {
+	void customBaseDirectionIsUsedWhenGeneratingProject() throws IOException {
 		ProjectDescription description = initProjectDescription();
 		description.setBuildSystem(new MavenBuildSystem());
 		description.setSpringBootVersion(Version.parse("2.1.0.RELEASE"));

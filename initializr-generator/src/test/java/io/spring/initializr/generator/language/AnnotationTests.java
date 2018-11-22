@@ -16,7 +16,7 @@
 
 package io.spring.initializr.generator.language;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -25,17 +25,17 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Stephane Nicoll
  */
-public class AnnotationTests {
+class AnnotationTests {
 
 	@Test
-	public void annotationWithNoAttribute() {
+	void annotationWithNoAttribute() {
 		Annotation annotation = Annotation.name("com.example.Test");
 		assertThat(annotation.getName()).isEqualTo("com.example.Test");
 		assertThat(annotation.getAttributes()).isEmpty();
 	}
 
 	@Test
-	public void annotationWithSingleAttribute() {
+	void annotationWithSingleAttribute() {
 		Annotation annotation = Annotation.name("com.example.Test",
 				(builder) -> builder.attribute("test", Enum.class,
 						"com.example.Unit.CENTURIES, com.example.Unit.NANOS"));

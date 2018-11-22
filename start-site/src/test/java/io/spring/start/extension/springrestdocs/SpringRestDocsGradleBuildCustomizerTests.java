@@ -20,7 +20,7 @@ import io.spring.initializr.generator.buildsystem.gradle.GradleBuild;
 import io.spring.initializr.generator.buildsystem.gradle.GradleBuild.TaskCustomization;
 import io.spring.initializr.generator.buildsystem.gradle.GradleBuild.TaskCustomization.Invocation;
 import io.spring.initializr.generator.buildsystem.gradle.GradlePlugin;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -29,12 +29,12 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Andy Wilkinson
  */
-public class SpringRestDocsGradleBuildCustomizerTests {
+class SpringRestDocsGradleBuildCustomizerTests {
 
 	private final SpringRestDocsGradleBuildCustomizer customizer = new SpringRestDocsGradleBuildCustomizer();
 
 	@Test
-	public void customizesGradleBuild() {
+	void customizesGradleBuild() {
 		GradleBuild build = new GradleBuild();
 		this.customizer.customize(build);
 		assertThat(build.getPlugins()).hasSize(1);

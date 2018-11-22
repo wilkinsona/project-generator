@@ -19,7 +19,7 @@ package io.spring.initializr.generator.project.build;
 import io.spring.initializr.generator.buildsystem.MavenRepository;
 import io.spring.initializr.generator.buildsystem.maven.MavenBuild;
 import io.spring.initializr.generator.util.Version;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -28,10 +28,10 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Andy Wilkinson
  */
-public class SpringBootVersionRepositoriesBuildCustomizerTests {
+class SpringBootVersionRepositoriesBuildCustomizerTests {
 
 	@Test
-	public void addMavenCentralWhenUsingRelease() {
+	void addMavenCentralWhenUsingRelease() {
 		MavenBuild build = new MavenBuild();
 		new SpringBootVersionRepositoriesBuildCustomizer(Version.parse("2.1.0.RELEASE"))
 				.customize(build);
@@ -40,7 +40,7 @@ public class SpringBootVersionRepositoriesBuildCustomizerTests {
 	}
 
 	@Test
-	public void addMavenCentralAndMilestoneWhenUsingMilestone() {
+	void addMavenCentralAndMilestoneWhenUsingMilestone() {
 		MavenBuild build = new MavenBuild();
 		new SpringBootVersionRepositoriesBuildCustomizer(Version.parse("2.1.0.M1"))
 				.customize(build);
@@ -55,7 +55,7 @@ public class SpringBootVersionRepositoriesBuildCustomizerTests {
 	}
 
 	@Test
-	public void addMavenCentralAndMilestoneWhenUsingReleaseCandidate() {
+	void addMavenCentralAndMilestoneWhenUsingReleaseCandidate() {
 		MavenBuild build = new MavenBuild();
 		new SpringBootVersionRepositoriesBuildCustomizer(Version.parse("2.1.0.RC1"))
 				.customize(build);
@@ -70,7 +70,7 @@ public class SpringBootVersionRepositoriesBuildCustomizerTests {
 	}
 
 	@Test
-	public void addMavenCentralMilestoneAndSnapshotWhenUsingSnapshot() {
+	void addMavenCentralMilestoneAndSnapshotWhenUsingSnapshot() {
 		MavenBuild build = new MavenBuild();
 		new SpringBootVersionRepositoriesBuildCustomizer(
 				Version.parse("2.1.0.BUILD-SNAPSHOT")).customize(build);

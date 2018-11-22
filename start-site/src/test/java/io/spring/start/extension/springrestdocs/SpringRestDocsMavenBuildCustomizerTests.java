@@ -22,7 +22,7 @@ import io.spring.initializr.generator.buildsystem.maven.MavenPlugin.Configuratio
 import io.spring.initializr.generator.buildsystem.maven.MavenPlugin.Dependency;
 import io.spring.initializr.generator.buildsystem.maven.MavenPlugin.Execution;
 import io.spring.initializr.generator.buildsystem.maven.MavenPlugin.Setting;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -31,12 +31,12 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Andy Wilkinson
  */
-public class SpringRestDocsMavenBuildCustomizerTests {
+class SpringRestDocsMavenBuildCustomizerTests {
 
 	private final SpringRestDocsMavenBuildCustomizer customizer = new SpringRestDocsMavenBuildCustomizer();
 
 	@Test
-	public void customizesGradleBuild() {
+	void customizesGradleBuild() {
 		MavenBuild build = new MavenBuild();
 		this.customizer.customize(build);
 		assertThat(build.getPlugins()).hasSize(1);

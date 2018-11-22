@@ -16,9 +16,9 @@
 
 package io.spring.initializr.generator.code.kotlin;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
 
@@ -34,9 +34,10 @@ import io.spring.initializr.generator.language.kotlin.KotlinReturnStatement;
 import io.spring.initializr.generator.language.kotlin.KotlinSourceCode;
 import io.spring.initializr.generator.language.kotlin.KotlinSourceCodeWriter;
 import io.spring.initializr.generator.language.kotlin.KotlinTypeDeclaration;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.junitpioneer.jupiter.TempDirectory;
+import org.junitpioneer.jupiter.TempDirectory.TempDir;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -45,39 +46,37 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Stephane Nicoll
  */
-public class KotlinSourceCodeWriterTests {
+@ExtendWith(TempDirectory.class)
+class KotlinSourceCodeWriterTests {
 
-	@Rule
-	public final TemporaryFolder temp = new TemporaryFolder();
+	private final Path directory;
 
 	private final KotlinSourceCodeWriter writer = new KotlinSourceCodeWriter();
 
+	KotlinSourceCodeWriterTests(@TempDir Path directory) {
+		this.directory = directory;
+	}
+
 	@Test
-	public void emptyCompilationUnit() throws IOException {
+	void emptyCompilationUnit() throws IOException {
 		KotlinSourceCode sourceCode = new KotlinSourceCode();
 		sourceCode.createCompilationUnit("com.example", "Test");
-		this.writer.writeTo(this.temp.getRoot(), sourceCode);
-		File testSource = new File(this.temp.getRoot(), "com/example/Test.kt");
-		assertThat(testSource).isFile();
-		List<String> lines = Files.readAllLines(testSource.toPath());
+		List<String> lines = writeSingleType(sourceCode, "com/example/Test.kt");
 		assertThat(lines).containsExactly("package com.example", "");
 	}
 
 	@Test
-	public void emptyTypeDeclaration() throws IOException {
+	void emptyTypeDeclaration() throws IOException {
 		KotlinSourceCode sourceCode = new KotlinSourceCode();
 		KotlinCompilationUnit compilationUnit = sourceCode
 				.createCompilationUnit("com.example", "Test");
 		compilationUnit.createTypeDeclaration("Test");
-		this.writer.writeTo(this.temp.getRoot(), sourceCode);
-		File testSource = new File(this.temp.getRoot(), "com/example/Test.kt");
-		assertThat(testSource).isFile();
-		List<String> lines = Files.readAllLines(testSource.toPath());
+		List<String> lines = writeSingleType(sourceCode, "com/example/Test.kt");
 		assertThat(lines).containsExactly("package com.example", "", "class Test", "");
 	}
 
 	@Test
-	public void simpleFunction() throws IOException {
+	void simpleFunction() throws IOException {
 		KotlinSourceCode sourceCode = new KotlinSourceCode();
 		KotlinCompilationUnit compilationUnit = sourceCode
 				.createCompilationUnit("com.example", "Test");
@@ -87,17 +86,14 @@ public class KotlinSourceCodeWriterTests {
 				.parameters(new Parameter("java.lang.String", "echo"))
 				.body(new KotlinReturnStatement(
 						new KotlinFunctionInvocation("echo", "reversed"))));
-		this.writer.writeTo(this.temp.getRoot(), sourceCode);
-		File testSource = new File(this.temp.getRoot(), "com/example/Test.kt");
-		assertThat(testSource).isFile();
-		List<String> lines = Files.readAllLines(testSource.toPath());
+		List<String> lines = writeSingleType(sourceCode, "com/example/Test.kt");
 		assertThat(lines).containsExactly("package com.example", "", "class Test {", "",
 				"    fun reverse(echo: String): String {",
 				"        return echo.reversed()", "    }", "", "}", "");
 	}
 
 	@Test
-	public void functionModifiers() throws IOException {
+	void functionModifiers() throws IOException {
 		KotlinSourceCode sourceCode = new KotlinSourceCode();
 		KotlinCompilationUnit compilationUnit = sourceCode
 				.createCompilationUnit("com.example", "Test");
@@ -107,17 +103,14 @@ public class KotlinSourceCodeWriterTests {
 						KotlinModifier.OPEN)
 				.returning("java.lang.String").body(new KotlinReturnStatement(
 						new KotlinFunctionInvocation("super", "toString"))));
-		this.writer.writeTo(this.temp.getRoot(), sourceCode);
-		File testSource = new File(this.temp.getRoot(), "com/example/Test.kt");
-		assertThat(testSource).isFile();
-		List<String> lines = Files.readAllLines(testSource.toPath());
+		List<String> lines = writeSingleType(sourceCode, "com/example/Test.kt");
 		assertThat(lines).containsExactly("package com.example", "", "class Test {", "",
 				"    open override fun toString(): String {",
 				"        return super.toString()", "    }", "", "}", "");
 	}
 
 	@Test
-	public void springBootApplication() throws IOException {
+	void springBootApplication() throws IOException {
 		KotlinSourceCode sourceCode = new KotlinSourceCode();
 		KotlinCompilationUnit compilationUnit = sourceCode
 				.createCompilationUnit("com.example", "Test");
@@ -128,10 +121,7 @@ public class KotlinSourceCodeWriterTests {
 				.parameters(new Parameter("Array<String>", "args"))
 				.body(new KotlinExpressionStatement(new KotlinReifiedFunctionInvocation(
 						"org.springframework.boot.runApplication", "Test", "*args"))));
-		this.writer.writeTo(this.temp.getRoot(), sourceCode);
-		File testSource = new File(this.temp.getRoot(), "com/example/Test.kt");
-		assertThat(testSource).isFile();
-		List<String> lines = Files.readAllLines(testSource.toPath());
+		List<String> lines = writeSingleType(sourceCode, "com/example/Test.kt");
 		assertThat(lines).containsExactly("package com.example", "",
 				"import org.springframework.boot.autoconfigure.SpringBootApplication",
 				"import org.springframework.boot.runApplication", "",
@@ -141,7 +131,7 @@ public class KotlinSourceCodeWriterTests {
 	}
 
 	@Test
-	public void annotationWithSimpleStringAttribute() throws IOException {
+	void annotationWithSimpleStringAttribute() throws IOException {
 		List<String> lines = writeClassAnnotation(
 				Annotation.name("org.springframework.test.TestApplication",
 						(builder) -> builder.attribute("name", String.class, "test")));
@@ -151,7 +141,7 @@ public class KotlinSourceCodeWriterTests {
 	}
 
 	@Test
-	public void annotationWithOnlyValueAttribute() throws IOException {
+	void annotationWithOnlyValueAttribute() throws IOException {
 		List<String> lines = writeClassAnnotation(
 				Annotation.name("org.springframework.test.TestApplication",
 						(builder) -> builder.attribute("value", String.class, "test")));
@@ -161,7 +151,7 @@ public class KotlinSourceCodeWriterTests {
 	}
 
 	@Test
-	public void annotationWithSimpleEnumAttribute() throws IOException {
+	void annotationWithSimpleEnumAttribute() throws IOException {
 		List<String> lines = writeClassAnnotation(
 				Annotation.name("org.springframework.test.TestApplication",
 						(builder) -> builder.attribute("unit", Enum.class,
@@ -173,7 +163,7 @@ public class KotlinSourceCodeWriterTests {
 	}
 
 	@Test
-	public void annotationWithClassArrayAttribute() throws IOException {
+	void annotationWithClassArrayAttribute() throws IOException {
 		List<String> lines = writeClassAnnotation(
 				Annotation.name("org.springframework.test.TestApplication",
 						(builder) -> builder.attribute("target", Class.class,
@@ -185,7 +175,7 @@ public class KotlinSourceCodeWriterTests {
 	}
 
 	@Test
-	public void annotationWithSeveralAttributes() throws IOException {
+	void annotationWithSeveralAttributes() throws IOException {
 		List<String> lines = writeClassAnnotation(Annotation.name(
 				"org.springframework.test.TestApplication",
 				(builder) -> builder.attribute("target", Class.class, "com.example.One")
@@ -204,14 +194,11 @@ public class KotlinSourceCodeWriterTests {
 				.createCompilationUnit("com.example", "Test");
 		KotlinTypeDeclaration test = compilationUnit.createTypeDeclaration("Test");
 		test.annotate(annotation);
-		this.writer.writeTo(this.temp.getRoot(), sourceCode);
-		File testSource = new File(this.temp.getRoot(), "com/example/Test.kt");
-		assertThat(testSource).isFile();
-		return Files.readAllLines(testSource.toPath());
+		return writeSingleType(sourceCode, "com/example/Test.kt");
 	}
 
 	@Test
-	public void functionWithSimpleAnnotation() throws IOException {
+	void functionWithSimpleAnnotation() throws IOException {
 		KotlinSourceCode sourceCode = new KotlinSourceCode();
 		KotlinCompilationUnit compilationUnit = sourceCode
 				.createCompilationUnit("com.example", "Test");
@@ -220,13 +207,23 @@ public class KotlinSourceCodeWriterTests {
 				.function("something").body();
 		function.annotate(Annotation.name("com.example.test.TestAnnotation"));
 		test.addFunctionDeclaration(function);
-		this.writer.writeTo(this.temp.getRoot(), sourceCode);
-		File testSource = new File(this.temp.getRoot(), "com/example/Test.kt");
-		assertThat(testSource).isFile();
-		List<String> lines = Files.readAllLines(testSource.toPath());
+		List<String> lines = writeSingleType(sourceCode, "com/example/Test.kt");
 		assertThat(lines).containsExactly("package com.example", "",
 				"import com.example.test.TestAnnotation", "", "class Test {", "",
 				"    @TestAnnotation", "    fun something() {", "    }", "", "}", "");
+	}
+
+	private List<String> writeSingleType(KotlinSourceCode sourceCode, String location)
+			throws IOException {
+		Path source = writeSourceCode(sourceCode).resolve(location);
+		assertThat(source).isRegularFile();
+		return Files.readAllLines(source);
+	}
+
+	private Path writeSourceCode(KotlinSourceCode sourceCode) throws IOException {
+		Path projectDirectory = Files.createTempDirectory(this.directory, "project-");
+		this.writer.writeTo(projectDirectory.toFile(), sourceCode);
+		return projectDirectory;
 	}
 
 }

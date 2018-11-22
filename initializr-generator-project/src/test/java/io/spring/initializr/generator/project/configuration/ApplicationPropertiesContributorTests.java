@@ -16,14 +16,15 @@
 
 package io.spring.initializr.generator.project.configuration;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.List;
 
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.junitpioneer.jupiter.TempDirectory;
+import org.junitpioneer.jupiter.TempDirectory.TempDir;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -32,19 +33,23 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Stephane Nicoll
  */
-public class ApplicationPropertiesContributorTests {
+@ExtendWith(TempDirectory.class)
+class ApplicationPropertiesContributorTests {
 
-	@Rule
-	public final TemporaryFolder temp = new TemporaryFolder();
+	private final Path directory;
+
+	ApplicationPropertiesContributorTests(@TempDir Path directory) {
+		this.directory = directory;
+	}
 
 	@Test
-	public void applicationConfigurationWithDefaultSettings() throws IOException {
-		ApplicationPropertiesContributor contributor = new ApplicationPropertiesContributor();
-		contributor.contribute(this.temp.getRoot());
-		File configuration = new File(this.temp.getRoot(),
-				"src/main/resources/application.properties");
-		assertThat(configuration).isFile();
-		List<String> lines = Files.readAllLines(configuration.toPath());
+	void applicationConfigurationWithDefaultSettings() throws IOException {
+		Path projectDir = Files.createTempDirectory(this.directory, "project-");
+		new ApplicationPropertiesContributor().contribute(projectDir.toFile());
+		Path configuration = projectDir
+				.resolve("src/main/resources/application.properties");
+		assertThat(configuration).isRegularFile();
+		List<String> lines = Files.readAllLines(configuration);
 		assertThat(lines).containsOnly("");
 	}
 

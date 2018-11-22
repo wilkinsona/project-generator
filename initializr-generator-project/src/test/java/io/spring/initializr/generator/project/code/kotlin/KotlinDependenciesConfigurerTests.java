@@ -20,7 +20,7 @@ import io.spring.initializr.generator.DependencyType;
 import io.spring.initializr.generator.buildsystem.gradle.GradleBuild;
 import io.spring.initializr.generator.buildsystem.maven.MavenBuild;
 import io.spring.initializr.generator.util.Version;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -29,10 +29,10 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Andy Wilkinson
  */
-public class KotlinDependenciesConfigurerTests {
+class KotlinDependenciesConfigurerTests {
 
 	@Test
-	public void configuresDependenciesForGradleBuild() {
+	void configuresDependenciesForGradleBuild() {
 		GradleBuild build = new GradleBuild();
 		new KotlinDependenciesConfigurer(Version.parse("2.1.0.RELEASE")).customize(build);
 		assertThat(build.getDependencies()).hasSize(2);
@@ -51,7 +51,7 @@ public class KotlinDependenciesConfigurerTests {
 	}
 
 	@Test
-	public void configuresDependenciesForMavenBuildWithBoot15() {
+	void configuresDependenciesForMavenBuildWithBoot15() {
 		MavenBuild build = new MavenBuild();
 		new KotlinDependenciesConfigurer(Version.parse("1.5.17.RELEASE"))
 				.customize(build);
@@ -73,7 +73,7 @@ public class KotlinDependenciesConfigurerTests {
 	}
 
 	@Test
-	public void configuresDependenciesForMavenBuildWithBoot20() {
+	void configuresDependenciesForMavenBuildWithBoot20() {
 		MavenBuild build = new MavenBuild();
 		new KotlinDependenciesConfigurer(Version.parse("2.0.6.RELEASE")).customize(build);
 		assertThat(build.getDependencies()).hasSize(2);

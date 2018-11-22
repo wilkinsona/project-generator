@@ -16,17 +16,18 @@
 
 package io.spring.initializr.generator.project.build.gradle;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.List;
 
 import io.spring.initializr.generator.DependencyType;
 import io.spring.initializr.generator.buildsystem.MavenRepository;
 import io.spring.initializr.generator.buildsystem.gradle.GradleBuild;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.junitpioneer.jupiter.TempDirectory;
+import org.junitpioneer.jupiter.TempDirectory.TempDir;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -35,23 +36,22 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Andy Wilkinson
  */
-public class BuildGradleProjectContributorTests {
+@ExtendWith(TempDirectory.class)
+class BuildGradleProjectContributorTests {
 
-	@Rule
-	public final TemporaryFolder temp = new TemporaryFolder();
+	private final Path directory;
+
+	BuildGradleProjectContributorTests(@TempDir Path directory) {
+		this.directory = directory;
+	}
 
 	@Test
-	public void gradleBuildWithBuildscriptDependency() throws IOException {
+	void gradleBuildWithBuildscriptDependency() throws IOException {
 		GradleBuild build = new GradleBuild();
 		build.addMavenRepository(MavenRepository.MAVEN_CENTRAL);
 		build.buildscript((buildscript) -> buildscript.dependency(
 				"org.springframework.boot:spring-boot-gradle-plugin:2.1.0.RELEASE"));
-		BuildGradleProjectContributor contributor = new BuildGradleProjectContributor(
-				build);
-		contributor.contribute(this.temp.getRoot());
-		File buildGradle = new File(this.temp.getRoot(), "build.gradle");
-		assertThat(buildGradle).isFile();
-		List<String> lines = Files.readAllLines(buildGradle.toPath());
+		List<String> lines = generateBuild(build);
 		assertThat(lines).containsSequence("buildscript {", "    repositories {",
 				"        mavenCentral()", "    }", "    dependencies {",
 				"        classpath \"org.springframework.boot:spring-boot-gradle-plugin:2.1.0.RELEASE\"",
@@ -59,101 +59,70 @@ public class BuildGradleProjectContributorTests {
 	}
 
 	@Test
-	public void gradleBuildWithBuildscriptExtProperty() throws IOException {
+	void gradleBuildWithBuildscriptExtProperty() throws IOException {
 		GradleBuild build = new GradleBuild();
 		build.addMavenRepository(MavenRepository.MAVEN_CENTRAL);
 		build.buildscript((buildscript) -> buildscript.ext("kotlinVersion", "'1.2.51'"));
-		BuildGradleProjectContributor contributor = new BuildGradleProjectContributor(
-				build);
-		contributor.contribute(this.temp.getRoot());
-		File buildGradle = new File(this.temp.getRoot(), "build.gradle");
-		assertThat(buildGradle).isFile();
-		List<String> lines = Files.readAllLines(buildGradle.toPath());
+		List<String> lines = generateBuild(build);
 		assertThat(lines).containsSequence("buildscript {", "    ext {",
 				"        kotlinVersion = '1.2.51'", "    }", "}");
 	}
 
 	@Test
-	public void gradleBuildWithMavenCentralRepository() throws IOException {
+	void gradleBuildWithMavenCentralRepository() throws IOException {
 		GradleBuild build = new GradleBuild();
 		build.addMavenRepository(MavenRepository.MAVEN_CENTRAL);
-		BuildGradleProjectContributor contributor = new BuildGradleProjectContributor(
-				build);
-		contributor.contribute(this.temp.getRoot());
-		File buildGradle = new File(this.temp.getRoot(), "build.gradle");
-		assertThat(buildGradle).isFile();
-		List<String> lines = Files.readAllLines(buildGradle.toPath());
+		List<String> lines = generateBuild(build);
 		assertThat(lines).containsSequence("repositories {", "    mavenCentral()", "}");
 	}
 
 	@Test
-	public void gradleBuildWithMavenRepository() throws IOException {
+	void gradleBuildWithMavenRepository() throws IOException {
 		GradleBuild build = new GradleBuild();
 		build.addMavenRepository("spring-milestones", "Spring Milestones",
 				"https://repo.spring.io/milestone");
-		BuildGradleProjectContributor contributor = new BuildGradleProjectContributor(
-				build);
-		contributor.contribute(this.temp.getRoot());
-		File buildGradle = new File(this.temp.getRoot(), "build.gradle");
-		assertThat(buildGradle).isFile();
-		List<String> lines = Files.readAllLines(buildGradle.toPath());
+		List<String> lines = generateBuild(build);
 		assertThat(lines).containsSequence("repositories {",
 				"    maven { url 'https://repo.spring.io/milestone' }", "}");
 	}
 
 	@Test
-	public void gradleBuildWithSnapshotMavenRepository() throws IOException {
+	void gradleBuildWithSnapshotMavenRepository() throws IOException {
 		GradleBuild build = new GradleBuild();
 		build.addSnapshotMavenRepository("spring-snapshots", "Spring Snapshots",
 				"https://repo.spring.io/snapshot");
-		BuildGradleProjectContributor contributor = new BuildGradleProjectContributor(
-				build);
-		contributor.contribute(this.temp.getRoot());
-		File buildGradle = new File(this.temp.getRoot(), "build.gradle");
-		assertThat(buildGradle).isFile();
-		List<String> lines = Files.readAllLines(buildGradle.toPath());
+		List<String> lines = generateBuild(build);
 		assertThat(lines).containsSequence("repositories {",
 				"    maven { url 'https://repo.spring.io/snapshot' }", "}");
 	}
 
 	@Test
-	public void gradleBuildWithTaskCustomizedWithInvocations() throws IOException {
+	void gradleBuildWithTaskCustomizedWithInvocations() throws IOException {
 		GradleBuild build = new GradleBuild();
 		build.customizeTask("asciidoctor", (task) -> {
 			task.invoke("inputs.dir", "snippetsDir");
 			task.invoke("dependsOn", "test");
 		});
-		BuildGradleProjectContributor contributor = new BuildGradleProjectContributor(
-				build);
-		contributor.contribute(this.temp.getRoot());
-		File buildGradle = new File(this.temp.getRoot(), "build.gradle");
-		assertThat(buildGradle).isFile();
-		List<String> lines = Files.readAllLines(buildGradle.toPath());
+		List<String> lines = generateBuild(build);
 		assertThat(lines).containsSequence("asciidoctor {", "    inputs.dir snippetsDir",
 				"    dependsOn test", "}");
 	}
 
 	@Test
-	public void gradleBuildWithTaskCustomizedWithAssignments() throws IOException {
+	void gradleBuildWithTaskCustomizedWithAssignments() throws IOException {
 		GradleBuild build = new GradleBuild();
 		build.customizeTask("compileKotlin", (task) -> {
 			task.set("kotlinOptions.freeCompilerArgs", "['-Xjsr305=strict']");
 			task.set("kotlinOptions.jvmTarget", "'1.8'");
 		});
-		BuildGradleProjectContributor contributor = new BuildGradleProjectContributor(
-				build);
-		contributor.contribute(this.temp.getRoot());
-		File buildGradle = new File(this.temp.getRoot(), "build.gradle");
-		assertThat(buildGradle).isFile();
-		List<String> lines = Files.readAllLines(buildGradle.toPath());
+		List<String> lines = generateBuild(build);
 		assertThat(lines).containsSequence("compileKotlin {",
 				"    kotlinOptions.freeCompilerArgs = ['-Xjsr305=strict']",
 				"    kotlinOptions.jvmTarget = '1.8'", "}");
 	}
 
 	@Test
-	public void gradleBuildWithTaskCustomizedWithNestedCustomization()
-			throws IOException {
+	void gradleBuildWithTaskCustomizedWithNestedCustomization() throws IOException {
 		GradleBuild build = new GradleBuild();
 		build.customizeTask("compileKotlin", (compileKotlin) -> {
 			compileKotlin.nested("kotlinOptions", (kotlinOptions) -> {
@@ -161,47 +130,40 @@ public class BuildGradleProjectContributorTests {
 				kotlinOptions.set("jvmTarget", "'1.8'");
 			});
 		});
-		BuildGradleProjectContributor contributor = new BuildGradleProjectContributor(
-				build);
-		contributor.contribute(this.temp.getRoot());
-		File buildGradle = new File(this.temp.getRoot(), "build.gradle");
-		assertThat(buildGradle).isFile();
-		List<String> lines = Files.readAllLines(buildGradle.toPath());
+		List<String> lines = generateBuild(build);
 		assertThat(lines).containsSequence("compileKotlin {", "    kotlinOptions {",
 				"        freeCompilerArgs = ['-Xjsr305=strict']",
 				"        jvmTarget = '1.8'", "    }", "}");
 	}
 
 	@Test
-	public void gradleBuildWithVersionedDependency() throws IOException {
+	void gradleBuildWithVersionedDependency() throws IOException {
 		GradleBuild build = new GradleBuild();
-		BuildGradleProjectContributor contributor = new BuildGradleProjectContributor(
-				build);
 		build.addDependency("org.jetbrains.kotlin", "kotlin-stdlib-jdk8",
 				"${kotlinVersion}", DependencyType.COMPILE);
-		contributor.contribute(this.temp.getRoot());
-		File buildGradle = new File(this.temp.getRoot(), "build.gradle");
-		assertThat(buildGradle).isFile();
-		List<String> lines = Files.readAllLines(buildGradle.toPath());
+		List<String> lines = generateBuild(build);
 		assertThat(lines).containsSequence("dependencies {",
 				"    implementation \"org.jetbrains.kotlin:kotlin-stdlib-jdk8:${kotlinVersion}\"",
 				"}");
 	}
 
 	@Test
-	public void gradleBuildWithDependency() throws IOException {
+	void gradleBuildWithDependency() throws IOException {
 		GradleBuild build = new GradleBuild();
-		BuildGradleProjectContributor contributor = new BuildGradleProjectContributor(
-				build);
 		build.addDependency("org.springframework.boot", "spring-boot-starter",
 				DependencyType.COMPILE);
-		contributor.contribute(this.temp.getRoot());
-		File buildGradle = new File(this.temp.getRoot(), "build.gradle");
-		assertThat(buildGradle).isFile();
-		List<String> lines = Files.readAllLines(buildGradle.toPath());
+		List<String> lines = generateBuild(build);
 		assertThat(lines).containsSequence("dependencies {",
 				"    implementation \"org.springframework.boot:spring-boot-starter\"",
 				"}");
+	}
+
+	private List<String> generateBuild(GradleBuild build) throws IOException {
+		Path projectDir = Files.createTempDirectory(this.directory, "project-");
+		new BuildGradleProjectContributor(build).contribute(projectDir.toFile());
+		Path buildGradle = projectDir.resolve("build.gradle");
+		assertThat(buildGradle).isRegularFile();
+		return Files.readAllLines(buildGradle);
 	}
 
 }

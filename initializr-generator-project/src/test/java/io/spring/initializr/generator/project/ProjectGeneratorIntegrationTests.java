@@ -19,6 +19,7 @@ package io.spring.initializr.generator.project;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -36,12 +37,12 @@ import io.spring.initializr.generator.packaging.Packaging;
 import io.spring.initializr.generator.packaging.jar.JarPackaging;
 import io.spring.initializr.generator.packaging.war.WarPackaging;
 import io.spring.initializr.generator.util.Version;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
-import org.junit.runners.Parameterized.Parameters;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
+import org.junitpioneer.jupiter.TempDirectory;
+import org.junitpioneer.jupiter.TempDirectory.TempDir;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -50,30 +51,16 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Andy Wilkinson
  */
-@RunWith(Parameterized.class)
-public class ProjectGeneratorIntegrationTests {
+@ExtendWith(TempDirectory.class)
+class ProjectGeneratorIntegrationTests {
 
-	@Rule
-	public final TemporaryFolder temp = new TemporaryFolder();
+	private final Path directory;
 
-	private final Version bootVersion;
-
-	private final Packaging packaging;
-
-	private final Language language;
-
-	private final BuildSystem buildSystem;
-
-	public ProjectGeneratorIntegrationTests(Version bootVersion, Packaging packaging,
-			Language language, BuildSystem buildSystem) {
-		this.bootVersion = bootVersion;
-		this.packaging = packaging;
-		this.language = language;
-		this.buildSystem = buildSystem;
+	ProjectGeneratorIntegrationTests(@TempDir Path directory) {
+		this.directory = directory;
 	}
 
-	@Parameters(name = "{0} {1} {2} {3}")
-	public static Object[] parameters() {
+	static Stream<Arguments> parameters() {
 		List<Version> bootVersions = Stream
 				.of("1.5.17.RELEASE", "2.0.6.RELEASE", "2.1.0.RELEASE",
 						"2.1.1.BUILD-SNAPSHOT")
@@ -84,34 +71,36 @@ public class ProjectGeneratorIntegrationTests {
 				new JavaLanguage());
 		List<BuildSystem> buildSystems = Arrays.asList(new GradleBuildSystem(),
 				new MavenBuildSystem());
-		List<Object[]> configurations = new ArrayList<>();
+		List<Arguments> configurations = new ArrayList<>();
 		for (Version bootVersion : bootVersions) {
 			for (Packaging packaging : packagings) {
 				for (Language language : languages) {
 					for (BuildSystem buildSystem : buildSystems) {
-						configurations.add(new Object[] { bootVersion, packaging,
-								language, buildSystem });
+						configurations.add(Arguments.arguments(bootVersion, packaging,
+								language, buildSystem));
 					}
 				}
 			}
 		}
-		return configurations.toArray(new Object[0]);
+		return configurations.stream();
 	}
 
-	@Test
-	public void projectBuilds() throws IOException, InterruptedException {
+	@ParameterizedTest(name = "{0} {1} {2} {3}")
+	@MethodSource("parameters")
+	void projectBuilds(Version bootVersion, Packaging packaging, Language language,
+			BuildSystem buildSystem) throws IOException, InterruptedException {
 		ProjectDescription description = new ProjectDescription();
-		description.setSpringBootVersion(this.bootVersion);
-		description.setLanguage(this.language);
-		description.setPackaging(this.packaging);
-		description.setBuildSystem(this.buildSystem);
+		description.setSpringBootVersion(bootVersion);
+		description.setLanguage(language);
+		description.setPackaging(packaging);
+		description.setBuildSystem(buildSystem);
 		description.setGroupId("com.example");
 		description.setArtifactId("demo");
 		description.setApplicationName("DemoApplication");
 		File project = new ProjectGenerator().generate(description);
-		ProcessBuilder processBuilder = createProcessBuilder(project);
+		ProcessBuilder processBuilder = createProcessBuilder(buildSystem, project);
 		processBuilder.directory(project);
-		File output = this.temp.newFile();
+		File output = Files.createTempFile(this.directory, "output-", ".log").toFile();
 		processBuilder.redirectError(output);
 		processBuilder.redirectOutput(output);
 		assertThat(processBuilder.start().waitFor())
@@ -119,11 +108,11 @@ public class ProjectGeneratorIntegrationTests {
 				.isEqualTo(0);
 	}
 
-	private ProcessBuilder createProcessBuilder(File project) {
-		if (this.buildSystem.id().equals(new MavenBuildSystem().id())) {
+	private ProcessBuilder createProcessBuilder(BuildSystem buildSystem, File project) {
+		if (buildSystem.id().equals(new MavenBuildSystem().id())) {
 			return new ProcessBuilder("./mvnw", "package");
 		}
-		if (this.buildSystem.id().equals(new GradleBuildSystem().id())) {
+		if (buildSystem.id().equals(new GradleBuildSystem().id())) {
 			return new ProcessBuilder("./gradlew", "--no-daemon", "build");
 		}
 		throw new IllegalStateException();
