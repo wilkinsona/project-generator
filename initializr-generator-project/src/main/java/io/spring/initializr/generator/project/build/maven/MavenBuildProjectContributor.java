@@ -16,9 +16,10 @@
 
 package io.spring.initializr.generator.project.build.maven;
 
-import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
+import java.io.Writer;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -63,7 +64,7 @@ public class MavenBuildProjectContributor implements ProjectContributor {
 	}
 
 	@Override
-	public void contribute(File projectRoot) throws IOException {
+	public void contribute(Path projectRoot) throws IOException {
 		DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
 		try {
 			DocumentBuilder builder = factory.newDocumentBuilder();
@@ -76,7 +77,7 @@ public class MavenBuildProjectContributor implements ProjectContributor {
 			addDependencies(project);
 			addBuild(project);
 			addRepositories(project);
-			write(document, new File(projectRoot, "pom.xml"));
+			write(document, Files.createFile(projectRoot.resolve("pom.xml")));
 		}
 		catch (ParserConfigurationException | TransformerException ex) {
 			throw new IOException(ex);
@@ -272,13 +273,13 @@ public class MavenBuildProjectContributor implements ProjectContributor {
 		child.appendChild(document.createTextNode(text));
 	}
 
-	private void write(Document document, File pomFile)
+	private void write(Document document, Path pomFile)
 			throws IOException, TransformerException {
 		TransformerFactory factory = TransformerFactory.newInstance();
 		Transformer transformer = factory.newTransformer();
 		transformer.setOutputProperty(OutputKeys.INDENT, "yes");
 		transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "4");
-		try (FileWriter writer = new FileWriter(pomFile)) {
+		try (Writer writer = Files.newBufferedWriter(pomFile)) {
 			transformer.transform(new DOMSource(document), new StreamResult(writer));
 		}
 	}

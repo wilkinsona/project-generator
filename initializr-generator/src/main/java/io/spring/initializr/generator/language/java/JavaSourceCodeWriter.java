@@ -16,11 +16,11 @@
 
 package io.spring.initializr.generator.language.java;
 
-import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.lang.reflect.Modifier;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -65,23 +65,20 @@ public class JavaSourceCodeWriter implements SourceCodeWriter<JavaSourceCode> {
 	}
 
 	@Override
-	public void writeTo(File directory, JavaSourceCode sourceCode) throws IOException {
-		if (!directory.isDirectory()) {
-			if (!directory.mkdirs()) {
-				throw new IllegalStateException("Directory '" + directory
-						+ "' did not exist and could not be made");
-			}
+	public void writeTo(Path directory, JavaSourceCode sourceCode) throws IOException {
+		if (!Files.exists(directory)) {
+			Files.createDirectories(directory);
 		}
 		for (JavaCompilationUnit compilationUnit : sourceCode.getCompilationUnits()) {
 			writeTo(directory, compilationUnit);
 		}
 	}
 
-	private void writeTo(File directory, JavaCompilationUnit compilationUnit)
+	private void writeTo(Path directory, JavaCompilationUnit compilationUnit)
 			throws IOException {
-		File output = fileForCompilationUnit(directory, compilationUnit);
-		output.getParentFile().mkdirs();
-		try (PrintWriter writer = new PrintWriter(new FileOutputStream(output))) {
+		Path output = fileForCompilationUnit(directory, compilationUnit);
+		Files.createDirectories(output.getParent());
+		try (PrintWriter writer = new PrintWriter(Files.newOutputStream(output))) {
 			writer.println("package " + compilationUnit.getPackageName() + ";");
 			writer.println();
 			Set<String> imports = determineImports(compilationUnit);
@@ -220,14 +217,14 @@ public class JavaSourceCodeWriter implements SourceCodeWriter<JavaSourceCode> {
 				+ String.join(", ", methodInvocation.getArguments()) + ")");
 	}
 
-	private File fileForCompilationUnit(File directory,
+	private Path fileForCompilationUnit(Path directory,
 			JavaCompilationUnit compilationUnit) {
-		return new File(directoryForPackage(directory, compilationUnit.getPackageName()),
-				compilationUnit.getName() + ".java");
+		return directoryForPackage(directory, compilationUnit.getPackageName())
+				.resolve(compilationUnit.getName() + ".java");
 	}
 
-	private File directoryForPackage(File directory, String packageName) {
-		return new File(directory, packageName.replace('.', '/'));
+	private Path directoryForPackage(Path directory, String packageName) {
+		return directory.resolve(packageName.replace('.', '/'));
 	}
 
 	private Set<String> determineImports(JavaCompilationUnit compilationUnit) {

@@ -360,10 +360,10 @@ class MavenBuildProjectContributorTests {
 	private void generatePom(MavenBuild mavenBuild, Consumer<NodeAssert> consumer)
 			throws Exception {
 		Path projectDir = Files.createTempDirectory(this.directory, "project-");
-		new MavenBuildProjectContributor(mavenBuild).contribute(projectDir.toFile());
+		new MavenBuildProjectContributor(mavenBuild).contribute(projectDir);
 		Path pomFile = projectDir.resolve("pom.xml");
 		assertThat(pomFile).isRegularFile();
-		consumer.accept(new NodeAssert(pomFile.toFile()));
+		consumer.accept(new NodeAssert(pomFile));
 	}
 
 }

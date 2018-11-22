@@ -16,10 +16,10 @@
 
 package io.spring.initializr.generator.language.kotlin;
 
-import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -45,23 +45,20 @@ import io.spring.initializr.generator.language.SourceCodeWriter;
 public class KotlinSourceCodeWriter implements SourceCodeWriter<KotlinSourceCode> {
 
 	@Override
-	public void writeTo(File directory, KotlinSourceCode sourceCode) throws IOException {
-		if (!directory.isDirectory()) {
-			if (!directory.mkdirs()) {
-				throw new IllegalStateException("Directory '" + directory
-						+ "' did not exist and could not be made");
-			}
+	public void writeTo(Path directory, KotlinSourceCode sourceCode) throws IOException {
+		if (!Files.exists(directory)) {
+			Files.createDirectories(directory);
 		}
 		for (KotlinCompilationUnit compilationUnit : sourceCode.getCompilationUnits()) {
 			writeTo(directory, compilationUnit);
 		}
 	}
 
-	private void writeTo(File directory, KotlinCompilationUnit compilationUnit)
+	private void writeTo(Path directory, KotlinCompilationUnit compilationUnit)
 			throws IOException {
-		File output = fileForCompilationUnit(directory, compilationUnit);
-		output.getParentFile().mkdirs();
-		try (PrintWriter writer = new PrintWriter(new FileOutputStream(output))) {
+		Path output = fileForCompilationUnit(directory, compilationUnit);
+		Files.createDirectories(output.getParent());
+		try (PrintWriter writer = new PrintWriter(Files.newOutputStream(output))) {
 			writer.println("package " + compilationUnit.getPackageName());
 			writer.println();
 			Set<String> imports = determineImports(compilationUnit);
@@ -231,14 +228,14 @@ public class KotlinSourceCodeWriter implements SourceCodeWriter<KotlinSourceCode
 				+ String.join(", ", functionInvocation.getArguments()) + ")");
 	}
 
-	private File fileForCompilationUnit(File directory,
+	private Path fileForCompilationUnit(Path directory,
 			KotlinCompilationUnit compilationUnit) {
-		return new File(directoryForPackage(directory, compilationUnit.getPackageName()),
-				compilationUnit.getName() + ".kt");
+		return directoryForPackage(directory, compilationUnit.getPackageName())
+				.resolve(compilationUnit.getName() + ".kt");
 	}
 
-	private File directoryForPackage(File directory, String packageName) {
-		return new File(directory, packageName.replace('.', '/'));
+	private Path directoryForPackage(Path directory, String packageName) {
+		return directory.resolve(packageName.replace('.', '/'));
 	}
 
 	private Set<String> determineImports(KotlinCompilationUnit compilationUnit) {

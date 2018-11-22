@@ -16,8 +16,8 @@
 
 package io.spring.initializr.generator.project;
 
-import java.io.File;
 import java.io.IOException;
+import java.nio.file.Path;
 import java.util.List;
 
 import io.spring.initializr.generator.ProjectContributor;
@@ -35,7 +35,7 @@ class ProjectContributors {
 		this.contributors = contributors;
 	}
 
-	void contribute(File projectRoot) throws IOException {
+	void contribute(Path projectRoot) throws IOException {
 		for (ProjectContributor contributor : this.contributors) {
 			contributor.contribute(projectRoot);
 		}

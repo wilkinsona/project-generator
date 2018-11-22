@@ -45,7 +45,7 @@ class ApplicationPropertiesContributorTests {
 	@Test
 	void applicationConfigurationWithDefaultSettings() throws IOException {
 		Path projectDir = Files.createTempDirectory(this.directory, "project-");
-		new ApplicationPropertiesContributor().contribute(projectDir.toFile());
+		new ApplicationPropertiesContributor().contribute(projectDir);
 		Path configuration = projectDir
 				.resolve("src/main/resources/application.properties");
 		assertThat(configuration).isRegularFile();

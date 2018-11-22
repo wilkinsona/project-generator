@@ -85,7 +85,7 @@ class SettingsGradleProjectContributorTests {
 
 	private List<String> generateSettings(GradleBuild build) throws IOException {
 		Path projectDir = Files.createTempDirectory(this.directory, "project-");
-		new SettingsGradleProjectContributor(build).contribute(projectDir.toFile());
+		new SettingsGradleProjectContributor(build).contribute(projectDir);
 		Path settingsGradle = projectDir.resolve("settings.gradle");
 		assertThat(settingsGradle).isRegularFile();
 		return Files.readAllLines(settingsGradle);

@@ -71,7 +71,7 @@ class WebFoldersContributorTests {
 
 	private Path contribute(ProjectDescription description) throws IOException {
 		Path projectDir = Files.createTempDirectory(this.directory, "project-");
-		new WebFoldersContributor(description).contribute(projectDir.toFile());
+		new WebFoldersContributor(description).contribute(projectDir);
 		return projectDir;
 	}
 

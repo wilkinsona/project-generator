@@ -16,8 +16,8 @@
 
 package io.spring.initializr.generator;
 
-import java.io.File;
 import java.io.IOException;
+import java.nio.file.Path;
 
 /**
  * A callback for contributing on a generated project.
@@ -31,6 +31,6 @@ public interface ProjectContributor {
 	 * @param projectRoot the root directory of the project
 	 * @throws IOException if contributing a resource failed
 	 */
-	void contribute(File projectRoot) throws IOException;
+	void contribute(Path projectRoot) throws IOException;
 
 }

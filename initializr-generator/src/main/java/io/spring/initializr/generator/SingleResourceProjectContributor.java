@@ -16,9 +16,10 @@
 
 package io.spring.initializr.generator;
 
-import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardOpenOption;
 
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
@@ -45,11 +46,15 @@ public class SingleResourceProjectContributor implements ProjectContributor {
 	}
 
 	@Override
-	public void contribute(File projectRoot) throws IOException {
-		File output = new File(projectRoot, this.filename);
-		output.getParentFile().mkdirs();
+	public void contribute(Path projectRoot) throws IOException {
+		Path output = projectRoot.resolve(this.filename);
+		if (!Files.exists(output)) {
+			Files.createDirectories(output.getParent());
+			Files.createFile(output);
+		}
 		Resource resource = this.resolver.getResource(this.resourcePattern);
-		FileCopyUtils.copy(resource.getInputStream(), new FileOutputStream(output, true));
+		FileCopyUtils.copy(resource.getInputStream(),
+				Files.newOutputStream(output, StandardOpenOption.APPEND));
 	}
 
 }

@@ -16,10 +16,10 @@
 
 package io.spring.initializr.generator.project.build.gradle;
 
-import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.nio.file.Files;
+import java.nio.file.Path;
 
 import io.spring.initializr.generator.ProjectContributor;
 import io.spring.initializr.generator.buildsystem.gradle.GradleBuild;
@@ -39,9 +39,9 @@ class Gradle3SettingsGradleProjectContributor implements ProjectContributor {
 	}
 
 	@Override
-	public void contribute(File projectRoot) throws IOException {
-		File file = new File(projectRoot, "settings.gradle");
-		try (PrintWriter writer = new PrintWriter(new FileOutputStream(file))) {
+	public void contribute(Path projectRoot) throws IOException {
+		Path file = Files.createFile(projectRoot.resolve("settings.gradle"));
+		try (PrintWriter writer = new PrintWriter(Files.newOutputStream(file))) {
 			writer.println("rootProject.name = '" + this.build.getName() + "'");
 		}
 	}

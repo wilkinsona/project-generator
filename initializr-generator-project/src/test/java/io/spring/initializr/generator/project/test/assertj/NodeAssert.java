@@ -16,7 +16,7 @@
 
 package io.spring.initializr.generator.project.test.assertj;
 
-import java.io.File;
+import java.nio.file.Path;
 
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.xpath.XPath;
@@ -45,7 +45,7 @@ public class NodeAssert extends AbstractAssert<NodeAssert, Node>
 
 	private final XPath xpath = this.xpathFactory.newXPath();
 
-	public NodeAssert(File xmlFile) {
+	public NodeAssert(Path xmlFile) {
 		this(read(xmlFile));
 	}
 
@@ -53,9 +53,9 @@ public class NodeAssert extends AbstractAssert<NodeAssert, Node>
 		super(actual, NodeAssert.class);
 	}
 
-	private static Document read(File xmlFile) {
+	private static Document read(Path xmlFile) {
 		try {
-			return FACTORY.newDocumentBuilder().parse(xmlFile);
+			return FACTORY.newDocumentBuilder().parse(xmlFile.toFile());
 		}
 		catch (Exception ex) {
 			throw new RuntimeException(ex);

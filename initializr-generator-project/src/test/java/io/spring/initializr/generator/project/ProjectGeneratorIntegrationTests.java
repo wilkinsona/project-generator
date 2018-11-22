@@ -16,7 +16,6 @@
 
 package io.spring.initializr.generator.project;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -97,18 +96,17 @@ class ProjectGeneratorIntegrationTests {
 		description.setGroupId("com.example");
 		description.setArtifactId("demo");
 		description.setApplicationName("DemoApplication");
-		File project = new ProjectGenerator().generate(description);
-		ProcessBuilder processBuilder = createProcessBuilder(buildSystem, project);
-		processBuilder.directory(project);
-		File output = Files.createTempFile(this.directory, "output-", ".log").toFile();
-		processBuilder.redirectError(output);
-		processBuilder.redirectOutput(output);
+		Path project = new ProjectGenerator().generate(description);
+		ProcessBuilder processBuilder = createProcessBuilder(buildSystem);
+		processBuilder.directory(project.toFile());
+		Path output = Files.createTempFile(this.directory, "output-", ".log");
+		processBuilder.redirectError(output.toFile());
+		processBuilder.redirectOutput(output.toFile());
 		assertThat(processBuilder.start().waitFor())
-				.describedAs(String.join("\n", Files.readAllLines(output.toPath())))
-				.isEqualTo(0);
+				.describedAs(String.join("\n", Files.readAllLines(output))).isEqualTo(0);
 	}
 
-	private ProcessBuilder createProcessBuilder(BuildSystem buildSystem, File project) {
+	private ProcessBuilder createProcessBuilder(BuildSystem buildSystem) {
 		if (buildSystem.id().equals(new MavenBuildSystem().id())) {
 			return new ProcessBuilder("./mvnw", "package");
 		}

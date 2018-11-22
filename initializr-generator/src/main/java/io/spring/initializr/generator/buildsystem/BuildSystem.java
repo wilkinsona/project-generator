@@ -16,7 +16,7 @@
 
 package io.spring.initializr.generator.buildsystem;
 
-import java.io.File;
+import java.nio.file.Path;
 import java.util.Objects;
 
 import io.spring.initializr.generator.language.Language;
@@ -36,12 +36,12 @@ public interface BuildSystem {
 	 */
 	String id();
 
-	default File getMainDirectory(File projectRoot, Language language) {
-		return new File(projectRoot, "src/main/" + language.id());
+	default Path getMainDirectory(Path projectRoot, Language language) {
+		return projectRoot.resolve("src/main/" + language.id());
 	}
 
-	default File getTestDirectory(File projectRoot, Language language) {
-		return new File(projectRoot, "src/test/" + language.id());
+	default Path getTestDirectory(Path projectRoot, Language language) {
+		return projectRoot.resolve("src/test/" + language.id());
 	}
 
 	static BuildSystem forId(String id) {

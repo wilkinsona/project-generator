@@ -160,7 +160,7 @@ class BuildGradleProjectContributorTests {
 
 	private List<String> generateBuild(GradleBuild build) throws IOException {
 		Path projectDir = Files.createTempDirectory(this.directory, "project-");
-		new BuildGradleProjectContributor(build).contribute(projectDir.toFile());
+		new BuildGradleProjectContributor(build).contribute(projectDir);
 		Path buildGradle = projectDir.resolve("build.gradle");
 		assertThat(buildGradle).isRegularFile();
 		return Files.readAllLines(buildGradle);

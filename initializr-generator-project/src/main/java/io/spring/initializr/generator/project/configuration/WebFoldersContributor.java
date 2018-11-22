@@ -16,7 +16,9 @@
 
 package io.spring.initializr.generator.project.configuration;
 
-import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 
 import io.spring.initializr.generator.ProjectContributor;
 import io.spring.initializr.generator.ProjectDescription;
@@ -36,12 +38,10 @@ public class WebFoldersContributor implements ProjectContributor {
 	}
 
 	@Override
-	public void contribute(File projectRoot) {
+	public void contribute(Path projectRoot) throws IOException {
 		if (hasFacet("web")) {
-			File templatesDir = new File(projectRoot, "src/main/resources/templates");
-			templatesDir.mkdirs();
-			File staticResourcesDir = new File(projectRoot, "src/main/resources/static");
-			staticResourcesDir.mkdirs();
+			Files.createDirectories(projectRoot.resolve("src/main/resources/templates"));
+			Files.createDirectories(projectRoot.resolve("src/main/resources/static"));
 		}
 	}
 

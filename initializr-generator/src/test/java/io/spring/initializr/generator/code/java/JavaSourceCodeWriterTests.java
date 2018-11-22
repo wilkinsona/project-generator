@@ -192,7 +192,7 @@ class JavaSourceCodeWriterTests {
 
 	private Path writeSourceCode(JavaSourceCode sourceCode) throws IOException {
 		Path projectDirectory = Files.createTempDirectory(this.directory, "project-");
-		this.writer.writeTo(projectDirectory.toFile(), sourceCode);
+		this.writer.writeTo(projectDirectory, sourceCode);
 		return projectDirectory;
 	}
 

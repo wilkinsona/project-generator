@@ -16,7 +16,6 @@
 
 package io.spring.start.extension;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
@@ -56,11 +55,10 @@ class StartSiteProjectGenerationTests {
 		description.setGroupId("com.example");
 		description.addDependency(new Dependency("org.springframework.restdocs",
 				"spring-restdocs-mockmvc", DependencyType.TEST_COMPILE));
-		File project = new ProjectGenerator().generate(description);
+		Path project = new ProjectGenerator().generate(description);
 		List<String> relativePaths = getRelativePathsOfProjectFiles(project);
 		assertThat(relativePaths).contains("build.gradle");
-		List<String> source = Files
-				.readAllLines(new File(project, "build.gradle").toPath());
+		List<String> source = Files.readAllLines(project.resolve("build.gradle"));
 		assertThat(source).contains("    id 'org.asciidoctor.convert' version '1.5.3'");
 		FileSystemUtils.deleteRecursively(project);
 	}
@@ -73,8 +71,8 @@ class StartSiteProjectGenerationTests {
 		description.setBuildSystem(new MavenBuildSystem());
 		description.addDependency(new Dependency("org.springframework.restdocs",
 				"spring-restdocs-mockmvc", DependencyType.TEST_COMPILE));
-		File project = new ProjectGenerator().generate(description);
-		NodeAssert pom = new NodeAssert(new File(project, "pom.xml"));
+		Path project = new ProjectGenerator().generate(description);
+		NodeAssert pom = new NodeAssert(project.resolve("pom.xml"));
 		assertThat(pom).textAtPath("/project/build/plugins/plugin[1]/groupId")
 				.isEqualTo("org.asciidoctor");
 		FileSystemUtils.deleteRecursively(project);
@@ -89,26 +87,23 @@ class StartSiteProjectGenerationTests {
 		description.setSpringBootVersion(Version.parse("2.1.0.RELEASE"));
 		description.addDependency(new Dependency("org.springframework.cloud",
 				"spring-cloud-config-server", DependencyType.COMPILE));
-		File project = new ProjectGenerator().generate(description);
+		Path project = new ProjectGenerator().generate(description);
 		List<String> relativePaths = getRelativePathsOfProjectFiles(project);
 		assertThat(relativePaths)
 				.contains("src/main/java/com/example/DemoApplication.java");
 		List<String> source = Files.readAllLines(
-				new File(project, "src/main/java/com/example/DemoApplication.java")
-						.toPath());
+				project.resolve("src/main/java/com/example/DemoApplication.java"));
 		assertThat(source).contains("@EnableConfigServer");
 		FileSystemUtils.deleteRecursively(project);
 	}
 
-	private List<String> getRelativePathsOfProjectFiles(File project) throws IOException {
+	private List<String> getRelativePathsOfProjectFiles(Path project) throws IOException {
 		List<String> relativePaths = new ArrayList<>();
-		Path projectPath = project.toPath();
-		Files.walkFileTree(projectPath, new SimpleFileVisitor<Path>() {
+		Files.walkFileTree(project, new SimpleFileVisitor<Path>() {
 
 			@Override
-			public FileVisitResult visitFile(Path file, BasicFileAttributes attrs)
-					throws IOException {
-				relativePaths.add(projectPath.relativize(file).toString());
+			public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) {
+				relativePaths.add(project.relativize(file).toString());
 				return FileVisitResult.CONTINUE;
 			}
 

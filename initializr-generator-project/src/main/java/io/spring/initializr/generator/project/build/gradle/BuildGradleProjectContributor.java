@@ -16,10 +16,10 @@
 
 package io.spring.initializr.generator.project.build.gradle;
 
-import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.List;
 import java.util.Map;
 
@@ -45,9 +45,9 @@ class BuildGradleProjectContributor implements ProjectContributor {
 	}
 
 	@Override
-	public void contribute(File projectRoot) throws IOException {
-		File file = new File(projectRoot, "build.gradle");
-		try (PrintWriter writer = new PrintWriter(new FileOutputStream(file))) {
+	public void contribute(Path projectRoot) throws IOException {
+		Path file = Files.createFile(projectRoot.resolve("build.gradle"));
+		try (PrintWriter writer = new PrintWriter(Files.newOutputStream(file))) {
 			writeBuildscript(writer);
 			writePlugins(writer);
 			writer.println("group = '" + this.build.getGroup() + "'");

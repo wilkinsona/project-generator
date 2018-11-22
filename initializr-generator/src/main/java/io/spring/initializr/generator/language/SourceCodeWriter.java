@@ -16,8 +16,8 @@
 
 package io.spring.initializr.generator.language;
 
-import java.io.File;
 import java.io.IOException;
+import java.nio.file.Path;
 
 /**
  * A writer for some {@link SourceCode}.
@@ -33,6 +33,6 @@ public interface SourceCodeWriter<S extends SourceCode<?, ?>> {
 	 * @param sourceCode the source code to write
 	 * @throws IOException if writing fails
 	 */
-	void writeTo(File directory, S sourceCode) throws IOException;
+	void writeTo(Path directory, S sourceCode) throws IOException;
 
 }

@@ -16,9 +16,9 @@
 
 package io.spring.initializr.generator;
 
-import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.function.Predicate;
 
 import org.springframework.core.io.Resource;
@@ -51,18 +51,20 @@ public class MultipleResourcesProjectContributor implements ProjectContributor {
 	}
 
 	@Override
-	public void contribute(File projectRoot) throws IOException {
+	public void contribute(Path projectRoot) throws IOException {
 		Resource root = this.resolver.getResource(this.rootResource);
 		Resource[] resources = this.resolver.getResources(this.rootResource + "/**");
 		for (Resource resource : resources) {
 			String filename = resource.getURI().toString()
 					.substring(root.getURI().toString().length() + 1);
 			if (resource.isReadable()) {
-				File output = new File(projectRoot, filename);
-				output.getParentFile().mkdirs();
+				Path output = projectRoot.resolve(filename);
+				Files.createDirectories(output.getParent());
+				Files.createFile(output);
 				FileCopyUtils.copy(resource.getInputStream(),
-						new FileOutputStream(output));
-				output.setExecutable(this.executable.test(filename));
+						Files.newOutputStream(output));
+				// TODO Set executable using NIO
+				output.toFile().setExecutable(this.executable.test(filename));
 			}
 		}
 	}

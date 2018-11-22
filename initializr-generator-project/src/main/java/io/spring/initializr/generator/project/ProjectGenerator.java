@@ -16,7 +16,6 @@
 
 package io.spring.initializr.generator.project;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -40,16 +39,15 @@ import org.springframework.core.type.AnnotationMetadata;
  */
 public class ProjectGenerator {
 
-	public File generate(ProjectDescription description) throws IOException {
+	public Path generate(ProjectDescription description) throws IOException {
 		try (AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext()) {
 			context.registerBean(ProjectDescription.class, () -> description);
 			context.register(CoreConfiguration.class);
 			context.refresh();
 			Path projectRoot = Files.createTempDirectory("project-");
 			Path projectDirectory = initializerProjectDirectory(projectRoot, description);
-			context.getBean(ProjectContributors.class)
-					.contribute(projectDirectory.toFile());
-			return projectRoot.toFile();
+			context.getBean(ProjectContributors.class).contribute(projectDirectory);
+			return projectRoot;
 		}
 	}
 

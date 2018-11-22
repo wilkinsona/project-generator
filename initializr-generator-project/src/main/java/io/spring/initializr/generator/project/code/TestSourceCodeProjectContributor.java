@@ -16,8 +16,8 @@
 
 package io.spring.initializr.generator.project.code;
 
-import java.io.File;
 import java.io.IOException;
+import java.nio.file.Path;
 import java.util.List;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
@@ -65,7 +65,7 @@ public class TestSourceCodeProjectContributor<T extends TypeDeclaration, C exten
 	}
 
 	@Override
-	public void contribute(File projectRoot) throws IOException {
+	public void contribute(Path projectRoot) throws IOException {
 		S sourceCode = this.sourceFactory.get();
 		String testName = this.projectDescription.getApplicationName() + "Tests";
 		C compilationUnit = sourceCode.createCompilationUnit(
