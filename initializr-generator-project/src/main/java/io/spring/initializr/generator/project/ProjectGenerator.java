@@ -39,12 +39,23 @@ import org.springframework.core.type.AnnotationMetadata;
  */
 public class ProjectGenerator {
 
+	private final ProjectDirectoryFactory projectDirectoryFactory;
+
+	public ProjectGenerator(ProjectDirectoryFactory projectDirectoryFactory) {
+		this.projectDirectoryFactory = projectDirectoryFactory;
+	}
+
+	public ProjectGenerator() {
+		this((description) -> Files.createTempDirectory("project-"));
+	}
+
 	public Path generate(ProjectDescription description) throws IOException {
 		try (AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext()) {
 			context.registerBean(ProjectDescription.class, () -> description);
 			context.register(CoreConfiguration.class);
 			context.refresh();
-			Path projectRoot = Files.createTempDirectory("project-");
+			Path projectRoot = this.projectDirectoryFactory
+					.createProjectDirectory(description);
 			Path projectDirectory = initializerProjectDirectory(projectRoot, description);
 			context.getBean(ProjectContributors.class).contribute(projectDirectory);
 			return projectRoot;

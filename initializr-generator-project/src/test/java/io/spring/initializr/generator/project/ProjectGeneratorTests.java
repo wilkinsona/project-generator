@@ -34,8 +34,9 @@ import io.spring.initializr.generator.language.kotlin.KotlinLanguage;
 import io.spring.initializr.generator.packaging.war.WarPackaging;
 import io.spring.initializr.generator.util.Version;
 import org.junit.jupiter.api.Test;
-
-import org.springframework.util.FileSystemUtils;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.junitpioneer.jupiter.TempDirectory;
+import org.junitpioneer.jupiter.TempDirectory.TempDir;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -45,7 +46,15 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Andy Wilkinson
  * @author Stephane Nicoll
  */
+@ExtendWith(TempDirectory.class)
 class ProjectGeneratorTests {
+
+	private final ProjectGenerator projectGenerator;
+
+	ProjectGeneratorTests(@TempDir Path directory) {
+		this.projectGenerator = new ProjectGenerator(
+				(description) -> Files.createTempDirectory(directory, "project-"));
+	}
 
 	@Test
 	void gradle3WrapperIsContributedWhenGeneratingGradleProjectWithBoot15()
@@ -53,7 +62,7 @@ class ProjectGeneratorTests {
 		ProjectDescription description = initProjectDescription();
 		description.setBuildSystem(new GradleBuildSystem());
 		description.setSpringBootVersion(Version.parse("1.5.17.RELEASE"));
-		Path project = new ProjectGenerator().generate(description);
+		Path project = this.projectGenerator.generate(description);
 		List<String> relativePaths = getRelativePathsOfProjectFiles(project);
 		assertThat(relativePaths).contains("gradlew", "gradlew.bat",
 				"gradle/wrapper/gradle-wrapper.properties",
@@ -63,7 +72,6 @@ class ProjectGeneratorTests {
 			assertThat(lines.filter((line) -> line.contains("gradle-3.5.1-bin.zip")))
 					.hasSize(1);
 		}
-		FileSystemUtils.deleteRecursively(project);
 	}
 
 	@Test
@@ -72,7 +80,7 @@ class ProjectGeneratorTests {
 		ProjectDescription description = initProjectDescription();
 		description.setBuildSystem(new GradleBuildSystem());
 		description.setSpringBootVersion(Version.parse("2.0.6.RELEASE"));
-		Path project = new ProjectGenerator().generate(description);
+		Path project = this.projectGenerator.generate(description);
 		List<String> relativePaths = getRelativePathsOfProjectFiles(project);
 		assertThat(relativePaths).contains("gradlew", "gradlew.bat",
 				"gradle/wrapper/gradle-wrapper.properties",
@@ -82,7 +90,6 @@ class ProjectGeneratorTests {
 			assertThat(lines.filter((line) -> line.contains("gradle-4.10.2-bin.zip")))
 					.hasSize(1);
 		}
-		FileSystemUtils.deleteRecursively(project);
 	}
 
 	@Test
@@ -93,7 +100,7 @@ class ProjectGeneratorTests {
 		description.setLanguage(new JavaLanguage());
 		description.setGroupId("com.example");
 		description.setArtifactId("demo");
-		Path project = new ProjectGenerator().generate(description);
+		Path project = this.projectGenerator.generate(description);
 		List<String> relativePaths = getRelativePathsOfProjectFiles(project);
 		assertThat(relativePaths).contains("build.gradle");
 		List<String> lines = Files.readAllLines(project.resolve("build.gradle"));
@@ -114,13 +121,12 @@ class ProjectGeneratorTests {
 		ProjectDescription description = initProjectDescription();
 		description.setBuildSystem(new MavenBuildSystem());
 		description.setSpringBootVersion(Version.parse("2.1.0.RELEASE"));
-		Path project = new ProjectGenerator().generate(description);
+		Path project = this.projectGenerator.generate(description);
 		List<String> relativePaths = getRelativePathsOfProjectFiles(project);
 		assertThat(relativePaths).contains("mvnw", "mvnw.cmd",
 				".mvn/wrapper/MavenWrapperDownloader.java",
 				".mvn/wrapper/maven-wrapper.properties",
 				".mvn/wrapper/maven-wrapper.jar");
-		FileSystemUtils.deleteRecursively(project);
 	}
 
 	@Test
@@ -128,10 +134,9 @@ class ProjectGeneratorTests {
 		ProjectDescription description = initProjectDescription();
 		description.setBuildSystem(new MavenBuildSystem());
 		description.setSpringBootVersion(Version.parse("2.1.0.RELEASE"));
-		Path project = new ProjectGenerator().generate(description);
+		Path project = this.projectGenerator.generate(description);
 		List<String> relativePaths = getRelativePathsOfProjectFiles(project);
 		assertThat(relativePaths).contains("pom.xml");
-		FileSystemUtils.deleteRecursively(project);
 	}
 
 	@Test
@@ -139,10 +144,9 @@ class ProjectGeneratorTests {
 		ProjectDescription description = initProjectDescription();
 		description.setBuildSystem(new GradleBuildSystem());
 		description.setSpringBootVersion(Version.parse("2.1.0.RELEASE"));
-		Path project = new ProjectGenerator().generate(description);
+		Path project = this.projectGenerator.generate(description);
 		assertThat(Files.readAllLines(project.resolve(".gitignore"))).contains(".gradle",
 				"### STS ###");
-		FileSystemUtils.deleteRecursively(project);
 	}
 
 	@Test
@@ -150,11 +154,9 @@ class ProjectGeneratorTests {
 		ProjectDescription description = initProjectDescription();
 		description.setBuildSystem(new MavenBuildSystem());
 		description.setSpringBootVersion(Version.parse("2.1.0.RELEASE"));
-		Path project = new ProjectGenerator().generate(description);
+		Path project = this.projectGenerator.generate(description);
 		assertThat(Files.readAllLines(project.resolve(".gitignore"))).contains("/target/",
 				"### STS ###");
-		FileSystemUtils.deleteRecursively(project);
-
 	}
 
 	@Test
@@ -164,11 +166,10 @@ class ProjectGeneratorTests {
 		description.setSpringBootVersion(Version.parse("2.1.0.RELEASE"));
 		description.setLanguage(new JavaLanguage());
 		description.setGroupId("com.example");
-		Path project = new ProjectGenerator().generate(description);
+		Path project = this.projectGenerator.generate(description);
 		List<String> relativePaths = getRelativePathsOfProjectFiles(project);
 		assertThat(relativePaths)
 				.contains("src/main/java/com/example/DemoApplication.java");
-		FileSystemUtils.deleteRecursively(project);
 	}
 
 	@Test
@@ -178,11 +179,10 @@ class ProjectGeneratorTests {
 		description.setSpringBootVersion(Version.parse("2.1.0.RELEASE"));
 		description.setLanguage(new KotlinLanguage());
 		description.setGroupId("com.example");
-		Path project = new ProjectGenerator().generate(description);
+		Path project = this.projectGenerator.generate(description);
 		List<String> relativePaths = getRelativePathsOfProjectFiles(project);
 		assertThat(relativePaths)
 				.contains("src/main/kotlin/com/example/DemoApplication.kt");
-		FileSystemUtils.deleteRecursively(project);
 	}
 
 	@Test
@@ -194,7 +194,7 @@ class ProjectGeneratorTests {
 		description.setLanguage(new JavaLanguage());
 		description.setPackaging(new WarPackaging());
 		description.setGroupId("com.example");
-		Path project = new ProjectGenerator().generate(description);
+		Path project = this.projectGenerator.generate(description);
 		List<String> relativePaths = getRelativePathsOfProjectFiles(project);
 		assertThat(relativePaths)
 				.contains("src/main/java/com/example/ServletInitializer.java");
@@ -209,7 +209,6 @@ class ProjectGeneratorTests {
 				"    protected SpringApplicationBuilder configure(SpringApplicationBuilder application) {",
 				"        return application.sources(DemoApplication.class);", "    }", "",
 				"}", "");
-		FileSystemUtils.deleteRecursively(project);
 	}
 
 	@Test
@@ -221,7 +220,7 @@ class ProjectGeneratorTests {
 		description.setLanguage(new KotlinLanguage());
 		description.setPackaging(new WarPackaging());
 		description.setGroupId("com.example");
-		Path project = new ProjectGenerator().generate(description);
+		Path project = this.projectGenerator.generate(description);
 		List<String> relativePaths = getRelativePathsOfProjectFiles(project);
 		assertThat(relativePaths)
 				.contains("src/main/kotlin/com/example/ServletInitializer.kt");
@@ -234,7 +233,6 @@ class ProjectGeneratorTests {
 				"    override fun configure(application: SpringApplicationBuilder): SpringApplicationBuilder {",
 				"        return application.sources(DemoApplication::class.java)",
 				"    }", "", "}", "");
-		FileSystemUtils.deleteRecursively(project);
 	}
 
 	@Test
@@ -246,13 +244,12 @@ class ProjectGeneratorTests {
 		description.setLanguage(new JavaLanguage());
 		description.setPackaging(new WarPackaging());
 		description.setGroupId("com.example");
-		Path project = new ProjectGenerator().generate(description);
+		Path project = this.projectGenerator.generate(description);
 		List<String> relativePaths = getRelativePathsOfProjectFiles(project);
 		assertThat(relativePaths).contains("build.gradle");
 		try (Stream<String> lines = Files.lines(project.resolve("build.gradle"))) {
 			assertThat(lines.filter((line) -> line.contains("    id 'war'"))).hasSize(1);
 		}
-		FileSystemUtils.deleteRecursively(project);
 	}
 
 	@Test
@@ -264,7 +261,7 @@ class ProjectGeneratorTests {
 		description.setLanguage(new JavaLanguage());
 		description.setPackaging(new WarPackaging());
 		description.setGroupId("com.example");
-		Path project = new ProjectGenerator().generate(description);
+		Path project = this.projectGenerator.generate(description);
 		List<String> relativePaths = getRelativePathsOfProjectFiles(project);
 		assertThat(relativePaths).contains("pom.xml");
 		try (Stream<String> lines = Files.lines(project.resolve("pom.xml"))) {
@@ -272,7 +269,6 @@ class ProjectGeneratorTests {
 					.filter((line) -> line.contains("    <packaging>war</packaging>")))
 							.hasSize(1);
 		}
-		FileSystemUtils.deleteRecursively(project);
 	}
 
 	@Test
@@ -282,7 +278,7 @@ class ProjectGeneratorTests {
 		description.setSpringBootVersion(Version.parse("2.1.0.RELEASE"));
 		description.setLanguage(new JavaLanguage());
 		description.setGroupId("com.example");
-		Path project = new ProjectGenerator().generate(description);
+		Path project = this.projectGenerator.generate(description);
 		List<String> relativePaths = getRelativePathsOfProjectFiles(project);
 		assertThat(relativePaths)
 				.contains("src/test/java/com/example/DemoApplicationTests.java");
@@ -295,7 +291,6 @@ class ProjectGeneratorTests {
 				"@RunWith(SpringRunner.class)", "@SpringBootTest",
 				"public class DemoApplicationTests {", "", "    @Test",
 				"    public void contextLoads() {", "    }", "", "}", "");
-		FileSystemUtils.deleteRecursively(project);
 	}
 
 	@Test
@@ -305,7 +300,7 @@ class ProjectGeneratorTests {
 		description.setSpringBootVersion(Version.parse("2.1.0.RELEASE"));
 		description.setLanguage(new KotlinLanguage());
 		description.setGroupId("com.example");
-		Path project = new ProjectGenerator().generate(description);
+		Path project = this.projectGenerator.generate(description);
 		List<String> relativePaths = getRelativePathsOfProjectFiles(project);
 		assertThat(relativePaths)
 				.contains("src/test/kotlin/com/example/DemoApplicationTests.kt");
@@ -318,7 +313,6 @@ class ProjectGeneratorTests {
 				"@RunWith(SpringRunner::class)", "@SpringBootTest",
 				"class DemoApplicationTests {", "", "    @Test",
 				"    fun contextLoads() {", "    }", "", "}", "");
-		FileSystemUtils.deleteRecursively(project);
 	}
 
 	@Test
@@ -329,12 +323,11 @@ class ProjectGeneratorTests {
 		description.setLanguage(new JavaLanguage());
 		description.setGroupId("com.example");
 		description.setPackageName("com.example.demo");
-		Path project = new ProjectGenerator().generate(description);
+		Path project = this.projectGenerator.generate(description);
 		List<String> relativePaths = getRelativePathsOfProjectFiles(project);
 		assertThat(relativePaths).contains(
 				"src/main/java/com/example/demo/DemoApplication.java",
 				"src/test/java/com/example/demo/DemoApplicationTests.java");
-		FileSystemUtils.deleteRecursively(project);
 	}
 
 	@Test
@@ -345,11 +338,10 @@ class ProjectGeneratorTests {
 		description.setLanguage(new JavaLanguage());
 		description.setGroupId("com.example");
 		description.setApplicationName("MyApplication");
-		Path project = new ProjectGenerator().generate(description);
+		Path project = this.projectGenerator.generate(description);
 		List<String> relativePaths = getRelativePathsOfProjectFiles(project);
 		assertThat(relativePaths).contains("src/main/java/com/example/MyApplication.java",
 				"src/test/java/com/example/MyApplicationTests.java");
-		FileSystemUtils.deleteRecursively(project);
 	}
 
 	@Test
@@ -360,7 +352,7 @@ class ProjectGeneratorTests {
 		description.setLanguage(new JavaLanguage());
 		description.setGroupId("com.example");
 		description.setBaseDirectory("test/demo-app");
-		Path project = new ProjectGenerator().generate(description);
+		Path project = this.projectGenerator.generate(description);
 		List<String> relativePaths = getRelativePathsOfProjectFiles(project);
 		assertThat(relativePaths).containsOnly("test/demo-app/.gitignore",
 				"test/demo-app/pom.xml", "test/demo-app/mvnw", "test/demo-app/mvnw.cmd",
@@ -370,7 +362,6 @@ class ProjectGeneratorTests {
 				"test/demo-app/src/main/java/com/example/DemoApplication.java",
 				"test/demo-app/src/main/resources/application.properties",
 				"test/demo-app/src/test/java/com/example/DemoApplicationTests.java");
-		FileSystemUtils.deleteRecursively(project);
 	}
 
 	private ProjectDescription initProjectDescription() {

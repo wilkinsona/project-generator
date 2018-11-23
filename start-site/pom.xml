@@ -24,6 +24,11 @@
 			<scope>test</scope>
 		</dependency>
 		<dependency>
+			<groupId>org.junit-pioneer</groupId>
+			<artifactId>junit-pioneer</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
 			<groupId>io.spring.initializr.experimental</groupId>
 			<artifactId>initializr-generator-project</artifactId>
 			<scope>test</scope>

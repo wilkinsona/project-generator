@@ -35,15 +35,24 @@ import io.spring.initializr.generator.project.ProjectGenerator;
 import io.spring.initializr.generator.project.test.assertj.NodeAssert;
 import io.spring.initializr.generator.util.Version;
 import org.junit.jupiter.api.Test;
-
-import org.springframework.util.FileSystemUtils;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.junitpioneer.jupiter.TempDirectory;
+import org.junitpioneer.jupiter.TempDirectory.TempDir;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * @author Stephane Nicoll
  */
+@ExtendWith(TempDirectory.class)
 class StartSiteProjectGenerationTests {
+
+	private final ProjectGenerator projectGenerator;
+
+	StartSiteProjectGenerationTests(@TempDir Path directory) {
+		this.projectGenerator = new ProjectGenerator(
+				(description) -> Files.createTempDirectory(directory, "project-"));
+	}
 
 	@Test
 	void buildDotGradleIsCustomizedWhenGeneratingProjectThatDependsOnSpringRestDocs()
@@ -55,12 +64,11 @@ class StartSiteProjectGenerationTests {
 		description.setGroupId("com.example");
 		description.addDependency(new Dependency("org.springframework.restdocs",
 				"spring-restdocs-mockmvc", DependencyType.TEST_COMPILE));
-		Path project = new ProjectGenerator().generate(description);
+		Path project = this.projectGenerator.generate(description);
 		List<String> relativePaths = getRelativePathsOfProjectFiles(project);
 		assertThat(relativePaths).contains("build.gradle");
 		List<String> source = Files.readAllLines(project.resolve("build.gradle"));
 		assertThat(source).contains("    id 'org.asciidoctor.convert' version '1.5.3'");
-		FileSystemUtils.deleteRecursively(project);
 	}
 
 	@Test
@@ -71,11 +79,10 @@ class StartSiteProjectGenerationTests {
 		description.setBuildSystem(new MavenBuildSystem());
 		description.addDependency(new Dependency("org.springframework.restdocs",
 				"spring-restdocs-mockmvc", DependencyType.TEST_COMPILE));
-		Path project = new ProjectGenerator().generate(description);
+		Path project = this.projectGenerator.generate(description);
 		NodeAssert pom = new NodeAssert(project.resolve("pom.xml"));
 		assertThat(pom).textAtPath("/project/build/plugins/plugin[1]/groupId")
 				.isEqualTo("org.asciidoctor");
-		FileSystemUtils.deleteRecursively(project);
 	}
 
 	@Test
@@ -87,14 +94,13 @@ class StartSiteProjectGenerationTests {
 		description.setSpringBootVersion(Version.parse("2.1.0.RELEASE"));
 		description.addDependency(new Dependency("org.springframework.cloud",
 				"spring-cloud-config-server", DependencyType.COMPILE));
-		Path project = new ProjectGenerator().generate(description);
+		Path project = this.projectGenerator.generate(description);
 		List<String> relativePaths = getRelativePathsOfProjectFiles(project);
 		assertThat(relativePaths)
 				.contains("src/main/java/com/example/DemoApplication.java");
 		List<String> source = Files.readAllLines(
 				project.resolve("src/main/java/com/example/DemoApplication.java"));
 		assertThat(source).contains("@EnableConfigServer");
-		FileSystemUtils.deleteRecursively(project);
 	}
 
 	private List<String> getRelativePathsOfProjectFiles(Path project) throws IOException {
