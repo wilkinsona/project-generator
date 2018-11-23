@@ -381,7 +381,7 @@ class ProjectGeneratorTests {
 										"Reference documentation")),
 				Collections.emptyList()));
 		Path project = this.projectGenerator.generate(description);
-		assertThat(Files.readAllLines(project.resolve("HELP.MD"))).contains("## Guides",
+		assertThat(Files.readAllLines(project.resolve("HELP.md"))).contains("## Guides",
 				"* [Test guide](example.com/guide)", "## Reference Documentation",
 				"* [Reference documentation](example.com/doc)");
 	}

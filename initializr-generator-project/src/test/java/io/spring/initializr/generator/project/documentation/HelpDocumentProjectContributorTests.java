@@ -55,7 +55,7 @@ class HelpDocumentProjectContributorTests {
 		Path projectDir = Files.createTempDirectory(this.directory, "project-");
 		new HelpDocumentProjectContributor(this.templateRenderer, document)
 				.contribute(projectDir);
-		Path helpDocument = projectDir.resolve("HELP.MD");
+		Path helpDocument = projectDir.resolve("HELP.md");
 		assertThat(helpDocument).doesNotExist();
 	}
 
@@ -133,7 +133,7 @@ class HelpDocumentProjectContributorTests {
 		Path projectDir = Files.createTempDirectory(this.directory, "project-");
 		new HelpDocumentProjectContributor(this.templateRenderer, document)
 				.contribute(projectDir);
-		Path helpDocument = projectDir.resolve("HELP.MD");
+		Path helpDocument = projectDir.resolve("HELP.md");
 		assertThat(helpDocument).isRegularFile();
 		return Files.readAllLines(helpDocument);
 	}

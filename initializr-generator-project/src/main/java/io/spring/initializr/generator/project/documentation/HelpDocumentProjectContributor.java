@@ -31,7 +31,7 @@ import io.spring.initializr.generator.ProjectContributor;
 import io.spring.initializr.generator.util.template.TemplateRenderer;
 
 /**
- * {@link ProjectContributor} for the project's {@code HELP.MD} file.
+ * {@link ProjectContributor} for the project's {@code HELP.md} file.
  *
  * @author Stephane Nicoll
  */
@@ -52,7 +52,7 @@ public class HelpDocumentProjectContributor implements ProjectContributor {
 		if (this.helpDocument.isEmpty()) {
 			return;
 		}
-		Path file = Files.createFile(projectRoot.resolve("HELP.MD"));
+		Path file = Files.createFile(projectRoot.resolve("HELP.md"));
 		try (PrintWriter writer = new PrintWriter(Files.newOutputStream(file))) {
 			writeGettingStartedSection(writer);
 			for (Section section : this.helpDocument.getSections()) {
