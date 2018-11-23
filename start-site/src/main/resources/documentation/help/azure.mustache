@@ -1,0 +1,27 @@
+# Microsoft Azure
+Adding Azure support brings auto-configuration and dependency management for Azure. You
+can enable additional features by adding the relevant libraries or you may chose to add
+more starters to get going, for instance:
+
+* Active Directory
+* Cosmos DB
+* Key Vault
+* Media Services
+* Service Bus
+* Storage
+
+{{#actuator}}
+As you are using the Actuator, you can export metrics to Azure Monitor by adding the
+following dependency:
+
+```xml
+<dependency>
+    <groupId>io.micrometer</groupId>
+    <artifactId>micrometer-registry-azure-monitor</artifactId>
+    <scope>runtime</scope>
+</dependency>
+```
+{{/actuator}}
+
+
+
