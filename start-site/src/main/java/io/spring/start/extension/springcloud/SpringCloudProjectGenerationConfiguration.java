@@ -16,11 +16,13 @@
 
 package io.spring.start.extension.springcloud;
 
+import io.spring.initializr.generator.ProjectDescription;
 import io.spring.initializr.generator.condition.ConditionalOnDependency;
 import io.spring.initializr.generator.language.Annotation;
 import io.spring.initializr.generator.language.TypeDeclaration;
 import io.spring.initializr.generator.project.ProjectGenerationConfiguration;
 import io.spring.initializr.generator.project.code.MainApplicationTypeCustomizer;
+import io.spring.initializr.generator.project.documentation.HelpDocumentCustomizer;
 
 import org.springframework.context.annotation.Bean;
 
@@ -37,6 +39,18 @@ public class SpringCloudProjectGenerationConfiguration {
 	public MainApplicationTypeCustomizer<TypeDeclaration> enableConfigServerAnnotator() {
 		return (typeDeclaration) -> typeDeclaration.annotate(Annotation
 				.name("org.springframework.cloud.config.server.EnableConfigServer"));
+	}
+
+	@Bean
+	@ConditionalOnDependency(groupId = "org.springframework.cloud", artifactId = "spring-cloud-starter-netflix-eureka-client")
+	public HelpDocumentCustomizer eurekaHelpDocumentCustomizer() {
+		return new EurekaHelpDocumentCustomizer();
+	}
+
+	@Bean
+	public HelpDocumentCustomizer BinderRequiredHelpDocumentCustomizer(
+			ProjectDescription description) {
+		return new SpringCloudStreamHelpDocumentCustomizer(description);
 	}
 
 }

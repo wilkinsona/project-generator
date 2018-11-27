@@ -18,31 +18,29 @@ package io.spring.initializr.generator.project.documentation;
 
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.nio.file.Files;
-import java.nio.file.Path;
+import java.util.Map;
 
-import io.spring.initializr.generator.ProjectContributor;
+import io.spring.initializr.generator.util.template.MustacheTemplateRenderer;
+import io.spring.initializr.generator.util.template.TemplateRenderer;
 
 /**
- * {@link ProjectContributor} for the project's {@code HELP.md} file.
+ * {@link Section} that uses a {@link MustacheTemplateRenderer}.
  *
- * @author Stephane Nicoll
  * @author Madhura Bhave
  */
-public class HelpDocumentProjectContributor implements ProjectContributor {
+public abstract class MustacheSection implements Section {
 
-	private final HelpDocument helpDocument;
-
-	public HelpDocumentProjectContributor(HelpDocument helpDocument) {
-		this.helpDocument = helpDocument;
-	}
+	private final TemplateRenderer renderer = new MustacheTemplateRenderer(
+			"classpath:/documentation/help");
 
 	@Override
-	public void contribute(Path projectRoot) throws IOException {
-		Path file = Files.createFile(projectRoot.resolve("HELP.md"));
-		try (PrintWriter writer = new PrintWriter(Files.newOutputStream(file))) {
-			this.helpDocument.write(writer);
-		}
+	public void write(PrintWriter writer) throws IOException {
+		writer.println(this.renderer.render(getTemplateName(), getModel()));
+		// writer.println();
 	}
+
+	public abstract String getTemplateName();
+
+	public abstract Map<String, Object> getModel();
 
 }

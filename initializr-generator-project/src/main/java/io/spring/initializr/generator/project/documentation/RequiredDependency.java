@@ -16,17 +16,28 @@
 
 package io.spring.initializr.generator.project.documentation;
 
-import java.io.IOException;
-import java.io.PrintWriter;
-
 /**
- * Define the section of a document that knows how to write itself.
+ * A kind of dependency that is required for the application to start up.
  *
- * @author Stephane Nicoll
  * @author Madhura Bhave
  */
-public interface Section {
+public class RequiredDependency {
 
-	void write(PrintWriter writer) throws IOException;
+	private String name;
+
+	private String description;
+
+	public RequiredDependency(String name, String description) {
+		this.name = name;
+		this.description = description;
+	}
+
+	public String getName() {
+		return this.name;
+	}
+
+	public String getDescription() {
+		return this.description;
+	}
 
 }
