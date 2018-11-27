@@ -42,7 +42,7 @@ public class ProjectDescriptionHelpDocumentCustomizer implements HelpDocumentCus
 	private void handleDependency(HelpDocument document, Dependency dependency) {
 		dependency.getLinks().forEach((link) -> {
 			if (link.getDescription() != null && link.getRel() != null) {
-				document.link(link);
+				document.addLink(link);
 			}
 		});
 	}

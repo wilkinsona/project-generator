@@ -16,17 +16,36 @@
 
 package io.spring.initializr.generator.project.documentation;
 
-import java.io.IOException;
-import java.io.PrintWriter;
-
 /**
- * Define the section of a document that knows how to write itself.
+ * Supporting infrastructure for the application.
  *
- * @author Stephane Nicoll
  * @author Madhura Bhave
  */
-public interface Section {
+public class SupportingInfrastructureElement {
 
-	void write(PrintWriter writer) throws IOException;
+	private String name;
+
+	private String description;
+
+	private String location;
+
+	public SupportingInfrastructureElement(String name, String description,
+			String location) {
+		this.name = name;
+		this.description = description;
+		this.location = location;
+	}
+
+	public String getName() {
+		return this.name;
+	}
+
+	public String getDescription() {
+		return this.description;
+	}
+
+	public String getLocation() {
+		return this.location;
+	}
 
 }
