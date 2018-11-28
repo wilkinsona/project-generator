@@ -17,7 +17,6 @@
 package io.spring.initializr.generator.language.kotlin;
 
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -31,6 +30,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import io.spring.initializr.generator.io.IndentingWriter;
 import io.spring.initializr.generator.language.Annotatable;
 import io.spring.initializr.generator.language.Annotation;
 import io.spring.initializr.generator.language.Parameter;
@@ -58,7 +58,8 @@ public class KotlinSourceCodeWriter implements SourceCodeWriter<KotlinSourceCode
 			throws IOException {
 		Path output = fileForCompilationUnit(directory, compilationUnit);
 		Files.createDirectories(output.getParent());
-		try (PrintWriter writer = new PrintWriter(Files.newOutputStream(output))) {
+		try (IndentingWriter writer = new IndentingWriter(
+				Files.newBufferedWriter(output))) {
 			writer.println("package " + compilationUnit.getPackageName());
 			writer.println();
 			Set<String> imports = determineImports(compilationUnit);
@@ -79,9 +80,11 @@ public class KotlinSourceCodeWriter implements SourceCodeWriter<KotlinSourceCode
 				if (!functionDeclarations.isEmpty()) {
 					writer.println(" {");
 					writer.println();
-					for (KotlinFunctionDeclaration functionDeclaration : functionDeclarations) {
-						writeFunction(writer, functionDeclaration, "    ");
-					}
+					writer.indented(() -> {
+						for (KotlinFunctionDeclaration functionDeclaration : functionDeclarations) {
+							writeFunction(writer, functionDeclaration);
+						}
+					});
 					writer.println("}");
 				}
 				else {
@@ -93,17 +96,16 @@ public class KotlinSourceCodeWriter implements SourceCodeWriter<KotlinSourceCode
 					.getTopLevelFunctions();
 			if (!topLevelFunctions.isEmpty()) {
 				for (KotlinFunctionDeclaration topLevelFunction : topLevelFunctions) {
-					writeFunction(writer, topLevelFunction, "");
+					writeFunction(writer, topLevelFunction);
 				}
 			}
 
 		}
 	}
 
-	private void writeFunction(PrintWriter writer,
-			KotlinFunctionDeclaration functionDeclaration, String prefix) {
-		writeAnnotations(writer, functionDeclaration, prefix);
-		writer.print(prefix);
+	private void writeFunction(IndentingWriter writer,
+			KotlinFunctionDeclaration functionDeclaration) {
+		writeAnnotations(writer, functionDeclaration);
 		writeMethodModifiers(writer, functionDeclaration);
 		writer.print("fun ");
 		writer.print(functionDeclaration.getName() + "(");
@@ -120,37 +122,32 @@ public class KotlinSourceCodeWriter implements SourceCodeWriter<KotlinSourceCode
 		}
 		writer.println(" {");
 		List<KotlinStatement> statements = functionDeclaration.getStatements();
-		for (KotlinStatement statement : statements) {
-			writer.print(prefix + "    ");
-			if (statement instanceof KotlinExpressionStatement) {
-				writeExpression(writer,
-						((KotlinExpressionStatement) statement).getExpression());
+		writer.indented(() -> {
+			for (KotlinStatement statement : statements) {
+				if (statement instanceof KotlinExpressionStatement) {
+					writeExpression(writer,
+							((KotlinExpressionStatement) statement).getExpression());
+				}
+				else if (statement instanceof KotlinReturnStatement) {
+					writer.print("return ");
+					writeExpression(writer,
+							((KotlinReturnStatement) statement).getExpression());
+				}
+				writer.println("");
 			}
-			else if (statement instanceof KotlinReturnStatement) {
-				writer.print("return ");
-				writeExpression(writer,
-						((KotlinReturnStatement) statement).getExpression());
-			}
-			writer.println("");
-		}
-		writer.println(prefix + "}");
+		});
+		writer.println("}");
 		writer.println();
 	}
 
-	private void writeAnnotations(PrintWriter writer, Annotatable annotatable) {
-		this.writeAnnotations(writer, annotatable, "");
-	}
-
-	private void writeAnnotations(PrintWriter writer, Annotatable annotatable,
-			String prefix) {
+	private void writeAnnotations(IndentingWriter writer, Annotatable annotatable) {
 		for (Annotation annotation : annotatable.getAnnotations()) {
-			writeAnnotation(writer, annotation, prefix);
+			writeAnnotation(writer, annotation);
 		}
 	}
 
-	private void writeAnnotation(PrintWriter writer, Annotation annotation,
-			String prefix) {
-		writer.print(prefix + "@" + getUnqualifiedName(annotation.getName()));
+	private void writeAnnotation(IndentingWriter writer, Annotation annotation) {
+		writer.print("@" + getUnqualifiedName(annotation.getName()));
 		List<Annotation.Attribute> attributes = annotation.getAttributes();
 		if (!attributes.isEmpty()) {
 			writer.print("(");
@@ -192,7 +189,7 @@ public class KotlinSourceCodeWriter implements SourceCodeWriter<KotlinSourceCode
 		return (values.size() > 1) ? "[" + result + "]" : result;
 	}
 
-	private void writeMethodModifiers(PrintWriter writer,
+	private void writeMethodModifiers(IndentingWriter writer,
 			KotlinFunctionDeclaration functionDeclaration) {
 		String modifiers = functionDeclaration.getModifiers().stream()
 				.filter((entry) -> !entry.equals(KotlinModifier.PUBLIC)).sorted()
@@ -204,7 +201,7 @@ public class KotlinSourceCodeWriter implements SourceCodeWriter<KotlinSourceCode
 		}
 	}
 
-	private void writeExpression(PrintWriter writer, KotlinExpression expression) {
+	private void writeExpression(IndentingWriter writer, KotlinExpression expression) {
 		if (expression instanceof KotlinFunctionInvocation) {
 			writeFunctionInvocation(writer, (KotlinFunctionInvocation) expression);
 		}
@@ -214,14 +211,14 @@ public class KotlinSourceCodeWriter implements SourceCodeWriter<KotlinSourceCode
 		}
 	}
 
-	private void writeFunctionInvocation(PrintWriter writer,
+	private void writeFunctionInvocation(IndentingWriter writer,
 			KotlinFunctionInvocation functionInvocation) {
 		writer.print(getUnqualifiedName(functionInvocation.getTarget()) + "."
 				+ functionInvocation.getName() + "("
 				+ String.join(", ", functionInvocation.getArguments()) + ")");
 	}
 
-	private void writeReifiedFunctionInvocation(PrintWriter writer,
+	private void writeReifiedFunctionInvocation(IndentingWriter writer,
 			KotlinReifiedFunctionInvocation functionInvocation) {
 		writer.print(getUnqualifiedName(functionInvocation.getName()) + "<"
 				+ getUnqualifiedName(functionInvocation.getTargetClass()) + ">("

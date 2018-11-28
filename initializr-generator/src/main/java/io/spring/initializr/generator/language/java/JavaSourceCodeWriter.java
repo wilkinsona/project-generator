@@ -17,7 +17,6 @@
 package io.spring.initializr.generator.language.java;
 
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.lang.reflect.Modifier;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -35,6 +34,7 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import io.spring.initializr.generator.io.IndentingWriter;
 import io.spring.initializr.generator.language.Annotatable;
 import io.spring.initializr.generator.language.Annotation;
 import io.spring.initializr.generator.language.Parameter;
@@ -78,7 +78,8 @@ public class JavaSourceCodeWriter implements SourceCodeWriter<JavaSourceCode> {
 			throws IOException {
 		Path output = fileForCompilationUnit(directory, compilationUnit);
 		Files.createDirectories(output.getParent());
-		try (PrintWriter writer = new PrintWriter(Files.newOutputStream(output))) {
+		try (IndentingWriter writer = new IndentingWriter(
+				Files.newBufferedWriter(output))) {
 			writer.println("package " + compilationUnit.getPackageName() + ";");
 			writer.println();
 			Set<String> imports = determineImports(compilationUnit);
@@ -99,39 +100,11 @@ public class JavaSourceCodeWriter implements SourceCodeWriter<JavaSourceCode> {
 				List<JavaMethodDeclaration> methodDeclarations = type
 						.getMethodDeclarations();
 				if (!methodDeclarations.isEmpty()) {
-					for (JavaMethodDeclaration methodDeclaration : methodDeclarations) {
-						writeAnnotations(writer, methodDeclaration, "    ");
-						writer.print("    ");
-						writeMethodModifiers(writer, methodDeclaration);
-						writer.print(getUnqualifiedName(methodDeclaration.getReturnType())
-								+ " " + methodDeclaration.getName() + "(");
-						List<Parameter> parameters = methodDeclaration.getParameters();
-						if (!parameters.isEmpty()) {
-							writer.print(parameters.stream().map(
-									(parameter) -> getUnqualifiedName(parameter.getType())
-											+ " " + parameter.getName())
-									.collect(Collectors.joining(", ")));
+					writer.indented(() -> {
+						for (JavaMethodDeclaration methodDeclaration : methodDeclarations) {
+							writeMethodDeclaration(writer, methodDeclaration);
 						}
-						writer.println(") {");
-						List<JavaStatement> statements = methodDeclaration
-								.getStatements();
-						for (JavaStatement statement : statements) {
-							writer.print("        ");
-							if (statement instanceof JavaExpressionStatement) {
-								writeExpression(writer,
-										((JavaExpressionStatement) statement)
-												.getExpression());
-							}
-							else if (statement instanceof JavaReturnStatement) {
-								writer.print("return ");
-								writeExpression(writer, ((JavaReturnStatement) statement)
-										.getExpression());
-							}
-							writer.println(";");
-						}
-						writer.println("    }");
-						writer.println();
-					}
+					});
 				}
 				writer.println("}");
 				writer.println("");
@@ -139,19 +112,13 @@ public class JavaSourceCodeWriter implements SourceCodeWriter<JavaSourceCode> {
 		}
 	}
 
-	private void writeAnnotations(PrintWriter writer, Annotatable annotatable) {
-		this.writeAnnotations(writer, annotatable, "");
-	}
-
-	private void writeAnnotations(PrintWriter writer, Annotatable annotatable,
-			String prefix) {
+	private void writeAnnotations(IndentingWriter writer, Annotatable annotatable) {
 		annotatable.getAnnotations()
-				.forEach((annotation) -> writeAnnotation(writer, annotation, prefix));
+				.forEach((annotation) -> writeAnnotation(writer, annotation));
 	}
 
-	private void writeAnnotation(PrintWriter writer, Annotation annotation,
-			String prefix) {
-		writer.print(prefix + "@" + getUnqualifiedName(annotation.getName()));
+	private void writeAnnotation(IndentingWriter writer, Annotation annotation) {
+		writer.print("@" + getUnqualifiedName(annotation.getName()));
 		List<Annotation.Attribute> attributes = annotation.getAttributes();
 		if (!attributes.isEmpty()) {
 			writer.print("(");
@@ -193,7 +160,40 @@ public class JavaSourceCodeWriter implements SourceCodeWriter<JavaSourceCode> {
 		return (values.size() > 1) ? "{ " + result + " }" : result;
 	}
 
-	private void writeMethodModifiers(PrintWriter writer,
+	private void writeMethodDeclaration(IndentingWriter writer,
+			JavaMethodDeclaration methodDeclaration) {
+		writeAnnotations(writer, methodDeclaration);
+		writeMethodModifiers(writer, methodDeclaration);
+		writer.print(getUnqualifiedName(methodDeclaration.getReturnType()) + " "
+				+ methodDeclaration.getName() + "(");
+		List<Parameter> parameters = methodDeclaration.getParameters();
+		if (!parameters.isEmpty()) {
+			writer.print(parameters
+					.stream().map((parameter) -> getUnqualifiedName(parameter.getType())
+							+ " " + parameter.getName())
+					.collect(Collectors.joining(", ")));
+		}
+		writer.println(") {");
+		writer.indented(() -> {
+			List<JavaStatement> statements = methodDeclaration.getStatements();
+			for (JavaStatement statement : statements) {
+				if (statement instanceof JavaExpressionStatement) {
+					writeExpression(writer,
+							((JavaExpressionStatement) statement).getExpression());
+				}
+				else if (statement instanceof JavaReturnStatement) {
+					writer.print("return ");
+					writeExpression(writer,
+							((JavaReturnStatement) statement).getExpression());
+				}
+				writer.println(";");
+			}
+		});
+		writer.println("}");
+		writer.println();
+	}
+
+	private void writeMethodModifiers(IndentingWriter writer,
 			JavaMethodDeclaration methodDeclaration) {
 		String modifiers = METHOD_MODIFIERS.entrySet().stream()
 				.filter((entry) -> entry.getKey().test(methodDeclaration.getModifiers()))
@@ -204,13 +204,13 @@ public class JavaSourceCodeWriter implements SourceCodeWriter<JavaSourceCode> {
 		}
 	}
 
-	private void writeExpression(PrintWriter writer, JavaExpression expression) {
+	private void writeExpression(IndentingWriter writer, JavaExpression expression) {
 		if (expression instanceof JavaMethodInvocation) {
 			writeMethodInvocation(writer, (JavaMethodInvocation) expression);
 		}
 	}
 
-	private void writeMethodInvocation(PrintWriter writer,
+	private void writeMethodInvocation(IndentingWriter writer,
 			JavaMethodInvocation methodInvocation) {
 		writer.print(getUnqualifiedName(methodInvocation.getTarget()) + "."
 				+ methodInvocation.getName() + "("

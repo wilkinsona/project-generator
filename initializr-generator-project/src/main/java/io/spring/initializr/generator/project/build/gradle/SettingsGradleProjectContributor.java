@@ -17,13 +17,13 @@
 package io.spring.initializr.generator.project.build.gradle;
 
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
 import io.spring.initializr.generator.ProjectContributor;
 import io.spring.initializr.generator.buildsystem.MavenRepository;
 import io.spring.initializr.generator.buildsystem.gradle.GradleBuild;
+import io.spring.initializr.generator.io.IndentingWriter;
 
 /**
  * {@link ProjectContributor} for the project's {@code settings.gradle} file.
@@ -40,49 +40,60 @@ class SettingsGradleProjectContributor implements ProjectContributor {
 
 	@Override
 	public void contribute(Path projectRoot) throws IOException {
-		Path file = Files.createFile(projectRoot.resolve("settings.gradle"));
-		try (PrintWriter writer = new PrintWriter(Files.newOutputStream(file))) {
+		Path settingsGradle = Files.createFile(projectRoot.resolve("settings.gradle"));
+		try (IndentingWriter writer = new IndentingWriter(
+				Files.newBufferedWriter(settingsGradle))) {
 			writePluginManagement(writer);
 			writer.println("rootProject.name = '" + this.build.getName() + "'");
 		}
 	}
 
-	private void writePluginManagement(PrintWriter writer) {
+	private void writePluginManagement(IndentingWriter writer) {
 		writer.println("pluginManagement {");
-		writeRepositories(writer);
-		writeResolutionStrategyIfNecessary(writer);
+		writer.indented(() -> {
+			writeRepositories(writer);
+			writeResolutionStrategyIfNecessary(writer);
+		});
 		writer.println("}");
 	}
 
-	private void writeRepositories(PrintWriter writer) {
-		writer.println("    repositories {");
-		this.build.getMavenRepositories().stream().map(this::repositoryAsString)
-				.forEach(writer::println);
-		writer.println("        gradlePluginPortal()");
-		writer.println("    }");
+	private void writeRepositories(IndentingWriter writer) {
+		writer.println("repositories {");
+		writer.indented(() -> {
+			this.build.getMavenRepositories().stream().map(this::repositoryAsString)
+					.forEach(writer::println);
+			writer.println("gradlePluginPortal()");
+		});
+		writer.println("}");
 	}
 
-	private void writeResolutionStrategyIfNecessary(PrintWriter writer) {
+	private void writeResolutionStrategyIfNecessary(IndentingWriter writer) {
 		if (!this.build.getMavenRepositories().stream()
 				.filter((repository) -> !MavenRepository.MAVEN_CENTRAL.equals(repository))
 				.findFirst().isPresent()) {
 			return;
 		}
-		writer.println("    resolutionStrategy {");
-		writer.println("        eachPlugin {");
-		writer.println("            if(requested.id.id == 'org.springframework.boot') {");
-		writer.println(
-				"                useModule(\"org.springframework.boot:spring-boot-gradle-plugin:${requested.version}\")");
-		writer.println("            }");
-		writer.println("        }");
-		writer.println("    }");
+		writer.println("resolutionStrategy {");
+		writer.indented(() -> {
+			writer.println("eachPlugin {");
+			writer.indented(() -> {
+				writer.println("if(requested.id.id == 'org.springframework.boot') {");
+				writer.indented(() -> {
+					writer.println(
+							"useModule(\"org.springframework.boot:spring-boot-gradle-plugin:${requested.version}\")");
+				});
+				writer.println("}");
+			});
+			writer.println("}");
+		});
+		writer.println("}");
 	}
 
 	private String repositoryAsString(MavenRepository repository) {
 		if (MavenRepository.MAVEN_CENTRAL.equals(repository)) {
-			return "        mavenCentral()";
+			return "mavenCentral()";
 		}
-		return "        maven { url '" + repository.getUrl() + "' }";
+		return "maven { url '" + repository.getUrl() + "' }";
 	}
 
 }
