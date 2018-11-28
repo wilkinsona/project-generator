@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package io.spring.initializr.generator.code.java;
+package io.spring.initializr.generator.language.java;
 
 import java.io.IOException;
 import java.lang.reflect.Modifier;

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package io.spring.initializr.generator.code.kotlin;
+package io.spring.initializr.generator.language.kotlin;
 
 import java.io.IOException;
 import java.nio.file.Files;
