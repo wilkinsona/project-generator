@@ -1,0 +1,4 @@
+rootProject.name = 'project-generator'
+include ':initializr-generator'
+include ':initializr-generator-project'
+include ':start-site'

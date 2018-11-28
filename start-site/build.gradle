@@ -1,0 +1,7 @@
+dependencies {
+	implementation project(':initializr-generator-project')
+	testImplementation "org.junit.jupiter:junit-jupiter-engine"
+	testImplementation "org.junit-pioneer:junit-pioneer:0.1.2"
+	testImplementation "org.assertj:assertj-core"
+	testImplementation project(path: ":initializr-generator-project", configuration: "testArtifacts")
+}
