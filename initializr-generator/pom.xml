@@ -9,7 +9,6 @@
 		<version>0.1.0.BUILD-SNAPSHOT</version>
 	</parent>
 	<artifactId>initializr-generator</artifactId>
-	<version>0.1.0.BUILD-SNAPSHOT</version>
 
 	<dependencies>
 		<dependency>

@@ -10,7 +10,6 @@
 	</parent>
 	<groupId>io.spring.start.experimental</groupId>
 	<artifactId>start-site</artifactId>
-	<version>0.1.0.BUILD-SNAPSHOT</version>
 
 	<dependencies>
 		<dependency>
