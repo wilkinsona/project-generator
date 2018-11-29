@@ -65,13 +65,8 @@ public class BuildProjectGenerationConfiguration {
 	@Bean
 	@Order(0)
 	@ConditionalOnWarPackaging
-	public BuildCustomizer<Build> webStarterContributor() {
-		return (build) -> {
-			build.addDependency("org.springframework.boot", "spring-boot-starter-web",
-					DependencyType.COMPILE);
-			build.addDependency("org.springframework.boot", "spring-boot-starter-tomcat",
-					DependencyType.PROVIDED_RUNTIME);
-		};
+	public WarPackagingWebStarterBuildCustomizer warPackagingWebStarterBuildCustomizer() {
+		return new WarPackagingWebStarterBuildCustomizer();
 	}
 
 	@Bean
