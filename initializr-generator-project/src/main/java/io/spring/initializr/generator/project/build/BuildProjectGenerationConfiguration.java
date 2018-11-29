@@ -20,10 +20,8 @@ import io.spring.initializr.generator.Dependency;
 import io.spring.initializr.generator.DependencyType;
 import io.spring.initializr.generator.ProjectDescription;
 import io.spring.initializr.generator.buildsystem.Build;
-import io.spring.initializr.generator.buildsystem.MavenRepository;
 import io.spring.initializr.generator.packaging.war.ConditionalOnWarPackaging;
 import io.spring.initializr.generator.project.ProjectGenerationConfiguration;
-import io.spring.initializr.generator.util.Version;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.core.Ordered;
@@ -70,21 +68,10 @@ public class BuildProjectGenerationConfiguration {
 	}
 
 	@Bean
-	public BuildCustomizer<Build> repositoriesCustomizer(ProjectDescription description) {
-		return (build) -> {
-			build.addMavenRepository(MavenRepository.MAVEN_CENTRAL);
-			Version bootVersion = description.getSpringBootVersion();
-			String qualifier = bootVersion.getQualifier().getQualifier();
-			if ("RELEASE".equals(qualifier)) {
-				return;
-			}
-			build.addMavenRepository("spring-milestones", "Spring Milestones",
-					"https://repo.spring.io/milestone");
-			if ("BUILD-SNAPSHOT".equals(qualifier)) {
-				build.addSnapshotMavenRepository("spring-snapshots", "Spring Snapshots",
-						"https://repo.spring.io/snapshot");
-			}
-		};
+	public SpringBootVersionRepositoriesBuildCustomizer repositoriesBuilderCustomizer(
+			ProjectDescription description) {
+		return new SpringBootVersionRepositoriesBuildCustomizer(
+				description.getSpringBootVersion());
 	}
 
 	private boolean isSpringBootStarter(Dependency dependency) {
