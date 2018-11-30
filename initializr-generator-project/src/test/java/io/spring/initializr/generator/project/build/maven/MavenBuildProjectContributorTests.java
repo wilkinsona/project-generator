@@ -30,8 +30,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.junitpioneer.jupiter.TempDirectory;
 import org.junitpioneer.jupiter.TempDirectory.TempDir;
 
-import org.springframework.util.FileCopyUtils;
-
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
@@ -363,9 +361,6 @@ class MavenBuildProjectContributorTests {
 			throws Exception {
 		Path projectDir = Files.createTempDirectory(this.directory, "project-");
 		new MavenBuildProjectContributor(mavenBuild).contribute(projectDir);
-		new MavenBuildProjectContributor2(mavenBuild).contribute(projectDir);
-		Path pom2File = projectDir.resolve("pom2.xml");
-		System.out.println(FileCopyUtils.copyToString(Files.newBufferedReader(pom2File)));
 		Path pomFile = projectDir.resolve("pom.xml");
 		assertThat(pomFile).isRegularFile();
 		consumer.accept(new NodeAssert(pomFile));
