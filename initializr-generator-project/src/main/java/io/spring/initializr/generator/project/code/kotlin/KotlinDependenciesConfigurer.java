@@ -16,11 +16,11 @@
 
 package io.spring.initializr.generator.project.code.kotlin;
 
-import io.spring.initializr.generator.DependencyType;
 import io.spring.initializr.generator.buildsystem.Build;
 import io.spring.initializr.generator.buildsystem.maven.MavenBuild;
 import io.spring.initializr.generator.project.build.BuildCustomizer;
 import io.spring.initializr.generator.util.Version;
+import io.spring.initializr.model.DependencyType;
 
 /**
  * {@link BuildCustomizer} that adds the dependencies required by projects written in

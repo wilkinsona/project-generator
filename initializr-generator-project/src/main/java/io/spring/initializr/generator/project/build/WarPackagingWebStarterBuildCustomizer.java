@@ -16,8 +16,8 @@
 
 package io.spring.initializr.generator.project.build;
 
-import io.spring.initializr.generator.DependencyType;
 import io.spring.initializr.generator.buildsystem.Build;
+import io.spring.initializr.model.DependencyType;
 
 /**
  * A {@link BuildCustomizer} that configures the necessary web-related dependency when

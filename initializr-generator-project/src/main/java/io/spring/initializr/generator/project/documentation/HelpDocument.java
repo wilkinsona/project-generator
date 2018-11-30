@@ -20,7 +20,7 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
-import io.spring.initializr.generator.Link;
+import io.spring.initializr.model.Link;
 
 /**
  * Project's help document intended to give additional references to the users. Contains

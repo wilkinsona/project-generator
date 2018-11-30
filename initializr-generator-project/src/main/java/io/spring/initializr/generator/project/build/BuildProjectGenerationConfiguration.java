@@ -16,12 +16,12 @@
 
 package io.spring.initializr.generator.project.build;
 
-import io.spring.initializr.generator.Dependency;
-import io.spring.initializr.generator.DependencyType;
 import io.spring.initializr.generator.ProjectDescription;
 import io.spring.initializr.generator.buildsystem.Build;
 import io.spring.initializr.generator.packaging.war.ConditionalOnWarPackaging;
 import io.spring.initializr.generator.project.ProjectGenerationConfiguration;
+import io.spring.initializr.model.Dependency;
+import io.spring.initializr.model.DependencyType;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.core.Ordered;

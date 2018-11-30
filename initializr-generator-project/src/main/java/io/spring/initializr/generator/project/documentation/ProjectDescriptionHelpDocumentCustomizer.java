@@ -16,8 +16,8 @@
 
 package io.spring.initializr.generator.project.documentation;
 
-import io.spring.initializr.generator.Dependency;
 import io.spring.initializr.generator.ProjectDescription;
+import io.spring.initializr.model.Dependency;
 
 /**
  * {@link HelpDocumentCustomizer} using the content of the {@link ProjectDescription}.

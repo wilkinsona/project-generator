@@ -26,14 +26,14 @@ import java.util.TreeSet;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
-import io.spring.initializr.generator.Dependency;
-import io.spring.initializr.generator.DependencyType;
 import io.spring.initializr.generator.ProjectContributor;
 import io.spring.initializr.generator.buildsystem.MavenRepository;
 import io.spring.initializr.generator.buildsystem.gradle.GradleBuild;
 import io.spring.initializr.generator.buildsystem.gradle.GradleBuild.TaskCustomization;
 import io.spring.initializr.generator.buildsystem.gradle.GradlePlugin;
 import io.spring.initializr.generator.io.IndentingWriter;
+import io.spring.initializr.model.Dependency;
+import io.spring.initializr.model.DependencyType;
 
 /**
  * {@link ProjectContributor} for the project's {@code build.gradle} file.

@@ -26,9 +26,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import io.spring.initializr.generator.Link;
 import io.spring.initializr.generator.ProjectContributor;
 import io.spring.initializr.generator.util.template.TemplateRenderer;
+import io.spring.initializr.model.Link;
 
 /**
  * {@link ProjectContributor} for the project's {@code HELP.md} file.

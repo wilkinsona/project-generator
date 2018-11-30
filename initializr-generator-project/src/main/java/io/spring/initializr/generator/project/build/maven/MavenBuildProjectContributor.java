@@ -36,8 +36,6 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
-import io.spring.initializr.generator.Dependency;
-import io.spring.initializr.generator.DependencyType;
 import io.spring.initializr.generator.ProjectContributor;
 import io.spring.initializr.generator.buildsystem.MavenRepository;
 import io.spring.initializr.generator.buildsystem.maven.MavenBuild;
@@ -46,6 +44,8 @@ import io.spring.initializr.generator.buildsystem.maven.MavenPlugin.Configuratio
 import io.spring.initializr.generator.buildsystem.maven.MavenPlugin.Execution;
 import io.spring.initializr.generator.buildsystem.maven.MavenPlugin.Setting;
 import io.spring.initializr.generator.buildsystem.maven.Parent;
+import io.spring.initializr.model.Dependency;
+import io.spring.initializr.model.DependencyType;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;

@@ -21,9 +21,9 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Collections;
 
-import io.spring.initializr.generator.Dependency;
-import io.spring.initializr.generator.DependencyType;
 import io.spring.initializr.generator.ProjectDescription;
+import io.spring.initializr.model.Dependency;
+import io.spring.initializr.model.DependencyType;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junitpioneer.jupiter.TempDirectory;

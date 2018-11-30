@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package io.spring.initializr.generator;
+package io.spring.initializr.model;
 
 import java.util.ArrayList;
 import java.util.Collection;

@@ -20,10 +20,10 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import io.spring.initializr.generator.Dependency;
-import io.spring.initializr.generator.DependencyType;
 import io.spring.initializr.generator.buildsystem.Build;
 import io.spring.initializr.generator.buildsystem.maven.MavenBuild;
+import io.spring.initializr.model.Dependency;
+import io.spring.initializr.model.DependencyType;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
