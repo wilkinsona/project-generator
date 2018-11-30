@@ -40,11 +40,11 @@ import io.spring.initializr.model.DependencyType;
  *
  * @author Andy Wilkinson
  */
-class BuildGradleProjectContributor implements ProjectContributor {
+class GradleBuildProjectContributor implements ProjectContributor {
 
 	private final GradleBuild build;
 
-	BuildGradleProjectContributor(GradleBuild build) {
+	GradleBuildProjectContributor(GradleBuild build) {
 		this.build = build;
 	}
 

@@ -32,16 +32,16 @@ import org.junitpioneer.jupiter.TempDirectory.TempDir;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for {@link BuildGradleProjectContributor}.
+ * Tests for {@link GradleBuildProjectContributor}.
  *
  * @author Andy Wilkinson
  */
 @ExtendWith(TempDirectory.class)
-class BuildGradleProjectContributorTests {
+class GradleBuildProjectContributorTests {
 
 	private final Path directory;
 
-	BuildGradleProjectContributorTests(@TempDir Path directory) {
+	GradleBuildProjectContributorTests(@TempDir Path directory) {
 		this.directory = directory;
 	}
 
@@ -160,7 +160,7 @@ class BuildGradleProjectContributorTests {
 
 	private List<String> generateBuild(GradleBuild build) throws IOException {
 		Path projectDir = Files.createTempDirectory(this.directory, "project-");
-		new BuildGradleProjectContributor(build).contribute(projectDir);
+		new GradleBuildProjectContributor(build).contribute(projectDir);
 		Path buildGradle = projectDir.resolve("build.gradle");
 		assertThat(buildGradle).isRegularFile();
 		return Files.readAllLines(buildGradle);

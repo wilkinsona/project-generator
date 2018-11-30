@@ -92,9 +92,9 @@ public class GradleProjectGenerationConfiguration {
 	}
 
 	@Bean
-	public BuildGradleProjectContributor gradleBuildProjectContributor(
+	public GradleBuildProjectContributor gradleBuildProjectContributor(
 			GradleBuild gradleBuild) {
-		return new BuildGradleProjectContributor(gradleBuild);
+		return new GradleBuildProjectContributor(gradleBuild);
 	}
 
 	/**
