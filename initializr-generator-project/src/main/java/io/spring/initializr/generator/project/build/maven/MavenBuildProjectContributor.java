@@ -17,24 +17,13 @@
 package io.spring.initializr.generator.project.build.maven;
 
 import java.io.IOException;
-import java.io.Writer;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.Collections;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 import java.util.function.BiConsumer;
 import java.util.stream.Collectors;
-
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.transform.OutputKeys;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerException;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.dom.DOMSource;
-import javax.xml.transform.stream.StreamResult;
 
 import io.spring.initializr.generator.ProjectContributor;
 import io.spring.initializr.generator.buildsystem.MavenRepository;
@@ -44,16 +33,16 @@ import io.spring.initializr.generator.buildsystem.maven.MavenPlugin.Configuratio
 import io.spring.initializr.generator.buildsystem.maven.MavenPlugin.Execution;
 import io.spring.initializr.generator.buildsystem.maven.MavenPlugin.Setting;
 import io.spring.initializr.generator.buildsystem.maven.Parent;
+import io.spring.initializr.generator.io.IndentingWriter;
 import io.spring.initializr.model.Dependency;
+import io.spring.initializr.model.DependencyComparator;
 import io.spring.initializr.model.DependencyType;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.Node;
 
 /**
  * {@link ProjectContributor} to contribute the files for a {@link MavenBuild}.
  *
  * @author Andy Wilkinson
+ * @author Stephane Nicoll
  */
 public class MavenBuildProjectContributor implements ProjectContributor {
 
@@ -65,223 +54,116 @@ public class MavenBuildProjectContributor implements ProjectContributor {
 
 	@Override
 	public void contribute(Path projectRoot) throws IOException {
-		DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-		try {
-			DocumentBuilder builder = factory.newDocumentBuilder();
-			Document document = builder.newDocument();
-			Element project = createProject(document);
-			addParent(project);
-			addCoordinates(project);
-			appendChildWithText(project, "packaging", this.mavenBuild.getPackaging());
-			addProperties(project);
-			addDependencies(project);
-			addBuild(project);
-			addRepositories(project);
-			write(document, Files.createFile(projectRoot.resolve("pom.xml")));
-		}
-		catch (ParserConfigurationException | TransformerException ex) {
-			throw new IOException(ex);
+		Path buildGradle = Files.createFile(projectRoot.resolve("pom.xml"));
+		try (IndentingWriter writer = new IndentingWriter(
+				Files.newBufferedWriter(buildGradle))) {
+			writeProject(writer, () -> {
+				writeParent(writer);
+				writeProjectCoordinates(writer);
+				writePackaging(writer);
+				writeProperties(writer);
+				writeDependencies(writer);
+				writeBuild(writer);
+				writeRepositories(writer);
+			});
 		}
 	}
 
-	private Element createProject(Document document) {
-		Element project = document.createElementNS("http://maven.apache.org/POM/4.0.0",
-				"project");
-		project.setAttributeNS("http://www.w3.org/2001/XMLSchema-instance",
-				"xsi:schema-location",
-				"http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd");
-		document.appendChild(project);
-		appendChildWithText(project, "modelVersion", "4.0.0");
-		return project;
+	private void writeProject(IndentingWriter writer, Runnable whenWritten) {
+		writer.println("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
+		writer.println(
+				"<project xmlns=\"http://maven.apache.org/POM/4.0.0\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"");
+		writer.indented(() -> {
+			writer.println(
+					"xsi:schemaLocation=\"http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd\">");
+			writeSingleElement(writer, "modelVersion", "4.0.0");
+			whenWritten.run();
+		});
+		writer.println();
+		writer.println("</project>");
 	}
 
-	private void addCoordinates(Element project) {
-		appendChildWithText(project, "groupId", this.mavenBuild.getGroup());
-		appendChildWithText(project, "artifactId", this.mavenBuild.getName());
-		appendChildWithText(project, "version", "0.0.1-SNAPSHOT");
-	}
-
-	private void addParent(Element project) {
+	private void writeParent(IndentingWriter writer) {
 		Parent parent = this.mavenBuild.getParent();
 		if (parent == null) {
 			return;
 		}
-		Document document = project.getOwnerDocument();
-		Node node = project.appendChild(document.createElement("parent"));
-		appendChildWithText(node, "groupId", parent.getGroupId());
-		appendChildWithText(node, "artifactId", parent.getArtifactId());
-		appendChildWithText(node, "version", parent.getVersion());
-		node.appendChild(document.createElement("relativePath"));
+		writer.println("<parent>");
+		writer.indented(() -> {
+			writeSingleElement(writer, "groupId", parent.getGroupId());
+			writeSingleElement(writer, "artifactId", parent.getArtifactId());
+			writeSingleElement(writer, "version", parent.getVersion());
+			writer.println("<relativePath/> <!-- lookup parent from repository -->");
+		});
+		writer.println("</parent>");
 	}
 
-	private void addProperties(Element project) {
+	private void writeProjectCoordinates(IndentingWriter writer) {
+		writeSingleElement(writer, "groupId", this.mavenBuild.getGroup());
+		writeSingleElement(writer, "artifactId", this.mavenBuild.getName());
+		writeSingleElement(writer, "version", "0.0.1-SNAPSHOT");
+	}
+
+	private void writePackaging(IndentingWriter writer) {
+		String packaging = this.mavenBuild.getPackaging();
+		if (!"jar".equals(packaging)) {
+			writeSingleElement(writer, "packaging", packaging);
+		}
+	}
+
+	private void writeProperties(IndentingWriter writer) {
 		if (this.mavenBuild.getProperties().isEmpty()) {
 			return;
 		}
-		Node properties = project
-				.appendChild(project.getOwnerDocument().createElement("properties"));
-		this.mavenBuild.getProperties()
-				.forEach((key, value) -> appendChildWithText(properties, key, value));
+		writer.println();
+		writeElement(writer, "properties", () -> this.mavenBuild.getProperties()
+				.forEach((key, value) -> writeSingleElement(writer, key, value)));
 	}
 
-	private void addDependencies(Element project) {
-		if (this.mavenBuild.getDependencies().isEmpty()) {
+	private void writeDependencies(IndentingWriter writer) {
+		List<Dependency> dependencies = this.mavenBuild.getDependencies();
+		if (dependencies.isEmpty()) {
 			return;
 		}
-		List<Dependency> sortedDependencies = new ArrayList<>(
-				this.mavenBuild.getDependencies());
-		Collections.sort(sortedDependencies);
-		addChildren(project, "dependencies", "dependency", sortedDependencies,
-				(node, dependency) -> {
-					appendChildWithText(node, "groupId", dependency.getGroupId());
-					appendChildWithText(node, "artifactId", dependency.getArtifactId());
-					appendChildWithText(node, "version", dependency.getVersion());
-					appendChildWithText(node, "scope",
-							scopeForType(dependency.getType()));
-					if (isOptional(dependency.getType())) {
-						appendChildWithText(node, "optional", Boolean.toString(true));
-					}
-
-				});
-	}
-
-	private void addBuild(Element project) {
-		if (this.mavenBuild.getSourceDirectory() == null
-				&& this.mavenBuild.getTestSourceDirectory() == null
-				&& this.mavenBuild.getPlugins().isEmpty()) {
-			return;
-		}
-		Node build = project
-				.appendChild(project.getOwnerDocument().createElement("build"));
-		appendChildWithText(build, "sourceDirectory",
-				this.mavenBuild.getSourceDirectory());
-		appendChildWithText(build, "testSourceDirectory",
-				this.mavenBuild.getTestSourceDirectory());
-		addPlugins(build);
-	}
-
-	private void addPlugins(Node build) {
-		if (this.mavenBuild.getPlugins().isEmpty()) {
-			return;
-		}
-		addChildren(build, "plugins", "plugin", this.mavenBuild.getPlugins(),
-				(node, plugin) -> {
-					appendChildWithText(node, "groupId", plugin.getGroupId());
-					appendChildWithText(node, "artifactId", plugin.getArtifactId());
-					appendChildWithText(node, "version", plugin.getVersion());
-					addConfiguration(node, plugin.getConfiguration());
-					addExecutions(node, plugin);
-					addDependencies(node, plugin);
-				});
-	}
-
-	private void addExecutions(Node pluginNode, MavenPlugin plugin) {
-		addChildren(pluginNode, "executions", "execution", plugin.getExecutions(),
-				(node, execution) -> {
-					appendChildWithText(node, "id", execution.getId());
-					appendChildWithText(node, "phase", execution.getPhase());
-					addGoals(node, execution);
-					addConfiguration(node, execution.getConfiguration());
-				});
-	}
-
-	private void addGoals(Node executionNode, Execution execution) {
-		addChildren(executionNode, "goals", "goal", execution.getGoals(), (node,
-				goal) -> node.appendChild(node.getOwnerDocument().createTextNode(goal)));
-	}
-
-	private void addConfiguration(Node parent, Configuration configuration) {
-		if (configuration == null || configuration.getSettings().isEmpty()) {
-			return;
-		}
-		Node configurationNode = parent
-				.appendChild(parent.getOwnerDocument().createElement("configuration"));
-		addSettings(configurationNode, configuration.getSettings());
-	}
-
-	@SuppressWarnings("unchecked")
-	private void addSettings(Node parent, List<Setting> settings) {
-		settings.forEach((setting) -> {
-			if (setting.getValue() instanceof String) {
-				appendChildWithText(parent, setting.getName(),
-						(String) setting.getValue());
+		writer.println();
+		writeElement(writer, "dependencies", () -> {
+			List<Dependency> compiledDependencies = writeDependencies(writer,
+					dependencies, DependencyType.COMPILE);
+			if (!compiledDependencies.isEmpty()) {
+				writer.println();
 			}
-			else if (setting.getValue() instanceof List) {
-				addSettings(
-						parent.appendChild(parent.getOwnerDocument()
-								.createElement(setting.getName())),
-						(List<Setting>) setting.getValue());
+			writeDependencies(writer, dependencies, DependencyType.RUNTIME);
+			writeDependencies(writer, dependencies, DependencyType.ANNOTATION_PROCESSOR);
+			writeDependencies(writer, dependencies, DependencyType.PROVIDED_RUNTIME);
+			writeDependencies(writer, dependencies, DependencyType.TEST_COMPILE,
+					DependencyType.TEST_RUNTIME);
+		});
+	}
+
+	private List<Dependency> writeDependencies(IndentingWriter writer,
+			List<Dependency> dependencies, DependencyType... types) {
+		List<Dependency> candidates = filterDependencies(dependencies, types);
+		writeCollection(writer, candidates, this::writeDependency);
+		return candidates;
+	}
+
+	private void writeDependency(IndentingWriter writer, Dependency dependency) {
+		writeElement(writer, "dependency", () -> {
+			writeSingleElement(writer, "groupId", dependency.getGroupId());
+			writeSingleElement(writer, "artifactId", dependency.getArtifactId());
+			writeSingleElement(writer, "version", dependency.getVersion());
+			writeSingleElement(writer, "scope", scopeForType(dependency.getType()));
+			if (isOptional(dependency.getType())) {
+				writeSingleElement(writer, "optional", Boolean.toString(true));
 			}
 		});
 	}
 
-	private void addDependencies(Node pluginNode, MavenPlugin plugin) {
-		addChildren(pluginNode, "dependencies", "dependency", plugin.getDependencies(),
-				(node, dependency) -> {
-					appendChildWithText(node, "groupId", dependency.getGroupId());
-					appendChildWithText(node, "artifactId", dependency.getArtifactId());
-					appendChildWithText(node, "version", dependency.getVersion());
-				});
-	}
-
-	private void addRepositories(Node project) {
-		List<MavenRepository> repositories = this.mavenBuild.getMavenRepositories()
-				.stream()
-				.filter((repository) -> !MavenRepository.MAVEN_CENTRAL.equals(repository))
-				.collect(Collectors.toList());
-		if (repositories.isEmpty()) {
-			return;
-		}
-		addRepositories(project, "repositories", "repository", repositories);
-		addRepositories(project, "pluginRepositories", "pluginRepository", repositories);
-	}
-
-	private void addRepositories(Node project, String containerName, String childName,
-			List<MavenRepository> repositories) {
-		addChildren(project, containerName, childName, repositories,
-				(node, repository) -> {
-					appendChildWithText(node, "id", repository.getId());
-					appendChildWithText(node, "name", repository.getName());
-					appendChildWithText(node, "url", repository.getUrl());
-					if (repository.isSnapshotsEnabled()) {
-						Node snapshots = node.appendChild(
-								(node.getOwnerDocument().createElement("snapshots")));
-						appendChildWithText(snapshots, "enabled", Boolean.toString(true));
-					}
-				});
-	}
-
-	private <T> void addChildren(Node parentNode, String containerName, String childName,
-			List<T> children, BiConsumer<Node, T> childHandler) {
-		if (children.isEmpty()) {
-			return;
-		}
-		Document document = parentNode.getOwnerDocument();
-		Node container = parentNode.appendChild(document.createElement(containerName));
-		for (T child : children) {
-			Node childNode = container.appendChild(document.createElement(childName));
-			childHandler.accept(childNode, child);
-		}
-	}
-
-	private void appendChildWithText(Node node, String nodeName, String text) {
-		if (text == null) {
-			return;
-		}
-		Document document = node.getOwnerDocument();
-		Node child = node.appendChild(document.createElement(nodeName));
-		child.appendChild(document.createTextNode(text));
-	}
-
-	private void write(Document document, Path pomFile)
-			throws IOException, TransformerException {
-		TransformerFactory factory = TransformerFactory.newInstance();
-		Transformer transformer = factory.newTransformer();
-		transformer.setOutputProperty(OutputKeys.INDENT, "yes");
-		transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "4");
-		try (Writer writer = Files.newBufferedWriter(pomFile)) {
-			transformer.transform(new DOMSource(document), new StreamResult(writer));
-		}
+	private static List<Dependency> filterDependencies(List<Dependency> dependencies,
+			DependencyType... types) {
+		List<DependencyType> candidates = Arrays.asList(types);
+		return dependencies.stream().filter((dep) -> candidates.contains(dep.getType()))
+				.sorted(DependencyComparator.INSTANCE).collect(Collectors.toList());
 	}
 
 	private String scopeForType(DependencyType type) {
@@ -306,6 +188,144 @@ public class MavenBuildProjectContributor implements ProjectContributor {
 
 	private boolean isOptional(DependencyType type) {
 		return type == DependencyType.ANNOTATION_PROCESSOR;
+	}
+
+	private void writeBuild(IndentingWriter writer) {
+		if (this.mavenBuild.getSourceDirectory() == null
+				&& this.mavenBuild.getTestSourceDirectory() == null
+				&& this.mavenBuild.getPlugins().isEmpty()) {
+			return;
+		}
+		writer.println();
+		writeElement(writer, "build", () -> {
+			writeSingleElement(writer, "sourceDirectory",
+					this.mavenBuild.getSourceDirectory());
+			writeSingleElement(writer, "testSourceDirectory",
+					this.mavenBuild.getTestSourceDirectory());
+			writePlugins(writer);
+
+		});
+	}
+
+	private void writePlugins(IndentingWriter writer) {
+		if (this.mavenBuild.getPlugins().isEmpty()) {
+			return;
+		}
+		writeElement(writer, "plugins", () -> writeCollection(writer,
+				this.mavenBuild.getPlugins(), this::writePlugin));
+	}
+
+	private void writePlugin(IndentingWriter writer, MavenPlugin plugin) {
+		writeElement(writer, "plugin", () -> {
+			writeSingleElement(writer, "groupId", plugin.getGroupId());
+			writeSingleElement(writer, "artifactId", plugin.getArtifactId());
+			writeSingleElement(writer, "version", plugin.getVersion());
+			writePluginConfiguration(writer, plugin.getConfiguration());
+			if (!plugin.getExecutions().isEmpty()) {
+				writeElement(writer, "executions", () -> writeCollection(writer,
+						plugin.getExecutions(), this::writePluginExecution));
+			}
+			if (!plugin.getDependencies().isEmpty()) {
+				writeElement(writer, "dependencies", () -> writeCollection(writer,
+						plugin.getDependencies(), this::writePluginDependency));
+			}
+		});
+	}
+
+	private void writePluginConfiguration(IndentingWriter writer,
+			Configuration configuration) {
+		if (configuration == null || configuration.getSettings().isEmpty()) {
+			return;
+		}
+		writeElement(writer, "configuration", () -> {
+			writeCollection(writer, configuration.getSettings(), this::writeSetting);
+		});
+	}
+
+	@SuppressWarnings("unchecked")
+	private void writeSetting(IndentingWriter writer, Setting setting) {
+		if (setting.getValue() instanceof String) {
+			writeSingleElement(writer, setting.getName(), (String) setting.getValue());
+		}
+		else if (setting.getValue() instanceof List) {
+			writeElement(writer, setting.getName(), () -> {
+				writeCollection(writer, (List<Setting>) setting.getValue(),
+						this::writeSetting);
+			});
+		}
+	}
+
+	private void writePluginExecution(IndentingWriter writer, Execution execution) {
+		writeElement(writer, "execution", () -> {
+			writeSingleElement(writer, "id", execution.getId());
+			writeSingleElement(writer, "phase", execution.getPhase());
+			List<String> goals = execution.getGoals();
+			if (!goals.isEmpty()) {
+				writeElement(writer, "goals", () -> goals
+						.forEach((goal) -> writeSingleElement(writer, "goal", goal)));
+			}
+			writePluginConfiguration(writer, execution.getConfiguration());
+		});
+	}
+
+	private void writePluginDependency(IndentingWriter writer,
+			MavenPlugin.Dependency dependency) {
+		writeElement(writer, "dependency", () -> {
+			writeSingleElement(writer, "groupId", dependency.getGroupId());
+			writeSingleElement(writer, "artifactId", dependency.getArtifactId());
+			writeSingleElement(writer, "version", dependency.getVersion());
+		});
+	}
+
+	private void writeRepositories(IndentingWriter writer) {
+		List<MavenRepository> repositories = this.mavenBuild.getMavenRepositories()
+				.stream()
+				.filter((repository) -> !MavenRepository.MAVEN_CENTRAL.equals(repository))
+				.collect(Collectors.toList());
+		if (repositories.isEmpty()) {
+			return;
+		}
+		writer.println();
+		writeRepositories(writer, "repositories", "repository", repositories);
+		writeRepositories(writer, "pluginRepositories", "pluginRepository", repositories);
+	}
+
+	private void writeRepositories(IndentingWriter writer, String containerName,
+			String childName, List<MavenRepository> repositories) {
+		writeElement(writer, containerName, () -> {
+			repositories.forEach((repository) -> {
+				writeElement(writer, childName, () -> {
+					writeSingleElement(writer, "id", repository.getId());
+					writeSingleElement(writer, "name", repository.getName());
+					writeSingleElement(writer, "url", repository.getUrl());
+					if (repository.isSnapshotsEnabled()) {
+						writeElement(writer, "snapshots", () -> writeSingleElement(writer,
+								"enabled", Boolean.toString(true)));
+					}
+				});
+			});
+		});
+	}
+
+	private void writeSingleElement(IndentingWriter writer, String name, String text) {
+		if (text != null) {
+			writer.print(String.format("<%s>", name));
+			writer.print(text);
+			writer.println(String.format("</%s>", name));
+		}
+	}
+
+	private void writeElement(IndentingWriter writer, String name, Runnable withContent) {
+		writer.println(String.format("<%s>", name));
+		writer.indented(withContent);
+		writer.println(String.format("</%s>", name));
+	}
+
+	private <T> void writeCollection(IndentingWriter writer, Collection<T> collection,
+			BiConsumer<IndentingWriter, T> itemWriter) {
+		if (!collection.isEmpty()) {
+			collection.forEach((item) -> itemWriter.accept(writer, item));
+		}
 	}
 
 }
