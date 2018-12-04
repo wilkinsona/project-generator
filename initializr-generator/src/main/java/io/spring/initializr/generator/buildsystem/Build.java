@@ -65,13 +65,13 @@ public abstract class Build {
 	}
 
 	public void addDependency(Dependency dependency) {
-		doAddDependency(dependency);
+		this.dependencies.add(dependency);
 	}
 
 	public Dependency addDependency(String groupId, String artifactId,
 			DependencyType dependencyType) {
 		Dependency dependency = new Dependency(groupId, artifactId, dependencyType);
-		doAddDependency(dependency);
+		this.dependencies.add(dependency);
 		return dependency;
 	}
 
@@ -79,17 +79,8 @@ public abstract class Build {
 			DependencyType dependencyType) {
 		Dependency dependency = new Dependency(groupId, artifactId, version,
 				dependencyType, null, null);
-		doAddDependency(dependency);
+		this.dependencies.add(dependency);
 		return dependency;
-	}
-
-	private void doAddDependency(Dependency dependency) {
-		boolean duplicateFound = this.dependencies.stream().anyMatch(
-				(candidate) -> dependency.getGroupId().equals(candidate.getGroupId())
-						&& dependency.getArtifactId().equals(candidate.getArtifactId()));
-		if (!duplicateFound) {
-			this.dependencies.add(dependency);
-		}
 	}
 
 	public List<Dependency> getDependencies() {
