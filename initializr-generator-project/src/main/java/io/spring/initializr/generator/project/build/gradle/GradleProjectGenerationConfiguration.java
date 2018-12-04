@@ -53,12 +53,8 @@ public class GradleProjectGenerationConfiguration {
 	}
 
 	@Bean
-	public GradleBuild gradleBuild(ProjectDescription projectDescription,
-			ObjectProvider<BuildCustomizer<?>> buildCustomizers) {
+	public GradleBuild gradleBuild(ObjectProvider<BuildCustomizer<?>> buildCustomizers) {
 		GradleBuild gradleBuild = new GradleBuild();
-		gradleBuild.setGroup(projectDescription.getGroupId());
-		gradleBuild.setName(projectDescription.getArtifactId());
-		gradleBuild.setVersion("0.0.1-SNAPSHOT");
 		customizeBuild(buildCustomizers, gradleBuild);
 		return gradleBuild;
 	}

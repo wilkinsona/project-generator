@@ -43,10 +43,9 @@ public class BuildProjectGenerationConfiguration {
 
 	@Bean
 	@Order(0)
-	public BuildCustomizer<Build> projectDescriptionDependenciesContributor(
+	public ProjectDescriptionBuildCustomizer projectDescriptionBuildCustomizer(
 			ProjectDescription projectDescription) {
-		return (build) -> projectDescription.getDependencies()
-				.forEach(build::addDependency);
+		return new ProjectDescriptionBuildCustomizer(projectDescription);
 	}
 
 	@Bean

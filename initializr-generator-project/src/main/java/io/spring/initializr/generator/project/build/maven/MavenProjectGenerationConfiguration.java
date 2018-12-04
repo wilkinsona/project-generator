@@ -70,12 +70,8 @@ public class MavenProjectGenerationConfiguration {
 
 	@Bean
 	public MavenBuildProjectContributor mavenBuildProjectContributor(
-			ProjectDescription projectDescription,
 			ObjectProvider<BuildCustomizer<?>> buildCustomizers) {
 		MavenBuild mavenBuild = new MavenBuild();
-		mavenBuild.setGroup(projectDescription.getGroupId());
-		mavenBuild.setName(projectDescription.getArtifactId());
-		mavenBuild.setVersion("0.0.1-SNAPSHOT");
 		customizeBuild(buildCustomizers, mavenBuild);
 		return new MavenBuildProjectContributor(mavenBuild);
 	}
