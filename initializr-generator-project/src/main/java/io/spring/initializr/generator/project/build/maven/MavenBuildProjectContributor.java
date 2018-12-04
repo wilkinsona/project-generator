@@ -19,8 +19,10 @@ package io.spring.initializr.generator.project.build.maven;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.List;
 import java.util.function.BiConsumer;
 import java.util.stream.Collectors;
@@ -34,6 +36,7 @@ import io.spring.initializr.generator.buildsystem.maven.MavenPlugin.Execution;
 import io.spring.initializr.generator.buildsystem.maven.MavenPlugin.Setting;
 import io.spring.initializr.generator.buildsystem.maven.Parent;
 import io.spring.initializr.generator.io.IndentingWriter;
+import io.spring.initializr.model.BillOfMaterials;
 import io.spring.initializr.model.Dependency;
 import io.spring.initializr.model.DependencyComparator;
 import io.spring.initializr.model.DependencyType;
@@ -63,6 +66,7 @@ public class MavenBuildProjectContributor implements ProjectContributor {
 				writePackaging(writer);
 				writeProperties(writer);
 				writeDependencies(writer);
+				writeDependencyManagement(writer);
 				writeBuild(writer);
 				writeRepositories(writer);
 			});
@@ -188,6 +192,27 @@ public class MavenBuildProjectContributor implements ProjectContributor {
 
 	private boolean isOptional(DependencyType type) {
 		return type == DependencyType.ANNOTATION_PROCESSOR;
+	}
+
+	private void writeDependencyManagement(IndentingWriter writer) {
+		List<BillOfMaterials> boms = new ArrayList<>(this.mavenBuild.getBoms());
+		if (boms.isEmpty()) {
+			return;
+		}
+		boms.sort(Comparator.comparing(BillOfMaterials::getOrder));
+		writer.println();
+		writeElement(writer, "dependencyManagement", () -> writeElement(writer,
+				"dependencies", () -> writeCollection(writer, boms, this::writeBom)));
+	}
+
+	private void writeBom(IndentingWriter writer, BillOfMaterials bom) {
+		writeElement(writer, "dependency", () -> {
+			writeSingleElement(writer, "groupId", bom.getGroupId());
+			writeSingleElement(writer, "artifactId", bom.getArtifactId());
+			writeSingleElement(writer, "version", bom.getVersion());
+			writeSingleElement(writer, "type", "pom");
+			writeSingleElement(writer, "scope", "import");
+		});
 	}
 
 	private void writeBuild(IndentingWriter writer) {

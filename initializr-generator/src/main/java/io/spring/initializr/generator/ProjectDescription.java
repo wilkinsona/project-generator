@@ -24,6 +24,7 @@ import io.spring.initializr.generator.buildsystem.BuildSystem;
 import io.spring.initializr.generator.language.Language;
 import io.spring.initializr.generator.packaging.Packaging;
 import io.spring.initializr.generator.util.Version;
+import io.spring.initializr.model.BillOfMaterials;
 import io.spring.initializr.model.Dependency;
 
 /**
@@ -34,6 +35,8 @@ import io.spring.initializr.model.Dependency;
 public class ProjectDescription {
 
 	private final List<Dependency> dependencies = new ArrayList<>();
+
+	private final List<BillOfMaterials> boms = new ArrayList<>();
 
 	private Version springBootVersion;
 
@@ -107,6 +110,14 @@ public class ProjectDescription {
 
 	public List<Dependency> getDependencies() {
 		return Collections.unmodifiableList(this.dependencies);
+	}
+
+	public void addBom(BillOfMaterials bom) {
+		this.boms.add(bom);
+	}
+
+	public List<BillOfMaterials> getBoms() {
+		return Collections.unmodifiableList(this.boms);
 	}
 
 	public String getApplicationName() {

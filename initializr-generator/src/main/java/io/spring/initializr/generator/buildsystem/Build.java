@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import io.spring.initializr.model.BillOfMaterials;
 import io.spring.initializr.model.Dependency;
 import io.spring.initializr.model.DependencyType;
 
@@ -37,6 +38,8 @@ public abstract class Build {
 	private String version = "0.0.1-SNAPSHOT";
 
 	private final List<Dependency> dependencies = new ArrayList<>();
+
+	private final List<BillOfMaterials> boms = new ArrayList<>();
 
 	private final List<MavenRepository> mavenRepositories = new ArrayList<>();
 
@@ -85,6 +88,14 @@ public abstract class Build {
 
 	public List<Dependency> getDependencies() {
 		return Collections.unmodifiableList(this.dependencies);
+	}
+
+	public void addBom(BillOfMaterials bom) {
+		this.boms.add(bom);
+	}
+
+	public List<BillOfMaterials> getBoms() {
+		return Collections.unmodifiableList(this.boms);
 	}
 
 	public void addMavenRepository(MavenRepository mavenRepository) {

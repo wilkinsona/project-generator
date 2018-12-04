@@ -23,6 +23,7 @@ import java.util.List;
 
 import io.spring.initializr.generator.buildsystem.MavenRepository;
 import io.spring.initializr.generator.buildsystem.gradle.GradleBuild;
+import io.spring.initializr.model.BillOfMaterials;
 import io.spring.initializr.model.DependencyType;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -35,6 +36,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Tests for {@link GradleBuildProjectContributor}.
  *
  * @author Andy Wilkinson
+ * @author Stephane Nicoll
  */
 @ExtendWith(TempDirectory.class)
 class GradleBuildProjectContributorTests {
@@ -156,6 +158,31 @@ class GradleBuildProjectContributorTests {
 		assertThat(lines).containsSequence("dependencies {",
 				"    implementation \"org.springframework.boot:spring-boot-starter\"",
 				"}");
+	}
+
+	@Test
+	void gradleBuildWithBom() throws IOException {
+		GradleBuild build = new GradleBuild();
+		build.addBom(new BillOfMaterials("com.example", "my-project-dependencies",
+				"1.0.0.RELEASE"));
+		List<String> lines = generateBuild(build);
+		assertThat(lines).containsSequence("dependencyManagement {", "    imports {",
+				"        mavenBom \"com.example:my-project-dependencies:1.0.0.RELEASE\"",
+				"    }", "}");
+	}
+
+	@Test
+	void gradleBuildWithOrderedBoms() throws IOException {
+		GradleBuild build = new GradleBuild();
+		build.addBom(new BillOfMaterials("com.example", "my-project-dependencies",
+				"1.0.0.RELEASE", 5));
+		build.addBom(new BillOfMaterials("com.example", "root-dependencies",
+				"2.1.0.RELEASE", 2));
+		List<String> lines = generateBuild(build);
+		assertThat(lines).containsSequence("dependencyManagement {", "    imports {",
+				"        mavenBom \"com.example:my-project-dependencies:1.0.0.RELEASE\"",
+				"        mavenBom \"com.example:root-dependencies:2.1.0.RELEASE\"",
+				"    }", "}");
 	}
 
 	private List<String> generateBuild(GradleBuild build) throws IOException {

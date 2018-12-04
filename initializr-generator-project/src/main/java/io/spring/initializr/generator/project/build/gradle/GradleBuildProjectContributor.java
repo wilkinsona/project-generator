@@ -19,7 +19,9 @@ package io.spring.initializr.generator.project.build.gradle;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeSet;
@@ -32,6 +34,7 @@ import io.spring.initializr.generator.buildsystem.gradle.GradleBuild;
 import io.spring.initializr.generator.buildsystem.gradle.GradleBuild.TaskCustomization;
 import io.spring.initializr.generator.buildsystem.gradle.GradlePlugin;
 import io.spring.initializr.generator.io.IndentingWriter;
+import io.spring.initializr.model.BillOfMaterials;
 import io.spring.initializr.model.Dependency;
 import io.spring.initializr.model.DependencyType;
 
@@ -61,6 +64,7 @@ class GradleBuildProjectContributor implements ProjectContributor {
 			writer.println();
 			writeRepositories(writer, writer::println);
 			writeDependencies(writer);
+			writeBoms(writer);
 			writeTaskCustomizations(writer);
 		}
 	}
@@ -138,6 +142,24 @@ class GradleBuildProjectContributor implements ProjectContributor {
 				+ dependency.getGroupId() + ":" + dependency.getArtifactId()
 				+ ((dependency.getVersion() == null) ? "" : ":" + dependency.getVersion())
 				+ "\"";
+	}
+
+	private void writeBoms(IndentingWriter writer) {
+		List<BillOfMaterials> boms = new ArrayList<>(this.build.getBoms());
+		if (boms.isEmpty()) {
+			return;
+		}
+		boms.sort(Comparator.comparingInt(BillOfMaterials::getOrder).reversed());
+		writer.println("dependencyManagement {");
+		writer.indented(() -> {
+			writeNestedCollection(writer, "imports", boms, this::bomAsString);
+		});
+		writer.println("}");
+	}
+
+	private String bomAsString(BillOfMaterials bom) {
+		return "mavenBom \"" + bom.getGroupId() + ":" + bom.getArtifactId() + ":"
+				+ bom.getVersion() + "\"";
 	}
 
 	private void writeTaskCustomizations(IndentingWriter writer) {

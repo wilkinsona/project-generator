@@ -24,6 +24,7 @@ import io.spring.initializr.generator.buildsystem.MavenRepository;
 import io.spring.initializr.generator.buildsystem.maven.MavenBuild;
 import io.spring.initializr.generator.buildsystem.maven.MavenPlugin;
 import io.spring.initializr.generator.project.test.assertj.NodeAssert;
+import io.spring.initializr.model.BillOfMaterials;
 import io.spring.initializr.model.DependencyType;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -36,6 +37,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Tests for {@link MavenBuildProjectContributor}.
  *
  * @author Andy Wilkinson
+ * @author Stephane Nicoll
  */
 @ExtendWith(TempDirectory.class)
 class MavenBuildProjectContributorTests {
@@ -199,6 +201,51 @@ class MavenBuildProjectContributorTests {
 			assertThat(dependency).textAtPath("scope").isEqualTo("test");
 			assertThat(dependency).textAtPath("optional").isNullOrEmpty();
 		});
+	}
+
+	@Test
+	void pomWithBom() throws Exception {
+		MavenBuild build = new MavenBuild();
+		build.setGroup("com.example.demo");
+		build.setName("demo");
+		build.addBom(new BillOfMaterials("com.example", "my-project-dependencies",
+				"1.0.0.RELEASE"));
+		generatePom(build, (pom) -> {
+			NodeAssert dependency = pom
+					.nodeAtPath("/project/dependencyManagement/dependencies/dependency");
+			assertBom(dependency, "com.example", "my-project-dependencies",
+					"1.0.0.RELEASE");
+		});
+	}
+
+	@Test
+	void pomWithOrderedBoms() throws Exception {
+		MavenBuild build = new MavenBuild();
+		build.setGroup("com.example.demo");
+		build.setName("demo");
+		build.addBom(new BillOfMaterials("com.example", "my-project-dependencies",
+				"1.0.0.RELEASE", 5));
+		build.addBom(new BillOfMaterials("com.example", "root-dependencies",
+				"2.1.0.RELEASE", 2));
+		generatePom(build, (pom) -> {
+			NodeAssert dependencies = pom
+					.nodeAtPath("/project/dependencyManagement/dependencies");
+			NodeAssert firstBom = assertThat(dependencies).nodeAtPath("dependency[1]");
+			assertBom(firstBom, "com.example", "root-dependencies", "2.1.0.RELEASE");
+			NodeAssert secondBom = assertThat(dependencies).nodeAtPath("dependency[2]");
+			assertBom(secondBom, "com.example", "my-project-dependencies",
+					"1.0.0.RELEASE");
+		});
+	}
+
+	private void assertBom(NodeAssert firstBom, String groupId, String artifactId,
+			String version) {
+		assertThat(firstBom).textAtPath("groupId").isEqualTo(groupId);
+		assertThat(firstBom).textAtPath("artifactId").isEqualTo(artifactId);
+
+		assertThat(firstBom).textAtPath("version").isEqualTo(version);
+		assertThat(firstBom).textAtPath("type").isEqualTo("pom");
+		assertThat(firstBom).textAtPath("scope").isEqualTo("import");
 	}
 
 	@Test
