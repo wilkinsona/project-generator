@@ -56,7 +56,7 @@ class GradleBuildProjectContributorTests {
 		List<String> lines = generateBuild(build);
 		assertThat(lines).containsSequence("buildscript {", "    repositories {",
 				"        mavenCentral()", "    }", "    dependencies {",
-				"        classpath \"org.springframework.boot:spring-boot-gradle-plugin:2.1.0.RELEASE\"",
+				"        classpath 'org.springframework.boot:spring-boot-gradle-plugin:2.1.0.RELEASE'",
 				"    }", "}");
 	}
 
@@ -145,7 +145,7 @@ class GradleBuildProjectContributorTests {
 				"${kotlinVersion}", DependencyType.COMPILE);
 		List<String> lines = generateBuild(build);
 		assertThat(lines).containsSequence("dependencies {",
-				"    implementation \"org.jetbrains.kotlin:kotlin-stdlib-jdk8:${kotlinVersion}\"",
+				"    implementation 'org.jetbrains.kotlin:kotlin-stdlib-jdk8:${kotlinVersion}'",
 				"}");
 	}
 
@@ -156,8 +156,7 @@ class GradleBuildProjectContributorTests {
 				DependencyType.COMPILE);
 		List<String> lines = generateBuild(build);
 		assertThat(lines).containsSequence("dependencies {",
-				"    implementation \"org.springframework.boot:spring-boot-starter\"",
-				"}");
+				"    implementation 'org.springframework.boot:spring-boot-starter'", "}");
 	}
 
 	@Test
@@ -167,7 +166,7 @@ class GradleBuildProjectContributorTests {
 				"1.0.0.RELEASE"));
 		List<String> lines = generateBuild(build);
 		assertThat(lines).containsSequence("dependencyManagement {", "    imports {",
-				"        mavenBom \"com.example:my-project-dependencies:1.0.0.RELEASE\"",
+				"        mavenBom 'com.example:my-project-dependencies:1.0.0.RELEASE'",
 				"    }", "}");
 	}
 
@@ -180,9 +179,9 @@ class GradleBuildProjectContributorTests {
 				"2.1.0.RELEASE", 2));
 		List<String> lines = generateBuild(build);
 		assertThat(lines).containsSequence("dependencyManagement {", "    imports {",
-				"        mavenBom \"com.example:my-project-dependencies:1.0.0.RELEASE\"",
-				"        mavenBom \"com.example:root-dependencies:2.1.0.RELEASE\"",
-				"    }", "}");
+				"        mavenBom 'com.example:my-project-dependencies:1.0.0.RELEASE'",
+				"        mavenBom 'com.example:root-dependencies:2.1.0.RELEASE'", "    }",
+				"}");
 	}
 
 	private List<String> generateBuild(GradleBuild build) throws IOException {

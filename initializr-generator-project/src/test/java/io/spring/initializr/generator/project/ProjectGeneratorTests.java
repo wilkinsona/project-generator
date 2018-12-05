@@ -121,8 +121,8 @@ class ProjectGeneratorTests {
 				"group = 'com.example'", "version = '0.0.1-SNAPSHOT'",
 				"sourceCompatibility = '1.8'", "", "repositories {", "    mavenCentral()",
 				"}", "", "dependencies {",
-				"    implementation \"org.springframework.boot:spring-boot-starter\"",
-				"    testImplementation \"org.springframework.boot:spring-boot-starter-test\"",
+				"    implementation 'org.springframework.boot:spring-boot-starter'",
+				"    testImplementation 'org.springframework.boot:spring-boot-starter-test'",
 				"}", "");
 	}
 

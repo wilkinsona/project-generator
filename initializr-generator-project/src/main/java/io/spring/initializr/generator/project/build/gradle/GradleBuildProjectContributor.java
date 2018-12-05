@@ -97,7 +97,7 @@ class GradleBuildProjectContributor implements ProjectContributor {
 	private void writeBuildscriptDependencies(IndentingWriter writer) {
 		writeNestedCollection(writer, "dependencies",
 				this.build.getBuildscript().getDependencies(),
-				(dependency) -> "classpath \"" + dependency + "\"");
+				(dependency) -> "classpath '" + dependency + "'");
 	}
 
 	private void writePlugins(IndentingWriter writer) {
@@ -138,10 +138,10 @@ class GradleBuildProjectContributor implements ProjectContributor {
 	}
 
 	private String dependencyAsString(Dependency dependency) {
-		return configurationForType(dependency.getType()) + " \""
-				+ dependency.getGroupId() + ":" + dependency.getArtifactId()
+		return configurationForType(dependency.getType()) + " '" + dependency.getGroupId()
+				+ ":" + dependency.getArtifactId()
 				+ ((dependency.getVersion() == null) ? "" : ":" + dependency.getVersion())
-				+ "\"";
+				+ "'";
 	}
 
 	private void writeBoms(IndentingWriter writer) {
@@ -158,8 +158,8 @@ class GradleBuildProjectContributor implements ProjectContributor {
 	}
 
 	private String bomAsString(BillOfMaterials bom) {
-		return "mavenBom \"" + bom.getGroupId() + ":" + bom.getArtifactId() + ":"
-				+ bom.getVersion() + "\"";
+		return "mavenBom '" + bom.getGroupId() + ":" + bom.getArtifactId() + ":"
+				+ bom.getVersion() + "'";
 	}
 
 	private void writeTaskCustomizations(IndentingWriter writer) {
