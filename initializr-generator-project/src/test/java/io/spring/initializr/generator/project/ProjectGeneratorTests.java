@@ -43,6 +43,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.junitpioneer.jupiter.TempDirectory;
 import org.junitpioneer.jupiter.TempDirectory.TempDir;
 
+import org.springframework.context.support.StaticApplicationContext;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
@@ -57,8 +59,11 @@ class ProjectGeneratorTests {
 	private final ProjectGenerator projectGenerator;
 
 	ProjectGeneratorTests(@TempDir Path directory) {
-		this.projectGenerator = new ProjectGenerator(
-				(description) -> Files.createTempDirectory(directory, "project-"));
+		StaticApplicationContext context = new StaticApplicationContext();
+		context.registerBean("testProjectDirectoryFactory", ProjectDirectoryFactory.class,
+				() -> (description) -> Files.createTempDirectory(directory, "project-"));
+		context.refresh();
+		this.projectGenerator = new ProjectGenerator(context);
 	}
 
 	@Test

@@ -24,11 +24,13 @@ import java.util.List;
 import io.spring.initializr.generator.ProjectContributor;
 import io.spring.initializr.generator.ProjectDescription;
 
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.ImportSelector;
+import org.springframework.context.support.StaticApplicationContext;
 import org.springframework.core.io.support.SpringFactoriesLoader;
 import org.springframework.core.type.AnnotationMetadata;
 
@@ -36,30 +38,44 @@ import org.springframework.core.type.AnnotationMetadata;
  * Main entry point for project generation.
  *
  * @author Andy Wilkinson
+ * @author Stephane Nicoll
  */
 public class ProjectGenerator {
 
-	private final ProjectDirectoryFactory projectDirectoryFactory;
+	private final ApplicationContext parentApplicationContext;
 
-	public ProjectGenerator(ProjectDirectoryFactory projectDirectoryFactory) {
-		this.projectDirectoryFactory = projectDirectoryFactory;
+	public ProjectGenerator(ApplicationContext parentApplicationContext) {
+		this.parentApplicationContext = parentApplicationContext;
 	}
 
 	public ProjectGenerator() {
-		this((description) -> Files.createTempDirectory("project-"));
+		this(emptyParentApplicationContext());
+	}
+
+	private static ApplicationContext emptyParentApplicationContext() {
+		StaticApplicationContext context = new StaticApplicationContext();
+		context.refresh();
+		return context;
 	}
 
 	public Path generate(ProjectDescription description) throws IOException {
 		try (AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext()) {
+			context.setParent(this.parentApplicationContext);
 			context.registerBean(ProjectDescription.class, () -> description);
 			context.register(CoreConfiguration.class);
 			context.refresh();
-			Path projectRoot = this.projectDirectoryFactory
+			Path projectRoot = getProjectDirectoryFactory(context)
 					.createProjectDirectory(description);
 			Path projectDirectory = initializerProjectDirectory(projectRoot, description);
 			context.getBean(ProjectContributors.class).contribute(projectDirectory);
 			return projectRoot;
 		}
+	}
+
+	private ProjectDirectoryFactory getProjectDirectoryFactory(
+			ApplicationContext context) {
+		return context.getBeanProvider(ProjectDirectoryFactory.class).getIfAvailable(
+				() -> (description) -> Files.createTempDirectory("project-"));
 	}
 
 	private Path initializerProjectDirectory(Path rootDir, ProjectDescription description)
