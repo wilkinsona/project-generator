@@ -35,6 +35,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import io.spring.initializr.generator.io.IndentingWriter;
+import io.spring.initializr.generator.io.IndentingWriterFactory;
 import io.spring.initializr.generator.language.Annotatable;
 import io.spring.initializr.generator.language.Annotation;
 import io.spring.initializr.generator.language.Parameter;
@@ -64,6 +65,12 @@ public class JavaSourceCodeWriter implements SourceCodeWriter<JavaSourceCode> {
 		METHOD_MODIFIERS = methodModifiers;
 	}
 
+	private final IndentingWriterFactory indentingWriterFactory;
+
+	public JavaSourceCodeWriter(IndentingWriterFactory indentingWriterFactory) {
+		this.indentingWriterFactory = indentingWriterFactory;
+	}
+
 	@Override
 	public void writeTo(Path directory, JavaSourceCode sourceCode) throws IOException {
 		if (!Files.exists(directory)) {
@@ -78,8 +85,8 @@ public class JavaSourceCodeWriter implements SourceCodeWriter<JavaSourceCode> {
 			throws IOException {
 		Path output = fileForCompilationUnit(directory, compilationUnit);
 		Files.createDirectories(output.getParent());
-		try (IndentingWriter writer = new IndentingWriter(
-				Files.newBufferedWriter(output))) {
+		try (IndentingWriter writer = this.indentingWriterFactory
+				.createIndentingWriter("java", Files.newBufferedWriter(output))) {
 			writer.println("package " + compilationUnit.getPackageName() + ";");
 			writer.println();
 			Set<String> imports = determineImports(compilationUnit);

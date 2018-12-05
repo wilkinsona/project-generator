@@ -22,6 +22,7 @@ import java.nio.file.Path;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
 
+import io.spring.initializr.generator.io.IndentingWriterFactory;
 import io.spring.initializr.generator.language.Annotation;
 import io.spring.initializr.generator.language.Parameter;
 import org.junit.jupiter.api.Test;
@@ -41,7 +42,8 @@ class KotlinSourceCodeWriterTests {
 
 	private final Path directory;
 
-	private final KotlinSourceCodeWriter writer = new KotlinSourceCodeWriter();
+	private final KotlinSourceCodeWriter writer = new KotlinSourceCodeWriter(
+			IndentingWriterFactory.withDefaultSettings());
 
 	KotlinSourceCodeWriterTests(@TempDir Path directory) {
 		this.directory = directory;

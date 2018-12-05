@@ -23,6 +23,7 @@ import io.spring.initializr.generator.ProjectDescription;
 import io.spring.initializr.generator.buildsystem.Build;
 import io.spring.initializr.generator.buildsystem.gradle.ConditionalOnGradle;
 import io.spring.initializr.generator.buildsystem.gradle.GradleBuild;
+import io.spring.initializr.generator.io.IndentingWriterFactory;
 import io.spring.initializr.generator.language.java.ConditionalOnJavaLanguage;
 import io.spring.initializr.generator.packaging.war.ConditionalOnWarPackaging;
 import io.spring.initializr.generator.project.build.BuildCustomizer;
@@ -45,6 +46,13 @@ import org.springframework.core.annotation.Order;
 @Configuration
 @ConditionalOnGradle
 public class GradleProjectGenerationConfiguration {
+
+	private final IndentingWriterFactory indentingWriterFactory;
+
+	public GradleProjectGenerationConfiguration(
+			IndentingWriterFactory indentingWriterFactory) {
+		this.indentingWriterFactory = indentingWriterFactory;
+	}
 
 	@Bean
 	@Order(Ordered.HIGHEST_PRECEDENCE)
@@ -90,7 +98,8 @@ public class GradleProjectGenerationConfiguration {
 	@Bean
 	public GradleBuildProjectContributor gradleBuildProjectContributor(
 			GradleBuild gradleBuild) {
-		return new GradleBuildProjectContributor(gradleBuild);
+		return new GradleBuildProjectContributor(gradleBuild,
+				this.indentingWriterFactory);
 	}
 
 	/**
@@ -138,8 +147,9 @@ public class GradleProjectGenerationConfiguration {
 
 		@Bean
 		public SettingsGradleProjectContributor settingsGradleProjectContributor(
-				GradleBuild gradleBuild) {
-			return new SettingsGradleProjectContributor(gradleBuild);
+				GradleBuild gradleBuild, IndentingWriterFactory indentingWriterFactory) {
+			return new SettingsGradleProjectContributor(gradleBuild,
+					indentingWriterFactory);
 		}
 
 		@Bean

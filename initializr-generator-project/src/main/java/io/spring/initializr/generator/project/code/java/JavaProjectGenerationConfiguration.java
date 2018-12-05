@@ -17,6 +17,7 @@
 package io.spring.initializr.generator.project.code.java;
 
 import io.spring.initializr.generator.ProjectDescription;
+import io.spring.initializr.generator.io.IndentingWriterFactory;
 import io.spring.initializr.generator.language.java.ConditionalOnJavaLanguage;
 import io.spring.initializr.generator.language.java.JavaCompilationUnit;
 import io.spring.initializr.generator.language.java.JavaSourceCode;
@@ -46,25 +47,35 @@ import org.springframework.context.annotation.Import;
 @Import(JavaProjectGenerationDefaultContributorsConfiguration.class)
 public class JavaProjectGenerationConfiguration {
 
+	private final ProjectDescription projectDescription;
+
+	private final IndentingWriterFactory indentingWriterFactory;
+
+	public JavaProjectGenerationConfiguration(ProjectDescription projectDescription,
+			IndentingWriterFactory indentingWriterFactory) {
+		this.projectDescription = projectDescription;
+		this.indentingWriterFactory = indentingWriterFactory;
+	}
+
 	@Bean
 	public MainSourceCodeProjectContributor<JavaTypeDeclaration, JavaCompilationUnit, JavaSourceCode> mainJavaSourceCodeProjectContributor(
-			ProjectDescription projectDescription,
 			ObjectProvider<MainApplicationTypeCustomizer<?>> mainApplicationTypeCustomizers,
 			ObjectProvider<MainCompilationUnitCustomizer<?, ?>> mainCompilationUnitCustomizers,
 			ObjectProvider<MainSourceCodeCustomizer<?, ?, ?>> mainSourceCodeCustomizers) {
-		return new MainSourceCodeProjectContributor<>(projectDescription,
-				JavaSourceCode::new, new JavaSourceCodeWriter(),
+		return new MainSourceCodeProjectContributor<>(this.projectDescription,
+				JavaSourceCode::new,
+				new JavaSourceCodeWriter(this.indentingWriterFactory),
 				mainApplicationTypeCustomizers, mainCompilationUnitCustomizers,
 				mainSourceCodeCustomizers);
 	}
 
 	@Bean
 	public TestSourceCodeProjectContributor<JavaTypeDeclaration, JavaCompilationUnit, JavaSourceCode> testJavaSourceCodeProjectContributor(
-			ProjectDescription projectDescription,
 			ObjectProvider<TestApplicationTypeCustomizer<?>> testApplicationTypeCustomizers,
 			ObjectProvider<TestSourceCodeCustomizer<?, ?, ?>> testSourceCodeCustomizers) {
-		return new TestSourceCodeProjectContributor<>(projectDescription,
-				JavaSourceCode::new, new JavaSourceCodeWriter(),
+		return new TestSourceCodeProjectContributor<>(this.projectDescription,
+				JavaSourceCode::new,
+				new JavaSourceCodeWriter(this.indentingWriterFactory),
 				testApplicationTypeCustomizers, testSourceCodeCustomizers);
 	}
 

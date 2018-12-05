@@ -24,6 +24,7 @@ import io.spring.initializr.generator.ProjectContributor;
 import io.spring.initializr.generator.buildsystem.MavenRepository;
 import io.spring.initializr.generator.buildsystem.gradle.GradleBuild;
 import io.spring.initializr.generator.io.IndentingWriter;
+import io.spring.initializr.generator.io.IndentingWriterFactory;
 
 /**
  * {@link ProjectContributor} for the project's {@code settings.gradle} file.
@@ -34,15 +35,19 @@ class SettingsGradleProjectContributor implements ProjectContributor {
 
 	private final GradleBuild build;
 
-	SettingsGradleProjectContributor(GradleBuild build) {
+	private final IndentingWriterFactory indentingWriterFactory;
+
+	SettingsGradleProjectContributor(GradleBuild build,
+			IndentingWriterFactory indentingWriterFactory) {
 		this.build = build;
+		this.indentingWriterFactory = indentingWriterFactory;
 	}
 
 	@Override
 	public void contribute(Path projectRoot) throws IOException {
 		Path settingsGradle = Files.createFile(projectRoot.resolve("settings.gradle"));
-		try (IndentingWriter writer = new IndentingWriter(
-				Files.newBufferedWriter(settingsGradle))) {
+		try (IndentingWriter writer = this.indentingWriterFactory.createIndentingWriter(
+				"gradle", Files.newBufferedWriter(settingsGradle))) {
 			writePluginManagement(writer);
 			writer.println("rootProject.name = '" + this.build.getName() + "'");
 		}

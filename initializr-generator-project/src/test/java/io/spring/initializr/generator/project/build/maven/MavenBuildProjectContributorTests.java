@@ -23,6 +23,7 @@ import java.util.function.Consumer;
 import io.spring.initializr.generator.buildsystem.MavenRepository;
 import io.spring.initializr.generator.buildsystem.maven.MavenBuild;
 import io.spring.initializr.generator.buildsystem.maven.MavenPlugin;
+import io.spring.initializr.generator.io.IndentingWriterFactory;
 import io.spring.initializr.generator.project.test.assertj.NodeAssert;
 import io.spring.initializr.model.BillOfMaterials;
 import io.spring.initializr.model.DependencyType;
@@ -407,7 +408,8 @@ class MavenBuildProjectContributorTests {
 	private void generatePom(MavenBuild mavenBuild, Consumer<NodeAssert> consumer)
 			throws Exception {
 		Path projectDir = Files.createTempDirectory(this.directory, "project-");
-		new MavenBuildProjectContributor(mavenBuild).contribute(projectDir);
+		new MavenBuildProjectContributor(mavenBuild,
+				IndentingWriterFactory.withDefaultSettings()).contribute(projectDir);
 		Path pomFile = projectDir.resolve("pom.xml");
 		assertThat(pomFile).isRegularFile();
 		consumer.accept(new NodeAssert(pomFile));

@@ -23,6 +23,7 @@ import java.nio.file.Path;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
 
+import io.spring.initializr.generator.io.IndentingWriterFactory;
 import io.spring.initializr.generator.language.Annotation;
 import io.spring.initializr.generator.language.Parameter;
 import org.junit.jupiter.api.Test;
@@ -42,7 +43,8 @@ class JavaSourceCodeWriterTests {
 
 	private final Path directory;
 
-	private final JavaSourceCodeWriter writer = new JavaSourceCodeWriter();
+	private final JavaSourceCodeWriter writer = new JavaSourceCodeWriter(
+			IndentingWriterFactory.withDefaultSettings());
 
 	JavaSourceCodeWriterTests(@TempDir Path directory) {
 		this.directory = directory;

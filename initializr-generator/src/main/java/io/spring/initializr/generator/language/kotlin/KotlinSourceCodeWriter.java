@@ -31,6 +31,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import io.spring.initializr.generator.io.IndentingWriter;
+import io.spring.initializr.generator.io.IndentingWriterFactory;
 import io.spring.initializr.generator.language.Annotatable;
 import io.spring.initializr.generator.language.Annotation;
 import io.spring.initializr.generator.language.Parameter;
@@ -43,6 +44,12 @@ import io.spring.initializr.generator.language.SourceCodeWriter;
  * @author Stephane Nicoll
  */
 public class KotlinSourceCodeWriter implements SourceCodeWriter<KotlinSourceCode> {
+
+	private final IndentingWriterFactory indentingWriterFactory;
+
+	public KotlinSourceCodeWriter(IndentingWriterFactory indentingWriterFactory) {
+		this.indentingWriterFactory = indentingWriterFactory;
+	}
 
 	@Override
 	public void writeTo(Path directory, KotlinSourceCode sourceCode) throws IOException {
@@ -58,8 +65,8 @@ public class KotlinSourceCodeWriter implements SourceCodeWriter<KotlinSourceCode
 			throws IOException {
 		Path output = fileForCompilationUnit(directory, compilationUnit);
 		Files.createDirectories(output.getParent());
-		try (IndentingWriter writer = new IndentingWriter(
-				Files.newBufferedWriter(output))) {
+		try (IndentingWriter writer = this.indentingWriterFactory
+				.createIndentingWriter("kotlin", Files.newBufferedWriter(output))) {
 			writer.println("package " + compilationUnit.getPackageName());
 			writer.println();
 			Set<String> imports = determineImports(compilationUnit);

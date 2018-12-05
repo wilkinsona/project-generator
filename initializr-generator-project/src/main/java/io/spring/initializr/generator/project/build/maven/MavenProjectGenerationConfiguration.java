@@ -23,6 +23,7 @@ import io.spring.initializr.generator.ProjectDescription;
 import io.spring.initializr.generator.buildsystem.Build;
 import io.spring.initializr.generator.buildsystem.maven.ConditionalOnMaven;
 import io.spring.initializr.generator.buildsystem.maven.MavenBuild;
+import io.spring.initializr.generator.io.IndentingWriterFactory;
 import io.spring.initializr.generator.packaging.war.ConditionalOnWarPackaging;
 import io.spring.initializr.generator.project.ProjectGenerationConfiguration;
 import io.spring.initializr.generator.project.build.BuildCustomizer;
@@ -70,10 +71,11 @@ public class MavenProjectGenerationConfiguration {
 
 	@Bean
 	public MavenBuildProjectContributor mavenBuildProjectContributor(
+			IndentingWriterFactory indentingWriterFactory,
 			ObjectProvider<BuildCustomizer<?>> buildCustomizers) {
 		MavenBuild mavenBuild = new MavenBuild();
 		customizeBuild(buildCustomizers, mavenBuild);
-		return new MavenBuildProjectContributor(mavenBuild);
+		return new MavenBuildProjectContributor(mavenBuild, indentingWriterFactory);
 	}
 
 	@SuppressWarnings("unchecked")

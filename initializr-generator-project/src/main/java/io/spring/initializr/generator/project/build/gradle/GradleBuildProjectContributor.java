@@ -34,6 +34,7 @@ import io.spring.initializr.generator.buildsystem.gradle.GradleBuild;
 import io.spring.initializr.generator.buildsystem.gradle.GradleBuild.TaskCustomization;
 import io.spring.initializr.generator.buildsystem.gradle.GradlePlugin;
 import io.spring.initializr.generator.io.IndentingWriter;
+import io.spring.initializr.generator.io.IndentingWriterFactory;
 import io.spring.initializr.model.BillOfMaterials;
 import io.spring.initializr.model.Dependency;
 import io.spring.initializr.model.DependencyType;
@@ -47,15 +48,19 @@ class GradleBuildProjectContributor implements ProjectContributor {
 
 	private final GradleBuild build;
 
-	GradleBuildProjectContributor(GradleBuild build) {
+	private final IndentingWriterFactory indentingWriterFactory;
+
+	GradleBuildProjectContributor(GradleBuild build,
+			IndentingWriterFactory indentingWriterFactory) {
 		this.build = build;
+		this.indentingWriterFactory = indentingWriterFactory;
 	}
 
 	@Override
 	public void contribute(Path projectRoot) throws IOException {
 		Path buildGradle = Files.createFile(projectRoot.resolve("build.gradle"));
-		try (IndentingWriter writer = new IndentingWriter(
-				Files.newBufferedWriter(buildGradle))) {
+		try (IndentingWriter writer = this.indentingWriterFactory
+				.createIndentingWriter("gradle", Files.newBufferedWriter(buildGradle))) {
 			writeBuildscript(writer);
 			writePlugins(writer);
 			writer.println("group = '" + this.build.getGroup() + "'");

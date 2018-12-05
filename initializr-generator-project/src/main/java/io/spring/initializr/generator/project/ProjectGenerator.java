@@ -30,7 +30,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.ImportSelector;
-import org.springframework.context.support.StaticApplicationContext;
 import org.springframework.core.io.support.SpringFactoriesLoader;
 import org.springframework.core.type.AnnotationMetadata;
 
@@ -49,13 +48,8 @@ public class ProjectGenerator {
 	}
 
 	public ProjectGenerator() {
-		this(emptyParentApplicationContext());
-	}
-
-	private static ApplicationContext emptyParentApplicationContext() {
-		StaticApplicationContext context = new StaticApplicationContext();
-		context.refresh();
-		return context;
+		this(new AnnotationConfigApplicationContext(
+				ProjectGeneratorDefaultConfiguration.class));
 	}
 
 	public Path generate(ProjectDescription description) throws IOException {
@@ -64,18 +58,12 @@ public class ProjectGenerator {
 			context.registerBean(ProjectDescription.class, () -> description);
 			context.register(CoreConfiguration.class);
 			context.refresh();
-			Path projectRoot = getProjectDirectoryFactory(context)
+			Path projectRoot = context.getBean(ProjectDirectoryFactory.class)
 					.createProjectDirectory(description);
 			Path projectDirectory = initializerProjectDirectory(projectRoot, description);
 			context.getBean(ProjectContributors.class).contribute(projectDirectory);
 			return projectRoot;
 		}
-	}
-
-	private ProjectDirectoryFactory getProjectDirectoryFactory(
-			ApplicationContext context) {
-		return context.getBeanProvider(ProjectDirectoryFactory.class).getIfAvailable(
-				() -> (description) -> Files.createTempDirectory("project-"));
 	}
 
 	private Path initializerProjectDirectory(Path rootDir, ProjectDescription description)

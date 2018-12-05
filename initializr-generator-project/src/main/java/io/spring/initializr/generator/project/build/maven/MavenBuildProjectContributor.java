@@ -36,6 +36,7 @@ import io.spring.initializr.generator.buildsystem.maven.MavenPlugin.Execution;
 import io.spring.initializr.generator.buildsystem.maven.MavenPlugin.Setting;
 import io.spring.initializr.generator.buildsystem.maven.Parent;
 import io.spring.initializr.generator.io.IndentingWriter;
+import io.spring.initializr.generator.io.IndentingWriterFactory;
 import io.spring.initializr.model.BillOfMaterials;
 import io.spring.initializr.model.Dependency;
 import io.spring.initializr.model.DependencyComparator;
@@ -51,15 +52,19 @@ public class MavenBuildProjectContributor implements ProjectContributor {
 
 	private final MavenBuild mavenBuild;
 
-	public MavenBuildProjectContributor(MavenBuild mavenBuild) {
+	private final IndentingWriterFactory indentingWriterFactory;
+
+	public MavenBuildProjectContributor(MavenBuild mavenBuild,
+			IndentingWriterFactory indentingWriterFactory) {
 		this.mavenBuild = mavenBuild;
+		this.indentingWriterFactory = indentingWriterFactory;
 	}
 
 	@Override
 	public void contribute(Path projectRoot) throws IOException {
 		Path buildGradle = Files.createFile(projectRoot.resolve("pom.xml"));
-		try (IndentingWriter writer = new IndentingWriter(
-				Files.newBufferedWriter(buildGradle))) {
+		try (IndentingWriter writer = this.indentingWriterFactory
+				.createIndentingWriter("maven", Files.newBufferedWriter(buildGradle))) {
 			writeProject(writer, () -> {
 				writeParent(writer);
 				writeProjectCoordinates(writer);

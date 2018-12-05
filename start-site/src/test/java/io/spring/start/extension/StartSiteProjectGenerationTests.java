@@ -31,6 +31,7 @@ import io.spring.initializr.generator.buildsystem.maven.MavenBuildSystem;
 import io.spring.initializr.generator.language.java.JavaLanguage;
 import io.spring.initializr.generator.project.ProjectDirectoryFactory;
 import io.spring.initializr.generator.project.ProjectGenerator;
+import io.spring.initializr.generator.project.ProjectGeneratorDefaultConfiguration;
 import io.spring.initializr.generator.project.test.assertj.NodeAssert;
 import io.spring.initializr.generator.util.Version;
 import io.spring.initializr.model.Dependency;
@@ -40,7 +41,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.junitpioneer.jupiter.TempDirectory;
 import org.junitpioneer.jupiter.TempDirectory.TempDir;
 
-import org.springframework.context.support.StaticApplicationContext;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -53,8 +54,9 @@ class StartSiteProjectGenerationTests {
 	private final ProjectGenerator projectGenerator;
 
 	StartSiteProjectGenerationTests(@TempDir Path directory) {
-		StaticApplicationContext context = new StaticApplicationContext();
-		context.registerBean("testProjectDirectoryFactory", ProjectDirectoryFactory.class,
+		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
+		context.register(ProjectGeneratorDefaultConfiguration.class);
+		context.registerBean(ProjectDirectoryFactory.class,
 				() -> (description) -> Files.createTempDirectory(directory, "project-"));
 		context.refresh();
 		this.projectGenerator = new ProjectGenerator(context);

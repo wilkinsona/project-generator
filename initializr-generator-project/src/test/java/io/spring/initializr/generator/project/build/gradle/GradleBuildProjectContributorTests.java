@@ -23,6 +23,7 @@ import java.util.List;
 
 import io.spring.initializr.generator.buildsystem.MavenRepository;
 import io.spring.initializr.generator.buildsystem.gradle.GradleBuild;
+import io.spring.initializr.generator.io.IndentingWriterFactory;
 import io.spring.initializr.model.BillOfMaterials;
 import io.spring.initializr.model.DependencyType;
 import org.junit.jupiter.api.Test;
@@ -186,7 +187,8 @@ class GradleBuildProjectContributorTests {
 
 	private List<String> generateBuild(GradleBuild build) throws IOException {
 		Path projectDir = Files.createTempDirectory(this.directory, "project-");
-		new GradleBuildProjectContributor(build).contribute(projectDir);
+		new GradleBuildProjectContributor(build,
+				IndentingWriterFactory.withDefaultSettings()).contribute(projectDir);
 		Path buildGradle = projectDir.resolve("build.gradle");
 		assertThat(buildGradle).isRegularFile();
 		return Files.readAllLines(buildGradle);

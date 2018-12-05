@@ -43,6 +43,8 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.junitpioneer.jupiter.TempDirectory;
 import org.junitpioneer.jupiter.TempDirectory.TempDir;
 
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
@@ -55,8 +57,16 @@ class ProjectGeneratorIntegrationTests {
 
 	private final Path directory;
 
+	private final ProjectGenerator projectGenerator;
+
 	ProjectGeneratorIntegrationTests(@TempDir Path directory) {
 		this.directory = directory;
+		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
+		context.register(ProjectGeneratorDefaultConfiguration.class);
+		context.registerBean(ProjectDirectoryFactory.class,
+				() -> (description) -> Files.createTempDirectory(directory, "project-"));
+		context.refresh();
+		this.projectGenerator = new ProjectGenerator(context);
 	}
 
 	static Stream<Arguments> parameters() {
@@ -96,7 +106,7 @@ class ProjectGeneratorIntegrationTests {
 		description.setGroupId("com.example");
 		description.setArtifactId("demo");
 		description.setApplicationName("DemoApplication");
-		Path project = new ProjectGenerator().generate(description);
+		Path project = this.projectGenerator.generate(description);
 		ProcessBuilder processBuilder = createProcessBuilder(buildSystem);
 		processBuilder.directory(project.toFile());
 		Path output = Files.createTempFile(this.directory, "output-", ".log");

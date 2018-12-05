@@ -23,6 +23,7 @@ import java.util.List;
 
 import io.spring.initializr.generator.buildsystem.MavenRepository;
 import io.spring.initializr.generator.buildsystem.gradle.GradleBuild;
+import io.spring.initializr.generator.io.IndentingWriterFactory;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junitpioneer.jupiter.TempDirectory;
@@ -85,7 +86,8 @@ class SettingsGradleProjectContributorTests {
 
 	private List<String> generateSettings(GradleBuild build) throws IOException {
 		Path projectDir = Files.createTempDirectory(this.directory, "project-");
-		new SettingsGradleProjectContributor(build).contribute(projectDir);
+		new SettingsGradleProjectContributor(build,
+				IndentingWriterFactory.withDefaultSettings()).contribute(projectDir);
 		Path settingsGradle = projectDir.resolve("settings.gradle");
 		assertThat(settingsGradle).isRegularFile();
 		return Files.readAllLines(settingsGradle);
