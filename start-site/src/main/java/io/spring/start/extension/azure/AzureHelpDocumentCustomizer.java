@@ -45,17 +45,13 @@ class AzureHelpDocumentCustomizer implements HelpDocumentCustomizer {
 
 	private Map<String, Object> createModel() {
 		Map<String, Object> model = new HashMap<>();
-		model.put("actuator",
-				this.description.getDependencies().stream()
-						.anyMatch((dependency) -> dependency.getArtifactId()
-								.equals("spring-boot-starter-actuator")));
+		model.put("actuator", this.description.getDependencies().containsKey("actuator"));
 		return model;
 	}
 
 	private boolean hasAzureSupport() {
-		return this.description.getDependencies().stream()
-				.anyMatch((dependency) -> dependency.getGroupId()
-						.startsWith("com.microsoft.azure"));
+		return this.description.getDependencies().keySet().stream()
+				.anyMatch((id) -> id.startsWith("azure"));
 	}
 
 }

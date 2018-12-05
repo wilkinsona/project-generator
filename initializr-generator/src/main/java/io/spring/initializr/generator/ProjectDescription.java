@@ -16,9 +16,9 @@
 
 package io.spring.initializr.generator;
 
-import java.util.ArrayList;
 import java.util.Collections;
-import java.util.List;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 import io.spring.initializr.generator.buildsystem.BuildSystem;
 import io.spring.initializr.generator.language.Language;
@@ -33,7 +33,7 @@ import io.spring.initializr.model.Dependency;
  */
 public class ProjectDescription {
 
-	private final List<Dependency> dependencies = new ArrayList<>();
+	private final Map<String, Dependency> dependencies = new LinkedHashMap<>();
 
 	private Version springBootVersion;
 
@@ -101,12 +101,12 @@ public class ProjectDescription {
 		this.artifactId = artifactId;
 	}
 
-	public void addDependency(Dependency dependency) {
-		this.dependencies.add(dependency);
+	public Dependency addDependency(String id, Dependency dependency) {
+		return this.dependencies.put(id, dependency);
 	}
 
-	public List<Dependency> getDependencies() {
-		return Collections.unmodifiableList(this.dependencies);
+	public Map<String, Dependency> getDependencies() {
+		return Collections.unmodifiableMap(this.dependencies);
 	}
 
 	public String getApplicationName() {

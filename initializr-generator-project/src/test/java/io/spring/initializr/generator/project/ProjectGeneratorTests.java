@@ -379,7 +379,7 @@ class ProjectGeneratorTests {
 		ProjectDescription description = initProjectDescription();
 		description.setBuildSystem(new MavenBuildSystem());
 		description.setSpringBootVersion(Version.parse("2.1.0.RELEASE"));
-		description.addDependency(new Dependency(
+		description.addDependency("acme", new Dependency(
 				"com.example", "acme", "1.0", DependencyType.COMPILE, Arrays
 						.asList(new Link("guide", "example.com/guide", "Test guide"),
 								new Link("reference", "example.com/doc",

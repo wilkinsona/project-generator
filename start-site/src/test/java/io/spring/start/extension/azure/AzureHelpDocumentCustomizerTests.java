@@ -34,7 +34,7 @@ class AzureHelpDocumentCustomizerTests {
 	@Test
 	void customizeWithAzureDependency() {
 		ProjectDescription description = new ProjectDescription();
-		description.addDependency(
+		description.addDependency("azure",
 				new Dependency("com.microsoft.azure", "azure", DependencyType.COMPILE));
 		HelpDocument document = new HelpDocument();
 		new AzureHelpDocumentCustomizer(description).customize(document);
@@ -44,7 +44,7 @@ class AzureHelpDocumentCustomizerTests {
 	@Test
 	void customizeWitoutAzureDependency() {
 		ProjectDescription description = new ProjectDescription();
-		description.addDependency(
+		description.addDependency("test",
 				new Dependency("com.example.another", "test", DependencyType.COMPILE));
 		HelpDocument document = new HelpDocument();
 		new AzureHelpDocumentCustomizer(description).customize(document);

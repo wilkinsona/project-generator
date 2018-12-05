@@ -38,7 +38,7 @@ class OnDependencyCondition extends ProjectGenerationCondition {
 		String artifactId = (String) metadata
 				.getAnnotationAttributes(ConditionalOnDependency.class.getName())
 				.get("artifactId");
-		for (Dependency dependency : projectDescription.getDependencies()) {
+		for (Dependency dependency : projectDescription.getDependencies().values()) {
 			if (dependency.getGroupId().equals(groupId)
 					&& dependency.getArtifactId().equals(artifactId)) {
 				return true;

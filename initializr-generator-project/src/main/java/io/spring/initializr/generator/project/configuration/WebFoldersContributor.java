@@ -46,7 +46,7 @@ public class WebFoldersContributor implements ProjectContributor {
 	}
 
 	private boolean hasFacet(String facet) {
-		return this.projectDescription.getDependencies().stream()
+		return this.projectDescription.getDependencies().values().stream()
 				.anyMatch((dependency) -> dependency.getFacets().contains(facet));
 	}
 

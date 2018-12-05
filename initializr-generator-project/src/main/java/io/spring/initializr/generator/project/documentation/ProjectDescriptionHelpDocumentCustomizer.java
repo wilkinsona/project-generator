@@ -34,7 +34,7 @@ public class ProjectDescriptionHelpDocumentCustomizer implements HelpDocumentCus
 
 	@Override
 	public void customize(HelpDocument document) {
-		for (Dependency dependency : this.description.getDependencies()) {
+		for (Dependency dependency : this.description.getDependencies().values()) {
 			handleDependency(document, dependency);
 		}
 	}

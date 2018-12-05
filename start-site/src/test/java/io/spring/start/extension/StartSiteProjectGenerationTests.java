@@ -68,8 +68,9 @@ class StartSiteProjectGenerationTests {
 		description.setBuildSystem(new GradleBuildSystem());
 		description.setLanguage(new JavaLanguage());
 		description.setGroupId("com.example");
-		description.addDependency(new Dependency("org.springframework.restdocs",
-				"spring-restdocs-mockmvc", DependencyType.TEST_COMPILE));
+		description.addDependency("restdocs",
+				new Dependency("org.springframework.restdocs", "spring-restdocs-mockmvc",
+						DependencyType.TEST_COMPILE));
 		Path project = this.projectGenerator.generate(description);
 		List<String> relativePaths = getRelativePathsOfProjectFiles(project);
 		assertThat(relativePaths).contains("build.gradle");
@@ -83,8 +84,9 @@ class StartSiteProjectGenerationTests {
 		ProjectDescription description = newProjectDescription();
 		description.setSpringBootVersion(Version.parse("2.1.0.RELEASE"));
 		description.setBuildSystem(new MavenBuildSystem());
-		description.addDependency(new Dependency("org.springframework.restdocs",
-				"spring-restdocs-mockmvc", DependencyType.TEST_COMPILE));
+		description.addDependency("restdocs",
+				new Dependency("org.springframework.restdocs", "spring-restdocs-mockmvc",
+						DependencyType.TEST_COMPILE));
 		Path project = this.projectGenerator.generate(description);
 		NodeAssert pom = new NodeAssert(project.resolve("pom.xml"));
 		assertThat(pom).textAtPath("/project/build/plugins/plugin[1]/groupId")
@@ -98,8 +100,9 @@ class StartSiteProjectGenerationTests {
 		description.setLanguage(new JavaLanguage());
 		description.setBuildSystem(new MavenBuildSystem());
 		description.setSpringBootVersion(Version.parse("2.1.0.RELEASE"));
-		description.addDependency(new Dependency("org.springframework.cloud",
-				"spring-cloud-config-server", DependencyType.COMPILE));
+		description.addDependency("cloud-config-server",
+				new Dependency("org.springframework.cloud", "spring-cloud-config-server",
+						DependencyType.COMPILE));
 		Path project = this.projectGenerator.generate(description);
 		List<String> relativePaths = getRelativePathsOfProjectFiles(project);
 		assertThat(relativePaths)
