@@ -62,9 +62,9 @@ public class MavenBuildProjectContributor implements ProjectContributor {
 
 	@Override
 	public void contribute(Path projectRoot) throws IOException {
-		Path buildGradle = Files.createFile(projectRoot.resolve("pom.xml"));
+		Path pomFile = Files.createFile(projectRoot.resolve("pom.xml"));
 		try (IndentingWriter writer = this.indentingWriterFactory
-				.createIndentingWriter("maven", Files.newBufferedWriter(buildGradle))) {
+				.createIndentingWriter("maven", Files.newBufferedWriter(pomFile))) {
 			writeProject(writer, () -> {
 				writeParent(writer);
 				writeProjectCoordinates(writer);
