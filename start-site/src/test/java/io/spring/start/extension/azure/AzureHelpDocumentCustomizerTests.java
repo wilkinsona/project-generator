@@ -42,7 +42,7 @@ class AzureHelpDocumentCustomizerTests {
 	}
 
 	@Test
-	void customizeWitoutAzureDependency() {
+	void customizeWithoutAzureDependency() {
 		ProjectDescription description = new ProjectDescription();
 		description.addDependency("test",
 				new Dependency("com.example.another", "test", DependencyType.COMPILE));
