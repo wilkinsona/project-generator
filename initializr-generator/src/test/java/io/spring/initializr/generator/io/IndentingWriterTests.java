@@ -27,7 +27,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Andy Wilkinson
  */
-public class IndentingWriterTests {
+class IndentingWriterTests {
 
 	private final StringWriter stringWriter = new StringWriter();
 
@@ -35,7 +35,7 @@ public class IndentingWriterTests {
 			this.stringWriter);
 
 	@Test
-	public void linesAreNotIndentedByDefault() {
+	void linesAreNotIndentedByDefault() {
 		this.indentingWriter.println("a");
 		this.indentingWriter.println("b");
 		this.indentingWriter.println("c");
@@ -43,7 +43,7 @@ public class IndentingWriterTests {
 	}
 
 	@Test
-	public void linesCanBeIndented() {
+	void linesCanBeIndented() {
 		this.indentingWriter.println("a");
 		this.indentingWriter.indented(() -> {
 			this.indentingWriter.println("b");
@@ -53,7 +53,7 @@ public class IndentingWriterTests {
 	}
 
 	@Test
-	public void blankLinesAreNotIndented() {
+	void blankLinesAreNotIndented() {
 		this.indentingWriter.println("a");
 		this.indentingWriter.indented(() -> {
 			this.indentingWriter.println("b");
@@ -64,7 +64,7 @@ public class IndentingWriterTests {
 	}
 
 	@Test
-	public void useOfPrintDoesNotAddIndent() {
+	void useOfPrintDoesNotAddIndent() {
 		this.indentingWriter.println("a");
 		this.indentingWriter.indented(() -> {
 			this.indentingWriter.print("b");
