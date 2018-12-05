@@ -18,6 +18,7 @@ package io.spring.initializr.generator.io;
 
 import java.io.IOException;
 import java.io.Writer;
+import java.util.function.Function;
 
 /**
  * A {@link Writer} with support for indenting.
@@ -28,6 +29,8 @@ public class IndentingWriter extends Writer {
 
 	private final Writer out;
 
+	private final Function<Integer, String> indentStrategy;
+
 	private int level = 0;
 
 	private String indent = "";
@@ -35,7 +38,12 @@ public class IndentingWriter extends Writer {
 	private boolean prependIndent = false;
 
 	public IndentingWriter(Writer out) {
+		this(out, new SimpleIndentStrategy("    "));
+	}
+
+	public IndentingWriter(Writer out, Function<Integer, String> indentStrategy) {
 		this.out = out;
+		this.indentStrategy = indentStrategy;
 	}
 
 	public void print(String string) {
@@ -75,11 +83,7 @@ public class IndentingWriter extends Writer {
 	}
 
 	private void refreshIndent() {
-		StringBuilder indentBuilder = new StringBuilder();
-		for (int i = 0; i < this.level; i++) {
-			indentBuilder.append("    ");
-		}
-		this.indent = indentBuilder.toString();
+		this.indent = this.indentStrategy.apply(this.level);
 	}
 
 	@Override

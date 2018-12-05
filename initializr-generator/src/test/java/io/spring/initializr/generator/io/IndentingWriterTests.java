@@ -75,4 +75,19 @@ class IndentingWriterTests {
 		assertThat(this.stringWriter.toString()).isEqualTo("a\n    bbb\nc\n");
 	}
 
+	@Test
+	void customIndentStrategyIsUsed() {
+		IndentingWriter customIndentingWriter = new IndentingWriter(this.stringWriter,
+				new SimpleIndentStrategy("\t"));
+		customIndentingWriter.println("a");
+		customIndentingWriter.indented(() -> {
+			customIndentingWriter.println("b");
+			customIndentingWriter.indented(() -> {
+				customIndentingWriter.print("c");
+				customIndentingWriter.println("e");
+			});
+		});
+		assertThat(this.stringWriter.toString()).isEqualTo("a\n\tb\n\t\tce\n");
+	}
+
 }
