@@ -47,16 +47,16 @@ class IndentingWriterFactoryTests {
 	@Test
 	void createWithSpecializedIndentStrategy() {
 		SimpleIndentStrategy twoSpacesStrategy = new SimpleIndentStrategy("  ");
-		IndentingWriterFactory factory = IndentingWriterFactory.create(SPACE_STRATEGY,
-				(builder) -> {
-					builder.indentingStrategy("java", TAB_STRATEGY);
-					builder.indentingStrategy("pom", twoSpacesStrategy);
+		IndentingWriterFactory indentingWriterFactory = IndentingWriterFactory
+				.create(SPACE_STRATEGY, (factory) -> {
+					factory.indentingStrategy("java", TAB_STRATEGY);
+					factory.indentingStrategy("pom", twoSpacesStrategy);
 				});
-		assertThat(factory.createIndentingWriter("java", this.out))
+		assertThat(indentingWriterFactory.createIndentingWriter("java", this.out))
 				.hasFieldOrPropertyWithValue("indentStrategy", TAB_STRATEGY);
-		assertThat(factory.createIndentingWriter("pom", this.out))
+		assertThat(indentingWriterFactory.createIndentingWriter("pom", this.out))
 				.hasFieldOrPropertyWithValue("indentStrategy", twoSpacesStrategy);
-		assertThat(factory.createIndentingWriter("c", this.out))
+		assertThat(indentingWriterFactory.createIndentingWriter("c", this.out))
 				.hasFieldOrPropertyWithValue("indentStrategy", SPACE_STRATEGY);
 	}
 

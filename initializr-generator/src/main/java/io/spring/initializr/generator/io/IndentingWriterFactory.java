@@ -73,14 +73,14 @@ public final class IndentingWriterFactory {
 	/**
 	 * Create a {@link IndentingWriterFactory}.
 	 * @param defaultIndentingStrategy the default indenting strategy to use
-	 * @param builder a consumer of the builder to apply further customizations
+	 * @param factory a consumer of the builder to apply further customizations
 	 * @return an {@link IndentingWriterFactory}
 	 */
 	public static IndentingWriterFactory create(
 			Function<Integer, String> defaultIndentingStrategy,
-			Consumer<Builder> builder) {
+			Consumer<Builder> factory) {
 		Builder factoryBuilder = new Builder(defaultIndentingStrategy);
-		builder.accept(factoryBuilder);
+		factory.accept(factoryBuilder);
 		return new IndentingWriterFactory(factoryBuilder);
 	}
 
