@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package io.spring.initializr.generator.project;
+package io.spring.start;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -35,6 +35,9 @@ import io.spring.initializr.generator.language.kotlin.KotlinLanguage;
 import io.spring.initializr.generator.packaging.Packaging;
 import io.spring.initializr.generator.packaging.jar.JarPackaging;
 import io.spring.initializr.generator.packaging.war.WarPackaging;
+import io.spring.initializr.generator.project.ProjectDirectoryFactory;
+import io.spring.initializr.generator.project.ProjectGenerator;
+import io.spring.initializr.generator.project.ProjectGeneratorDefaultConfiguration;
 import io.spring.initializr.generator.util.Version;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
