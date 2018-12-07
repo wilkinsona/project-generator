@@ -14,8 +14,10 @@
  * limitations under the License.
  */
 
-package io.spring.initializr.generator.project.test.assertj;
+package io.spring.initializr.generator.test.assertj;
 
+import java.io.ByteArrayInputStream;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -49,6 +51,10 @@ public class NodeAssert extends AbstractAssert<NodeAssert, Node>
 		this(read(xmlFile));
 	}
 
+	public NodeAssert(String xmlContent) {
+		this(read(xmlContent));
+	}
+
 	public NodeAssert(Node actual) {
 		super(actual, NodeAssert.class);
 	}
@@ -56,6 +62,16 @@ public class NodeAssert extends AbstractAssert<NodeAssert, Node>
 	private static Document read(Path xmlFile) {
 		try {
 			return FACTORY.newDocumentBuilder().parse(xmlFile.toFile());
+		}
+		catch (Exception ex) {
+			throw new RuntimeException(ex);
+		}
+	}
+
+	private static Document read(String xmlContent) {
+		try {
+			return FACTORY.newDocumentBuilder().parse(new ByteArrayInputStream(
+					xmlContent.getBytes(StandardCharsets.UTF_8)));
 		}
 		catch (Exception ex) {
 			throw new RuntimeException(ex);

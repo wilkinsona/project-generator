@@ -32,7 +32,7 @@ import io.spring.initializr.generator.language.java.JavaLanguage;
 import io.spring.initializr.generator.project.ProjectDirectoryFactory;
 import io.spring.initializr.generator.project.ProjectGenerator;
 import io.spring.initializr.generator.project.ProjectGeneratorDefaultConfiguration;
-import io.spring.initializr.generator.project.test.assertj.NodeAssert;
+import io.spring.initializr.generator.test.assertj.NodeAssert;
 import io.spring.initializr.generator.util.Version;
 import io.spring.initializr.model.Dependency;
 import io.spring.initializr.model.DependencyType;

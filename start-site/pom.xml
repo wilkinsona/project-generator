@@ -29,7 +29,7 @@
 		</dependency>
 		<dependency>
 			<groupId>io.spring.initializr.experimental</groupId>
-			<artifactId>initializr-generator-project</artifactId>
+			<artifactId>initializr-generator</artifactId>
 			<scope>test</scope>
 			<type>test-jar</type>
 		</dependency>
