@@ -1,0 +1,243 @@
+/*
+ * Copyright 2012-2018 the original author or authors.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package io.spring.initializr.generator.buildsystem.gradle;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Map;
+import java.util.TreeSet;
+import java.util.function.BiFunction;
+import java.util.function.Function;
+
+import io.spring.initializr.generator.buildsystem.MavenRepository;
+import io.spring.initializr.generator.buildsystem.gradle.GradleBuild.TaskCustomization;
+import io.spring.initializr.generator.io.IndentingWriter;
+import io.spring.initializr.model.BillOfMaterials;
+import io.spring.initializr.model.Dependency;
+import io.spring.initializr.model.DependencyType;
+
+/**
+ * A {@link GradleBuild} writer for {@code build.gradle}.
+ *
+ * @author Andy Wilkinson
+ * @author Stephane Nicoll
+ */
+public class GradleBuildWriter {
+
+	public void writeTo(IndentingWriter writer, GradleBuild build) throws IOException {
+		writeBuildscript(writer, build);
+		writePlugins(writer, build);
+		writer.println("group = '" + build.getGroup() + "'");
+		writer.println("version = '" + build.getVersion() + "'");
+		writer.println("sourceCompatibility = '" + build.getJavaVersion() + "'");
+		writer.println();
+		writeRepositories(writer, build, writer::println);
+		writeDependencies(writer, build);
+		writeBoms(writer, build);
+		writeTaskCustomizations(writer, build);
+	}
+
+	private void writeBuildscript(IndentingWriter writer, GradleBuild build) {
+		List<String> dependencies = build.getBuildscript().getDependencies();
+		Map<String, String> ext = build.getBuildscript().getExt();
+		if (dependencies.isEmpty() && ext.isEmpty()) {
+			return;
+		}
+		writer.println("buildscript {");
+		writer.indented(() -> {
+			writeBuildscriptExt(writer, build);
+			writeBuildscriptRepositories(writer, build);
+			writeBuildscriptDependencies(writer, build);
+		});
+		writer.println("}");
+		writer.println("");
+	}
+
+	private void writeBuildscriptExt(IndentingWriter writer, GradleBuild build) {
+		writeNestedMap(writer, "ext", build.getBuildscript().getExt(),
+				(key, value) -> key + " = " + value);
+	}
+
+	private void writeBuildscriptRepositories(IndentingWriter writer, GradleBuild build) {
+		writeRepositories(writer, build);
+	}
+
+	private void writeBuildscriptDependencies(IndentingWriter writer, GradleBuild build) {
+		writeNestedCollection(writer, "dependencies",
+				build.getBuildscript().getDependencies(),
+				(dependency) -> "classpath '" + dependency + "'");
+	}
+
+	private void writePlugins(IndentingWriter writer, GradleBuild build) {
+		writeNestedCollection(writer, "plugins", build.getPlugins(), this::pluginAsString,
+				writer::println);
+		writeCollection(writer, build.getAppliedPlugins(),
+				(plugin) -> "apply plugin: '" + plugin + "'", writer::println);
+	}
+
+	private String pluginAsString(GradlePlugin plugin) {
+		String string = "id '" + plugin.getId() + "'";
+		if (plugin.getVersion() != null) {
+			string += " version '" + plugin.getVersion() + "'";
+		}
+		return string;
+	}
+
+	private void writeRepositories(IndentingWriter writer, GradleBuild build) {
+		writeRepositories(writer, build, null);
+	}
+
+	private void writeRepositories(IndentingWriter writer, GradleBuild build,
+			Runnable whenWritten) {
+		writeNestedCollection(writer, "repositories", build.getMavenRepositories(),
+				this::repositoryAsString, whenWritten);
+	}
+
+	private String repositoryAsString(MavenRepository repository) {
+		if (MavenRepository.MAVEN_CENTRAL.equals(repository)) {
+			return "mavenCentral()";
+		}
+		return "maven { url '" + repository.getUrl() + "' }";
+	}
+
+	private void writeDependencies(IndentingWriter writer, GradleBuild build) {
+		writeNestedCollection(writer, "dependencies",
+				new TreeSet<>(build.getDependencies()), this::dependencyAsString,
+				writer::println);
+	}
+
+	private String dependencyAsString(Dependency dependency) {
+		return configurationForType(dependency.getType()) + " '" + dependency.getGroupId()
+				+ ":" + dependency.getArtifactId()
+				+ ((dependency.getVersion() == null) ? "" : ":" + dependency.getVersion())
+				+ "'";
+	}
+
+	private void writeBoms(IndentingWriter writer, GradleBuild build) {
+		List<BillOfMaterials> boms = new ArrayList<>(build.getBoms());
+		if (boms.isEmpty()) {
+			return;
+		}
+		boms.sort(Comparator.comparingInt(BillOfMaterials::getOrder).reversed());
+		writer.println("dependencyManagement {");
+		writer.indented(() -> {
+			writeNestedCollection(writer, "imports", boms, this::bomAsString);
+		});
+		writer.println("}");
+	}
+
+	private String bomAsString(BillOfMaterials bom) {
+		return "mavenBom '" + bom.getGroupId() + ":" + bom.getArtifactId() + ":"
+				+ bom.getVersion() + "'";
+	}
+
+	private void writeTaskCustomizations(IndentingWriter writer, GradleBuild build) {
+		Map<String, TaskCustomization> taskCustomizations = build.getTaskCustomizations();
+		taskCustomizations.forEach((name, customization) -> {
+			writer.println(name + " {");
+			writer.indented(() -> writeTaskCustomization(writer, customization));
+			writer.println("}");
+			writer.println();
+		});
+	}
+
+	private void writeTaskCustomization(IndentingWriter writer,
+			TaskCustomization customization) {
+		writeCollection(writer, customization.getInvocations(),
+				(invocation) -> invocation.getTarget() + " "
+						+ String.join(", ", invocation.getArguments()));
+		writeMap(writer, customization.getAssignments(),
+				(key, value) -> key + " = " + value);
+		customization.getNested().forEach((property, nestedCustomization) -> {
+			writer.println(property + " {");
+			writer.indented(() -> writeTaskCustomization(writer, nestedCustomization));
+			writer.println("}");
+		});
+	}
+
+	private <T> void writeNestedCollection(IndentingWriter writer, String name,
+			Collection<T> collection, Function<T, String> itemToStringConverter) {
+		this.writeNestedCollection(writer, name, collection, itemToStringConverter, null);
+	}
+
+	private <T> void writeNestedCollection(IndentingWriter writer, String name,
+			Collection<T> collection, Function<T, String> converter,
+			Runnable whenWritten) {
+		if (!collection.isEmpty()) {
+			writer.println(name + " {");
+			writer.indented(() -> writeCollection(writer, collection, converter));
+			writer.println("}");
+			if (whenWritten != null) {
+				whenWritten.run();
+
+			}
+		}
+	}
+
+	private <T> void writeCollection(IndentingWriter writer, Collection<T> collection,
+			Function<T, String> converter) {
+		writeCollection(writer, collection, converter, null);
+	}
+
+	private <T> void writeCollection(IndentingWriter writer, Collection<T> collection,
+			Function<T, String> itemToStringConverter, Runnable whenWritten) {
+		if (!collection.isEmpty()) {
+			collection.stream().map(itemToStringConverter).forEach(writer::println);
+			if (whenWritten != null) {
+				whenWritten.run();
+			}
+		}
+	}
+
+	private <T, U> void writeNestedMap(IndentingWriter writer, String name, Map<T, U> map,
+			BiFunction<T, U, String> converter) {
+		if (!map.isEmpty()) {
+			writer.println(name + " {");
+			writer.indented(() -> writeMap(writer, map, converter));
+			writer.println("}");
+		}
+	}
+
+	private <T, U> void writeMap(IndentingWriter writer, Map<T, U> map,
+			BiFunction<T, U, String> converter) {
+		map.forEach((key, value) -> writer.println(converter.apply(key, value)));
+	}
+
+	private String configurationForType(DependencyType type) {
+		switch (type) {
+		case ANNOTATION_PROCESSOR:
+			return "annotationProcessor";
+		case COMPILE:
+			return "implementation";
+		case PROVIDED_RUNTIME:
+			return "providedRuntime";
+		case RUNTIME:
+			return "runtimeOnly";
+		case TEST_COMPILE:
+			return "testImplementation";
+		case TEST_RUNTIME:
+			return "testRuntimeOnly";
+		default:
+			throw new IllegalStateException(
+					"Unrecognized dependency type '" + type + "'");
+		}
+	}
+
+}

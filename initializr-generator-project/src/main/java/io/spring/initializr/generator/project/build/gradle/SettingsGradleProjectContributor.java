@@ -21,8 +21,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 
 import io.spring.initializr.generator.ProjectContributor;
-import io.spring.initializr.generator.buildsystem.MavenRepository;
 import io.spring.initializr.generator.buildsystem.gradle.GradleBuild;
+import io.spring.initializr.generator.buildsystem.gradle.GradleSettingsWriter;
 import io.spring.initializr.generator.io.IndentingWriter;
 import io.spring.initializr.generator.io.IndentingWriterFactory;
 
@@ -37,10 +37,13 @@ class SettingsGradleProjectContributor implements ProjectContributor {
 
 	private final IndentingWriterFactory indentingWriterFactory;
 
+	private final GradleSettingsWriter settingsWriter;
+
 	SettingsGradleProjectContributor(GradleBuild build,
 			IndentingWriterFactory indentingWriterFactory) {
 		this.build = build;
 		this.indentingWriterFactory = indentingWriterFactory;
+		this.settingsWriter = new GradleSettingsWriter();
 	}
 
 	@Override
@@ -48,57 +51,8 @@ class SettingsGradleProjectContributor implements ProjectContributor {
 		Path settingsGradle = Files.createFile(projectRoot.resolve("settings.gradle"));
 		try (IndentingWriter writer = this.indentingWriterFactory.createIndentingWriter(
 				"gradle", Files.newBufferedWriter(settingsGradle))) {
-			writePluginManagement(writer);
-			writer.println("rootProject.name = '" + this.build.getName() + "'");
+			this.settingsWriter.writeTo(writer, this.build);
 		}
-	}
-
-	private void writePluginManagement(IndentingWriter writer) {
-		writer.println("pluginManagement {");
-		writer.indented(() -> {
-			writeRepositories(writer);
-			writeResolutionStrategyIfNecessary(writer);
-		});
-		writer.println("}");
-	}
-
-	private void writeRepositories(IndentingWriter writer) {
-		writer.println("repositories {");
-		writer.indented(() -> {
-			this.build.getMavenRepositories().stream().map(this::repositoryAsString)
-					.forEach(writer::println);
-			writer.println("gradlePluginPortal()");
-		});
-		writer.println("}");
-	}
-
-	private void writeResolutionStrategyIfNecessary(IndentingWriter writer) {
-		if (!this.build.getMavenRepositories().stream()
-				.filter((repository) -> !MavenRepository.MAVEN_CENTRAL.equals(repository))
-				.findFirst().isPresent()) {
-			return;
-		}
-		writer.println("resolutionStrategy {");
-		writer.indented(() -> {
-			writer.println("eachPlugin {");
-			writer.indented(() -> {
-				writer.println("if(requested.id.id == 'org.springframework.boot') {");
-				writer.indented(() -> {
-					writer.println(
-							"useModule(\"org.springframework.boot:spring-boot-gradle-plugin:${requested.version}\")");
-				});
-				writer.println("}");
-			});
-			writer.println("}");
-		});
-		writer.println("}");
-	}
-
-	private String repositoryAsString(MavenRepository repository) {
-		if (MavenRepository.MAVEN_CENTRAL.equals(repository)) {
-			return "mavenCentral()";
-		}
-		return "maven { url '" + repository.getUrl() + "' }";
 	}
 
 }

@@ -21,11 +21,9 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
 
-import io.spring.initializr.generator.buildsystem.MavenRepository;
 import io.spring.initializr.generator.buildsystem.gradle.GradleBuild;
 import io.spring.initializr.generator.io.IndentingWriterFactory;
-import io.spring.initializr.model.BillOfMaterials;
-import io.spring.initializr.model.DependencyType;
+import io.spring.initializr.generator.io.SimpleIndentStrategy;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junitpioneer.jupiter.TempDirectory;
@@ -49,146 +47,40 @@ class GradleBuildProjectContributorTests {
 	}
 
 	@Test
-	void gradleBuildWithBuildscriptDependency() throws IOException {
+	void gradleBuildIsContributedToProject() throws IOException {
 		GradleBuild build = new GradleBuild();
-		build.addMavenRepository(MavenRepository.MAVEN_CENTRAL);
-		build.buildscript((buildscript) -> buildscript.dependency(
-				"org.springframework.boot:spring-boot-gradle-plugin:2.1.0.RELEASE"));
-		List<String> lines = generateBuild(build);
-		assertThat(lines).containsSequence("buildscript {", "    repositories {",
-				"        mavenCentral()", "    }", "    dependencies {",
-				"        classpath 'org.springframework.boot:spring-boot-gradle-plugin:2.1.0.RELEASE'",
-				"    }", "}");
-	}
-
-	@Test
-	void gradleBuildWithBuildscriptExtProperty() throws IOException {
-		GradleBuild build = new GradleBuild();
-		build.addMavenRepository(MavenRepository.MAVEN_CENTRAL);
-		build.buildscript((buildscript) -> buildscript.ext("kotlinVersion", "'1.2.51'"));
+		build.setGroup("com.example");
+		build.setVersion("1.0.0-SNAPSHOT");
+		build.buildscript((buildscript) -> buildscript.ext("someVersion", "'1.2.3'"));
 		List<String> lines = generateBuild(build);
 		assertThat(lines).containsSequence("buildscript {", "    ext {",
-				"        kotlinVersion = '1.2.51'", "    }");
+				"        someVersion = '1.2.3'", "    }", "}");
+		assertThat(lines).containsSequence("group = 'com.example'",
+				"version = '1.0.0-SNAPSHOT'");
 	}
 
 	@Test
-	void gradleBuildWithMavenCentralRepository() throws IOException {
+	void gradleBuildIsContributedUsingGradleContentId() throws IOException {
+		IndentingWriterFactory indentingWriterFactory = IndentingWriterFactory
+				.create(new SimpleIndentStrategy("    "), (factory) -> {
+					factory.indentingStrategy("gradle", new SimpleIndentStrategy("  "));
+				});
 		GradleBuild build = new GradleBuild();
-		build.addMavenRepository(MavenRepository.MAVEN_CENTRAL);
-		List<String> lines = generateBuild(build);
-		assertThat(lines).containsSequence("repositories {", "    mavenCentral()", "}");
-	}
-
-	@Test
-	void gradleBuildWithMavenRepository() throws IOException {
-		GradleBuild build = new GradleBuild();
-		build.addMavenRepository("spring-milestones", "Spring Milestones",
-				"https://repo.spring.io/milestone");
-		List<String> lines = generateBuild(build);
-		assertThat(lines).containsSequence("repositories {",
-				"    maven { url 'https://repo.spring.io/milestone' }", "}");
-	}
-
-	@Test
-	void gradleBuildWithSnapshotMavenRepository() throws IOException {
-		GradleBuild build = new GradleBuild();
-		build.addSnapshotMavenRepository("spring-snapshots", "Spring Snapshots",
-				"https://repo.spring.io/snapshot");
-		List<String> lines = generateBuild(build);
-		assertThat(lines).containsSequence("repositories {",
-				"    maven { url 'https://repo.spring.io/snapshot' }", "}");
-	}
-
-	@Test
-	void gradleBuildWithTaskCustomizedWithInvocations() throws IOException {
-		GradleBuild build = new GradleBuild();
-		build.customizeTask("asciidoctor", (task) -> {
-			task.invoke("inputs.dir", "snippetsDir");
-			task.invoke("dependsOn", "test");
-		});
-		List<String> lines = generateBuild(build);
-		assertThat(lines).containsSequence("asciidoctor {", "    inputs.dir snippetsDir",
-				"    dependsOn test", "}");
-	}
-
-	@Test
-	void gradleBuildWithTaskCustomizedWithAssignments() throws IOException {
-		GradleBuild build = new GradleBuild();
-		build.customizeTask("compileKotlin", (task) -> {
-			task.set("kotlinOptions.freeCompilerArgs", "['-Xjsr305=strict']");
-			task.set("kotlinOptions.jvmTarget", "'1.8'");
-		});
-		List<String> lines = generateBuild(build);
-		assertThat(lines).containsSequence("compileKotlin {",
-				"    kotlinOptions.freeCompilerArgs = ['-Xjsr305=strict']",
-				"    kotlinOptions.jvmTarget = '1.8'", "}");
-	}
-
-	@Test
-	void gradleBuildWithTaskCustomizedWithNestedCustomization() throws IOException {
-		GradleBuild build = new GradleBuild();
-		build.customizeTask("compileKotlin", (compileKotlin) -> {
-			compileKotlin.nested("kotlinOptions", (kotlinOptions) -> {
-				kotlinOptions.set("freeCompilerArgs", "['-Xjsr305=strict']");
-				kotlinOptions.set("jvmTarget", "'1.8'");
-			});
-		});
-		List<String> lines = generateBuild(build);
-		assertThat(lines).containsSequence("compileKotlin {", "    kotlinOptions {",
-				"        freeCompilerArgs = ['-Xjsr305=strict']",
-				"        jvmTarget = '1.8'", "    }", "}");
-	}
-
-	@Test
-	void gradleBuildWithVersionedDependency() throws IOException {
-		GradleBuild build = new GradleBuild();
-		build.addDependency("org.jetbrains.kotlin", "kotlin-stdlib-jdk8",
-				"${kotlinVersion}", DependencyType.COMPILE);
-		List<String> lines = generateBuild(build);
-		assertThat(lines).containsSequence("dependencies {",
-				"    implementation 'org.jetbrains.kotlin:kotlin-stdlib-jdk8:${kotlinVersion}'",
-				"}");
-	}
-
-	@Test
-	void gradleBuildWithDependency() throws IOException {
-		GradleBuild build = new GradleBuild();
-		build.addDependency("org.springframework.boot", "spring-boot-starter",
-				DependencyType.COMPILE);
-		List<String> lines = generateBuild(build);
-		assertThat(lines).containsSequence("dependencies {",
-				"    implementation 'org.springframework.boot:spring-boot-starter'", "}");
-	}
-
-	@Test
-	void gradleBuildWithBom() throws IOException {
-		GradleBuild build = new GradleBuild();
-		build.addBom(new BillOfMaterials("com.example", "my-project-dependencies",
-				"1.0.0.RELEASE"));
-		List<String> lines = generateBuild(build);
-		assertThat(lines).containsSequence("dependencyManagement {", "    imports {",
-				"        mavenBom 'com.example:my-project-dependencies:1.0.0.RELEASE'",
-				"    }", "}");
-	}
-
-	@Test
-	void gradleBuildWithOrderedBoms() throws IOException {
-		GradleBuild build = new GradleBuild();
-		build.addBom(new BillOfMaterials("com.example", "my-project-dependencies",
-				"1.0.0.RELEASE", 5));
-		build.addBom(new BillOfMaterials("com.example", "root-dependencies",
-				"2.1.0.RELEASE", 2));
-		List<String> lines = generateBuild(build);
-		assertThat(lines).containsSequence("dependencyManagement {", "    imports {",
-				"        mavenBom 'com.example:my-project-dependencies:1.0.0.RELEASE'",
-				"        mavenBom 'com.example:root-dependencies:2.1.0.RELEASE'", "    }",
-				"}");
+		build.buildscript((buildscript) -> buildscript.ext("someVersion", "'1.2.3'"));
+		List<String> lines = generateBuild(build, indentingWriterFactory);
+		assertThat(lines).containsSequence("buildscript {", "  ext {",
+				"    someVersion = '1.2.3'", "  }", "}");
 	}
 
 	private List<String> generateBuild(GradleBuild build) throws IOException {
+		return generateBuild(build, IndentingWriterFactory.withDefaultSettings());
+	}
+
+	private List<String> generateBuild(GradleBuild build,
+			IndentingWriterFactory indentingWriterFactory) throws IOException {
 		Path projectDir = Files.createTempDirectory(this.directory, "project-");
-		new GradleBuildProjectContributor(build,
-				IndentingWriterFactory.withDefaultSettings()).contribute(projectDir);
+		new GradleBuildProjectContributor(build, indentingWriterFactory)
+				.contribute(projectDir);
 		Path buildGradle = projectDir.resolve("build.gradle");
 		assertThat(buildGradle).isRegularFile();
 		return Files.readAllLines(buildGradle);

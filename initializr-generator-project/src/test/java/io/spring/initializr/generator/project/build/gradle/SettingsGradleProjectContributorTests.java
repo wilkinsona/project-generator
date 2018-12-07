@@ -24,6 +24,7 @@ import java.util.List;
 import io.spring.initializr.generator.buildsystem.MavenRepository;
 import io.spring.initializr.generator.buildsystem.gradle.GradleBuild;
 import io.spring.initializr.generator.io.IndentingWriterFactory;
+import io.spring.initializr.generator.io.SimpleIndentStrategy;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junitpioneer.jupiter.TempDirectory;
@@ -46,7 +47,7 @@ class SettingsGradleProjectContributorTests {
 	}
 
 	@Test
-	void gradleBuildWithMavenCentralRepository() throws IOException {
+	void gradleSettingsIsContributedToProject() throws IOException {
 		GradleBuild build = new GradleBuild();
 		build.addMavenRepository(MavenRepository.MAVEN_CENTRAL);
 		List<String> lines = generateSettings(build);
@@ -55,39 +56,27 @@ class SettingsGradleProjectContributorTests {
 	}
 
 	@Test
-	void gradleBuildWithMavenRepository() throws IOException {
+	void gradleSettingsIsContributedUsingGradleContentId() throws IOException {
+		IndentingWriterFactory indentingWriterFactory = IndentingWriterFactory
+				.create(new SimpleIndentStrategy("    "), (factory) -> {
+					factory.indentingStrategy("gradle", new SimpleIndentStrategy("  "));
+				});
 		GradleBuild build = new GradleBuild();
-		build.addMavenRepository("spring-milestones", "Spring Milestones",
-				"https://repo.spring.io/milestone");
-		List<String> lines = generateSettings(build);
-		assertThat(lines).containsSequence("pluginManagement {", "    repositories {",
-				"        maven { url 'https://repo.spring.io/milestone' }",
-				"        gradlePluginPortal()", "    }", "    resolutionStrategy {",
-				"        eachPlugin {",
-				"            if(requested.id.id == 'org.springframework.boot') {",
-				"                useModule(\"org.springframework.boot:spring-boot-gradle-plugin:${requested.version}\")",
-				"            }", "        }", "    }", "}");
-	}
-
-	@Test
-	void gradleBuildWithSnapshotMavenRepository() throws IOException {
-		GradleBuild build = new GradleBuild();
-		build.addSnapshotMavenRepository("spring-snapshots", "Spring Snapshots",
-				"https://repo.spring.io/snapshot");
-		List<String> lines = generateSettings(build);
-		assertThat(lines).containsSequence("pluginManagement {", "    repositories {",
-				"        maven { url 'https://repo.spring.io/snapshot' }",
-				"        gradlePluginPortal()", "    }", "    resolutionStrategy {",
-				"        eachPlugin {",
-				"            if(requested.id.id == 'org.springframework.boot') {",
-				"                useModule(\"org.springframework.boot:spring-boot-gradle-plugin:${requested.version}\")",
-				"            }", "        }", "    }", "}");
+		build.addMavenRepository(MavenRepository.MAVEN_CENTRAL);
+		List<String> lines = generateSettings(build, indentingWriterFactory);
+		assertThat(lines).containsSequence("pluginManagement {", "  repositories {",
+				"    mavenCentral()", "    gradlePluginPortal()", "  }", "}");
 	}
 
 	private List<String> generateSettings(GradleBuild build) throws IOException {
+		return generateSettings(build, IndentingWriterFactory.withDefaultSettings());
+	}
+
+	private List<String> generateSettings(GradleBuild build,
+			IndentingWriterFactory indentingWriterFactory) throws IOException {
 		Path projectDir = Files.createTempDirectory(this.directory, "project-");
-		new SettingsGradleProjectContributor(build,
-				IndentingWriterFactory.withDefaultSettings()).contribute(projectDir);
+		new SettingsGradleProjectContributor(build, indentingWriterFactory)
+				.contribute(projectDir);
 		Path settingsGradle = projectDir.resolve("settings.gradle");
 		assertThat(settingsGradle).isRegularFile();
 		return Files.readAllLines(settingsGradle);
