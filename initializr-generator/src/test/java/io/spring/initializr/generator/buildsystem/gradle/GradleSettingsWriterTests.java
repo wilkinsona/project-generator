@@ -34,8 +34,6 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 class GradleSettingsWriterTests {
 
-	private final GradleSettingsWriter writer = new GradleSettingsWriter();
-
 	@Test
 	void gradleBuildWithMavenCentralRepository() throws IOException {
 		GradleBuild build = new GradleBuild();
@@ -76,9 +74,10 @@ class GradleSettingsWriterTests {
 	}
 
 	private List<String> generateSettings(GradleBuild build) throws IOException {
-		StringWriter writer = new StringWriter();
-		this.writer.writeTo(new IndentingWriter(writer), build);
-		return Arrays.asList(writer.toString().split("\n"));
+		GradleSettingsWriter writer = new GradleSettingsWriter();
+		StringWriter out = new StringWriter();
+		writer.writeTo(new IndentingWriter(out), build);
+		return Arrays.asList(out.toString().split("\n"));
 	}
 
 }
