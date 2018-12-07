@@ -71,8 +71,8 @@ class ProjectGeneratorIntegrationTests {
 
 	static Stream<Arguments> parameters() {
 		List<Version> bootVersions = Stream
-				.of("1.5.17.RELEASE", "2.0.6.RELEASE", "2.1.0.RELEASE",
-						"2.1.1.BUILD-SNAPSHOT")
+				.of("1.5.18.RELEASE", "2.0.7.RELEASE", "2.1.1.RELEASE",
+						"2.1.2.BUILD-SNAPSHOT")
 				.map(Version::parse).collect(Collectors.toList());
 		List<Packaging> packagings = Arrays.asList(new JarPackaging(),
 				new WarPackaging());
