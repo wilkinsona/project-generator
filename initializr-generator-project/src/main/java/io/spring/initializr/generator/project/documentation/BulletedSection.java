@@ -38,6 +38,11 @@ public class BulletedSection<T> extends MustacheSection {
 
 	private List<T> items = new ArrayList<>();
 
+	public BulletedSection(MustacheTemplateRenderer templateRenderer,
+			String templateName) {
+		this(templateRenderer, templateName, "items");
+	}
+
 	public BulletedSection(MustacheTemplateRenderer templateRenderer, String templateName,
 			String itemName) {
 		super(templateRenderer, templateName, new HashMap<>());
