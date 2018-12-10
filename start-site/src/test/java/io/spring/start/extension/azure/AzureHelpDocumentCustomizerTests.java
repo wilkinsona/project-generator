@@ -18,6 +18,7 @@ package io.spring.start.extension.azure;
 
 import io.spring.initializr.generator.ProjectDescription;
 import io.spring.initializr.generator.project.documentation.HelpDocument;
+import io.spring.initializr.generator.util.template.MustacheTemplateRenderer;
 import io.spring.initializr.model.Dependency;
 import io.spring.initializr.model.DependencyType;
 import org.junit.jupiter.api.Test;
@@ -36,7 +37,7 @@ class AzureHelpDocumentCustomizerTests {
 		ProjectDescription description = new ProjectDescription();
 		description.addDependency("azure",
 				new Dependency("com.microsoft.azure", "azure", DependencyType.COMPILE));
-		HelpDocument document = new HelpDocument();
+		HelpDocument document = createHelpDocument();
 		new AzureHelpDocumentCustomizer(description).customize(document);
 		assertThat(document.getSections()).hasSize(1);
 	}
@@ -46,9 +47,14 @@ class AzureHelpDocumentCustomizerTests {
 		ProjectDescription description = new ProjectDescription();
 		description.addDependency("test",
 				new Dependency("com.example.another", "test", DependencyType.COMPILE));
-		HelpDocument document = new HelpDocument();
+		HelpDocument document = createHelpDocument();
 		new AzureHelpDocumentCustomizer(description).customize(document);
 		assertThat(document.getSections()).isEmpty();
+	}
+
+	private HelpDocument createHelpDocument() {
+		return new HelpDocument(
+				new MustacheTemplateRenderer("classpath:/documentation/help"));
 	}
 
 }

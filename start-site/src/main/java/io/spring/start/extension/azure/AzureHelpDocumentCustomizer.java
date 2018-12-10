@@ -40,22 +40,9 @@ class AzureHelpDocumentCustomizer implements HelpDocumentCustomizer {
 	@Override
 	public void customize(HelpDocument document) {
 		if (hasAzureSupport()) {
-			document.addSection(getSection());
+			document.addSection(new MustacheSection(document.getTemplateRenderer(),
+					"azure", createModel()));
 		}
-	}
-
-	private MustacheSection getSection() {
-		return new MustacheSection() {
-			@Override
-			public String getTemplateName() {
-				return "azure";
-			}
-
-			@Override
-			public Map<String, Object> getModel() {
-				return createModel();
-			}
-		};
 	}
 
 	private Map<String, Object> createModel() {

@@ -21,6 +21,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
 
+import io.spring.initializr.generator.util.template.MustacheTemplateRenderer;
 import io.spring.initializr.model.Link;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -39,13 +40,17 @@ class HelpDocumentProjectContributorTests {
 
 	private final Path directory;
 
+	private final MustacheTemplateRenderer templateRenderer;
+
 	HelpDocumentProjectContributorTests(@TempDir Path directory) {
 		this.directory = directory;
+		this.templateRenderer = new MustacheTemplateRenderer(
+				"classpath:/documentation/help");
 	}
 
 	@Test
 	void helpDocumentWithLinksToGuide() throws IOException {
-		HelpDocument document = new HelpDocument();
+		HelpDocument document = new HelpDocument(this.templateRenderer);
 		document.addLink(link("guide", "https://test.example.com", "test"))
 				.addLink(link("guide", "https://test2.example.com", "test2"));
 		List<String> lines = generateDocument(document);
@@ -57,7 +62,7 @@ class HelpDocumentProjectContributorTests {
 
 	@Test
 	void helpDocumentWithLinksToReferenceDoc() throws IOException {
-		HelpDocument document = new HelpDocument();
+		HelpDocument document = new HelpDocument(this.templateRenderer);
 		document.addLink(link("reference", "https://test.example.com", "doc"))
 				.addLink(link("reference", "https://test2.example.com", "doc2"));
 		List<String> lines = generateDocument(document);
@@ -70,7 +75,7 @@ class HelpDocumentProjectContributorTests {
 
 	@Test
 	void helpDocumentWithLinksToOtherLinks() throws IOException {
-		HelpDocument document = new HelpDocument();
+		HelpDocument document = new HelpDocument(this.templateRenderer);
 		document.addLink(link("other", "https://test.example.com", "Something"));
 		List<String> lines = generateDocument(document);
 		assertThat(lines).containsExactly("# Getting Started", "", "### Additional Links",
@@ -80,7 +85,7 @@ class HelpDocumentProjectContributorTests {
 
 	@Test
 	void helpDocumentWithSimpleSection() throws IOException {
-		HelpDocument document = new HelpDocument();
+		HelpDocument document = new HelpDocument(this.templateRenderer);
 		document.addSection((writer) -> writer
 				.println(String.format("# My test section%n%n    * Test")));
 		List<String> lines = generateDocument(document);
@@ -90,7 +95,7 @@ class HelpDocumentProjectContributorTests {
 
 	@Test
 	void helpDocumentWithLinksAndSimpleSection() throws IOException {
-		HelpDocument document = new HelpDocument();
+		HelpDocument document = new HelpDocument(this.templateRenderer);
 		document.addLink(link("guide", "https://test.example.com", "test"))
 				.addSection((writer) -> writer
 						.println(String.format("# My test section%n%n    * Test")));

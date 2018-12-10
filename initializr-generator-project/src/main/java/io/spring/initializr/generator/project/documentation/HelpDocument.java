@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
+import io.spring.initializr.generator.util.template.MustacheTemplateRenderer;
 import io.spring.initializr.model.Link;
 
 /**
@@ -33,26 +34,47 @@ import io.spring.initializr.model.Link;
  */
 public class HelpDocument {
 
-	private final BulletedSection<Link> referenceDocs = new BulletedSection<>(
-			"reference-documentation", "links");
+	private final MustacheTemplateRenderer templateRenderer;
 
-	private final BulletedSection<Link> guides = new BulletedSection<>("guides", "links");
+	private final PreDefinedSection gettingStarted;
 
-	private final BulletedSection<RequiredDependency> requiredDependencies = new BulletedSection<>(
-			"required-dependencies", "requiredDependencies");
+	private final BulletedSection<Link> referenceDocs;
 
-	private final BulletedSection<SupportingInfrastructureElement> infrastructureElements = new BulletedSection<>(
-			"supporting-infrastructure", "supportingInfrastructure");
+	private final BulletedSection<Link> guides;
+
+	private BulletedSection<Link> additionalLinks;
+
+	private final BulletedSection<RequiredDependency> requiredDependencies;
+
+	private final BulletedSection<SupportingInfrastructureElement> infrastructureElements;
+
+	private final PreDefinedSection nextSteps;
 
 	private final LinkedList<Section> sections = new LinkedList<>();
 
-	private final PreDefinedSection gettingStarted = new PreDefinedSection(
-			"Getting Started");
+	public HelpDocument(MustacheTemplateRenderer templateRenderer) {
+		this.templateRenderer = templateRenderer;
+		this.gettingStarted = new PreDefinedSection("Getting Started");
+		this.referenceDocs = new BulletedSection<>(templateRenderer,
+				"reference-documentation", "links");
+		this.guides = new BulletedSection<>(templateRenderer, "guides", "links");
+		this.additionalLinks = new BulletedSection<>(templateRenderer, "additional-links",
+				"links");
+		this.requiredDependencies = new BulletedSection<>(templateRenderer,
+				"required-dependencies", "requiredDependencies");
+		this.infrastructureElements = new BulletedSection<>(templateRenderer,
+				"supporting-infrastructure", "supportingInfrastructure");
+		this.nextSteps = new PreDefinedSection("Next Steps");
+	}
 
-	private final PreDefinedSection nextSteps = new PreDefinedSection("Next Steps");
-
-	private BulletedSection<Link> additionalLinks = new BulletedSection<>(
-			"additional-links", "links");
+	/**
+	 * Return a {@link MustacheTemplateRenderer} that can be used to render additional
+	 * sections.
+	 * @return a {@link MustacheTemplateRenderer}
+	 */
+	public MustacheTemplateRenderer getTemplateRenderer() {
+		return this.templateRenderer;
+	}
 
 	public PreDefinedSection getGettingStarted() {
 		return this.gettingStarted;

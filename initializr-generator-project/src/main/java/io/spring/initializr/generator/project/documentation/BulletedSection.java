@@ -23,6 +23,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import io.spring.initializr.generator.util.template.MustacheTemplateRenderer;
+
 /**
  * {@link MustacheSection} for list of items.
  *
@@ -31,14 +33,13 @@ import java.util.Map;
  */
 public class BulletedSection<T> extends MustacheSection {
 
-	private final String templateName;
-
 	private final String itemName;
 
 	private List<T> items = new ArrayList<>();
 
-	public BulletedSection(String templateName, String itemName) {
-		this.templateName = templateName;
+	public BulletedSection(MustacheTemplateRenderer templateRenderer, String templateName,
+			String itemName) {
+		super(templateRenderer, templateName, new HashMap<>());
 		this.itemName = itemName;
 	}
 
@@ -48,22 +49,16 @@ public class BulletedSection<T> extends MustacheSection {
 	}
 
 	@Override
-	public String getTemplateName() {
-		return this.templateName;
-	}
-
-	@Override
-	public Map<String, Object> getModel() {
-		HashMap<String, Object> model = new HashMap<>();
-		model.put(this.itemName, this.items);
-		return model;
-	}
-
-	@Override
 	public void write(PrintWriter writer) throws IOException {
 		if (!this.items.isEmpty()) {
 			super.write(writer);
 		}
+	}
+
+	@Override
+	protected Map<String, Object> resolveModel(Map<String, Object> model) {
+		model.put(this.itemName, this.items);
+		return model;
 	}
 
 }

@@ -44,7 +44,7 @@ public class SpringCloudStreamHelpDocumentCustomizer implements HelpDocumentCust
 	}
 
 	private boolean hasSpringCloudStream() {
-		return this.description.getDependencies().stream()
+		return this.description.getDependencies().values().stream()
 				.anyMatch((dependency) -> requiresBinder(dependency.getArtifactId()));
 	}
 

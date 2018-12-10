@@ -21,26 +21,40 @@ import java.io.PrintWriter;
 import java.util.Map;
 
 import io.spring.initializr.generator.util.template.MustacheTemplateRenderer;
-import io.spring.initializr.generator.util.template.TemplateRenderer;
 
 /**
  * {@link Section} that uses a {@link MustacheTemplateRenderer}.
  *
  * @author Madhura Bhave
  */
-public abstract class MustacheSection implements Section {
+public class MustacheSection implements Section {
 
-	private final TemplateRenderer renderer = new MustacheTemplateRenderer(
-			"classpath:/documentation/help");
+	private final MustacheTemplateRenderer templateRenderer;
+
+	private final String templateName;
+
+	private final Map<String, Object> model;
+
+	public MustacheSection(MustacheTemplateRenderer templateRenderer, String templateName,
+			Map<String, Object> model) {
+		this.templateRenderer = templateRenderer;
+		this.templateName = templateName;
+		this.model = model;
+	}
 
 	@Override
 	public void write(PrintWriter writer) throws IOException {
-		writer.println(this.renderer.render(getTemplateName(), getModel()));
-		// writer.println();
+		writer.println(this.templateRenderer.render(this.templateName,
+				resolveModel(this.model)));
 	}
 
-	public abstract String getTemplateName();
-
-	public abstract Map<String, Object> getModel();
+	/**
+	 * Resolve the {@code model} prior to render the section.
+	 * @param model the current model
+	 * @return the model to use to render this section (never null)
+	 */
+	protected Map<String, Object> resolveModel(Map<String, Object> model) {
+		return model;
+	}
 
 }
