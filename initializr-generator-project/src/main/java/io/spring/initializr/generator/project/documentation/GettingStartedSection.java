@@ -42,14 +42,14 @@ public final class GettingStartedSection extends PreDefinedSection {
 	GettingStartedSection(MustacheTemplateRenderer templateRenderer) {
 		super("Getting Started");
 		this.referenceDocs = new BulletedSection<>(templateRenderer,
-				"reference-documentation", "links");
-		this.guides = new BulletedSection<>(templateRenderer, "guides", "links");
-		this.additionalLinks = new BulletedSection<>(templateRenderer, "additional-links",
-				"links");
+				"reference-documentation");
+		this.guides = new BulletedSection<>(templateRenderer, "guides");
+		this.additionalLinks = new BulletedSection<>(templateRenderer,
+				"additional-links");
 		this.requiredDependencies = new BulletedSection<>(templateRenderer,
-				"required-dependencies", "requiredDependencies");
+				"required-dependencies");
 		this.infrastructureElements = new BulletedSection<>(templateRenderer,
-				"supporting-infrastructure", "supportingInfrastructure");
+				"supporting-infrastructure");
 	}
 
 	@Override
