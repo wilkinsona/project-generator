@@ -25,15 +25,15 @@ import java.util.List;
 import java.util.function.BiConsumer;
 import java.util.stream.Collectors;
 
+import io.spring.initializr.generator.buildsystem.BillOfMaterials;
+import io.spring.initializr.generator.buildsystem.Dependency;
+import io.spring.initializr.generator.buildsystem.DependencyComparator;
+import io.spring.initializr.generator.buildsystem.DependencyType;
 import io.spring.initializr.generator.buildsystem.MavenRepository;
 import io.spring.initializr.generator.buildsystem.maven.MavenPlugin.Configuration;
 import io.spring.initializr.generator.buildsystem.maven.MavenPlugin.Execution;
 import io.spring.initializr.generator.buildsystem.maven.MavenPlugin.Setting;
 import io.spring.initializr.generator.io.IndentingWriter;
-import io.spring.initializr.model.BillOfMaterials;
-import io.spring.initializr.model.Dependency;
-import io.spring.initializr.model.DependencyComparator;
-import io.spring.initializr.model.DependencyType;
 
 /**
  * A {@link MavenBuild} writer.

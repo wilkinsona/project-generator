@@ -20,10 +20,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import io.spring.initializr.model.BillOfMaterials;
-import io.spring.initializr.model.Dependency;
-import io.spring.initializr.model.DependencyType;
-
 /**
  * Build configuration for a project.
  *

@@ -17,10 +17,10 @@
 package io.spring.start.extension.azure;
 
 import io.spring.initializr.generator.ProjectDescription;
+import io.spring.initializr.generator.buildsystem.Dependency;
+import io.spring.initializr.generator.buildsystem.DependencyType;
 import io.spring.initializr.generator.project.documentation.HelpDocument;
 import io.spring.initializr.generator.util.template.MustacheTemplateRenderer;
-import io.spring.initializr.model.Dependency;
-import io.spring.initializr.model.DependencyType;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;

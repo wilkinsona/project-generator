@@ -21,10 +21,10 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 import io.spring.initializr.generator.buildsystem.BuildSystem;
+import io.spring.initializr.generator.buildsystem.Dependency;
 import io.spring.initializr.generator.language.Language;
 import io.spring.initializr.generator.packaging.Packaging;
 import io.spring.initializr.generator.util.Version;
-import io.spring.initializr.model.Dependency;
 
 /**
  * Description of a project that is being generated.

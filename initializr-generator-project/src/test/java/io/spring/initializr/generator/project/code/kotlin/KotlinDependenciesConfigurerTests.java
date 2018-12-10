@@ -16,10 +16,10 @@
 
 package io.spring.initializr.generator.project.code.kotlin;
 
+import io.spring.initializr.generator.buildsystem.DependencyType;
 import io.spring.initializr.generator.buildsystem.gradle.GradleBuild;
 import io.spring.initializr.generator.buildsystem.maven.MavenBuild;
 import io.spring.initializr.generator.util.Version;
-import io.spring.initializr.model.DependencyType;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;

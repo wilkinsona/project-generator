@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package io.spring.initializr.model;
+package io.spring.initializr.generator.buildsystem;
 
 /**
  * The types of dependencies supported by project generation.

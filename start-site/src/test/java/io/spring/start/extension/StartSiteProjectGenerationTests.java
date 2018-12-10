@@ -26,6 +26,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import io.spring.initializr.generator.ProjectDescription;
+import io.spring.initializr.generator.buildsystem.Dependency;
+import io.spring.initializr.generator.buildsystem.DependencyType;
 import io.spring.initializr.generator.buildsystem.gradle.GradleBuildSystem;
 import io.spring.initializr.generator.buildsystem.maven.MavenBuildSystem;
 import io.spring.initializr.generator.language.java.JavaLanguage;
@@ -34,8 +36,6 @@ import io.spring.initializr.generator.project.ProjectGenerator;
 import io.spring.initializr.generator.project.ProjectGeneratorDefaultConfiguration;
 import io.spring.initializr.generator.test.assertj.NodeAssert;
 import io.spring.initializr.generator.util.Version;
-import io.spring.initializr.model.Dependency;
-import io.spring.initializr.model.DependencyType;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junitpioneer.jupiter.TempDirectory;

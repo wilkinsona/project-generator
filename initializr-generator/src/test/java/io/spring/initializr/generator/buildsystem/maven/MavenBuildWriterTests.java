@@ -19,11 +19,11 @@ package io.spring.initializr.generator.buildsystem.maven;
 import java.io.StringWriter;
 import java.util.function.Consumer;
 
+import io.spring.initializr.generator.buildsystem.BillOfMaterials;
+import io.spring.initializr.generator.buildsystem.DependencyType;
 import io.spring.initializr.generator.buildsystem.MavenRepository;
 import io.spring.initializr.generator.io.IndentingWriter;
 import io.spring.initializr.generator.test.assertj.NodeAssert;
-import io.spring.initializr.model.BillOfMaterials;
-import io.spring.initializr.model.DependencyType;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;

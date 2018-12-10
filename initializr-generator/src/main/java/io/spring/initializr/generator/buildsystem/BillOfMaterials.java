@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package io.spring.initializr.model;
+package io.spring.initializr.generator.buildsystem;
 
 /**
  * A Bill of Materials (BOM) definition to be declared in a project's build configuration.

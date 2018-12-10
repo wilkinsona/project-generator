@@ -17,7 +17,7 @@
 package io.spring.initializr.generator.condition;
 
 import io.spring.initializr.generator.ProjectDescription;
-import io.spring.initializr.model.Dependency;
+import io.spring.initializr.generator.buildsystem.Dependency;
 
 import org.springframework.context.annotation.ConditionContext;
 import org.springframework.core.type.AnnotatedTypeMetadata;
