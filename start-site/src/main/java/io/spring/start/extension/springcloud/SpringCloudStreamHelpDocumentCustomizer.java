@@ -14,46 +14,44 @@
  * limitations under the License.
  */
 
-package io.spring.start.extension.azure;
-
-import java.util.HashMap;
-import java.util.Map;
+package io.spring.start.extension.springcloud;
 
 import io.spring.initializr.generator.ProjectDescription;
 import io.spring.initializr.generator.project.documentation.HelpDocument;
 import io.spring.initializr.generator.project.documentation.HelpDocumentCustomizer;
-import io.spring.initializr.generator.project.documentation.MustacheSection;
+import io.spring.initializr.generator.project.documentation.RequiredDependency;
 
 /**
- * {@link HelpDocumentCustomizer} for Azure.
+ * {@link HelpDocumentCustomizer} for Spring cloud stream.
  *
- * @author Stephane Nicoll
+ * @author Madhura Bhave
  */
-class AzureHelpDocumentCustomizer implements HelpDocumentCustomizer {
+public class SpringCloudStreamHelpDocumentCustomizer implements HelpDocumentCustomizer {
 
 	private final ProjectDescription description;
 
-	AzureHelpDocumentCustomizer(ProjectDescription description) {
+	public SpringCloudStreamHelpDocumentCustomizer(ProjectDescription description) {
 		this.description = description;
 	}
 
 	@Override
 	public void customize(HelpDocument document) {
-		if (hasAzureSupport()) {
-			document.addSection(new MustacheSection(document.getTemplateRenderer(),
-					"azure", createModel()));
+		if (hasSpringCloudStream()) {
+			RequiredDependency dependency = new RequiredDependency("Binder",
+					"A binder is required for the application to start up, e.g, RabbitMQ or Kafka");
+			document.addRequiredDependency(dependency);
 		}
 	}
 
-	private Map<String, Object> createModel() {
-		Map<String, Object> model = new HashMap<>();
-		model.put("actuator", this.description.getDependencies().containsKey("actuator"));
-		return model;
+	private boolean hasSpringCloudStream() {
+		return this.description.getDependencies().values().stream()
+				.anyMatch((dependency) -> requiresBinder(dependency.getArtifactId()));
 	}
 
-	private boolean hasAzureSupport() {
-		return this.description.getDependencies().keySet().stream()
-				.anyMatch((id) -> id.startsWith("azure"));
+	private boolean requiresBinder(String artifactId) {
+		return artifactId.equals("spring-cloud-bus")
+				|| artifactId.equals("spring-cloud-stream")
+				|| artifactId.equals("spring-cloud-stream-reactive");
 	}
 
 }

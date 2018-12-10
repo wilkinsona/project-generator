@@ -19,7 +19,6 @@ package io.spring.initializr.generator.project.documentation;
 import io.spring.initializr.generator.ProjectDescription;
 import io.spring.initializr.generator.project.ProjectGenerationConfiguration;
 import io.spring.initializr.generator.util.template.MustacheTemplateRenderer;
-import io.spring.initializr.generator.util.template.TemplateRenderer;
 
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.context.annotation.Bean;
@@ -38,12 +37,15 @@ public class HelpDocumentProjectGenerationConfiguration {
 	public HelpDocumentProjectContributor helpDocumentProjectContributor(
 			ProjectDescription projectDescription,
 			ObjectProvider<HelpDocumentCustomizer> helpDocumentCustomizers) {
-		HelpDocument helpDocument = new HelpDocument();
+		HelpDocument helpDocument = new HelpDocument(helpMustacheTemplateRenderer());
 		helpDocumentCustomizers.orderedStream()
 				.forEach((customizer) -> customizer.customize(helpDocument));
-		TemplateRenderer templateRenderer = new MustacheTemplateRenderer(
-				"classpath:/documentation/help");
-		return new HelpDocumentProjectContributor(templateRenderer, helpDocument);
+		return new HelpDocumentProjectContributor(helpDocument);
+	}
+
+	@Bean
+	public MustacheTemplateRenderer helpMustacheTemplateRenderer() {
+		return new MustacheTemplateRenderer("classpath:/documentation/help");
 	}
 
 }
