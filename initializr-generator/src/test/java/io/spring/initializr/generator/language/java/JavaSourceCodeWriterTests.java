@@ -59,7 +59,7 @@ class JavaSourceCodeWriterTests {
 	}
 
 	@Test
-	void emptyTypeDeclaration(@TempDir Path directory) throws IOException {
+	void emptyTypeDeclaration() throws IOException {
 		JavaSourceCode sourceCode = new JavaSourceCode();
 		JavaCompilationUnit compilationUnit = sourceCode
 				.createCompilationUnit("com.example", "Test");
@@ -70,7 +70,7 @@ class JavaSourceCodeWriterTests {
 	}
 
 	@Test
-	void springBootApplication(@TempDir Path directory) throws IOException {
+	void springBootApplication() throws IOException {
 		JavaSourceCode sourceCode = new JavaSourceCode();
 		JavaCompilationUnit compilationUnit = sourceCode
 				.createCompilationUnit("com.example", "Test");
