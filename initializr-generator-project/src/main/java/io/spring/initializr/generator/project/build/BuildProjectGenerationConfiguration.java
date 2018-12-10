@@ -18,7 +18,6 @@ package io.spring.initializr.generator.project.build;
 
 import io.spring.initializr.generator.ProjectDescription;
 import io.spring.initializr.generator.buildsystem.Build;
-import io.spring.initializr.generator.packaging.war.ConditionalOnWarPackaging;
 import io.spring.initializr.generator.project.ProjectGenerationConfiguration;
 import io.spring.initializr.model.Dependency;
 import io.spring.initializr.model.DependencyType;
@@ -57,13 +56,6 @@ public class BuildProjectGenerationConfiguration {
 						DependencyType.COMPILE);
 			}
 		};
-	}
-
-	@Bean
-	@Order(0)
-	@ConditionalOnWarPackaging
-	public WarPackagingWebStarterBuildCustomizer warPackagingWebStarterBuildCustomizer() {
-		return new WarPackagingWebStarterBuildCustomizer();
 	}
 
 	@Bean
