@@ -20,11 +20,11 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
+import java.util.function.Consumer;
 
 import io.spring.initializr.generator.ProjectContributor;
 import io.spring.initializr.generator.ProjectDescription;
 
-import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -41,22 +41,23 @@ import org.springframework.core.type.AnnotationMetadata;
  */
 public class ProjectGenerator {
 
-	private final ApplicationContext parentApplicationContext;
+	private final Consumer<AnnotationConfigApplicationContext> projectGenerationContext;
 
-	public ProjectGenerator(ApplicationContext parentApplicationContext) {
-		this.parentApplicationContext = parentApplicationContext;
-	}
-
-	public ProjectGenerator() {
-		this(new AnnotationConfigApplicationContext(
-				ProjectGeneratorDefaultConfiguration.class));
+	/**
+	 * Create an instance with a customizer for the project generator application context.
+	 * @param projectGenerationContext a consumer of the project generation context before
+	 * it is refreshed.
+	 */
+	public ProjectGenerator(
+			Consumer<AnnotationConfigApplicationContext> projectGenerationContext) {
+		this.projectGenerationContext = projectGenerationContext;
 	}
 
 	public Path generate(ProjectDescription description) throws IOException {
 		try (AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext()) {
-			context.setParent(this.parentApplicationContext);
 			context.registerBean(ProjectDescription.class, () -> description);
 			context.register(CoreConfiguration.class);
+			this.projectGenerationContext.accept(context);
 			context.refresh();
 			Path projectRoot = context.getBean(ProjectDirectoryFactory.class)
 					.createProjectDirectory(description);

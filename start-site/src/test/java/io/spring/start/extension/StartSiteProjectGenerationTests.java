@@ -54,12 +54,14 @@ class StartSiteProjectGenerationTests {
 	private final ProjectGenerator projectGenerator;
 
 	StartSiteProjectGenerationTests(@TempDir Path directory) {
-		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
-		context.register(ProjectGeneratorDefaultConfiguration.class);
-		context.registerBean(ProjectDirectoryFactory.class,
+		AnnotationConfigApplicationContext parentContext = new AnnotationConfigApplicationContext();
+		parentContext.register(ProjectGeneratorDefaultConfiguration.class);
+		parentContext.registerBean(ProjectDirectoryFactory.class,
 				() -> (description) -> Files.createTempDirectory(directory, "project-"));
-		context.refresh();
-		this.projectGenerator = new ProjectGenerator(context);
+		parentContext.refresh();
+		this.projectGenerator = new ProjectGenerator(
+				(projectGenerationContext) -> projectGenerationContext
+						.setParent(parentContext));
 	}
 
 	@Test
