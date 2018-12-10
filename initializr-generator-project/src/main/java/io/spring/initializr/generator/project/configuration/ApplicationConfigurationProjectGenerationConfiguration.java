@@ -16,7 +16,6 @@
 
 package io.spring.initializr.generator.project.configuration;
 
-import io.spring.initializr.generator.ProjectDescription;
 import io.spring.initializr.generator.project.ProjectGenerationConfiguration;
 
 import org.springframework.context.annotation.Bean;
@@ -34,11 +33,6 @@ public class ApplicationConfigurationProjectGenerationConfiguration {
 	@Order(0)
 	public ApplicationPropertiesContributor applicationPropertiesContributor() {
 		return new ApplicationPropertiesContributor();
-	}
-
-	@Bean
-	public WebFoldersContributor webFoldersContributor(ProjectDescription description) {
-		return new WebFoldersContributor(description);
 	}
 
 }
