@@ -19,51 +19,45 @@ package io.spring.initializr.generator.project.documentation;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-
-import io.spring.initializr.generator.util.template.MustacheTemplateRenderer;
 
 /**
- * {@link MustacheSection} for list of items.
+ * Section that is pre-defined and always present in the document. You can only add
+ * additional sections to pre-defined sections.
  *
- * @param <T> the type of the item in the bullets
  * @author Madhura Bhave
  */
-public class BulletedSection<T> extends MustacheSection {
+public class PreDefinedSection implements Section {
 
-	private final String itemName;
+	private final String title;
 
-	private List<T> items = new ArrayList<>();
+	private final List<Section> subSections = new ArrayList<>();
 
-	public BulletedSection(MustacheTemplateRenderer templateRenderer, String templateName,
-			String itemName) {
-		super(templateRenderer, templateName, new HashMap<>());
-		this.itemName = itemName;
+	public PreDefinedSection(String title) {
+		this.title = title;
 	}
 
-	public BulletedSection addItem(T item) {
-		this.items.add(item);
+	public PreDefinedSection addSection(Section section) {
+		this.subSections.add(section);
 		return this;
-	}
-
-	public List<T> getItems() {
-		return Collections.unmodifiableList(this.items);
 	}
 
 	@Override
 	public void write(PrintWriter writer) throws IOException {
-		if (!this.items.isEmpty()) {
-			super.write(writer);
+		writer.println("# " + this.title);
+		writer.println("");
+		for (Section section : resolveSubSections(this.subSections)) {
+			section.write(writer);
 		}
 	}
 
-	@Override
-	protected Map<String, Object> resolveModel(Map<String, Object> model) {
-		model.put(this.itemName, this.items);
-		return model;
+	/**
+	 * Resolve the sections to render based on the current registered sections.
+	 * @param sections the registered sections
+	 * @return the sections to render
+	 */
+	protected List<Section> resolveSubSections(List<Section> sections) {
+		return sections;
 	}
 
 }

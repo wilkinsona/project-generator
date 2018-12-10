@@ -23,8 +23,6 @@ import java.nio.file.Path;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.stream.Stream;
 
@@ -35,9 +33,6 @@ import io.spring.initializr.generator.language.java.JavaLanguage;
 import io.spring.initializr.generator.language.kotlin.KotlinLanguage;
 import io.spring.initializr.generator.packaging.war.WarPackaging;
 import io.spring.initializr.generator.util.Version;
-import io.spring.initializr.model.Dependency;
-import io.spring.initializr.model.DependencyType;
-import io.spring.initializr.model.Link;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junitpioneer.jupiter.TempDirectory;
@@ -373,23 +368,6 @@ class ProjectGeneratorTests {
 				"test/demo-app/src/main/java/com/example/DemoApplication.java",
 				"test/demo-app/src/main/resources/application.properties",
 				"test/demo-app/src/test/java/com/example/DemoApplicationTests.java");
-	}
-
-	@Test
-	void helpDocumentContributedWhenGeneratingProjectWithLinks() throws IOException {
-		ProjectDescription description = initProjectDescription();
-		description.setBuildSystem(new MavenBuildSystem());
-		description.setSpringBootVersion(Version.parse("2.1.0.RELEASE"));
-		description.addDependency("acme", new Dependency(
-				"com.example", "acme", "1.0", DependencyType.COMPILE, Arrays
-						.asList(new Link("guide", "example.com/guide", "Test guide"),
-								new Link("reference", "example.com/doc",
-										"Reference documentation")),
-				Collections.emptyList()));
-		Path project = this.projectGenerator.generate(description);
-		assertThat(Files.readAllLines(project.resolve("HELP.md"))).contains("### Guides",
-				"* [Test guide](example.com/guide)", "### Reference Documentation",
-				"* [Reference documentation](example.com/doc)");
 	}
 
 	private ProjectDescription initProjectDescription() {

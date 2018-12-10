@@ -18,7 +18,6 @@ package io.spring.start.extension.springcloud;
 
 import io.spring.initializr.generator.project.documentation.HelpDocument;
 import io.spring.initializr.generator.project.documentation.HelpDocumentCustomizer;
-import io.spring.initializr.generator.project.documentation.SupportingInfrastructureElement;
 
 /**
  * {@link HelpDocumentCustomizer} for Eureka client.
@@ -29,10 +28,9 @@ public class EurekaHelpDocumentCustomizer implements HelpDocumentCustomizer {
 
 	@Override
 	public void customize(HelpDocument document) {
-		SupportingInfrastructureElement element = new SupportingInfrastructureElement(
-				"Eureka-Server", "Create a Eureka Server",
+		document.gettingStarted().addSupportingInfrastructureElement("Eureka-Server",
+				"Create a Eureka Server",
 				"https://start.spring.io/supporting-starter.zip");
-		document.addSupportingInfrastructureElement(element);
 	}
 
 }

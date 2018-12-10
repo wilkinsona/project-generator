@@ -22,7 +22,6 @@ import io.spring.initializr.generator.util.template.MustacheTemplateRenderer;
 
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Import;
 
 /**
  * Configuration for contributions specific to the help documentation of a project.
@@ -30,7 +29,6 @@ import org.springframework.context.annotation.Import;
  * @author Stephane Nicoll
  */
 @ProjectGenerationConfiguration
-@Import(HelpDocumentDefaultContributorsConfiguration.class)
 public class HelpDocumentProjectGenerationConfiguration {
 
 	@Bean

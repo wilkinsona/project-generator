@@ -19,7 +19,6 @@ package io.spring.initializr.model;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.List;
 
 /**
  * A dependency to be declared in a project's build configuration.
@@ -36,21 +35,18 @@ public class Dependency implements Comparable<Dependency> {
 
 	private final DependencyType type;
 
-	private final List<Link> links;
-
 	private final Collection<String> facets;
 
 	public Dependency(String groupId, String artifactId, DependencyType type) {
-		this(groupId, artifactId, null, type, null, null);
+		this(groupId, artifactId, null, type, null);
 	}
 
 	public Dependency(String groupId, String artifactId, String version,
-			DependencyType type, List<Link> links, Collection<String> facets) {
+			DependencyType type, Collection<String> facets) {
 		this.groupId = groupId;
 		this.artifactId = artifactId;
 		this.version = version;
 		this.type = type;
-		this.links = (links != null) ? new ArrayList<>(links) : Collections.emptyList();
 		this.facets = (facets != null) ? new ArrayList<>(facets)
 				: Collections.emptyList();
 	}
@@ -86,14 +82,6 @@ public class Dependency implements Comparable<Dependency> {
 	 */
 	public DependencyType getType() {
 		return this.type;
-	}
-
-	/**
-	 * The {@code links} of the dependency.
-	 * @return the links or an empty list
-	 */
-	public List<Link> getLinks() {
-		return this.links;
 	}
 
 	/**

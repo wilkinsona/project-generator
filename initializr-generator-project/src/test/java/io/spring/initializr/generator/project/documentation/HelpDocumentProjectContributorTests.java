@@ -22,7 +22,6 @@ import java.nio.file.Path;
 import java.util.List;
 
 import io.spring.initializr.generator.util.template.MustacheTemplateRenderer;
-import io.spring.initializr.model.Link;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junitpioneer.jupiter.TempDirectory;
@@ -51,8 +50,8 @@ class HelpDocumentProjectContributorTests {
 	@Test
 	void helpDocumentWithLinksToGuide() throws IOException {
 		HelpDocument document = new HelpDocument(this.templateRenderer);
-		document.addLink(link("guide", "https://test.example.com", "test"))
-				.addLink(link("guide", "https://test2.example.com", "test2"));
+		document.gettingStarted().addGuideLink("https://test.example.com", "test")
+				.addGuideLink("https://test2.example.com", "test2");
 		List<String> lines = generateDocument(document);
 		assertThat(lines).containsExactly("# Getting Started", "", "### Guides",
 				"The following guides illustrates how to use certain features concretely:",
@@ -63,8 +62,8 @@ class HelpDocumentProjectContributorTests {
 	@Test
 	void helpDocumentWithLinksToReferenceDoc() throws IOException {
 		HelpDocument document = new HelpDocument(this.templateRenderer);
-		document.addLink(link("reference", "https://test.example.com", "doc"))
-				.addLink(link("reference", "https://test2.example.com", "doc2"));
+		document.gettingStarted().addReferenceDocLink("https://test.example.com", "doc")
+				.addReferenceDocLink("https://test2.example.com", "doc2");
 		List<String> lines = generateDocument(document);
 		assertThat(lines).containsExactly("# Getting Started", "",
 				"### Reference Documentation",
@@ -76,7 +75,8 @@ class HelpDocumentProjectContributorTests {
 	@Test
 	void helpDocumentWithLinksToOtherLinks() throws IOException {
 		HelpDocument document = new HelpDocument(this.templateRenderer);
-		document.addLink(link("other", "https://test.example.com", "Something"));
+		document.gettingStarted().addAdditionalLink("https://test.example.com",
+				"Something");
 		List<String> lines = generateDocument(document);
 		assertThat(lines).containsExactly("# Getting Started", "", "### Additional Links",
 				"These additional references should also help you:", "",
@@ -96,7 +96,7 @@ class HelpDocumentProjectContributorTests {
 	@Test
 	void helpDocumentWithLinksAndSimpleSection() throws IOException {
 		HelpDocument document = new HelpDocument(this.templateRenderer);
-		document.addLink(link("guide", "https://test.example.com", "test"))
+		document.gettingStarted().addGuideLink("https://test.example.com", "test")
 				.addSection((writer) -> writer
 						.println(String.format("# My test section%n%n    * Test")));
 		List<String> lines = generateDocument(document);
@@ -104,10 +104,6 @@ class HelpDocumentProjectContributorTests {
 				"The following guides illustrates how to use certain features concretely:",
 				"", "* [test](https://test.example.com)", "", "# My test section", "",
 				"    * Test", "# Next Steps", "");
-	}
-
-	private Link link(String rel, String link, String description) {
-		return new Link(rel, link, description);
 	}
 
 	private List<String> generateDocument(HelpDocument document) throws IOException {

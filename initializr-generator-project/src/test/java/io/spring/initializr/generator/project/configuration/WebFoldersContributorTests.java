@@ -49,9 +49,9 @@ class WebFoldersContributorTests {
 	void webFoldersCreatedWithWebDependency() throws IOException {
 		ProjectDescription description = new ProjectDescription();
 		description.addDependency("simple", new Dependency("com.example", "simple", null,
-				DependencyType.COMPILE, null, null));
+				DependencyType.COMPILE, null));
 		description.addDependency("web", new Dependency("com.example", "web", null,
-				DependencyType.COMPILE, null, Collections.singleton("web")));
+				DependencyType.COMPILE, Collections.singleton("web")));
 		Path projectDir = contribute(description);
 		assertThat(projectDir.resolve("src/main/resources/templates")).isDirectory();
 		assertThat(projectDir.resolve("src/main/resources/static")).isDirectory();
@@ -61,9 +61,9 @@ class WebFoldersContributorTests {
 	void webFoldersNotCreatedWithoutWebDependency() throws IOException {
 		ProjectDescription description = new ProjectDescription();
 		description.addDependency("simple", new Dependency("com.example", "simple", null,
-				DependencyType.COMPILE, null, null));
+				DependencyType.COMPILE, null));
 		description.addDependency("web", new Dependency("com.example", "another", null,
-				DependencyType.COMPILE, null, Collections.singleton("test")));
+				DependencyType.COMPILE, Collections.singleton("test")));
 		Path projectDir = contribute(description);
 		assertThat(projectDir.resolve("src/main/resources/templates")).doesNotExist();
 		assertThat(projectDir.resolve("src/main/resources/static")).doesNotExist();

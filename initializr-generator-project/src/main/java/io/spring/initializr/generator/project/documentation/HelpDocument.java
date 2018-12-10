@@ -18,12 +18,11 @@ package io.spring.initializr.generator.project.documentation;
 
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.ArrayList;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
 import io.spring.initializr.generator.util.template.MustacheTemplateRenderer;
-import io.spring.initializr.model.Link;
 
 /**
  * Project's help document intended to give additional references to the users. Contains a
@@ -36,17 +35,7 @@ public class HelpDocument {
 
 	private final MustacheTemplateRenderer templateRenderer;
 
-	private final PreDefinedSection gettingStarted;
-
-	private final BulletedSection<Link> referenceDocs;
-
-	private final BulletedSection<Link> guides;
-
-	private BulletedSection<Link> additionalLinks;
-
-	private final BulletedSection<RequiredDependency> requiredDependencies;
-
-	private final BulletedSection<SupportingInfrastructureElement> infrastructureElements;
+	private final GettingStartedSection gettingStarted;
 
 	private final PreDefinedSection nextSteps;
 
@@ -54,16 +43,7 @@ public class HelpDocument {
 
 	public HelpDocument(MustacheTemplateRenderer templateRenderer) {
 		this.templateRenderer = templateRenderer;
-		this.gettingStarted = new PreDefinedSection("Getting Started");
-		this.referenceDocs = new BulletedSection<>(templateRenderer,
-				"reference-documentation", "links");
-		this.guides = new BulletedSection<>(templateRenderer, "guides", "links");
-		this.additionalLinks = new BulletedSection<>(templateRenderer, "additional-links",
-				"links");
-		this.requiredDependencies = new BulletedSection<>(templateRenderer,
-				"required-dependencies", "requiredDependencies");
-		this.infrastructureElements = new BulletedSection<>(templateRenderer,
-				"supporting-infrastructure", "supportingInfrastructure");
+		this.gettingStarted = new GettingStartedSection(templateRenderer);
 		this.nextSteps = new PreDefinedSection("Next Steps");
 	}
 
@@ -76,7 +56,7 @@ public class HelpDocument {
 		return this.templateRenderer;
 	}
 
-	public PreDefinedSection getGettingStarted() {
+	public GettingStartedSection gettingStarted() {
 		return this.gettingStarted;
 	}
 
@@ -84,86 +64,22 @@ public class HelpDocument {
 		return this.nextSteps;
 	}
 
-	public HelpDocument addLink(Link link) {
-		if ("reference".equals(link.getRel())) {
-			this.referenceDocs.addItem(link);
-		}
-		else if ("guide".equals(link.getRel())) {
-			this.guides.addItem(link);
-		}
-		else {
-			this.additionalLinks.addItem(link);
-		}
-		return this;
-	}
-
 	public HelpDocument addSection(Section section) {
 		this.sections.add(section);
 		return this;
 	}
 
-	public HelpDocument addRequiredDependency(RequiredDependency dependency) {
-		this.requiredDependencies.addItem(dependency);
-		return this;
-	}
-
-	public HelpDocument addSupportingInfrastructureElement(
-			SupportingInfrastructureElement element) {
-		this.infrastructureElements.addItem(element);
-		return this;
-	}
-
-	public LinkedList<Section> getSections() {
-		return this.sections;
+	public List<Section> getSections() {
+		return Collections.unmodifiableList(this.sections);
 	}
 
 	public void write(PrintWriter writer) throws IOException {
-		addGettingStartedSection();
-		addNextStepsSection();
-		for (Section section : this.sections) {
+		LinkedList<Section> allSections = new LinkedList(this.sections);
+		allSections.addFirst(this.gettingStarted);
+		allSections.addLast(this.nextSteps);
+		for (Section section : allSections) {
 			section.write(writer);
 		}
-	}
-
-	private void addGettingStartedSection() {
-		this.gettingStarted.addSection(this.referenceDocs);
-		this.gettingStarted.addSection(this.guides);
-		this.gettingStarted.addSection(this.additionalLinks);
-		this.sections.addFirst(this.gettingStarted);
-	}
-
-	private void addNextStepsSection() {
-		this.sections.addLast(this.nextSteps);
-	}
-
-	/**
-	 * Section that is pre-defined and always present in the document. You can only add
-	 * additional sections to pre-defined sections.
-	 */
-	public static final class PreDefinedSection implements Section {
-
-		private final String title;
-
-		private final List<Section> subSections = new ArrayList<>();
-
-		private PreDefinedSection(String title) {
-			this.title = title;
-		}
-
-		public PreDefinedSection addSection(Section section) {
-			this.subSections.add(section);
-			return this;
-		}
-
-		@Override
-		public void write(PrintWriter writer) throws IOException {
-			writer.println("# " + this.title);
-			writer.println("");
-			for (Section section : this.subSections) {
-				section.write(writer);
-			}
-		}
-
 	}
 
 }

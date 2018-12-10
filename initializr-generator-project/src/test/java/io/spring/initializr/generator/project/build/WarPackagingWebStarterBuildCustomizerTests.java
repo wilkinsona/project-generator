@@ -48,9 +48,8 @@ class WarPackagingWebStarterBuildCustomizerTests {
 	@Test
 	void addWebStarterDoesNotReplaceWebFacetDependency() {
 		MavenBuild build = new MavenBuild();
-		build.addDependency(
-				new Dependency("com.example", "web-test", null, DependencyType.COMPILE,
-						Collections.emptyList(), Collections.singletonList("web")));
+		build.addDependency(new Dependency("com.example", "web-test", null,
+				DependencyType.COMPILE, Collections.singletonList("web")));
 		new WarPackagingWebStarterBuildCustomizer().customize(build);
 		Map<String, Dependency> dependencies = mapDependencies(build);
 		assertThat(dependencies).containsOnlyKeys("web-test",

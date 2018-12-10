@@ -19,7 +19,6 @@ package io.spring.start.extension.springcloud;
 import io.spring.initializr.generator.ProjectDescription;
 import io.spring.initializr.generator.project.documentation.HelpDocument;
 import io.spring.initializr.generator.project.documentation.HelpDocumentCustomizer;
-import io.spring.initializr.generator.project.documentation.RequiredDependency;
 
 /**
  * {@link HelpDocumentCustomizer} for Spring cloud stream.
@@ -37,9 +36,8 @@ public class SpringCloudStreamHelpDocumentCustomizer implements HelpDocumentCust
 	@Override
 	public void customize(HelpDocument document) {
 		if (hasSpringCloudStream()) {
-			RequiredDependency dependency = new RequiredDependency("Binder",
+			document.gettingStarted().addRequiredDependency("Binder",
 					"A binder is required for the application to start up, e.g, RabbitMQ or Kafka");
-			document.addRequiredDependency(dependency);
 		}
 	}
 
