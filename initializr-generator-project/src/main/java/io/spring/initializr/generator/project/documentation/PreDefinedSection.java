@@ -44,11 +44,17 @@ public class PreDefinedSection implements Section {
 
 	@Override
 	public void write(PrintWriter writer) throws IOException {
-		writer.println("# " + this.title);
-		writer.println("");
-		for (Section section : resolveSubSections(this.subSections)) {
-			section.write(writer);
+		if (!isEmpty()) {
+			writer.println("# " + this.title);
+			writer.println("");
+			for (Section section : resolveSubSections(this.subSections)) {
+				section.write(writer);
+			}
 		}
+	}
+
+	public boolean isEmpty() {
+		return this.subSections.isEmpty();
 	}
 
 	/**

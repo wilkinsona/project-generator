@@ -53,6 +53,14 @@ public final class GettingStartedSection extends PreDefinedSection {
 	}
 
 	@Override
+	public boolean isEmpty() {
+		return referenceDocs().isEmpty() && guides().isEmpty()
+				&& additionalLinks().isEmpty() && infrastructureElements().isEmpty()
+				&& requiredDependencies().isEmpty() && infrastructureElements().isEmpty()
+				&& super.isEmpty();
+	}
+
+	@Override
 	protected List<Section> resolveSubSections(List<Section> sections) {
 		List<Section> allSections = new ArrayList<>();
 		allSections.add(this.referenceDocs);

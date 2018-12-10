@@ -74,12 +74,17 @@ public class HelpDocument {
 	}
 
 	public void write(PrintWriter writer) throws IOException {
-		LinkedList<Section> allSections = new LinkedList(this.sections);
+		LinkedList<Section> allSections = new LinkedList<>(this.sections);
 		allSections.addFirst(this.gettingStarted);
 		allSections.addLast(this.nextSteps);
 		for (Section section : allSections) {
 			section.write(writer);
 		}
+	}
+
+	public boolean isEmpty() {
+		return gettingStarted().isEmpty() && this.sections.isEmpty()
+				&& nextSteps().isEmpty();
 	}
 
 }

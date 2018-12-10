@@ -39,6 +39,9 @@ public class HelpDocumentProjectContributor implements ProjectContributor {
 
 	@Override
 	public void contribute(Path projectRoot) throws IOException {
+		if (this.helpDocument.isEmpty()) {
+			return;
+		}
 		Path file = Files.createFile(projectRoot.resolve("HELP.md"));
 		try (PrintWriter writer = new PrintWriter(Files.newBufferedWriter(file))) {
 			this.helpDocument.write(writer);

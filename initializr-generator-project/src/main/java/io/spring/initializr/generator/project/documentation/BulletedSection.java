@@ -49,13 +49,17 @@ public class BulletedSection<T> extends MustacheSection {
 		return this;
 	}
 
+	public boolean isEmpty() {
+		return this.items.isEmpty();
+	}
+
 	public List<T> getItems() {
 		return Collections.unmodifiableList(this.items);
 	}
 
 	@Override
 	public void write(PrintWriter writer) throws IOException {
-		if (!this.items.isEmpty()) {
+		if (!isEmpty()) {
 			super.write(writer);
 		}
 	}

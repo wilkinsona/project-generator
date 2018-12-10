@@ -48,6 +48,16 @@ class HelpDocumentProjectContributorTests {
 	}
 
 	@Test
+	void helpDocumentEmptyDoesNotCreateFile() throws IOException {
+		HelpDocument document = new HelpDocument(this.templateRenderer);
+		assertThat(document.isEmpty()).isTrue();
+		Path projectDir = Files.createTempDirectory(this.directory, "project-");
+		new HelpDocumentProjectContributor(document).contribute(projectDir);
+		Path helpDocument = projectDir.resolve("HELP.md");
+		assertThat(helpDocument).doesNotExist();
+	}
+
+	@Test
 	void helpDocumentWithLinksToGuide() throws IOException {
 		HelpDocument document = new HelpDocument(this.templateRenderer);
 		document.gettingStarted().addGuideLink("https://test.example.com", "test")
@@ -56,7 +66,7 @@ class HelpDocumentProjectContributorTests {
 		assertThat(lines).containsExactly("# Getting Started", "", "### Guides",
 				"The following guides illustrates how to use certain features concretely:",
 				"", "* [test](https://test.example.com)",
-				"* [test2](https://test2.example.com)", "", "# Next Steps", "");
+				"* [test2](https://test2.example.com)", "");
 	}
 
 	@Test
@@ -69,7 +79,7 @@ class HelpDocumentProjectContributorTests {
 				"### Reference Documentation",
 				"For further reference, please consider the following sections:", "",
 				"* [doc](https://test.example.com)",
-				"* [doc2](https://test2.example.com)", "", "# Next Steps", "");
+				"* [doc2](https://test2.example.com)", "");
 	}
 
 	@Test
@@ -80,7 +90,7 @@ class HelpDocumentProjectContributorTests {
 		List<String> lines = generateDocument(document);
 		assertThat(lines).containsExactly("# Getting Started", "", "### Additional Links",
 				"These additional references should also help you:", "",
-				"* [Something](https://test.example.com)", "", "# Next Steps", "");
+				"* [Something](https://test.example.com)", "");
 	}
 
 	@Test
@@ -89,8 +99,7 @@ class HelpDocumentProjectContributorTests {
 		document.addSection((writer) -> writer
 				.println(String.format("# My test section%n%n    * Test")));
 		List<String> lines = generateDocument(document);
-		assertThat(lines).containsExactly("# Getting Started", "", "# My test section",
-				"", "    * Test", "# Next Steps", "");
+		assertThat(lines).containsExactly("# My test section", "", "    * Test");
 	}
 
 	@Test
@@ -103,7 +112,7 @@ class HelpDocumentProjectContributorTests {
 		assertThat(lines).containsExactly("# Getting Started", "", "### Guides",
 				"The following guides illustrates how to use certain features concretely:",
 				"", "* [test](https://test.example.com)", "", "# My test section", "",
-				"    * Test", "# Next Steps", "");
+				"    * Test");
 	}
 
 	private List<String> generateDocument(HelpDocument document) throws IOException {

@@ -364,7 +364,7 @@ class ProjectGeneratorTests {
 				"test/demo-app/pom.xml", "test/demo-app/mvnw", "test/demo-app/mvnw.cmd",
 				"test/demo-app/.mvn/wrapper/MavenWrapperDownloader.java",
 				"test/demo-app/.mvn/wrapper/maven-wrapper.properties",
-				"test/demo-app/.mvn/wrapper/maven-wrapper.jar", "test/demo-app/HELP.md",
+				"test/demo-app/.mvn/wrapper/maven-wrapper.jar",
 				"test/demo-app/src/main/java/com/example/DemoApplication.java",
 				"test/demo-app/src/main/resources/application.properties",
 				"test/demo-app/src/test/java/com/example/DemoApplicationTests.java");
