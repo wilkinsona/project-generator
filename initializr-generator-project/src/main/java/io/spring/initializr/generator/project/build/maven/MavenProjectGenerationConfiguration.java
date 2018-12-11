@@ -60,6 +60,8 @@ public class MavenProjectGenerationConfiguration {
 	public BuildCustomizer<MavenBuild> defaultMavenConfigurationContributor(
 			ProjectDescription projectDescription) {
 		return (mavenBuild) -> {
+			mavenBuild.setName(projectDescription.getName());
+			mavenBuild.setDescription(projectDescription.getDescription());
 			mavenBuild.setProperty("project.build.sourceEncoding", "UTF-8");
 			mavenBuild.setProperty("project.reporting.outputEncoding", "UTF-8");
 			mavenBuild.setProperty("java.version", "1.8");

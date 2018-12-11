@@ -47,6 +47,10 @@ public class ProjectDescription {
 
 	private String artifactId;
 
+	private String name;
+
+	private String description;
+
 	private String applicationName;
 
 	private String packageName;
@@ -99,6 +103,22 @@ public class ProjectDescription {
 
 	public void setArtifactId(String artifactId) {
 		this.artifactId = artifactId;
+	}
+
+	public String getName() {
+		return this.name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public String getDescription() {
+		return this.description;
+	}
+
+	public void setDescription(String description) {
+		this.description = description;
 	}
 
 	public Dependency addDependency(String id, Dependency dependency) {
