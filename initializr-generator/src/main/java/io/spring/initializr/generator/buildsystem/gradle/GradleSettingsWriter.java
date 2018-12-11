@@ -30,7 +30,7 @@ public class GradleSettingsWriter {
 
 	public void writeTo(IndentingWriter writer, GradleBuild build) throws IOException {
 		writePluginManagement(writer, build);
-		writer.println("rootProject.name = '" + build.getName() + "'");
+		writer.println("rootProject.name = '" + build.getArtifact() + "'");
 	}
 
 	private void writePluginManagement(IndentingWriter writer, GradleBuild build) {

@@ -33,6 +33,10 @@ public class MavenBuild extends Build {
 
 	private Parent parent;
 
+	private String name;
+
+	private String description;
+
 	private String sourceDirectory;
 
 	private String testSourceDirectory;
@@ -50,6 +54,22 @@ public class MavenBuild extends Build {
 
 	public Parent getParent() {
 		return this.parent;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public String getName() {
+		return this.name;
+	}
+
+	public void setDescription(String description) {
+		this.description = description;
+	}
+
+	public String getDescription() {
+		return this.description;
 	}
 
 	public void setProperty(String key, String value) {

@@ -48,6 +48,7 @@ public class MavenBuildWriter {
 			writeParent(writer, build);
 			writeProjectCoordinates(writer, build);
 			writePackaging(writer, build);
+			writeProjectName(writer, build);
 			writeProperties(writer, build);
 			writeDependencies(writer, build);
 			writeDependencyManagement(writer, build);
@@ -88,7 +89,7 @@ public class MavenBuildWriter {
 
 	private void writeProjectCoordinates(IndentingWriter writer, MavenBuild build) {
 		writeSingleElement(writer, "groupId", build.getGroup());
-		writeSingleElement(writer, "artifactId", build.getName());
+		writeSingleElement(writer, "artifactId", build.getArtifact());
 		writeSingleElement(writer, "version", "0.0.1-SNAPSHOT");
 	}
 
@@ -97,6 +98,11 @@ public class MavenBuildWriter {
 		if (!"jar".equals(packaging)) {
 			writeSingleElement(writer, "packaging", packaging);
 		}
+	}
+
+	private void writeProjectName(IndentingWriter writer, MavenBuild build) {
+		writeSingleElement(writer, "name", build.getName());
+		writeSingleElement(writer, "description", build.getDescription());
 	}
 
 	private void writeProperties(IndentingWriter writer, MavenBuild build) {

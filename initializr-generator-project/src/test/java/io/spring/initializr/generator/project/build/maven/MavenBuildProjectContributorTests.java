@@ -49,7 +49,7 @@ class MavenBuildProjectContributorTests {
 	void pomIsContributedToProject() throws Exception {
 		MavenBuild build = new MavenBuild();
 		build.setGroup("com.example.demo");
-		build.setName("demo");
+		build.setArtifact("demo");
 		build.parent("org.springframework.boot", "spring-boot-starter-parent",
 				"2.1.0.RELEASE");
 		List<String> lines = generatePom(build);
@@ -67,7 +67,7 @@ class MavenBuildProjectContributorTests {
 				});
 		MavenBuild build = new MavenBuild();
 		build.setGroup("com.example.demo");
-		build.setName("demo");
+		build.setArtifact("demo");
 		build.parent("org.springframework.boot", "spring-boot-starter-parent",
 				"2.1.0.RELEASE");
 		List<String> lines = generatePom(build, indentingWriterFactory);

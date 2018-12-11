@@ -29,7 +29,7 @@ public abstract class Build {
 
 	private String group;
 
-	private String name;
+	private String artifact;
 
 	private String version = "0.0.1-SNAPSHOT";
 
@@ -39,6 +39,10 @@ public abstract class Build {
 
 	private final List<MavenRepository> mavenRepositories = new ArrayList<>();
 
+	/**
+	 * Return the identifier of the group for the project.
+	 * @return the groupId
+	 */
 	public String getGroup() {
 		return this.group;
 	}
@@ -47,12 +51,16 @@ public abstract class Build {
 		this.group = group;
 	}
 
-	public String getName() {
-		return this.name;
+	/**
+	 * Return the identifier of the project.
+	 * @return the artifactId
+	 */
+	public String getArtifact() {
+		return this.artifact;
 	}
 
-	public void setName(String name) {
-		this.name = name;
+	public void setArtifact(String artifact) {
+		this.artifact = artifact;
 	}
 
 	public String getVersion() {

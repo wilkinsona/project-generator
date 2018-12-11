@@ -36,7 +36,7 @@ public class ProjectDescriptionBuildCustomizer implements BuildCustomizer<Build>
 	@Override
 	public void customize(Build build) {
 		build.setGroup(this.projectDescription.getGroupId());
-		build.setName(this.projectDescription.getArtifactId());
+		build.setArtifact(this.projectDescription.getArtifactId());
 		build.setVersion("0.0.1-SNAPSHOT");
 		this.projectDescription.getDependencies().values().forEach(build::addDependency);
 	}
