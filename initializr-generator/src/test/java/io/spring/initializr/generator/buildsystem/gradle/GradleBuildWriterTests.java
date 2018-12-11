@@ -25,6 +25,7 @@ import io.spring.initializr.generator.buildsystem.BillOfMaterials;
 import io.spring.initializr.generator.buildsystem.DependencyType;
 import io.spring.initializr.generator.buildsystem.MavenRepository;
 import io.spring.initializr.generator.io.IndentingWriter;
+import io.spring.initializr.generator.util.VersionProperty;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -125,6 +126,19 @@ class GradleBuildWriterTests {
 		assertThat(lines).containsSequence("compileKotlin {", "    kotlinOptions {",
 				"        freeCompilerArgs = ['-Xjsr305=strict']",
 				"        jvmTarget = '1.8'", "    }", "}");
+	}
+
+	@Test
+	void gradleBuildWithVersionProperties() throws IOException {
+		GradleBuild build = new GradleBuild();
+		build.addVersionProperty(VersionProperty.of("version.property"), "1.2.3");
+		build.addInternalVersionProperty("internal.property", "4.5.6");
+		build.addExternalVersionProperty("external.property", "7.8.9");
+		List<String> lines = generateBuild(build);
+		assertThat(lines).containsSequence("ext {",
+				"    set('external.property', '7.8.9')",
+				"    set('internalProperty', '4.5.6')",
+				"    set('versionProperty', '1.2.3')", "}");
 	}
 
 	@Test

@@ -19,6 +19,10 @@ package io.spring.initializr.generator.buildsystem;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
+
+import io.spring.initializr.generator.util.VersionProperty;
 
 /**
  * Build configuration for a project.
@@ -32,6 +36,8 @@ public abstract class Build {
 	private String artifact;
 
 	private String version = "0.0.1-SNAPSHOT";
+
+	private final Map<VersionProperty, String> versionProperties = new TreeMap<>();
 
 	private final List<Dependency> dependencies = new ArrayList<>();
 
@@ -69,6 +75,22 @@ public abstract class Build {
 
 	public void setVersion(String version) {
 		this.version = version;
+	}
+
+	public void addVersionProperty(VersionProperty versionProperty, String version) {
+		this.versionProperties.put(versionProperty, version);
+	}
+
+	public void addExternalVersionProperty(String propertyName, String version) {
+		addVersionProperty(VersionProperty.of(propertyName, false), version);
+	}
+
+	public void addInternalVersionProperty(String propertyName, String version) {
+		addVersionProperty(VersionProperty.of(propertyName, true), version);
+	}
+
+	public Map<VersionProperty, String> getVersionProperties() {
+		return Collections.unmodifiableMap(this.versionProperties);
 	}
 
 	public void addDependency(Dependency dependency) {

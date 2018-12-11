@@ -22,6 +22,7 @@ import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.TreeSet;
 import java.util.function.BiFunction;
 import java.util.function.Function;
@@ -32,6 +33,7 @@ import io.spring.initializr.generator.buildsystem.DependencyType;
 import io.spring.initializr.generator.buildsystem.MavenRepository;
 import io.spring.initializr.generator.buildsystem.gradle.GradleBuild.TaskCustomization;
 import io.spring.initializr.generator.io.IndentingWriter;
+import io.spring.initializr.generator.util.VersionProperty;
 
 /**
  * A {@link GradleBuild} writer for {@code build.gradle}.
@@ -49,6 +51,7 @@ public class GradleBuildWriter {
 		writer.println("sourceCompatibility = '" + build.getJavaVersion() + "'");
 		writer.println();
 		writeRepositories(writer, build, writer::println);
+		writeVersions(writer, build);
 		writeDependencies(writer, build);
 		writeBoms(writer, build);
 		writeTaskCustomizations(writer, build);
@@ -115,6 +118,17 @@ public class GradleBuildWriter {
 			return "mavenCentral()";
 		}
 		return "maven { url '" + repository.getUrl() + "' }";
+	}
+
+	private void writeVersions(IndentingWriter writer, GradleBuild build) {
+		writeNestedCollection(writer, "ext", build.getVersionProperties().entrySet(),
+				this::versionPropertyAsString, writer::println);
+	}
+
+	private String versionPropertyAsString(Entry<VersionProperty, String> entry) {
+		String key = (entry.getKey().isInternal() ? entry.getKey().toCamelCaseFormat()
+				: entry.getKey().toStandardFormat());
+		return String.format("set('%s', '%s')", key, entry.getValue());
 	}
 
 	private void writeDependencies(IndentingWriter writer, GradleBuild build) {

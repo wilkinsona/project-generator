@@ -24,6 +24,7 @@ import io.spring.initializr.generator.buildsystem.DependencyType;
 import io.spring.initializr.generator.buildsystem.MavenRepository;
 import io.spring.initializr.generator.io.IndentingWriter;
 import io.spring.initializr.generator.test.assertj.NodeAssert;
+import io.spring.initializr.generator.util.VersionProperty;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -94,6 +95,22 @@ class MavenBuildWriterTests {
 			assertThat(pom).textAtPath("/project/properties/java.version")
 					.isEqualTo("1.8");
 			assertThat(pom).textAtPath("/project/properties/alpha").isEqualTo("a");
+		});
+	}
+
+	@Test
+	void pomWithVersionProperties() throws Exception {
+		MavenBuild build = new MavenBuild();
+		build.addVersionProperty(VersionProperty.of("version.property"), "1.2.3");
+		build.addInternalVersionProperty("internal.property", "4.5.6");
+		build.addExternalVersionProperty("external.property", "7.8.9");
+		generatePom(build, (pom) -> {
+			assertThat(pom).textAtPath("/project/properties/version.property")
+					.isEqualTo("1.2.3");
+			assertThat(pom).textAtPath("/project/properties/internal.property")
+					.isEqualTo("4.5.6");
+			assertThat(pom).textAtPath("/project/properties/external.property")
+					.isEqualTo("7.8.9");
 		});
 	}
 

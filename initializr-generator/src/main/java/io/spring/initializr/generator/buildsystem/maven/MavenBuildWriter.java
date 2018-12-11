@@ -106,12 +106,16 @@ public class MavenBuildWriter {
 	}
 
 	private void writeProperties(IndentingWriter writer, MavenBuild build) {
-		if (build.getProperties().isEmpty()) {
+		if (build.getProperties().isEmpty() && build.getVersionProperties().isEmpty()) {
 			return;
 		}
 		writer.println();
-		writeElement(writer, "properties", () -> build.getProperties()
-				.forEach((key, value) -> writeSingleElement(writer, key, value)));
+		writeElement(writer, "properties", () -> {
+			build.getProperties()
+					.forEach((key, value) -> writeSingleElement(writer, key, value));
+			build.getVersionProperties().forEach((key,
+					value) -> writeSingleElement(writer, key.toStandardFormat(), value));
+		});
 	}
 
 	private void writeDependencies(IndentingWriter writer, MavenBuild build) {
