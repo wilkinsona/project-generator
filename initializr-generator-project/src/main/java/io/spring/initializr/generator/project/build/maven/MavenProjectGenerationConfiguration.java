@@ -62,11 +62,7 @@ public class MavenProjectGenerationConfiguration {
 		return (mavenBuild) -> {
 			mavenBuild.setName(projectDescription.getName());
 			mavenBuild.setDescription(projectDescription.getDescription());
-			mavenBuild.setProperty("project.build.sourceEncoding", "UTF-8");
-			mavenBuild.setProperty("project.reporting.outputEncoding", "UTF-8");
 			mavenBuild.setProperty("java.version", "1.8");
-			mavenBuild.parent("org.springframework.boot", "spring-boot-starter-parent",
-					projectDescription.getSpringBootVersion().toString());
 			mavenBuild.plugin("org.springframework.boot", "spring-boot-maven-plugin");
 		};
 	}
