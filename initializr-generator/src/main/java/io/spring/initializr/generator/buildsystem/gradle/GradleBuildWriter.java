@@ -34,6 +34,7 @@ import io.spring.initializr.generator.buildsystem.MavenRepository;
 import io.spring.initializr.generator.buildsystem.gradle.GradleBuild.TaskCustomization;
 import io.spring.initializr.generator.io.IndentingWriter;
 import io.spring.initializr.generator.util.VersionProperty;
+import io.spring.initializr.generator.util.VersionReference;
 
 /**
  * A {@link GradleBuild} writer for {@code build.gradle}.
@@ -138,10 +139,11 @@ public class GradleBuildWriter {
 	}
 
 	private String dependencyAsString(Dependency dependency) {
-		return configurationForType(dependency.getType()) + " '" + dependency.getGroupId()
-				+ ":" + dependency.getArtifactId()
-				+ ((dependency.getVersion() == null) ? "" : ":" + dependency.getVersion())
-				+ "'";
+		String quoteStyle = determineQuoteStyle(dependency.getVersion());
+		String version = determineVersion(dependency.getVersion());
+		return configurationForType(dependency.getType()) + " " + quoteStyle
+				+ dependency.getGroupId() + ":" + dependency.getArtifactId()
+				+ ((version != null) ? ":" + version : "") + quoteStyle;
 	}
 
 	private void writeBoms(IndentingWriter writer, GradleBuild build) {
@@ -151,15 +153,34 @@ public class GradleBuildWriter {
 		}
 		boms.sort(Comparator.comparingInt(BillOfMaterials::getOrder).reversed());
 		writer.println("dependencyManagement {");
-		writer.indented(() -> {
-			writeNestedCollection(writer, "imports", boms, this::bomAsString);
-		});
+		writer.indented(
+				() -> writeNestedCollection(writer, "imports", boms, this::bomAsString));
 		writer.println("}");
 	}
 
 	private String bomAsString(BillOfMaterials bom) {
-		return "mavenBom '" + bom.getGroupId() + ":" + bom.getArtifactId() + ":"
-				+ bom.getVersion() + "'";
+		String quoteStyle = determineQuoteStyle(bom.getVersion());
+		String version = determineVersion(bom.getVersion());
+		return "mavenBom " + quoteStyle + bom.getGroupId() + ":" + bom.getArtifactId()
+				+ ":" + version + quoteStyle;
+	}
+
+	private String determineQuoteStyle(VersionReference versionReference) {
+		return (versionReference != null && versionReference.isProperty()) ? "\"" : "'";
+	}
+
+	private String determineVersion(VersionReference versionReference) {
+		if (versionReference != null) {
+			if (versionReference.isProperty()) {
+				VersionProperty property = versionReference.getProperty();
+				return "${"
+						+ (property.isInternal() ? property.toCamelCaseFormat()
+								: "property('" + property.toStandardFormat() + "')")
+						+ "}";
+			}
+			return versionReference.getValue();
+		}
+		return null;
 	}
 
 	private void writeTaskCustomizations(IndentingWriter writer, GradleBuild build) {

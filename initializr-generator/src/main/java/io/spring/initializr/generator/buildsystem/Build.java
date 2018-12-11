@@ -23,6 +23,7 @@ import java.util.Map;
 import java.util.TreeMap;
 
 import io.spring.initializr.generator.util.VersionProperty;
+import io.spring.initializr.generator.util.VersionReference;
 
 /**
  * Build configuration for a project.
@@ -104,8 +105,8 @@ public abstract class Build {
 		return dependency;
 	}
 
-	public Dependency addDependency(String groupId, String artifactId, String version,
-			DependencyType dependencyType) {
+	public Dependency addDependency(String groupId, String artifactId,
+			VersionReference version, DependencyType dependencyType) {
 		Dependency dependency = new Dependency(groupId, artifactId, version,
 				dependencyType);
 		this.dependencies.add(dependency);

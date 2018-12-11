@@ -34,6 +34,7 @@ import io.spring.initializr.generator.buildsystem.maven.MavenPlugin.Configuratio
 import io.spring.initializr.generator.buildsystem.maven.MavenPlugin.Execution;
 import io.spring.initializr.generator.buildsystem.maven.MavenPlugin.Setting;
 import io.spring.initializr.generator.io.IndentingWriter;
+import io.spring.initializr.generator.util.VersionReference;
 
 /**
  * A {@link MavenBuild} writer.
@@ -149,7 +150,8 @@ public class MavenBuildWriter {
 		writeElement(writer, "dependency", () -> {
 			writeSingleElement(writer, "groupId", dependency.getGroupId());
 			writeSingleElement(writer, "artifactId", dependency.getArtifactId());
-			writeSingleElement(writer, "version", dependency.getVersion());
+			writeSingleElement(writer, "version",
+					determineVersion(dependency.getVersion()));
 			writeSingleElement(writer, "scope", scopeForType(dependency.getType()));
 			if (isOptional(dependency.getType())) {
 				writeSingleElement(writer, "optional", Boolean.toString(true));
@@ -203,10 +205,19 @@ public class MavenBuildWriter {
 		writeElement(writer, "dependency", () -> {
 			writeSingleElement(writer, "groupId", bom.getGroupId());
 			writeSingleElement(writer, "artifactId", bom.getArtifactId());
-			writeSingleElement(writer, "version", bom.getVersion());
+			writeSingleElement(writer, "version", determineVersion(bom.getVersion()));
 			writeSingleElement(writer, "type", "pom");
 			writeSingleElement(writer, "scope", "import");
 		});
+	}
+
+	private String determineVersion(VersionReference versionReference) {
+		if (versionReference == null) {
+			return null;
+		}
+		return (versionReference.isProperty())
+				? "${" + versionReference.getProperty().toStandardFormat() + "}"
+				: versionReference.getValue();
 	}
 
 	private void writeBuild(IndentingWriter writer, MavenBuild build) {

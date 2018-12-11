@@ -16,6 +16,8 @@
 
 package io.spring.initializr.generator.buildsystem;
 
+import io.spring.initializr.generator.util.VersionReference;
+
 /**
  * A Bill of Materials (BOM) definition to be declared in a project's build configuration.
  *
@@ -27,15 +29,16 @@ public class BillOfMaterials {
 
 	private final String artifactId;
 
-	private final String version;
+	private final VersionReference version;
 
 	private final int order;
 
-	public BillOfMaterials(String groupId, String artifactId, String version) {
+	public BillOfMaterials(String groupId, String artifactId, VersionReference version) {
 		this(groupId, artifactId, version, Integer.MAX_VALUE);
 	}
 
-	public BillOfMaterials(String groupId, String artifactId, String version, int order) {
+	public BillOfMaterials(String groupId, String artifactId, VersionReference version,
+			int order) {
 		this.groupId = groupId;
 		this.artifactId = artifactId;
 		this.version = version;
@@ -50,7 +53,7 @@ public class BillOfMaterials {
 		return this.artifactId;
 	}
 
-	public String getVersion() {
+	public VersionReference getVersion() {
 		return this.version;
 	}
 

@@ -61,7 +61,7 @@ class KotlinDependenciesConfigurerTests {
 		assertThat(build.getDependencies().get(0).getArtifactId())
 				.isEqualTo("kotlin-stdlib-jdk8");
 		assertThat(build.getDependencies().get(0).getVersion())
-				.isEqualTo("${kotlin.version}");
+				.hasToString("${kotlin.version}");
 		assertThat(build.getDependencies().get(0).getType())
 				.isEqualTo(DependencyType.COMPILE);
 		assertThat(build.getDependencies().get(1).getGroupId())
@@ -69,7 +69,7 @@ class KotlinDependenciesConfigurerTests {
 		assertThat(build.getDependencies().get(1).getArtifactId())
 				.isEqualTo("kotlin-reflect");
 		assertThat(build.getDependencies().get(1).getVersion())
-				.isEqualTo("${kotlin.version}");
+				.hasToString("${kotlin.version}");
 	}
 
 	@Test

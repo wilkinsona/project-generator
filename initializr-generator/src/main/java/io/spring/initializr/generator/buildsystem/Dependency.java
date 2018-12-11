@@ -16,6 +16,8 @@
 
 package io.spring.initializr.generator.buildsystem;
 
+import io.spring.initializr.generator.util.VersionReference;
+
 /**
  * A dependency to be declared in a project's build configuration.
  *
@@ -27,7 +29,7 @@ public class Dependency implements Comparable<Dependency> {
 
 	private final String artifactId;
 
-	private final String version;
+	private final VersionReference version;
 
 	private final DependencyType type;
 
@@ -35,7 +37,7 @@ public class Dependency implements Comparable<Dependency> {
 		this(groupId, artifactId, null, type);
 	}
 
-	public Dependency(String groupId, String artifactId, String version,
+	public Dependency(String groupId, String artifactId, VersionReference version,
 			DependencyType type) {
 		this.groupId = groupId;
 		this.artifactId = artifactId;
@@ -60,11 +62,11 @@ public class Dependency implements Comparable<Dependency> {
 	}
 
 	/**
-	 * The version of the dependency. May be {@code null} for a dependency whose version
-	 * is expected to be provided by dependency management.
-	 * @return the version or {@code null}
+	 * The {@link VersionReference} of the dependency. May be {@code null} for a
+	 * dependency whose version is expected to be provided by dependency management.
+	 * @return the version reference or {@code null}
 	 */
-	public String getVersion() {
+	public VersionReference getVersion() {
 		return this.version;
 	}
 

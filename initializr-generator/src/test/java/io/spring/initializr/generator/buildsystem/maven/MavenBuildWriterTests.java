@@ -25,6 +25,7 @@ import io.spring.initializr.generator.buildsystem.MavenRepository;
 import io.spring.initializr.generator.io.IndentingWriter;
 import io.spring.initializr.generator.test.assertj.NodeAssert;
 import io.spring.initializr.generator.util.VersionProperty;
+import io.spring.initializr.generator.util.VersionReference;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -231,7 +232,7 @@ class MavenBuildWriterTests {
 		build.setGroup("com.example.demo");
 		build.setArtifact("demo");
 		build.addBom(new BillOfMaterials("com.example", "my-project-dependencies",
-				"1.0.0.RELEASE"));
+				VersionReference.ofValue("1.0.0.RELEASE")));
 		generatePom(build, (pom) -> {
 			NodeAssert dependency = pom
 					.nodeAtPath("/project/dependencyManagement/dependencies/dependency");
@@ -246,14 +247,14 @@ class MavenBuildWriterTests {
 		build.setGroup("com.example.demo");
 		build.setArtifact("demo");
 		build.addBom(new BillOfMaterials("com.example", "my-project-dependencies",
-				"1.0.0.RELEASE", 5));
+				VersionReference.ofValue("1.0.0.RELEASE"), 5));
 		build.addBom(new BillOfMaterials("com.example", "root-dependencies",
-				"2.1.0.RELEASE", 2));
+				VersionReference.ofProperty("root.version"), 2));
 		generatePom(build, (pom) -> {
 			NodeAssert dependencies = pom
 					.nodeAtPath("/project/dependencyManagement/dependencies");
 			NodeAssert firstBom = assertThat(dependencies).nodeAtPath("dependency[1]");
-			assertBom(firstBom, "com.example", "root-dependencies", "2.1.0.RELEASE");
+			assertBom(firstBom, "com.example", "root-dependencies", "${root.version}");
 			NodeAssert secondBom = assertThat(dependencies).nodeAtPath("dependency[2]");
 			assertBom(secondBom, "com.example", "my-project-dependencies",
 					"1.0.0.RELEASE");

@@ -21,6 +21,7 @@ import io.spring.initializr.generator.buildsystem.DependencyType;
 import io.spring.initializr.generator.buildsystem.maven.MavenBuild;
 import io.spring.initializr.generator.project.build.BuildCustomizer;
 import io.spring.initializr.generator.util.Version;
+import io.spring.initializr.generator.util.VersionReference;
 
 /**
  * {@link BuildCustomizer} that adds the dependencies required by projects written in
@@ -38,17 +39,17 @@ class KotlinDependenciesConfigurer implements BuildCustomizer<Build> {
 
 	@Override
 	public void customize(Build build) {
-		String version = determineDependencyVersion(build);
+		VersionReference version = determineDependencyVersion(build);
 		build.addDependency("org.jetbrains.kotlin", "kotlin-stdlib-jdk8", version,
 				DependencyType.COMPILE);
 		build.addDependency("org.jetbrains.kotlin", "kotlin-reflect", version,
 				DependencyType.COMPILE);
 	}
 
-	private String determineDependencyVersion(Build build) {
+	private VersionReference determineDependencyVersion(Build build) {
 		if (build instanceof MavenBuild
 				&& this.springBootVersion.compareTo(Version.parse("2.0.0.M1")) <= 0) {
-			return "${kotlin.version}";
+			return VersionReference.ofProperty("kotlin.version");
 		}
 		return null;
 	}

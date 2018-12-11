@@ -26,6 +26,7 @@ import io.spring.initializr.generator.buildsystem.DependencyType;
 import io.spring.initializr.generator.buildsystem.MavenRepository;
 import io.spring.initializr.generator.io.IndentingWriter;
 import io.spring.initializr.generator.util.VersionProperty;
+import io.spring.initializr.generator.util.VersionReference;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -145,10 +146,22 @@ class GradleBuildWriterTests {
 	void gradleBuildWithVersionedDependency() throws IOException {
 		GradleBuild build = new GradleBuild();
 		build.addDependency("org.jetbrains.kotlin", "kotlin-stdlib-jdk8",
-				"${kotlinVersion}", DependencyType.COMPILE);
+				VersionReference.ofProperty("kotlin.version"), DependencyType.COMPILE);
 		List<String> lines = generateBuild(build);
 		assertThat(lines).containsSequence("dependencies {",
-				"    implementation 'org.jetbrains.kotlin:kotlin-stdlib-jdk8:${kotlinVersion}'",
+				"    implementation \"org.jetbrains.kotlin:kotlin-stdlib-jdk8:${kotlinVersion}\"",
+				"}");
+	}
+
+	@Test
+	void gradleBuildWithExternalVersionedDependency() throws IOException {
+		GradleBuild build = new GradleBuild();
+		build.addDependency("com.example", "acme",
+				VersionReference.ofProperty(VersionProperty.of("acme.version", false)),
+				DependencyType.COMPILE);
+		List<String> lines = generateBuild(build);
+		assertThat(lines).containsSequence("dependencies {",
+				"    implementation \"com.example:acme:${property('acme.version')}\"",
 				"}");
 	}
 
@@ -166,7 +179,7 @@ class GradleBuildWriterTests {
 	void gradleBuildWithBom() throws IOException {
 		GradleBuild build = new GradleBuild();
 		build.addBom(new BillOfMaterials("com.example", "my-project-dependencies",
-				"1.0.0.RELEASE"));
+				VersionReference.ofValue("1.0.0.RELEASE")));
 		List<String> lines = generateBuild(build);
 		assertThat(lines).containsSequence("dependencyManagement {", "    imports {",
 				"        mavenBom 'com.example:my-project-dependencies:1.0.0.RELEASE'",
@@ -177,14 +190,14 @@ class GradleBuildWriterTests {
 	void gradleBuildWithOrderedBoms() throws IOException {
 		GradleBuild build = new GradleBuild();
 		build.addBom(new BillOfMaterials("com.example", "my-project-dependencies",
-				"1.0.0.RELEASE", 5));
+				VersionReference.ofValue("1.0.0.RELEASE"), 5));
 		build.addBom(new BillOfMaterials("com.example", "root-dependencies",
-				"2.1.0.RELEASE", 2));
+				VersionReference.ofProperty("root.version"), 2));
 		List<String> lines = generateBuild(build);
 		assertThat(lines).containsSequence("dependencyManagement {", "    imports {",
 				"        mavenBom 'com.example:my-project-dependencies:1.0.0.RELEASE'",
-				"        mavenBom 'com.example:root-dependencies:2.1.0.RELEASE'", "    }",
-				"}");
+				"        mavenBom \"com.example:root-dependencies:${rootVersion}\"",
+				"    }", "}");
 	}
 
 	private List<String> generateBuild(GradleBuild build) throws IOException {
