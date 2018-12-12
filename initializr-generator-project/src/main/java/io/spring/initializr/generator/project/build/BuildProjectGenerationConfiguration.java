@@ -18,12 +18,10 @@ package io.spring.initializr.generator.project.build;
 
 import io.spring.initializr.generator.ProjectDescription;
 import io.spring.initializr.generator.buildsystem.Build;
-import io.spring.initializr.generator.buildsystem.Dependency;
 import io.spring.initializr.generator.buildsystem.DependencyType;
 import io.spring.initializr.generator.project.ProjectGenerationConfiguration;
 
 import org.springframework.context.annotation.Bean;
-import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 
 /**
@@ -48,28 +46,10 @@ public class BuildProjectGenerationConfiguration {
 	}
 
 	@Bean
-	@Order(Ordered.LOWEST_PRECEDENCE)
-	public BuildCustomizer<Build> defaultStarterContributor() {
-		return (build) -> {
-			if (build.getDependencies().values().stream()
-					.noneMatch(this::isSpringBootStarter)) {
-				build.addDependency("root_starter", "org.springframework.boot",
-						"spring-boot-starter", DependencyType.COMPILE);
-			}
-		};
-	}
-
-	@Bean
 	public SpringBootVersionRepositoriesBuildCustomizer repositoriesBuilderCustomizer(
 			ProjectDescription description) {
 		return new SpringBootVersionRepositoriesBuildCustomizer(
 				description.getSpringBootVersion());
-	}
-
-	private boolean isSpringBootStarter(Dependency dependency) {
-		return dependency.getGroupId().equals("org.springframework.boot")
-				&& dependency.getArtifactId().startsWith("spring-boot-starter")
-				&& dependency.getType() == DependencyType.COMPILE;
 	}
 
 }

@@ -27,6 +27,8 @@ import java.util.List;
 import java.util.stream.Stream;
 
 import io.spring.initializr.generator.ProjectDescription;
+import io.spring.initializr.generator.buildsystem.Dependency;
+import io.spring.initializr.generator.buildsystem.DependencyType;
 import io.spring.initializr.generator.buildsystem.gradle.GradleBuildSystem;
 import io.spring.initializr.generator.buildsystem.maven.MavenBuildSystem;
 import io.spring.initializr.generator.language.java.JavaLanguage;
@@ -109,6 +111,8 @@ class ProjectGeneratorTests {
 		description.setLanguage(new JavaLanguage());
 		description.setGroupId("com.example");
 		description.setArtifactId("demo");
+		description.addDependency("acme",
+				new Dependency("com.example", "acme", DependencyType.COMPILE));
 		Path project = this.projectGenerator.generate(description);
 		List<String> relativePaths = getRelativePathsOfProjectFiles(project);
 		assertThat(relativePaths).contains("build.gradle");
@@ -119,8 +123,7 @@ class ProjectGeneratorTests {
 				"apply plugin: 'io.spring.dependency-management'", "",
 				"group = 'com.example'", "version = '0.0.1-SNAPSHOT'",
 				"sourceCompatibility = '1.8'", "", "repositories {", "    mavenCentral()",
-				"}", "", "dependencies {",
-				"    implementation 'org.springframework.boot:spring-boot-starter'",
+				"}", "", "dependencies {", "    implementation 'com.example:acme'",
 				"    testImplementation 'org.springframework.boot:spring-boot-starter-test'",
 				"}", "");
 	}
