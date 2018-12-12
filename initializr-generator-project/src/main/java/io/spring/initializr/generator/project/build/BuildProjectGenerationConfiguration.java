@@ -36,7 +36,7 @@ public class BuildProjectGenerationConfiguration {
 
 	@Bean
 	public BuildCustomizer<Build> testStarterContributor() {
-		return (build) -> build.addDependency("org.springframework.boot",
+		return (build) -> build.addDependency("test", "org.springframework.boot",
 				"spring-boot-starter-test", DependencyType.TEST_COMPILE);
 	}
 
@@ -51,9 +51,10 @@ public class BuildProjectGenerationConfiguration {
 	@Order(Ordered.LOWEST_PRECEDENCE)
 	public BuildCustomizer<Build> defaultStarterContributor() {
 		return (build) -> {
-			if (build.getDependencies().stream().noneMatch(this::isSpringBootStarter)) {
-				build.addDependency("org.springframework.boot", "spring-boot-starter",
-						DependencyType.COMPILE);
+			if (build.getDependencies().values().stream()
+					.noneMatch(this::isSpringBootStarter)) {
+				build.addDependency("root_starter", "org.springframework.boot",
+						"spring-boot-starter", DependencyType.COMPILE);
 			}
 		};
 	}

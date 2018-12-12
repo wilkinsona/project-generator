@@ -18,6 +18,7 @@ package io.spring.initializr.generator.buildsystem;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -40,7 +41,7 @@ public abstract class Build {
 
 	private final Map<VersionProperty, String> versionProperties = new TreeMap<>();
 
-	private final List<Dependency> dependencies = new ArrayList<>();
+	private final Map<String, Dependency> dependencies = new LinkedHashMap<>();
 
 	private final List<BillOfMaterials> boms = new ArrayList<>();
 
@@ -94,27 +95,27 @@ public abstract class Build {
 		return Collections.unmodifiableMap(this.versionProperties);
 	}
 
-	public void addDependency(Dependency dependency) {
-		this.dependencies.add(dependency);
+	public void addDependency(String id, Dependency dependency) {
+		this.dependencies.put(id, dependency);
 	}
 
-	public Dependency addDependency(String groupId, String artifactId,
+	public Dependency addDependency(String id, String groupId, String artifactId,
 			DependencyType dependencyType) {
 		Dependency dependency = new Dependency(groupId, artifactId, dependencyType);
-		this.dependencies.add(dependency);
+		this.dependencies.put(id, dependency);
 		return dependency;
 	}
 
-	public Dependency addDependency(String groupId, String artifactId,
+	public Dependency addDependency(String id, String groupId, String artifactId,
 			VersionReference version, DependencyType dependencyType) {
 		Dependency dependency = new Dependency(groupId, artifactId, version,
 				dependencyType);
-		this.dependencies.add(dependency);
+		this.dependencies.put(id, dependency);
 		return dependency;
 	}
 
-	public List<Dependency> getDependencies() {
-		return Collections.unmodifiableList(this.dependencies);
+	public Map<String, Dependency> getDependencies() {
+		return Collections.unmodifiableMap(this.dependencies);
 	}
 
 	public void addBom(BillOfMaterials bom) {

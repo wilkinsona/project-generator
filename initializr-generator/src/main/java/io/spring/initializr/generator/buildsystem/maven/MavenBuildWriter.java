@@ -120,13 +120,13 @@ public class MavenBuildWriter {
 	}
 
 	private void writeDependencies(IndentingWriter writer, MavenBuild build) {
-		List<Dependency> dependencies = build.getDependencies();
+		Collection<Dependency> dependencies = build.getDependencies().values();
 		if (dependencies.isEmpty()) {
 			return;
 		}
 		writer.println();
 		writeElement(writer, "dependencies", () -> {
-			List<Dependency> compiledDependencies = writeDependencies(writer,
+			Collection<Dependency> compiledDependencies = writeDependencies(writer,
 					dependencies, DependencyType.COMPILE);
 			if (!compiledDependencies.isEmpty()) {
 				writer.println();
@@ -139,9 +139,9 @@ public class MavenBuildWriter {
 		});
 	}
 
-	private List<Dependency> writeDependencies(IndentingWriter writer,
-			List<Dependency> dependencies, DependencyType... types) {
-		List<Dependency> candidates = filterDependencies(dependencies, types);
+	private Collection<Dependency> writeDependencies(IndentingWriter writer,
+			Collection<Dependency> dependencies, DependencyType... types) {
+		Collection<Dependency> candidates = filterDependencies(dependencies, types);
 		writeCollection(writer, candidates, this::writeDependency);
 		return candidates;
 	}
@@ -159,8 +159,8 @@ public class MavenBuildWriter {
 		});
 	}
 
-	private static List<Dependency> filterDependencies(List<Dependency> dependencies,
-			DependencyType... types) {
+	private static Collection<Dependency> filterDependencies(
+			Collection<Dependency> dependencies, DependencyType... types) {
 		List<DependencyType> candidates = Arrays.asList(types);
 		return dependencies.stream().filter((dep) -> candidates.contains(dep.getType()))
 				.sorted(DependencyComparator.INSTANCE).collect(Collectors.toList());

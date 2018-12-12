@@ -134,7 +134,7 @@ public class GradleBuildWriter {
 
 	private void writeDependencies(IndentingWriter writer, GradleBuild build) {
 		writeNestedCollection(writer, "dependencies",
-				new TreeSet<>(build.getDependencies()), this::dependencyAsString,
+				new TreeSet<>(build.getDependencies().values()), this::dependencyAsString,
 				writer::println);
 	}
 
