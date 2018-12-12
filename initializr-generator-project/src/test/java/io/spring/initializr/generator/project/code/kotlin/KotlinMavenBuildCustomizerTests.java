@@ -36,7 +36,7 @@ class KotlinMavenBuildCustomizerTests {
 	@Test
 	void kotlinVersionPropertyIsConfigured() {
 		MavenBuild build = new MavenBuild();
-		new KotlinMavenBuildCustomizer(new KotlinProjectSettings("1.2.70"))
+		new KotlinMavenBuildCustomizer(new SimpleKotlinProjectSettings("1.2.70"))
 				.customize(build);
 		assertThat(build.getProperties()).hasSize(1);
 		assertThat(build.getProperties()).containsEntry("kotlin.version", "1.2.70");
@@ -45,7 +45,7 @@ class KotlinMavenBuildCustomizerTests {
 	@Test
 	void buildSourceDirectoriesAreConfigured() {
 		MavenBuild build = new MavenBuild();
-		new KotlinMavenBuildCustomizer(new KotlinProjectSettings("1.2.70"))
+		new KotlinMavenBuildCustomizer(new SimpleKotlinProjectSettings("1.2.70"))
 				.customize(build);
 		assertThat(build.getSourceDirectory())
 				.isEqualTo("${project.basedir}/src/main/kotlin");
@@ -56,7 +56,7 @@ class KotlinMavenBuildCustomizerTests {
 	@Test
 	void kotlinMavenPluginIsConfigured() {
 		MavenBuild build = new MavenBuild();
-		new KotlinMavenBuildCustomizer(new KotlinProjectSettings("1.2.70"))
+		new KotlinMavenBuildCustomizer(new SimpleKotlinProjectSettings("1.2.70"))
 				.customize(build);
 		assertThat(build.getPlugins()).hasSize(1);
 		MavenPlugin kotlinPlugin = build.getPlugins().get(0);

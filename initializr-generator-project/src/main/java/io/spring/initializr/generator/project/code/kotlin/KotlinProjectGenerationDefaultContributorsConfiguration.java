@@ -73,11 +73,6 @@ class KotlinProjectGenerationDefaultContributorsConfiguration {
 	static class SpringBoot15KotlinProjectGenerationConfiguration {
 
 		@Bean
-		public KotlinProjectSettings kotlinProjectSettings() {
-			return new KotlinProjectSettings("1.2.51");
-		}
-
-		@Bean
 		public MainCompilationUnitCustomizer<KotlinTypeDeclaration, KotlinCompilationUnit> boot15MainFunctionContributor() {
 			return (compilationUnit) -> {
 				compilationUnit.addTopLevelFunction(KotlinFunctionDeclaration
@@ -97,11 +92,6 @@ class KotlinProjectGenerationDefaultContributorsConfiguration {
 	@Configuration
 	@ConditionalOnSpringBootVersion("2.0.0.M1")
 	static class SpringBoot2AndLaterKotlinProjectGenerationConfiguration {
-
-		@Bean
-		public KotlinProjectSettings kotlinProjectSettings() {
-			return new KotlinProjectSettings("1.2.70");
-		}
 
 		@Bean
 		public MainCompilationUnitCustomizer<KotlinTypeDeclaration, KotlinCompilationUnit> mainFunctionContributor() {

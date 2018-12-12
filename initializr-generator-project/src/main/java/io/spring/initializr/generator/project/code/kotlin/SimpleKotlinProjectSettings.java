@@ -16,37 +16,22 @@
 
 package io.spring.initializr.generator.project.code.kotlin;
 
-import java.util.Collections;
-import java.util.List;
-
 /**
  * Commons settings for Kotlin projects.
  *
  * @author Andy Wilkinson
- * @author Stephane Nicoll
  */
-public interface KotlinProjectSettings {
+public class SimpleKotlinProjectSettings implements KotlinProjectSettings {
 
-	/**
-	 * Return the version of Kotlin to use.
-	 * @return the kotlin version
-	 */
-	String getVersion();
+	private final String version;
 
-	/**
-	 * Return the {@code jvmTarget} to use.
-	 * @return the jvm target
-	 */
-	default String getJvmTarget() {
-		return "1.8";
+	public SimpleKotlinProjectSettings(String version) {
+		this.version = version;
 	}
 
-	/**
-	 * Return the compiler arguments.
-	 * @return the compiler arguments
-	 */
-	default List<String> getCompilerArgs() {
-		return Collections.singletonList("-Xjsr305=strict");
+	@Override
+	public String getVersion() {
+		return this.version;
 	}
 
 }

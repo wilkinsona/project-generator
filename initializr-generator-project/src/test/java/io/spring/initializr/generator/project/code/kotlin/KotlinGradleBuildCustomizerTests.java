@@ -32,7 +32,7 @@ class KotlinGradleBuildCustomizerTests {
 	@Test
 	void kotlinPluginsAreConfigured() {
 		GradleBuild build = new GradleBuild();
-		new KotlinGradleBuildCustomizer(new KotlinProjectSettings("1.2.70"))
+		new KotlinGradleBuildCustomizer(new SimpleKotlinProjectSettings("1.2.70"))
 				.customize(build);
 		assertThat(build.getPlugins()).hasSize(2);
 		assertThat(build.getPlugins().get(0).getId())
@@ -46,7 +46,7 @@ class KotlinGradleBuildCustomizerTests {
 	@Test
 	void kotlinCompilationTasksAreCustomized() {
 		GradleBuild build = new GradleBuild();
-		new KotlinGradleBuildCustomizer(new KotlinProjectSettings("1.2.70"))
+		new KotlinGradleBuildCustomizer(new SimpleKotlinProjectSettings("1.2.70"))
 				.customize(build);
 		assertThat(build.getTaskCustomizations()).hasSize(2);
 		assertThat(build.getTaskCustomizations()).containsKeys("compileKotlin",

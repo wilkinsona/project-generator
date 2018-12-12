@@ -20,17 +20,27 @@ import java.nio.file.Files;
 
 import io.spring.initializr.generator.io.IndentingWriterFactory;
 import io.spring.initializr.generator.io.SimpleIndentStrategy;
+import io.spring.initializr.generator.language.kotlin.ConditionalOnKotlinLanguage;
+import io.spring.initializr.generator.project.code.kotlin.KotlinProjectSettings;
+import io.spring.initializr.generator.project.code.kotlin.SimpleKotlinProjectSettings;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 /**
- * {@link ProjectGenerator} default configuration.
+ * {@link ProjectGenerator} default configuration used for configure the infrastructure
+ * locally. For internal purpose only.
  *
  * @author Stephane Nicoll
  */
 @Configuration
 public class ProjectGeneratorDefaultConfiguration {
+
+	@Bean
+	@ConditionalOnKotlinLanguage
+	public KotlinProjectSettings kotlinProjectSettings() {
+		return new SimpleKotlinProjectSettings("1.2.70");
+	}
 
 	@Bean
 	public ProjectDirectoryFactory projectDirectoryFactory() {
