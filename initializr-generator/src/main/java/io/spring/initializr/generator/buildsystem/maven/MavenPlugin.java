@@ -165,7 +165,7 @@ public class MavenPlugin {
 	 */
 	public static final class Configuration {
 
-		private List<Setting> settings = new ArrayList<Setting>();
+		private final List<Setting> settings;
 
 		private Configuration(List<Setting> settings) {
 			this.settings = settings;
