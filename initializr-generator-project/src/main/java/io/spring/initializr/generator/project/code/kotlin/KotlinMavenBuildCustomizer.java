@@ -47,6 +47,7 @@ class KotlinMavenBuildCustomizer implements BuildCustomizer<MavenBuild> {
 			configuration.add("compilerPlugins", (compilerPlugins) -> {
 				compilerPlugins.add("plugin", "spring");
 			});
+			configuration.add("jvmTarget", this.settings.getJvmTarget());
 		});
 		kotlinMavenPlugin.execution("compile",
 				(compile) -> compile.phase("compile").goal("compile"));

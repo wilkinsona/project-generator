@@ -65,7 +65,7 @@ class KotlinMavenBuildCustomizerTests {
 		assertThat(kotlinPlugin.getVersion()).isEqualTo("${kotlin.version}");
 		Configuration configuration = kotlinPlugin.getConfiguration();
 		assertThat(configuration).isNotNull();
-		assertThat(configuration.getSettings()).hasSize(2);
+		assertThat(configuration.getSettings()).hasSize(3);
 		Setting args = configuration.getSettings().get(0);
 		assertThat(args.getName()).isEqualTo("args");
 		assertThat(args.getValue()).asList().hasSize(1);
@@ -78,6 +78,9 @@ class KotlinMavenBuildCustomizerTests {
 		assertThat(compilerPlugins.getValue()).asList().element(0)
 				.hasFieldOrPropertyWithValue("name", "plugin")
 				.hasFieldOrPropertyWithValue("value", "spring");
+		Setting jvmTarget = configuration.getSettings().get(2);
+		assertThat(jvmTarget.getName()).isEqualTo("jvmTarget");
+		assertThat(jvmTarget.getValue()).isEqualTo("1.8");
 		assertThat(kotlinPlugin.getExecutions()).hasSize(2);
 		Execution compile = kotlinPlugin.getExecutions().get(0);
 		assertThat(compile.getId()).isEqualTo("compile");
