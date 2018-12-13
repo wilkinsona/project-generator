@@ -23,7 +23,7 @@ import io.spring.initializr.generator.util.VersionReference;
  *
  * @author Andy Wilkinson
  */
-public class Dependency implements Comparable<Dependency> {
+public class Dependency {
 
 	private final String groupId;
 
@@ -76,20 +76,6 @@ public class Dependency implements Comparable<Dependency> {
 	 */
 	public DependencyType getType() {
 		return this.type;
-	}
-
-	@Override
-	public int compareTo(Dependency another) {
-		int typeComparison = Integer.compare(getType().ordinal(),
-				another.getType().ordinal());
-		if (typeComparison != 0) {
-			return typeComparison;
-		}
-		int groupComparison = getGroupId().compareTo(another.getGroupId());
-		if (groupComparison != 0) {
-			return groupComparison;
-		}
-		return getArtifactId().compareTo(another.getArtifactId());
 	}
 
 }

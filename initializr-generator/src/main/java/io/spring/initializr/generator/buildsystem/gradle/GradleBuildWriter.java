@@ -18,17 +18,21 @@ package io.spring.initializr.generator.buildsystem.gradle;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Comparator;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.TreeSet;
+import java.util.Set;
 import java.util.function.BiFunction;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import io.spring.initializr.generator.buildsystem.BillOfMaterials;
 import io.spring.initializr.generator.buildsystem.Dependency;
+import io.spring.initializr.generator.buildsystem.DependencyComparator;
 import io.spring.initializr.generator.buildsystem.DependencyType;
 import io.spring.initializr.generator.buildsystem.MavenRepository;
 import io.spring.initializr.generator.buildsystem.gradle.GradleBuild.TaskCustomization;
@@ -133,9 +137,20 @@ public class GradleBuildWriter {
 	}
 
 	private void writeDependencies(IndentingWriter writer, GradleBuild build) {
-		writeNestedCollection(writer, "dependencies",
-				new TreeSet<>(build.getDependencies().values()), this::dependencyAsString,
-				writer::println);
+		Collection<Dependency> allDependencies = build.getDependencies().values();
+		Set<Dependency> dependencies = new LinkedHashSet<>();
+		dependencies.addAll(filterDependencies(allDependencies, DependencyType.COMPILE));
+		dependencies.addAll(filterDependencies(allDependencies, DependencyType.RUNTIME));
+		dependencies.addAll(
+				filterDependencies(allDependencies, DependencyType.ANNOTATION_PROCESSOR));
+		dependencies.addAll(
+				filterDependencies(allDependencies, DependencyType.PROVIDED_RUNTIME));
+		dependencies
+				.addAll(filterDependencies(allDependencies, DependencyType.TEST_COMPILE));
+		dependencies
+				.addAll(filterDependencies(allDependencies, DependencyType.TEST_RUNTIME));
+		writeNestedCollection(writer, "dependencies", dependencies,
+				this::dependencyAsString, writer::println);
 	}
 
 	private String dependencyAsString(Dependency dependency) {
@@ -253,6 +268,13 @@ public class GradleBuildWriter {
 	private <T, U> void writeMap(IndentingWriter writer, Map<T, U> map,
 			BiFunction<T, U, String> converter) {
 		map.forEach((key, value) -> writer.println(converter.apply(key, value)));
+	}
+
+	private static Collection<Dependency> filterDependencies(
+			Collection<Dependency> dependencies, DependencyType... types) {
+		List<DependencyType> candidates = Arrays.asList(types);
+		return dependencies.stream().filter((dep) -> candidates.contains(dep.getType()))
+				.sorted(DependencyComparator.INSTANCE).collect(Collectors.toList());
 	}
 
 	private String configurationForType(DependencyType type) {
