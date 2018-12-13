@@ -18,14 +18,24 @@ package io.spring.initializr.generator.project.build;
 
 import io.spring.initializr.generator.buildsystem.Build;
 
+import org.springframework.core.Ordered;
+
 /**
- * Callback for customizing a project's {@link Build}.
+ * Callback for customizing a project's {@link Build}. Invoked with an {@link Ordered
+ * order} of {@code 0} by default, considering overriding {@link #getOrder()} to customize
+ * this behaviour.
  *
  * @param <B> {@link Build} type handled by this customizer
  * @author Andy Wilkinson
  */
-public interface BuildCustomizer<B extends Build> {
+@FunctionalInterface
+public interface BuildCustomizer<B extends Build> extends Ordered {
 
 	void customize(B build);
+
+	@Override
+	default int getOrder() {
+		return 0;
+	}
 
 }

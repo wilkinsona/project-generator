@@ -18,14 +18,24 @@ package io.spring.initializr.generator.project.code;
 
 import io.spring.initializr.generator.language.TypeDeclaration;
 
+import org.springframework.core.Ordered;
+
 /**
- * Callback for configuring the generated project's servlet initializer.
+ * Callback for configuring the generated project's servlet initializer. Invoked with an
+ * {@link Ordered order} of {@code 0} by default, considering overriding
+ * {@link #getOrder()} to customize this behaviour.
  *
  * @param <T> type declaration that this customizer can handle
  * @author Andy Wilkinson
  */
-public interface ServletInitializerCustomizer<T extends TypeDeclaration> {
+@FunctionalInterface
+public interface ServletInitializerCustomizer<T extends TypeDeclaration> extends Ordered {
 
 	void customize(T typeDeclaration);
+
+	@Override
+	default int getOrder() {
+		return 0;
+	}
 
 }

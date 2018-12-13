@@ -34,8 +34,6 @@ import io.spring.initializr.generator.util.LambdaSafe;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.Ordered;
-import org.springframework.core.annotation.Order;
 
 /**
  * Configuration for contributions specific to the generation of a project that will use
@@ -55,7 +53,6 @@ public class GradleProjectGenerationConfiguration {
 	}
 
 	@Bean
-	@Order(Ordered.HIGHEST_PRECEDENCE)
 	public GitIgnoreContributor gradleGitIgnoreContributor() {
 		return new GitIgnoreContributor("classpath:gradle/gitignore");
 	}

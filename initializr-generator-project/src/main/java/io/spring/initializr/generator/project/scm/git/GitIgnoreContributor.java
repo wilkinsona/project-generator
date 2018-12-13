@@ -18,6 +18,8 @@ package io.spring.initializr.generator.project.scm.git;
 
 import io.spring.initializr.generator.SingleResourceProjectContributor;
 
+import org.springframework.core.Ordered;
+
 /**
  * A {@link SingleResourceProjectContributor} that contributes a {@code .gitignore} file
  * to a project.
@@ -32,6 +34,11 @@ public class GitIgnoreContributor extends SingleResourceProjectContributor {
 
 	public GitIgnoreContributor(String resourcePattern) {
 		super(".gitignore", resourcePattern);
+	}
+
+	@Override
+	public int getOrder() {
+		return Ordered.HIGHEST_PRECEDENCE;
 	}
 
 }

@@ -20,16 +20,27 @@ import io.spring.initializr.generator.language.CompilationUnit;
 import io.spring.initializr.generator.language.SourceCode;
 import io.spring.initializr.generator.language.TypeDeclaration;
 
+import org.springframework.core.Ordered;
+
 /**
- * Callback for customizing the application's main source code.
+ * Callback for customizing the application's main source code. Invoked with an
+ * {@link Ordered order} of {@code 0} by default, considering overriding
+ * {@link #getOrder()} to customize this behaviour.
  *
  * @param <T> language-specific type declaration
  * @param <C> language-specific compilation unit
  * @param <S> language-specific source code
  * @author Andy Wilkinson
  */
-public interface MainSourceCodeCustomizer<T extends TypeDeclaration, C extends CompilationUnit<T>, S extends SourceCode<T, C>> {
+@FunctionalInterface
+public interface MainSourceCodeCustomizer<T extends TypeDeclaration, C extends CompilationUnit<T>, S extends SourceCode<T, C>>
+		extends Ordered {
 
 	void customize(S sourceCode);
+
+	@Override
+	default int getOrder() {
+		return 0;
+	}
 
 }

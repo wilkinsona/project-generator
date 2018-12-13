@@ -19,7 +19,6 @@ package io.spring.initializr.generator.project.configuration;
 import io.spring.initializr.generator.project.ProjectGenerationConfiguration;
 
 import org.springframework.context.annotation.Bean;
-import org.springframework.core.annotation.Order;
 
 /**
  * Configuration for application-related contributions to a generated project.
@@ -30,7 +29,6 @@ import org.springframework.core.annotation.Order;
 public class ApplicationConfigurationProjectGenerationConfiguration {
 
 	@Bean
-	@Order(0)
 	public ApplicationPropertiesContributor applicationPropertiesContributor() {
 		return new ApplicationPropertiesContributor();
 	}

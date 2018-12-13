@@ -22,7 +22,6 @@ import io.spring.initializr.generator.buildsystem.DependencyType;
 import io.spring.initializr.generator.project.ProjectGenerationConfiguration;
 
 import org.springframework.context.annotation.Bean;
-import org.springframework.core.annotation.Order;
 
 /**
  * Project generation configuration for projects using any build system.
@@ -39,7 +38,6 @@ public class BuildProjectGenerationConfiguration {
 	}
 
 	@Bean
-	@Order(0)
 	public ProjectDescriptionBuildCustomizer projectDescriptionBuildCustomizer(
 			ProjectDescription projectDescription) {
 		return new ProjectDescriptionBuildCustomizer(projectDescription);

@@ -16,14 +16,23 @@
 
 package io.spring.initializr.generator.project.documentation;
 
+import org.springframework.core.Ordered;
+
 /**
- * Callback for customizing a project's {@link HelpDocument}.
+ * Callback for customizing a project's {@link HelpDocument}. Invoked with an
+ * {@link Ordered order} of {@code 0} by default, considering overriding
+ * {@link #getOrder()} to customize this behaviour.
  *
  * @author Stephane Nicoll
  */
 @FunctionalInterface
-public interface HelpDocumentCustomizer {
+public interface HelpDocumentCustomizer extends Ordered {
 
 	void customize(HelpDocument document);
+
+	@Override
+	default int getOrder() {
+		return 0;
+	}
 
 }
