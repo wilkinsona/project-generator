@@ -37,6 +37,8 @@ public class ProjectDescription {
 
 	private Version springBootVersion;
 
+	private String javaVersion;
+
 	private BuildSystem buildSystem;
 
 	private Packaging packaging;
@@ -63,6 +65,14 @@ public class ProjectDescription {
 
 	public void setSpringBootVersion(Version springBootVersion) {
 		this.springBootVersion = springBootVersion;
+	}
+
+	public String getJavaVersion() {
+		return this.javaVersion;
+	}
+
+	public void setJavaVersion(String javaVersion) {
+		this.javaVersion = javaVersion;
 	}
 
 	public BuildSystem getBuildSystem() {

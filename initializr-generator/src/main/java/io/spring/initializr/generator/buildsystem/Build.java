@@ -166,8 +166,4 @@ public abstract class Build {
 		return Collections.unmodifiableList(this.pluginRepositories);
 	}
 
-	public String getJavaVersion() {
-		return "1.8";
-	}
-
 }

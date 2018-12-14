@@ -53,7 +53,7 @@ public class GradleBuildWriter {
 		writePlugins(writer, build);
 		writer.println("group = '" + build.getGroup() + "'");
 		writer.println("version = '" + build.getVersion() + "'");
-		writer.println("sourceCompatibility = '" + build.getJavaVersion() + "'");
+		writer.println("sourceCompatibility = '" + build.getSourceCompatibility() + "'");
 		writer.println();
 		writeRepositories(writer, build, writer::println);
 		writeVersions(writer, build);

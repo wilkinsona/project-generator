@@ -111,6 +111,7 @@ class ProjectGeneratorTests {
 		description.setLanguage(new JavaLanguage());
 		description.setGroupId("com.example");
 		description.setArtifactId("demo");
+		description.setJavaVersion("11");
 		description.addDependency("acme",
 				new Dependency("com.example", "acme", DependencyType.COMPILE));
 		Path project = this.projectGenerator.generate(description);
@@ -122,7 +123,7 @@ class ProjectGeneratorTests {
 				"    id 'java'", "}", "",
 				"apply plugin: 'io.spring.dependency-management'", "",
 				"group = 'com.example'", "version = '0.0.1-SNAPSHOT'",
-				"sourceCompatibility = '1.8'", "", "repositories {", "    mavenCentral()",
+				"sourceCompatibility = '11'", "", "repositories {", "    mavenCentral()",
 				"}", "", "dependencies {", "    implementation 'com.example:acme'",
 				"    testImplementation 'org.springframework.boot:spring-boot-starter-test'",
 				"}", "");

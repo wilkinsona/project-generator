@@ -39,6 +39,23 @@ import static org.assertj.core.api.Assertions.assertThat;
 class GradleBuildWriterTests {
 
 	@Test
+	void gradleBuildWithCoordinates() throws IOException {
+		GradleBuild build = new GradleBuild();
+		build.setGroup("com.example");
+		build.setVersion("0.0.1-SNAPSHOT");
+		List<String> lines = generateBuild(build);
+		assertThat(lines).contains("group = 'com.example'", "version = '0.0.1-SNAPSHOT'");
+	}
+
+	@Test
+	void gradleBuildWithSourceCompatibility() throws IOException {
+		GradleBuild build = new GradleBuild();
+		build.setSourceCompatibility("11");
+		List<String> lines = generateBuild(build);
+		assertThat(lines).contains("sourceCompatibility = '11'");
+	}
+
+	@Test
 	void gradleBuildWithBuildscriptDependency() throws IOException {
 		GradleBuild build = new GradleBuild();
 		build.addRepository(MavenRepository.MAVEN_CENTRAL);

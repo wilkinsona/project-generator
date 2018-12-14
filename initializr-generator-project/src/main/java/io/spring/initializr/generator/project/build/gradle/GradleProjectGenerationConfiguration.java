@@ -65,6 +65,13 @@ public class GradleProjectGenerationConfiguration {
 	}
 
 	@Bean
+	public BuildCustomizer<GradleBuild> defaultGradleBuildCustomizer(
+			ProjectDescription projectDescription) {
+		return (gradleBuild) -> gradleBuild
+				.setSourceCompatibility(projectDescription.getJavaVersion());
+	}
+
+	@Bean
 	@ConditionalOnJavaLanguage
 	public BuildCustomizer<GradleBuild> javaPluginContributor() {
 		return (gradleBuild) -> gradleBuild.addPlugin("java");

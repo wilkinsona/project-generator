@@ -59,7 +59,7 @@ public class MavenProjectGenerationConfiguration {
 		return (mavenBuild) -> {
 			mavenBuild.setName(projectDescription.getName());
 			mavenBuild.setDescription(projectDescription.getDescription());
-			mavenBuild.setProperty("java.version", "1.8");
+			mavenBuild.setProperty("java.version", projectDescription.getJavaVersion());
 			mavenBuild.plugin("org.springframework.boot", "spring-boot-maven-plugin");
 		};
 	}

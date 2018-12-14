@@ -33,6 +33,8 @@ import io.spring.initializr.generator.buildsystem.Build;
  */
 public class GradleBuild extends Build {
 
+	private String sourceCompatibility;
+
 	private final List<GradlePlugin> plugins = new ArrayList<>();
 
 	private final List<String> appliedPlugins = new ArrayList<>();
@@ -40,6 +42,14 @@ public class GradleBuild extends Build {
 	private final Map<String, TaskCustomization> taskCustomizations = new LinkedHashMap<>();
 
 	private final Buildscript buildscript = new Buildscript();
+
+	public void setSourceCompatibility(String sourceCompatibility) {
+		this.sourceCompatibility = sourceCompatibility;
+	}
+
+	public String getSourceCompatibility() {
+		return this.sourceCompatibility;
+	}
 
 	public GradlePlugin addPlugin(String id) {
 		return this.addPlugin(id, null);
