@@ -18,6 +18,9 @@ package io.spring.initializr.generator.project.code.groovy;
 
 import java.lang.reflect.Modifier;
 
+import io.spring.initializr.generator.buildsystem.Build;
+import io.spring.initializr.generator.buildsystem.gradle.ConditionalOnGradle;
+import io.spring.initializr.generator.buildsystem.maven.ConditionalOnMaven;
 import io.spring.initializr.generator.language.Annotation;
 import io.spring.initializr.generator.language.Parameter;
 import io.spring.initializr.generator.language.groovy.GroovyExpressionStatement;
@@ -26,6 +29,7 @@ import io.spring.initializr.generator.language.groovy.GroovyMethodInvocation;
 import io.spring.initializr.generator.language.groovy.GroovyReturnStatement;
 import io.spring.initializr.generator.language.groovy.GroovyTypeDeclaration;
 import io.spring.initializr.generator.packaging.war.ConditionalOnWarPackaging;
+import io.spring.initializr.generator.project.build.BuildCustomizer;
 import io.spring.initializr.generator.project.code.MainApplicationTypeCustomizer;
 import io.spring.initializr.generator.project.code.ServletInitializerCustomizer;
 import io.spring.initializr.generator.project.code.TestApplicationTypeCustomizer;
@@ -63,6 +67,11 @@ class GroovyProjectGenerationDefaultContributorsConfiguration {
 		};
 	}
 
+	@Bean
+	public BuildCustomizer<Build> groovyDependenciesConfigurer() {
+		return new GroovyDependenciesConfigurer();
+	}
+
 	/**
 	 * Groovy source code contributions for projects using war packaging.
 	 */
@@ -85,6 +94,34 @@ class GroovyProjectGenerationDefaultContributorsConfiguration {
 				configure.annotate(Annotation.name("java.lang.Override"));
 				typeDeclaration.addMethodDeclaration(configure);
 			};
+		}
+
+	}
+
+	/**
+	 * Configuration for Groovy projects built with Maven.
+	 */
+	@Configuration
+	@ConditionalOnMaven
+	static class GroovyMavenProjectConfiguration {
+
+		@Bean
+		public GroovyMavenBuildCustomizer groovyBuildCustomizer() {
+			return new GroovyMavenBuildCustomizer();
+		}
+
+	}
+
+	/**
+	 * Configuration for Groovy projects built with Gradle.
+	 */
+	@Configuration
+	@ConditionalOnGradle
+	static class GroovyGradleProjectConfiguration {
+
+		@Bean
+		public GroovyGradleBuildCustomizer groovyBuildCustomizer() {
+			return new GroovyGradleBuildCustomizer();
 		}
 
 	}
