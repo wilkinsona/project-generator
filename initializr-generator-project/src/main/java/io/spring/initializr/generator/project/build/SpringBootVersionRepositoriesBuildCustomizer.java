@@ -36,13 +36,17 @@ class SpringBootVersionRepositoriesBuildCustomizer implements BuildCustomizer<Bu
 
 	@Override
 	public void customize(Build build) {
-		build.addMavenRepository(MavenRepository.MAVEN_CENTRAL);
+		build.addRepository(MavenRepository.MAVEN_CENTRAL);
 		String qualifier = this.springBootVersion.getQualifier().getQualifier();
 		if (!"RELEASE".equals(qualifier)) {
-			build.addSnapshotMavenRepository("spring-snapshots", "Spring Snapshots",
-					"https://repo.spring.io/snapshot");
-			build.addMavenRepository("spring-milestones", "Spring Milestones",
-					"https://repo.spring.io/milestone");
+			MavenRepository snapshotRepository = new MavenRepository("spring-snapshots",
+					"Spring Snapshots", "https://repo.spring.io/snapshot", true);
+			build.addRepository(snapshotRepository);
+			build.addPluginRepository(snapshotRepository);
+			MavenRepository milestoneRepository = new MavenRepository("spring-milestones",
+					"Spring Milestones", "https://repo.spring.io/milestone");
+			build.addRepository(milestoneRepository);
+			build.addPluginRepository(milestoneRepository);
 		}
 
 	}

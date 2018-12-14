@@ -114,7 +114,7 @@ public class GradleBuildWriter {
 
 	private void writeRepositories(IndentingWriter writer, GradleBuild build,
 			Runnable whenWritten) {
-		writeNestedCollection(writer, "repositories", build.getMavenRepositories(),
+		writeNestedCollection(writer, "repositories", build.getRepositories(),
 				this::repositoryAsString, whenWritten);
 	}
 

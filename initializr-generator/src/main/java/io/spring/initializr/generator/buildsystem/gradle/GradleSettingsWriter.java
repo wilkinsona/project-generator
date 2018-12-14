@@ -45,7 +45,7 @@ public class GradleSettingsWriter {
 	private void writeRepositories(IndentingWriter writer, GradleBuild build) {
 		writer.println("repositories {");
 		writer.indented(() -> {
-			build.getMavenRepositories().stream().map(this::repositoryAsString)
+			build.getPluginRepositories().stream().map(this::repositoryAsString)
 					.forEach(writer::println);
 			writer.println("gradlePluginPortal()");
 		});
@@ -54,7 +54,7 @@ public class GradleSettingsWriter {
 
 	private void writeResolutionStrategyIfNecessary(IndentingWriter writer,
 			GradleBuild build) {
-		if (!build.getMavenRepositories().stream()
+		if (!build.getPluginRepositories().stream()
 				.filter((repository) -> !MavenRepository.MAVEN_CENTRAL.equals(repository))
 				.findFirst().isPresent()) {
 			return;

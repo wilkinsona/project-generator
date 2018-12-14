@@ -347,7 +347,7 @@ class MavenBuildWriterTests {
 		MavenBuild build = new MavenBuild();
 		build.setGroup("com.example.demo");
 		build.setArtifact("demo");
-		build.addMavenRepository(MavenRepository.MAVEN_CENTRAL);
+		build.addRepository(MavenRepository.MAVEN_CENTRAL);
 		generatePom(build, (pom) -> {
 			assertThat(pom).nodeAtPath("/project/repositories").isNull();
 			assertThat(pom).nodeAtPath("/project/pluginRepositories").isNull();
@@ -359,7 +359,7 @@ class MavenBuildWriterTests {
 		MavenBuild build = new MavenBuild();
 		build.setGroup("com.example.demo");
 		build.setArtifact("demo");
-		build.addMavenRepository("spring-milestones", "Spring Milestones",
+		build.addRepository("spring-milestones", "Spring Milestones",
 				"https://repo.spring.io/milestone");
 		generatePom(build, (pom) -> {
 			assertThat(pom).textAtPath("/project/repositories/repository/id")
@@ -370,6 +370,18 @@ class MavenBuildWriterTests {
 					.isEqualTo("https://repo.spring.io/milestone");
 			assertThat(pom).nodeAtPath("/project/repositories/repository/snapshots")
 					.isNull();
+			assertThat(pom).nodeAtPath("/project/pluginRepositories").isNull();
+		});
+	}
+
+	@Test
+	void pomWithPluginRepository() throws Exception {
+		MavenBuild build = new MavenBuild();
+		build.setGroup("com.example.demo");
+		build.setArtifact("demo");
+		build.addPluginRepository("spring-milestones", "Spring Milestones",
+				"https://repo.spring.io/milestone");
+		generatePom(build, (pom) -> {
 			assertThat(pom).textAtPath("/project/pluginRepositories/pluginRepository/id")
 					.isEqualTo("spring-milestones");
 			assertThat(pom)
@@ -379,6 +391,7 @@ class MavenBuildWriterTests {
 					.isEqualTo("https://repo.spring.io/milestone");
 			assertThat(pom).nodeAtPath("/project/repositories/repository/snapshots")
 					.isNull();
+			assertThat(pom).nodeAtPath("/project/repositories").isNull();
 		});
 	}
 
@@ -387,8 +400,8 @@ class MavenBuildWriterTests {
 		MavenBuild build = new MavenBuild();
 		build.setGroup("com.example.demo");
 		build.setArtifact("demo");
-		build.addSnapshotMavenRepository("spring-snapshots", "Spring Snapshots",
-				"https://repo.spring.io/snapshot");
+		build.addRepository("spring-snapshots", "Spring Snapshots",
+				"https://repo.spring.io/snapshot", true);
 		generatePom(build, (pom) -> {
 			assertThat(pom).textAtPath("/project/repositories/repository/id")
 					.isEqualTo("spring-snapshots");
@@ -399,6 +412,18 @@ class MavenBuildWriterTests {
 			assertThat(pom)
 					.textAtPath("/project/repositories/repository/snapshots/enabled")
 					.isEqualTo("true");
+			assertThat(pom).nodeAtPath("/project/pluginRepositories").isNull();
+		});
+	}
+
+	@Test
+	void pomWithSnapshotPluginRepository() throws Exception {
+		MavenBuild build = new MavenBuild();
+		build.setGroup("com.example.demo");
+		build.setArtifact("demo");
+		build.addPluginRepository("spring-snapshots", "Spring Snapshots",
+				"https://repo.spring.io/snapshot", true);
+		generatePom(build, (pom) -> {
 			assertThat(pom).textAtPath("/project/pluginRepositories/pluginRepository/id")
 					.isEqualTo("spring-snapshots");
 			assertThat(pom)
@@ -409,6 +434,7 @@ class MavenBuildWriterTests {
 			assertThat(pom).textAtPath(
 					"/project/pluginRepositories/pluginRepository/snapshots/enabled")
 					.isEqualTo("true");
+			assertThat(pom).nodeAtPath("/project/repositories").isNull();
 		});
 	}
 

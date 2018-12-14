@@ -35,7 +35,7 @@ class SpringBootVersionRepositoriesBuildCustomizerTests {
 		MavenBuild build = new MavenBuild();
 		new SpringBootVersionRepositoriesBuildCustomizer(Version.parse("2.1.0.RELEASE"))
 				.customize(build);
-		assertThat(build.getMavenRepositories())
+		assertThat(build.getRepositories())
 				.containsExactly(MavenRepository.MAVEN_CENTRAL);
 	}
 
@@ -64,15 +64,15 @@ class SpringBootVersionRepositoriesBuildCustomizerTests {
 	}
 
 	private void assertNonReleaseRepositories(MavenBuild build) {
-		assertThat(build.getMavenRepositories()).hasSize(3);
-		assertThat(build.getMavenRepositories().get(0))
+		assertThat(build.getRepositories()).hasSize(3);
+		assertThat(build.getRepositories().get(0))
 				.isEqualTo(MavenRepository.MAVEN_CENTRAL);
-		assertThat(build.getMavenRepositories().get(1))
+		assertThat(build.getRepositories().get(1))
 				.hasFieldOrPropertyWithValue("id", "spring-snapshots")
 				.hasFieldOrPropertyWithValue("name", "Spring Snapshots")
 				.hasFieldOrPropertyWithValue("url", "https://repo.spring.io/snapshot")
 				.hasFieldOrPropertyWithValue("snapshotsEnabled", true);
-		assertThat(build.getMavenRepositories().get(2))
+		assertThat(build.getRepositories().get(2))
 				.hasFieldOrPropertyWithValue("id", "spring-milestones")
 				.hasFieldOrPropertyWithValue("name", "Spring Milestones")
 				.hasFieldOrPropertyWithValue("url", "https://repo.spring.io/milestone")

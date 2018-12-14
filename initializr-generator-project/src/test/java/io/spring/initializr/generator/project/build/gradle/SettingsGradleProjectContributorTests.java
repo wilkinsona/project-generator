@@ -49,7 +49,7 @@ class SettingsGradleProjectContributorTests {
 	@Test
 	void gradleSettingsIsContributedToProject() throws IOException {
 		GradleBuild build = new GradleBuild();
-		build.addMavenRepository(MavenRepository.MAVEN_CENTRAL);
+		build.addPluginRepository(MavenRepository.MAVEN_CENTRAL);
 		List<String> lines = generateSettings(build);
 		assertThat(lines).containsSequence("pluginManagement {", "    repositories {",
 				"        mavenCentral()", "        gradlePluginPortal()", "    }", "}");
@@ -62,10 +62,19 @@ class SettingsGradleProjectContributorTests {
 					factory.indentingStrategy("gradle", new SimpleIndentStrategy("  "));
 				});
 		GradleBuild build = new GradleBuild();
-		build.addMavenRepository(MavenRepository.MAVEN_CENTRAL);
+		build.addPluginRepository(MavenRepository.MAVEN_CENTRAL);
 		List<String> lines = generateSettings(build, indentingWriterFactory);
 		assertThat(lines).containsSequence("pluginManagement {", "  repositories {",
 				"    mavenCentral()", "    gradlePluginPortal()", "  }", "}");
+	}
+
+	@Test
+	void gradleSettingsDoesNotUseRepositories() throws IOException {
+		GradleBuild build = new GradleBuild();
+		build.addRepository(MavenRepository.MAVEN_CENTRAL);
+		List<String> lines = generateSettings(build);
+		assertThat(lines).containsSequence("pluginManagement {", "    repositories {",
+				"        gradlePluginPortal()", "    }", "}");
 	}
 
 	private List<String> generateSettings(GradleBuild build) throws IOException {

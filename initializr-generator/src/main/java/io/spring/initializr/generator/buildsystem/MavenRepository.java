@@ -27,8 +27,7 @@ public class MavenRepository {
 	 * Maven Central.
 	 */
 	public static final MavenRepository MAVEN_CENTRAL = new MavenRepository(
-			"maven-central", "Maven Central", "https://repo.maven.apache.org/maven2",
-			false);
+			"maven-central", "Maven Central", "https://repo.maven.apache.org/maven2");
 
 	private final String id;
 
@@ -38,7 +37,11 @@ public class MavenRepository {
 
 	private final boolean snapshotsEnabled;
 
-	MavenRepository(String id, String name, String url, boolean snapshotsEnabled) {
+	public MavenRepository(String id, String name, String url) {
+		this(id, name, url, false);
+	}
+
+	public MavenRepository(String id, String name, String url, boolean snapshotsEnabled) {
 		this.id = id;
 		this.name = name;
 		this.url = url;

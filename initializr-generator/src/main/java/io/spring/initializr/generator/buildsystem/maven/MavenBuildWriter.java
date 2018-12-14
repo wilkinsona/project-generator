@@ -306,15 +306,26 @@ public class MavenBuildWriter {
 	}
 
 	private void writeRepositories(IndentingWriter writer, MavenBuild build) {
-		List<MavenRepository> repositories = build.getMavenRepositories().stream()
-				.filter((repository) -> !MavenRepository.MAVEN_CENTRAL.equals(repository))
-				.collect(Collectors.toList());
-		if (repositories.isEmpty()) {
+		List<MavenRepository> repositories = filterRepositories(build.getRepositories());
+		List<MavenRepository> pluginRepositories = filterRepositories(
+				build.getPluginRepositories());
+		if (repositories.isEmpty() && pluginRepositories.isEmpty()) {
 			return;
 		}
 		writer.println();
-		writeRepositories(writer, "repositories", "repository", repositories);
-		writeRepositories(writer, "pluginRepositories", "pluginRepository", repositories);
+		if (!repositories.isEmpty()) {
+			writeRepositories(writer, "repositories", "repository", repositories);
+		}
+		if (!pluginRepositories.isEmpty()) {
+			writeRepositories(writer, "pluginRepositories", "pluginRepository",
+					pluginRepositories);
+		}
+	}
+
+	private List<MavenRepository> filterRepositories(List<MavenRepository> repositories) {
+		return repositories.stream()
+				.filter((repository) -> !MavenRepository.MAVEN_CENTRAL.equals(repository))
+				.collect(Collectors.toList());
 	}
 
 	private void writeRepositories(IndentingWriter writer, String containerName,

@@ -41,7 +41,7 @@ class GradleBuildWriterTests {
 	@Test
 	void gradleBuildWithBuildscriptDependency() throws IOException {
 		GradleBuild build = new GradleBuild();
-		build.addMavenRepository(MavenRepository.MAVEN_CENTRAL);
+		build.addRepository(MavenRepository.MAVEN_CENTRAL);
 		build.buildscript((buildscript) -> buildscript.dependency(
 				"org.springframework.boot:spring-boot-gradle-plugin:2.1.0.RELEASE"));
 		List<String> lines = generateBuild(build);
@@ -54,7 +54,7 @@ class GradleBuildWriterTests {
 	@Test
 	void gradleBuildWithBuildscriptExtProperty() throws IOException {
 		GradleBuild build = new GradleBuild();
-		build.addMavenRepository(MavenRepository.MAVEN_CENTRAL);
+		build.addRepository(MavenRepository.MAVEN_CENTRAL);
 		build.buildscript((buildscript) -> buildscript.ext("kotlinVersion", "'1.2.51'"));
 		List<String> lines = generateBuild(build);
 		assertThat(lines).containsSequence("buildscript {", "    ext {",
@@ -64,15 +64,15 @@ class GradleBuildWriterTests {
 	@Test
 	void gradleBuildWithMavenCentralRepository() throws IOException {
 		GradleBuild build = new GradleBuild();
-		build.addMavenRepository(MavenRepository.MAVEN_CENTRAL);
+		build.addRepository(MavenRepository.MAVEN_CENTRAL);
 		List<String> lines = generateBuild(build);
 		assertThat(lines).containsSequence("repositories {", "    mavenCentral()", "}");
 	}
 
 	@Test
-	void gradleBuildWithMavenRepository() throws IOException {
+	void gradleBuildWithRepository() throws IOException {
 		GradleBuild build = new GradleBuild();
-		build.addMavenRepository("spring-milestones", "Spring Milestones",
+		build.addRepository("spring-milestones", "Spring Milestones",
 				"https://repo.spring.io/milestone");
 		List<String> lines = generateBuild(build);
 		assertThat(lines).containsSequence("repositories {",
@@ -80,13 +80,22 @@ class GradleBuildWriterTests {
 	}
 
 	@Test
-	void gradleBuildWithSnapshotMavenRepository() throws IOException {
+	void gradleBuildWithSnapshotRepository() throws IOException {
 		GradleBuild build = new GradleBuild();
-		build.addSnapshotMavenRepository("spring-snapshots", "Spring Snapshots",
-				"https://repo.spring.io/snapshot");
+		build.addRepository("spring-snapshots", "Spring Snapshots",
+				"https://repo.spring.io/snapshot", true);
 		List<String> lines = generateBuild(build);
 		assertThat(lines).containsSequence("repositories {",
 				"    maven { url 'https://repo.spring.io/snapshot' }", "}");
+	}
+
+	@Test
+	void gradleBuildWithPluginRepository() throws IOException {
+		GradleBuild build = new GradleBuild();
+		build.addPluginRepository("spring-milestones", "Spring Milestones",
+				"https://repo.spring.io/milestone");
+		List<String> lines = generateBuild(build);
+		assertThat(lines).doesNotContain("repositories {");
 	}
 
 	@Test

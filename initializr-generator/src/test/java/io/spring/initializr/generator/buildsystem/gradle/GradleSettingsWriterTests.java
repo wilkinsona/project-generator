@@ -35,18 +35,18 @@ import static org.assertj.core.api.Assertions.assertThat;
 class GradleSettingsWriterTests {
 
 	@Test
-	void gradleBuildWithMavenCentralRepository() throws IOException {
+	void gradleBuildWithMavenCentralPluginRepository() throws IOException {
 		GradleBuild build = new GradleBuild();
-		build.addMavenRepository(MavenRepository.MAVEN_CENTRAL);
+		build.addPluginRepository(MavenRepository.MAVEN_CENTRAL);
 		List<String> lines = generateSettings(build);
 		assertThat(lines).containsSequence("pluginManagement {", "    repositories {",
 				"        mavenCentral()", "        gradlePluginPortal()", "    }", "}");
 	}
 
 	@Test
-	void gradleBuildWithMavenRepository() throws IOException {
+	void gradleBuildWithPluginRepository() throws IOException {
 		GradleBuild build = new GradleBuild();
-		build.addMavenRepository("spring-milestones", "Spring Milestones",
+		build.addPluginRepository("spring-milestones", "Spring Milestones",
 				"https://repo.spring.io/milestone");
 		List<String> lines = generateSettings(build);
 		assertThat(lines).containsSequence("pluginManagement {", "    repositories {",
@@ -59,10 +59,10 @@ class GradleSettingsWriterTests {
 	}
 
 	@Test
-	void gradleBuildWithSnapshotMavenRepository() throws IOException {
+	void gradleBuildWithSnapshotPluginRepository() throws IOException {
 		GradleBuild build = new GradleBuild();
-		build.addSnapshotMavenRepository("spring-snapshots", "Spring Snapshots",
-				"https://repo.spring.io/snapshot");
+		build.addPluginRepository("spring-snapshots", "Spring Snapshots",
+				"https://repo.spring.io/snapshot", true);
 		List<String> lines = generateSettings(build);
 		assertThat(lines).containsSequence("pluginManagement {", "    repositories {",
 				"        maven { url 'https://repo.spring.io/snapshot' }",

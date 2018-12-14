@@ -45,7 +45,9 @@ public abstract class Build {
 
 	private final List<BillOfMaterials> boms = new ArrayList<>();
 
-	private final List<MavenRepository> mavenRepositories = new ArrayList<>();
+	private final List<MavenRepository> repositories = new ArrayList<>();
+
+	private final List<MavenRepository> pluginRepositories = new ArrayList<>();
 
 	/**
 	 * Return the identifier of the group for the project.
@@ -126,25 +128,42 @@ public abstract class Build {
 		return Collections.unmodifiableList(this.boms);
 	}
 
-	public void addMavenRepository(MavenRepository mavenRepository) {
-		this.mavenRepositories.add(mavenRepository);
+	public void addRepository(MavenRepository repository) {
+		this.repositories.add(repository);
 	}
 
-	public MavenRepository addMavenRepository(String id, String name, String url) {
-		MavenRepository repository = new MavenRepository(id, name, url, false);
-		this.mavenRepositories.add(repository);
+	public MavenRepository addRepository(String id, String name, String url) {
+		return addRepository(id, name, url, false);
+	}
+
+	public MavenRepository addRepository(String id, String name, String url,
+			boolean snapshotsEnabled) {
+		MavenRepository repository = new MavenRepository(id, name, url, snapshotsEnabled);
+		this.repositories.add(repository);
 		return repository;
 	}
 
-	public MavenRepository addSnapshotMavenRepository(String id, String name,
-			String url) {
-		MavenRepository repository = new MavenRepository(id, name, url, true);
-		this.mavenRepositories.add(repository);
+	public List<MavenRepository> getRepositories() {
+		return Collections.unmodifiableList(this.repositories);
+	}
+
+	public void addPluginRepository(MavenRepository pluginRepository) {
+		this.pluginRepositories.add(pluginRepository);
+	}
+
+	public MavenRepository addPluginRepository(String id, String name, String url) {
+		return addPluginRepository(id, name, url, false);
+	}
+
+	public MavenRepository addPluginRepository(String id, String name, String url,
+			boolean snapshotsEnabled) {
+		MavenRepository repository = new MavenRepository(id, name, url, snapshotsEnabled);
+		this.pluginRepositories.add(repository);
 		return repository;
 	}
 
-	public List<MavenRepository> getMavenRepositories() {
-		return Collections.unmodifiableList(this.mavenRepositories);
+	public List<MavenRepository> getPluginRepositories() {
+		return Collections.unmodifiableList(this.pluginRepositories);
 	}
 
 	public String getJavaVersion() {
