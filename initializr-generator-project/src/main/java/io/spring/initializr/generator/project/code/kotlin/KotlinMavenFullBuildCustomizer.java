@@ -21,19 +21,16 @@ import io.spring.initializr.generator.buildsystem.maven.MavenPlugin;
 import io.spring.initializr.generator.project.build.BuildCustomizer;
 
 /**
- * {@link BuildCustomizer} for Kotlin projects build with Maven when Kotlin is supported
- * by the parent and only a partial configuration is required. Consider using
- * {@link KotlinMavenFullBuildCustomizer} for cases where the parent does not provide a
- * base configuration for Kotlin.
+ * {@link BuildCustomizer} for Kotlin projects build with Maven when Kotlin is not
+ * supported by the parent and a full configuration should be provided.
  *
  * @author Andy Wilkinson
- * @author Stephane Nicoll
  */
-class KotlinMavenBuildCustomizer implements BuildCustomizer<MavenBuild> {
+class KotlinMavenFullBuildCustomizer implements BuildCustomizer<MavenBuild> {
 
 	private final KotlinProjectSettings settings;
 
-	KotlinMavenBuildCustomizer(KotlinProjectSettings kotlinProjectSettings) {
+	KotlinMavenFullBuildCustomizer(KotlinProjectSettings kotlinProjectSettings) {
 		this.settings = kotlinProjectSettings;
 	}
 
@@ -43,13 +40,18 @@ class KotlinMavenBuildCustomizer implements BuildCustomizer<MavenBuild> {
 		build.setSourceDirectory("${project.basedir}/src/main/kotlin");
 		build.setTestSourceDirectory("${project.basedir}/src/test/kotlin");
 		MavenPlugin kotlinMavenPlugin = build.plugin("org.jetbrains.kotlin",
-				"kotlin-maven-plugin");
+				"kotlin-maven-plugin", "${kotlin.version}");
 		kotlinMavenPlugin.configuration((configuration) -> {
 			configuration.add("args", (args) -> this.settings.getCompilerArgs()
 					.forEach((arg) -> args.add("arg", arg)));
 			configuration.add("compilerPlugins",
 					(compilerPlugins) -> compilerPlugins.add("plugin", "spring"));
+			configuration.add("jvmTarget", this.settings.getJvmTarget());
 		});
+		kotlinMavenPlugin.execution("compile",
+				(compile) -> compile.phase("compile").goal("compile"));
+		kotlinMavenPlugin.execution("test-compile",
+				(compile) -> compile.phase("test-compile").goal("test-compile"));
 		kotlinMavenPlugin.dependency("org.jetbrains.kotlin", "kotlin-maven-allopen",
 				"${kotlin.version}");
 	}

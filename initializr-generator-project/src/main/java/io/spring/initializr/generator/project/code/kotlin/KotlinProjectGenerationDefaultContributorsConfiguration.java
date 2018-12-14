@@ -73,6 +73,13 @@ class KotlinProjectGenerationDefaultContributorsConfiguration {
 	static class SpringBoot15KotlinProjectGenerationConfiguration {
 
 		@Bean
+		@ConditionalOnMaven
+		public KotlinMavenFullBuildCustomizer kotlinBuildCustomizer(
+				KotlinProjectSettings kotlinProjectSettings) {
+			return new KotlinMavenFullBuildCustomizer(kotlinProjectSettings);
+		}
+
+		@Bean
 		public MainCompilationUnitCustomizer<KotlinTypeDeclaration, KotlinCompilationUnit> boot15MainFunctionContributor() {
 			return (compilationUnit) -> {
 				compilationUnit.addTopLevelFunction(KotlinFunctionDeclaration
@@ -92,6 +99,13 @@ class KotlinProjectGenerationDefaultContributorsConfiguration {
 	@Configuration
 	@ConditionalOnSpringBootVersion("2.0.0.M1")
 	static class SpringBoot2AndLaterKotlinProjectGenerationConfiguration {
+
+		@Bean
+		@ConditionalOnMaven
+		public KotlinMavenBuildCustomizer kotlinBuildCustomizer(
+				KotlinProjectSettings kotlinProjectSettings) {
+			return new KotlinMavenBuildCustomizer(kotlinProjectSettings);
+		}
 
 		@Bean
 		public MainCompilationUnitCustomizer<KotlinTypeDeclaration, KotlinCompilationUnit> mainFunctionContributor() {
@@ -130,21 +144,6 @@ class KotlinProjectGenerationDefaultContributorsConfiguration {
 										"DemoApplication::class.java")));
 				typeDeclaration.addFunctionDeclaration(configure);
 			};
-		}
-
-	}
-
-	/**
-	 * Configuration for Kotlin projects built with Maven.
-	 */
-	@Configuration
-	@ConditionalOnMaven
-	static class KotlinMavenProjectConfiguration {
-
-		@Bean
-		public KotlinMavenBuildCustomizer kotlinBuildCustomizer(
-				KotlinProjectSettings kotlinProjectSettings) {
-			return new KotlinMavenBuildCustomizer(kotlinProjectSettings);
 		}
 
 	}
