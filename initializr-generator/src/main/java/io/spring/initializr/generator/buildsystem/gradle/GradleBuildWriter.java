@@ -51,9 +51,9 @@ public class GradleBuildWriter {
 	public void writeTo(IndentingWriter writer, GradleBuild build) throws IOException {
 		writeBuildscript(writer, build);
 		writePlugins(writer, build);
-		writer.println("group = '" + build.getGroup() + "'");
-		writer.println("version = '" + build.getVersion() + "'");
-		writer.println("sourceCompatibility = '" + build.getSourceCompatibility() + "'");
+		writeProperty(writer, "group", build.getGroup());
+		writeProperty(writer, "version", build.getVersion());
+		writeProperty(writer, "sourceCompatibility", build.getSourceCompatibility());
 		writer.println();
 		writeRepositories(writer, build, writer::println);
 		writeVersions(writer, build);
@@ -268,6 +268,12 @@ public class GradleBuildWriter {
 	private <T, U> void writeMap(IndentingWriter writer, Map<T, U> map,
 			BiFunction<T, U, String> converter) {
 		map.forEach((key, value) -> writer.println(converter.apply(key, value)));
+	}
+
+	private void writeProperty(IndentingWriter writer, String name, String value) {
+		if (value != null) {
+			writer.println(String.format("%s = '%s'", name, value));
+		}
 	}
 
 	private static Collection<Dependency> filterDependencies(
