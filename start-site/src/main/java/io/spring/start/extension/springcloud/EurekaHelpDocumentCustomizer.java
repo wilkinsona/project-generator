@@ -24,7 +24,7 @@ import io.spring.initializr.generator.project.documentation.HelpDocumentCustomiz
  *
  * @author Madhura Bhave
  */
-public class EurekaHelpDocumentCustomizer implements HelpDocumentCustomizer {
+class EurekaHelpDocumentCustomizer implements HelpDocumentCustomizer {
 
 	@Override
 	public void customize(HelpDocument document) {

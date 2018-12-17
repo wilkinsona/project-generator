@@ -24,7 +24,7 @@ import io.spring.initializr.generator.project.documentation.HelpDocumentCustomiz
  *
  * @author Madhura Bhave
  */
-public class MicrometerHelpDocumentCustomizer implements HelpDocumentCustomizer {
+class MicrometerHelpDocumentCustomizer implements HelpDocumentCustomizer {
 
 	@Override
 	public void customize(HelpDocument document) {

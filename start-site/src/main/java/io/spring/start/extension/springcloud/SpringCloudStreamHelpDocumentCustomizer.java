@@ -25,11 +25,11 @@ import io.spring.initializr.generator.project.documentation.HelpDocumentCustomiz
  *
  * @author Madhura Bhave
  */
-public class SpringCloudStreamHelpDocumentCustomizer implements HelpDocumentCustomizer {
+class SpringCloudStreamHelpDocumentCustomizer implements HelpDocumentCustomizer {
 
 	private final Build build;
 
-	public SpringCloudStreamHelpDocumentCustomizer(Build build) {
+	SpringCloudStreamHelpDocumentCustomizer(Build build) {
 		this.build = build;
 	}
 
