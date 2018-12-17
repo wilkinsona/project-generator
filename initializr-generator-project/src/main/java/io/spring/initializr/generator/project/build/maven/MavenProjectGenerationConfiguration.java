@@ -54,6 +54,13 @@ public class MavenProjectGenerationConfiguration {
 	}
 
 	@Bean
+	public MavenBuild mavenBuild(ObjectProvider<BuildCustomizer<?>> buildCustomizers) {
+		MavenBuild mavenBuild = new MavenBuild();
+		customizeBuild(buildCustomizers, mavenBuild);
+		return mavenBuild;
+	}
+
+	@Bean
 	public BuildCustomizer<MavenBuild> defaultMavenConfigurationContributor(
 			ProjectDescription projectDescription) {
 		return (mavenBuild) -> {
@@ -66,10 +73,7 @@ public class MavenProjectGenerationConfiguration {
 
 	@Bean
 	public MavenBuildProjectContributor mavenBuildProjectContributor(
-			IndentingWriterFactory indentingWriterFactory,
-			ObjectProvider<BuildCustomizer<?>> buildCustomizers) {
-		MavenBuild mavenBuild = new MavenBuild();
-		customizeBuild(buildCustomizers, mavenBuild);
+			MavenBuild mavenBuild, IndentingWriterFactory indentingWriterFactory) {
 		return new MavenBuildProjectContributor(mavenBuild, indentingWriterFactory);
 	}
 
