@@ -35,13 +35,13 @@ class OnSpringBootVersionCondition extends ProjectGenerationCondition {
 	@Override
 	protected boolean matches(ProjectDescription projectDescription,
 			ConditionContext context, AnnotatedTypeMetadata metadata) {
-		if (projectDescription.getSpringBootVersion() == null) {
+		if (projectDescription.getPlatformVersion() == null) {
 			return false;
 		}
 		VersionRange range = VersionParser.DEFAULT.parseRange((String) metadata
 				.getAnnotationAttributes(ConditionalOnSpringBootVersion.class.getName())
 				.get("value"));
-		return range.match(projectDescription.getSpringBootVersion());
+		return range.match(projectDescription.getPlatformVersion());
 	}
 
 }

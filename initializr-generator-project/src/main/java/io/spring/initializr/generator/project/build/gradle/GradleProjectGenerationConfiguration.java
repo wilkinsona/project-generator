@@ -130,7 +130,7 @@ public class GradleProjectGenerationConfiguration {
 			return (gradleBuild) -> {
 				gradleBuild.buildscript((buildscript) -> buildscript
 						.dependency("org.springframework.boot:spring-boot-gradle-plugin:"
-								+ projectDescription.getSpringBootVersion()));
+								+ projectDescription.getPlatformVersion()));
 				gradleBuild.applyPlugin("org.springframework.boot");
 			};
 		}
@@ -160,7 +160,7 @@ public class GradleProjectGenerationConfiguration {
 		public BuildCustomizer<GradleBuild> springBootPluginContributor(
 				ProjectDescription projectDescription) {
 			return (gradleBuild) -> gradleBuild.addPlugin("org.springframework.boot",
-					projectDescription.getSpringBootVersion().toString());
+					projectDescription.getPlatformVersion().toString());
 		}
 
 	}

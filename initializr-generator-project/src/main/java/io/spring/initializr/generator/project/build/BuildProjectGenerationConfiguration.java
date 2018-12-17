@@ -47,7 +47,7 @@ public class BuildProjectGenerationConfiguration {
 	public SpringBootVersionRepositoriesBuildCustomizer repositoriesBuilderCustomizer(
 			ProjectDescription description) {
 		return new SpringBootVersionRepositoriesBuildCustomizer(
-				description.getSpringBootVersion());
+				description.getPlatformVersion());
 	}
 
 }

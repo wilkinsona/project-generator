@@ -69,7 +69,7 @@ class StartSiteProjectGenerationTests {
 	void buildDotGradleIsCustomizedWhenGeneratingProjectThatDependsOnSpringRestDocs()
 			throws IOException {
 		ProjectDescription description = newProjectDescription();
-		description.setSpringBootVersion(Version.parse("2.1.0.RELEASE"));
+		description.setPlatformVersion(Version.parse("2.1.0.RELEASE"));
 		description.setBuildSystem(new GradleBuildSystem());
 		description.setLanguage(new JavaLanguage());
 		description.setGroupId("com.example");
@@ -87,7 +87,7 @@ class StartSiteProjectGenerationTests {
 	void pomIsCustomizedWhenGeneratingProjectThatDependsOnSpringRestDocs()
 			throws IOException {
 		ProjectDescription description = newProjectDescription();
-		description.setSpringBootVersion(Version.parse("2.1.0.RELEASE"));
+		description.setPlatformVersion(Version.parse("2.1.0.RELEASE"));
 		description.setBuildSystem(new MavenBuildSystem());
 		description.addDependency("restdocs",
 				new Dependency("org.springframework.restdocs", "spring-restdocs-mockmvc",
@@ -104,7 +104,7 @@ class StartSiteProjectGenerationTests {
 		ProjectDescription description = newProjectDescription();
 		description.setLanguage(new JavaLanguage());
 		description.setBuildSystem(new MavenBuildSystem());
-		description.setSpringBootVersion(Version.parse("2.1.0.RELEASE"));
+		description.setPlatformVersion(Version.parse("2.1.0.RELEASE"));
 		description.addDependency("cloud-config-server",
 				new Dependency("org.springframework.cloud", "spring-cloud-config-server",
 						DependencyType.COMPILE));

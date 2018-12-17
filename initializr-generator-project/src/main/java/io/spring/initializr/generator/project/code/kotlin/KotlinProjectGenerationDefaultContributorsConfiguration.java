@@ -62,7 +62,7 @@ class KotlinProjectGenerationDefaultContributorsConfiguration {
 	@Bean
 	public BuildCustomizer<Build> kotlinDependenciesConfigurer(
 			ProjectDescription project) {
-		return new KotlinDependenciesConfigurer(project.getSpringBootVersion());
+		return new KotlinDependenciesConfigurer(project.getPlatformVersion());
 	}
 
 	/**

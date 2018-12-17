@@ -72,7 +72,7 @@ class ProjectGeneratorTests {
 			throws IOException {
 		ProjectDescription description = initProjectDescription();
 		description.setBuildSystem(new GradleBuildSystem());
-		description.setSpringBootVersion(Version.parse("1.5.17.RELEASE"));
+		description.setPlatformVersion(Version.parse("1.5.17.RELEASE"));
 		Path project = this.projectGenerator.generate(description);
 		List<String> relativePaths = getRelativePathsOfProjectFiles(project);
 		assertThat(relativePaths).contains("gradlew", "gradlew.bat",
@@ -90,7 +90,7 @@ class ProjectGeneratorTests {
 			throws IOException {
 		ProjectDescription description = initProjectDescription();
 		description.setBuildSystem(new GradleBuildSystem());
-		description.setSpringBootVersion(Version.parse("2.0.6.RELEASE"));
+		description.setPlatformVersion(Version.parse("2.0.6.RELEASE"));
 		Path project = this.projectGenerator.generate(description);
 		List<String> relativePaths = getRelativePathsOfProjectFiles(project);
 		assertThat(relativePaths).contains("gradlew", "gradlew.bat",
@@ -107,7 +107,7 @@ class ProjectGeneratorTests {
 	void buildDotGradleIsContributedWhenGeneratingGradleProject() throws IOException {
 		ProjectDescription description = initProjectDescription();
 		description.setBuildSystem(new GradleBuildSystem());
-		description.setSpringBootVersion(Version.parse("2.1.0.RELEASE"));
+		description.setPlatformVersion(Version.parse("2.1.0.RELEASE"));
 		description.setLanguage(new JavaLanguage());
 		description.setGroupId("com.example");
 		description.setArtifactId("demo");
@@ -133,7 +133,7 @@ class ProjectGeneratorTests {
 	void mavenWrapperIsContributedWhenGeneratingMavenProject() throws IOException {
 		ProjectDescription description = initProjectDescription();
 		description.setBuildSystem(new MavenBuildSystem());
-		description.setSpringBootVersion(Version.parse("2.1.0.RELEASE"));
+		description.setPlatformVersion(Version.parse("2.1.0.RELEASE"));
 		Path project = this.projectGenerator.generate(description);
 		List<String> relativePaths = getRelativePathsOfProjectFiles(project);
 		assertThat(relativePaths).contains("mvnw", "mvnw.cmd",
@@ -146,7 +146,7 @@ class ProjectGeneratorTests {
 	void mavenPomIsContributedWhenGeneratingMavenProject() throws IOException {
 		ProjectDescription description = initProjectDescription();
 		description.setBuildSystem(new MavenBuildSystem());
-		description.setSpringBootVersion(Version.parse("2.1.0.RELEASE"));
+		description.setPlatformVersion(Version.parse("2.1.0.RELEASE"));
 		Path project = this.projectGenerator.generate(description);
 		List<String> relativePaths = getRelativePathsOfProjectFiles(project);
 		assertThat(relativePaths).contains("pom.xml");
@@ -156,7 +156,7 @@ class ProjectGeneratorTests {
 	void gitIgnoreIsContributedWhenGeneratingGradleProject() throws IOException {
 		ProjectDescription description = initProjectDescription();
 		description.setBuildSystem(new GradleBuildSystem());
-		description.setSpringBootVersion(Version.parse("2.1.0.RELEASE"));
+		description.setPlatformVersion(Version.parse("2.1.0.RELEASE"));
 		Path project = this.projectGenerator.generate(description);
 		assertThat(Files.readAllLines(project.resolve(".gitignore"))).contains(".gradle",
 				"### STS ###");
@@ -166,7 +166,7 @@ class ProjectGeneratorTests {
 	void gitIgnoreIsContributedWhenGeneratingMavenProject() throws IOException {
 		ProjectDescription description = initProjectDescription();
 		description.setBuildSystem(new MavenBuildSystem());
-		description.setSpringBootVersion(Version.parse("2.1.0.RELEASE"));
+		description.setPlatformVersion(Version.parse("2.1.0.RELEASE"));
 		Path project = this.projectGenerator.generate(description);
 		assertThat(Files.readAllLines(project.resolve(".gitignore"))).contains("/target/",
 				"### STS ###");
@@ -176,7 +176,7 @@ class ProjectGeneratorTests {
 	void mainJavaClassIsContributedWhenGeneratingJavaProject() throws IOException {
 		ProjectDescription description = initProjectDescription();
 		description.setBuildSystem(new MavenBuildSystem());
-		description.setSpringBootVersion(Version.parse("2.1.0.RELEASE"));
+		description.setPlatformVersion(Version.parse("2.1.0.RELEASE"));
 		description.setLanguage(new JavaLanguage());
 		description.setGroupId("com.example");
 		Path project = this.projectGenerator.generate(description);
@@ -189,7 +189,7 @@ class ProjectGeneratorTests {
 	void mainKotlinClassIsContributedWhenGeneratingKotlinProject() throws IOException {
 		ProjectDescription description = initProjectDescription();
 		description.setBuildSystem(new MavenBuildSystem());
-		description.setSpringBootVersion(Version.parse("2.1.0.RELEASE"));
+		description.setPlatformVersion(Version.parse("2.1.0.RELEASE"));
 		description.setLanguage(new KotlinLanguage());
 		description.setGroupId("com.example");
 		Path project = this.projectGenerator.generate(description);
@@ -202,7 +202,7 @@ class ProjectGeneratorTests {
 	void servletInitializerIsContributedWhenGeneratingJavaProjectThatUsesWarPackaging()
 			throws IOException {
 		ProjectDescription description = initProjectDescription();
-		description.setSpringBootVersion(Version.parse("2.1.0.RELEASE"));
+		description.setPlatformVersion(Version.parse("2.1.0.RELEASE"));
 		description.setBuildSystem(new MavenBuildSystem());
 		description.setLanguage(new JavaLanguage());
 		description.setPackaging(new WarPackaging());
@@ -228,7 +228,7 @@ class ProjectGeneratorTests {
 	void servletInitializerIsContributedWhenGeneratingKotlinProjectThatUsesWarPackaging()
 			throws IOException {
 		ProjectDescription description = initProjectDescription();
-		description.setSpringBootVersion(Version.parse("2.1.0.RELEASE"));
+		description.setPlatformVersion(Version.parse("2.1.0.RELEASE"));
 		description.setBuildSystem(new MavenBuildSystem());
 		description.setLanguage(new KotlinLanguage());
 		description.setPackaging(new WarPackaging());
@@ -252,7 +252,7 @@ class ProjectGeneratorTests {
 	void warPluginIsAppliedWhenBuildingGradleProjectThatUsesWarPackaging()
 			throws IOException {
 		ProjectDescription description = initProjectDescription();
-		description.setSpringBootVersion(Version.parse("2.1.0.RELEASE"));
+		description.setPlatformVersion(Version.parse("2.1.0.RELEASE"));
 		description.setBuildSystem(new GradleBuildSystem());
 		description.setLanguage(new JavaLanguage());
 		description.setPackaging(new WarPackaging());
@@ -269,7 +269,7 @@ class ProjectGeneratorTests {
 	void warPackagingIsUsedWhenBuildingMavenProjectThatUsesWarPackaging()
 			throws IOException {
 		ProjectDescription description = initProjectDescription();
-		description.setSpringBootVersion(Version.parse("2.1.0.RELEASE"));
+		description.setPlatformVersion(Version.parse("2.1.0.RELEASE"));
 		description.setBuildSystem(new MavenBuildSystem());
 		description.setLanguage(new JavaLanguage());
 		description.setPackaging(new WarPackaging());
@@ -288,7 +288,7 @@ class ProjectGeneratorTests {
 	void testJavaClassIsContributedWhenGeneratingJavaProject() throws IOException {
 		ProjectDescription description = initProjectDescription();
 		description.setBuildSystem(new MavenBuildSystem());
-		description.setSpringBootVersion(Version.parse("2.1.0.RELEASE"));
+		description.setPlatformVersion(Version.parse("2.1.0.RELEASE"));
 		description.setLanguage(new JavaLanguage());
 		description.setGroupId("com.example");
 		Path project = this.projectGenerator.generate(description);
@@ -310,7 +310,7 @@ class ProjectGeneratorTests {
 	void testKotlinClassIsContributedWhenGeneratingKotlinProject() throws IOException {
 		ProjectDescription description = initProjectDescription();
 		description.setBuildSystem(new MavenBuildSystem());
-		description.setSpringBootVersion(Version.parse("2.1.0.RELEASE"));
+		description.setPlatformVersion(Version.parse("2.1.0.RELEASE"));
 		description.setLanguage(new KotlinLanguage());
 		description.setGroupId("com.example");
 		Path project = this.projectGenerator.generate(description);
@@ -332,7 +332,7 @@ class ProjectGeneratorTests {
 	void customPackageNameIsUsedWhenGeneratingProject() throws IOException {
 		ProjectDescription description = initProjectDescription();
 		description.setBuildSystem(new MavenBuildSystem());
-		description.setSpringBootVersion(Version.parse("2.1.0.RELEASE"));
+		description.setPlatformVersion(Version.parse("2.1.0.RELEASE"));
 		description.setLanguage(new JavaLanguage());
 		description.setGroupId("com.example");
 		description.setPackageName("com.example.demo");
@@ -347,7 +347,7 @@ class ProjectGeneratorTests {
 	void customApplicationNameIsUsedWhenGeneratingProject() throws IOException {
 		ProjectDescription description = initProjectDescription();
 		description.setBuildSystem(new MavenBuildSystem());
-		description.setSpringBootVersion(Version.parse("2.1.0.RELEASE"));
+		description.setPlatformVersion(Version.parse("2.1.0.RELEASE"));
 		description.setLanguage(new JavaLanguage());
 		description.setGroupId("com.example");
 		description.setApplicationName("MyApplication");
@@ -361,7 +361,7 @@ class ProjectGeneratorTests {
 	void customBaseDirectionIsUsedWhenGeneratingProject() throws IOException {
 		ProjectDescription description = initProjectDescription();
 		description.setBuildSystem(new MavenBuildSystem());
-		description.setSpringBootVersion(Version.parse("2.1.0.RELEASE"));
+		description.setPlatformVersion(Version.parse("2.1.0.RELEASE"));
 		description.setLanguage(new JavaLanguage());
 		description.setGroupId("com.example");
 		description.setBaseDirectory("test/demo-app");

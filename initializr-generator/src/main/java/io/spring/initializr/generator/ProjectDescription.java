@@ -27,23 +27,25 @@ import io.spring.initializr.generator.packaging.Packaging;
 import io.spring.initializr.generator.util.Version;
 
 /**
- * Description of a project that is being generated.
+ * Description of a project to generate.
  *
  * @author Andy Wilkinson
  */
 public class ProjectDescription {
 
-	private final Map<String, Dependency> dependencies = new LinkedHashMap<>();
-
-	private Version springBootVersion;
-
-	private String javaVersion;
+	private Version platformVersion;
 
 	private BuildSystem buildSystem;
 
 	private Packaging packaging;
 
 	private Language language;
+
+	private final Map<String, Dependency> dependencies = new LinkedHashMap<>();
+
+	// This does not fit very well here as we have a language abstraction. This is also
+	// more or less the same thing as https://github.com/spring-io/initializr/issues/773.
+	private String javaVersion;
 
 	private String groupId;
 
@@ -59,20 +61,12 @@ public class ProjectDescription {
 
 	private String baseDirectory;
 
-	public Version getSpringBootVersion() {
-		return this.springBootVersion;
+	public Version getPlatformVersion() {
+		return this.platformVersion;
 	}
 
-	public void setSpringBootVersion(Version springBootVersion) {
-		this.springBootVersion = springBootVersion;
-	}
-
-	public String getJavaVersion() {
-		return this.javaVersion;
-	}
-
-	public void setJavaVersion(String javaVersion) {
-		this.javaVersion = javaVersion;
+	public void setPlatformVersion(Version platformVersion) {
+		this.platformVersion = platformVersion;
 	}
 
 	public BuildSystem getBuildSystem() {
@@ -97,6 +91,22 @@ public class ProjectDescription {
 
 	public void setLanguage(Language language) {
 		this.language = language;
+	}
+
+	public Dependency addDependency(String id, Dependency dependency) {
+		return this.dependencies.put(id, dependency);
+	}
+
+	public Map<String, Dependency> getDependencies() {
+		return Collections.unmodifiableMap(this.dependencies);
+	}
+
+	public String getJavaVersion() {
+		return this.javaVersion;
+	}
+
+	public void setJavaVersion(String javaVersion) {
+		this.javaVersion = javaVersion;
 	}
 
 	public String getGroupId() {
@@ -131,14 +141,6 @@ public class ProjectDescription {
 		this.description = description;
 	}
 
-	public Dependency addDependency(String id, Dependency dependency) {
-		return this.dependencies.put(id, dependency);
-	}
-
-	public Map<String, Dependency> getDependencies() {
-		return Collections.unmodifiableMap(this.dependencies);
-	}
-
 	public String getApplicationName() {
 		return this.applicationName;
 	}
@@ -148,6 +150,7 @@ public class ProjectDescription {
 	}
 
 	public String getPackageName() {
+		// TODO: move to "resolve" logic
 		return (this.packageName != null) ? this.packageName : this.groupId;
 	}
 
