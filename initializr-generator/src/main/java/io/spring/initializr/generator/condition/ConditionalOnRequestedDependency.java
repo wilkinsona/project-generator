@@ -22,29 +22,30 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+import io.spring.initializr.generator.ProjectDescription;
+
 import org.springframework.context.annotation.Conditional;
 
 /**
- * Condition that matches when a generated project has a particular dependency.
+ * Condition that matches when a {@link ProjectDescription} defines a particular
+ * dependency. A generated project may ultimately define a different set of dependencies
+ * according to the contributors that have been executed. To contribute to the project
+ * according to the real set, prefer querying the model itself rather than using this
+ * condition.
  *
  * @author Andy Wilkinson
+ * @author Stephane Nicoll
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ ElementType.TYPE, ElementType.METHOD })
 @Documented
 @Conditional(OnDependencyCondition.class)
-public @interface ConditionalOnDependency {
+public @interface ConditionalOnRequestedDependency {
 
 	/**
-	 * The group ID of the dependency.
-	 * @return the group ID
+	 * The identifier of the dependency.
+	 * @return the dependency ID
 	 */
-	String groupId();
-
-	/**
-	 * The artifact ID of the dependency.
-	 * @return the artifact ID
-	 */
-	String artifactId();
+	String id();
 
 }

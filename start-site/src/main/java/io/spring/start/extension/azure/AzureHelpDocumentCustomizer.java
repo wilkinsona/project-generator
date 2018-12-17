@@ -19,7 +19,7 @@ package io.spring.start.extension.azure;
 import java.util.HashMap;
 import java.util.Map;
 
-import io.spring.initializr.generator.ProjectDescription;
+import io.spring.initializr.generator.buildsystem.Build;
 import io.spring.initializr.generator.project.documentation.HelpDocument;
 import io.spring.initializr.generator.project.documentation.HelpDocumentCustomizer;
 import io.spring.initializr.generator.project.documentation.MustacheSection;
@@ -31,10 +31,10 @@ import io.spring.initializr.generator.project.documentation.MustacheSection;
  */
 class AzureHelpDocumentCustomizer implements HelpDocumentCustomizer {
 
-	private final ProjectDescription description;
+	private final Build build;
 
-	AzureHelpDocumentCustomizer(ProjectDescription description) {
-		this.description = description;
+	AzureHelpDocumentCustomizer(Build build) {
+		this.build = build;
 	}
 
 	@Override
@@ -47,12 +47,12 @@ class AzureHelpDocumentCustomizer implements HelpDocumentCustomizer {
 
 	private Map<String, Object> createModel() {
 		Map<String, Object> model = new HashMap<>();
-		model.put("actuator", this.description.getDependencies().containsKey("actuator"));
+		model.put("actuator", this.build.getDependencies().containsKey("actuator"));
 		return model;
 	}
 
 	private boolean hasAzureSupport() {
-		return this.description.getDependencies().keySet().stream()
+		return this.build.getDependencies().keySet().stream()
 				.anyMatch((id) -> id.startsWith("azure"));
 	}
 

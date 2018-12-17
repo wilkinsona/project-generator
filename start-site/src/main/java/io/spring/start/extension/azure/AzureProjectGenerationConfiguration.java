@@ -16,7 +16,7 @@
 
 package io.spring.start.extension.azure;
 
-import io.spring.initializr.generator.ProjectDescription;
+import io.spring.initializr.generator.buildsystem.Build;
 import io.spring.initializr.generator.project.ProjectGenerationConfiguration;
 import io.spring.initializr.generator.project.documentation.HelpDocumentCustomizer;
 
@@ -31,9 +31,8 @@ import org.springframework.context.annotation.Bean;
 public class AzureProjectGenerationConfiguration {
 
 	@Bean
-	public HelpDocumentCustomizer azureHelpDocumentCustomizer(
-			ProjectDescription description) {
-		return new AzureHelpDocumentCustomizer(description);
+	public HelpDocumentCustomizer azureHelpDocumentCustomizer(Build build) {
+		return new AzureHelpDocumentCustomizer(build);
 	}
 
 }

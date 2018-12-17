@@ -16,9 +16,10 @@
 
 package io.spring.start.extension.azure;
 
-import io.spring.initializr.generator.ProjectDescription;
+import io.spring.initializr.generator.buildsystem.Build;
 import io.spring.initializr.generator.buildsystem.Dependency;
 import io.spring.initializr.generator.buildsystem.DependencyType;
+import io.spring.initializr.generator.buildsystem.maven.MavenBuild;
 import io.spring.initializr.generator.project.documentation.HelpDocument;
 import io.spring.initializr.generator.util.template.MustacheTemplateRenderer;
 import org.junit.jupiter.api.Test;
@@ -34,21 +35,21 @@ class AzureHelpDocumentCustomizerTests {
 
 	@Test
 	void customizeWithAzureDependency() {
-		ProjectDescription description = new ProjectDescription();
-		description.addDependency("azure",
+		Build build = new MavenBuild();
+		build.addDependency("azure",
 				new Dependency("com.microsoft.azure", "azure", DependencyType.COMPILE));
 		HelpDocument document = createHelpDocument();
-		new AzureHelpDocumentCustomizer(description).customize(document);
+		new AzureHelpDocumentCustomizer(build).customize(document);
 		assertThat(document.getSections()).hasSize(1);
 	}
 
 	@Test
 	void customizeWithoutAzureDependency() {
-		ProjectDescription description = new ProjectDescription();
-		description.addDependency("test",
+		Build build = new MavenBuild();
+		build.addDependency("test",
 				new Dependency("com.example.another", "test", DependencyType.COMPILE));
 		HelpDocument document = createHelpDocument();
-		new AzureHelpDocumentCustomizer(description).customize(document);
+		new AzureHelpDocumentCustomizer(build).customize(document);
 		assertThat(document.getSections()).isEmpty();
 	}
 

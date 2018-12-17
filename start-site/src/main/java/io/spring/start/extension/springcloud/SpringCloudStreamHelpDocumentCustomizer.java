@@ -16,7 +16,7 @@
 
 package io.spring.start.extension.springcloud;
 
-import io.spring.initializr.generator.ProjectDescription;
+import io.spring.initializr.generator.buildsystem.Build;
 import io.spring.initializr.generator.project.documentation.HelpDocument;
 import io.spring.initializr.generator.project.documentation.HelpDocumentCustomizer;
 
@@ -27,10 +27,10 @@ import io.spring.initializr.generator.project.documentation.HelpDocumentCustomiz
  */
 public class SpringCloudStreamHelpDocumentCustomizer implements HelpDocumentCustomizer {
 
-	private final ProjectDescription description;
+	private final Build build;
 
-	public SpringCloudStreamHelpDocumentCustomizer(ProjectDescription description) {
-		this.description = description;
+	public SpringCloudStreamHelpDocumentCustomizer(Build build) {
+		this.build = build;
 	}
 
 	@Override
@@ -42,7 +42,7 @@ public class SpringCloudStreamHelpDocumentCustomizer implements HelpDocumentCust
 	}
 
 	private boolean hasSpringCloudStream() {
-		return this.description.getDependencies().values().stream()
+		return this.build.getDependencies().values().stream()
 				.anyMatch((dependency) -> requiresBinder(dependency.getArtifactId()));
 	}
 

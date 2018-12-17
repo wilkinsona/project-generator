@@ -41,7 +41,7 @@ public class ProjectDescription {
 
 	private Language language;
 
-	private final Map<String, Dependency> dependencies = new LinkedHashMap<>();
+	private final Map<String, Dependency> requestedDependencies = new LinkedHashMap<>();
 
 	// This does not fit very well here as we have a language abstraction. This is also
 	// more or less the same thing as https://github.com/spring-io/initializr/issues/773.
@@ -94,11 +94,11 @@ public class ProjectDescription {
 	}
 
 	public Dependency addDependency(String id, Dependency dependency) {
-		return this.dependencies.put(id, dependency);
+		return this.requestedDependencies.put(id, dependency);
 	}
 
-	public Map<String, Dependency> getDependencies() {
-		return Collections.unmodifiableMap(this.dependencies);
+	public Map<String, Dependency> getRequestedDependencies() {
+		return Collections.unmodifiableMap(this.requestedDependencies);
 	}
 
 	public String getJavaVersion() {

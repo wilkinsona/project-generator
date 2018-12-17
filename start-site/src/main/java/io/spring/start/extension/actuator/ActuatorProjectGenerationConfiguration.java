@@ -16,7 +16,7 @@
 
 package io.spring.start.extension.actuator;
 
-import io.spring.initializr.generator.condition.ConditionalOnDependency;
+import io.spring.initializr.generator.condition.ConditionalOnRequestedDependency;
 import io.spring.initializr.generator.project.ProjectGenerationConfiguration;
 
 import org.springframework.context.annotation.Bean;
@@ -27,7 +27,7 @@ import org.springframework.context.annotation.Bean;
  * @author Madhura Bhave
  */
 @ProjectGenerationConfiguration
-@ConditionalOnDependency(groupId = "org.springframework.boot", artifactId = "spring-boot-starter-actuator")
+@ConditionalOnRequestedDependency(id = "actuator")
 public class ActuatorProjectGenerationConfiguration {
 
 	@Bean

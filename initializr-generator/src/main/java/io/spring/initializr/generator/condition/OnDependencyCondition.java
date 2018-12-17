@@ -17,13 +17,13 @@
 package io.spring.initializr.generator.condition;
 
 import io.spring.initializr.generator.ProjectDescription;
-import io.spring.initializr.generator.buildsystem.Dependency;
 
 import org.springframework.context.annotation.ConditionContext;
 import org.springframework.core.type.AnnotatedTypeMetadata;
 
 /**
- * {@link ProjectGenerationCondition} implementation for {@link ConditionalOnDependency}.
+ * {@link ProjectGenerationCondition} implementation for
+ * {@link ConditionalOnRequestedDependency}.
  *
  * @author Andy Wilkinson
  */
@@ -32,19 +32,10 @@ class OnDependencyCondition extends ProjectGenerationCondition {
 	@Override
 	protected boolean matches(ProjectDescription projectDescription,
 			ConditionContext context, AnnotatedTypeMetadata metadata) {
-		String groupId = (String) metadata
-				.getAnnotationAttributes(ConditionalOnDependency.class.getName())
-				.get("groupId");
-		String artifactId = (String) metadata
-				.getAnnotationAttributes(ConditionalOnDependency.class.getName())
-				.get("artifactId");
-		for (Dependency dependency : projectDescription.getDependencies().values()) {
-			if (dependency.getGroupId().equals(groupId)
-					&& dependency.getArtifactId().equals(artifactId)) {
-				return true;
-			}
-		}
-		return false;
+		String id = (String) metadata
+				.getAnnotationAttributes(ConditionalOnRequestedDependency.class.getName())
+				.get("id");
+		return projectDescription.getRequestedDependencies().containsKey(id);
 	}
 
 }

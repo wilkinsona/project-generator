@@ -38,7 +38,7 @@ public class ProjectDescriptionBuildCustomizer implements BuildCustomizer<Build>
 		build.setGroup(this.projectDescription.getGroupId());
 		build.setArtifact(this.projectDescription.getArtifactId());
 		build.setVersion("0.0.1-SNAPSHOT");
-		this.projectDescription.getDependencies().forEach(build::addDependency);
+		this.projectDescription.getRequestedDependencies().forEach(build::addDependency);
 	}
 
 }
