@@ -171,8 +171,9 @@ class GradleBuildWriterTests {
 	@Test
 	void gradleBuildWithVersionedDependency() throws IOException {
 		GradleBuild build = new GradleBuild();
-		build.addDependency("kotlin-stdlib", "org.jetbrains.kotlin", "kotlin-stdlib-jdk8",
-				VersionReference.ofProperty("kotlin.version"), DependencyType.COMPILE);
+		build.dependencies().add("kotlin-stdlib", "org.jetbrains.kotlin",
+				"kotlin-stdlib-jdk8", VersionReference.ofProperty("kotlin.version"),
+				DependencyType.COMPILE);
 		List<String> lines = generateBuild(build);
 		assertThat(lines).containsSequence("dependencies {",
 				"    implementation \"org.jetbrains.kotlin:kotlin-stdlib-jdk8:${kotlinVersion}\"",
@@ -182,7 +183,7 @@ class GradleBuildWriterTests {
 	@Test
 	void gradleBuildWithExternalVersionedDependency() throws IOException {
 		GradleBuild build = new GradleBuild();
-		build.addDependency("acme", "com.example", "acme",
+		build.dependencies().add("acme", "com.example", "acme",
 				VersionReference.ofProperty(VersionProperty.of("acme.version", false)),
 				DependencyType.COMPILE);
 		List<String> lines = generateBuild(build);
@@ -194,8 +195,8 @@ class GradleBuildWriterTests {
 	@Test
 	void gradleBuildWithDependency() throws IOException {
 		GradleBuild build = new GradleBuild();
-		build.addDependency("root", "org.springframework.boot", "spring-boot-starter",
-				DependencyType.COMPILE);
+		build.dependencies().add("root", "org.springframework.boot",
+				"spring-boot-starter", DependencyType.COMPILE);
 		List<String> lines = generateBuild(build);
 		assertThat(lines).containsSequence("dependencies {",
 				"    implementation 'org.springframework.boot:spring-boot-starter'", "}");

@@ -33,7 +33,7 @@ public class BuildProjectGenerationConfiguration {
 
 	@Bean
 	public BuildCustomizer<Build> testStarterContributor() {
-		return (build) -> build.addDependency("test", "org.springframework.boot",
+		return (build) -> build.dependencies().add("test", "org.springframework.boot",
 				"spring-boot-starter-test", DependencyType.TEST_COMPILE);
 	}
 

@@ -36,14 +36,14 @@ class KotlinDependenciesConfigurerTests {
 	void configuresDependenciesForGradleBuild() {
 		GradleBuild build = new GradleBuild();
 		new KotlinDependenciesConfigurer(Version.parse("2.1.0.RELEASE")).customize(build);
-		assertThat(build.getDependencies()).containsOnlyKeys("kotlin-stdlib",
+		assertThat(build.dependencies().ids()).containsOnly("kotlin-stdlib",
 				"kotlin-reflect");
-		Dependency kotlinStdlib = build.getDependencies().get("kotlin-stdlib");
+		Dependency kotlinStdlib = build.dependencies().get("kotlin-stdlib");
 		assertThat(kotlinStdlib.getGroupId()).isEqualTo("org.jetbrains.kotlin");
 		assertThat(kotlinStdlib.getArtifactId()).isEqualTo("kotlin-stdlib-jdk8");
 		assertThat(kotlinStdlib.getVersion()).isNull();
 		assertThat(kotlinStdlib.getType()).isEqualTo(DependencyType.COMPILE);
-		Dependency kotlinReflect = build.getDependencies().get("kotlin-reflect");
+		Dependency kotlinReflect = build.dependencies().get("kotlin-reflect");
 		assertThat(kotlinReflect.getGroupId()).isEqualTo("org.jetbrains.kotlin");
 		assertThat(kotlinReflect.getArtifactId()).isEqualTo("kotlin-reflect");
 		assertThat(kotlinReflect.getVersion()).isNull();
@@ -54,14 +54,14 @@ class KotlinDependenciesConfigurerTests {
 		MavenBuild build = new MavenBuild();
 		new KotlinDependenciesConfigurer(Version.parse("1.5.17.RELEASE"))
 				.customize(build);
-		assertThat(build.getDependencies()).containsOnlyKeys("kotlin-stdlib",
+		assertThat(build.dependencies().ids()).containsOnly("kotlin-stdlib",
 				"kotlin-reflect");
-		Dependency kotlinStdlib = build.getDependencies().get("kotlin-stdlib");
+		Dependency kotlinStdlib = build.dependencies().get("kotlin-stdlib");
 		assertThat(kotlinStdlib.getGroupId()).isEqualTo("org.jetbrains.kotlin");
 		assertThat(kotlinStdlib.getArtifactId()).isEqualTo("kotlin-stdlib-jdk8");
 		assertThat(kotlinStdlib.getVersion()).hasToString("${kotlin.version}");
 		assertThat(kotlinStdlib.getType()).isEqualTo(DependencyType.COMPILE);
-		Dependency kotlinReflect = build.getDependencies().get("kotlin-reflect");
+		Dependency kotlinReflect = build.dependencies().get("kotlin-reflect");
 		assertThat(kotlinReflect.getGroupId()).isEqualTo("org.jetbrains.kotlin");
 		assertThat(kotlinReflect.getArtifactId()).isEqualTo("kotlin-reflect");
 		assertThat(kotlinReflect.getVersion()).hasToString("${kotlin.version}");
@@ -71,14 +71,14 @@ class KotlinDependenciesConfigurerTests {
 	void configuresDependenciesForMavenBuildWithBoot20() {
 		MavenBuild build = new MavenBuild();
 		new KotlinDependenciesConfigurer(Version.parse("2.0.6.RELEASE")).customize(build);
-		assertThat(build.getDependencies()).containsOnlyKeys("kotlin-stdlib",
+		assertThat(build.dependencies().ids()).containsOnly("kotlin-stdlib",
 				"kotlin-reflect");
-		Dependency kotlinStdlib = build.getDependencies().get("kotlin-stdlib");
+		Dependency kotlinStdlib = build.dependencies().get("kotlin-stdlib");
 		assertThat(kotlinStdlib.getGroupId()).isEqualTo("org.jetbrains.kotlin");
 		assertThat(kotlinStdlib.getArtifactId()).isEqualTo("kotlin-stdlib-jdk8");
 		assertThat(kotlinStdlib.getVersion()).isNull();
 		assertThat(kotlinStdlib.getType()).isEqualTo(DependencyType.COMPILE);
-		Dependency kotlinReflect = build.getDependencies().get("kotlin-reflect");
+		Dependency kotlinReflect = build.dependencies().get("kotlin-reflect");
 		assertThat(kotlinReflect.getGroupId()).isEqualTo("org.jetbrains.kotlin");
 		assertThat(kotlinReflect.getArtifactId()).isEqualTo("kotlin-reflect");
 		assertThat(kotlinReflect.getVersion()).isNull();

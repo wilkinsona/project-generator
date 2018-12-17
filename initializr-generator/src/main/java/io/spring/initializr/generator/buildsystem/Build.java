@@ -18,13 +18,11 @@ package io.spring.initializr.generator.buildsystem;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
 import io.spring.initializr.generator.util.VersionProperty;
-import io.spring.initializr.generator.util.VersionReference;
 
 /**
  * Build configuration for a project.
@@ -41,13 +39,21 @@ public abstract class Build {
 
 	private final Map<VersionProperty, String> versionProperties = new TreeMap<>();
 
-	private final Map<String, Dependency> dependencies = new LinkedHashMap<>();
+	private final DependencyContainer dependencies;
 
 	private final List<BillOfMaterials> boms = new ArrayList<>();
 
 	private final List<MavenRepository> repositories = new ArrayList<>();
 
 	private final List<MavenRepository> pluginRepositories = new ArrayList<>();
+
+	protected Build(BuildItemResolver buildItemResolver) {
+		this.dependencies = new DependencyContainer(buildItemResolver::resolveDependency);
+	}
+
+	protected Build() {
+		this(new SimpleBuildItemResolver((id) -> null));
+	}
 
 	/**
 	 * Return the identifier of the group for the project.
@@ -97,27 +103,8 @@ public abstract class Build {
 		return Collections.unmodifiableMap(this.versionProperties);
 	}
 
-	public void addDependency(String id, Dependency dependency) {
-		this.dependencies.put(id, dependency);
-	}
-
-	public Dependency addDependency(String id, String groupId, String artifactId,
-			DependencyType dependencyType) {
-		Dependency dependency = new Dependency(groupId, artifactId, dependencyType);
-		this.dependencies.put(id, dependency);
-		return dependency;
-	}
-
-	public Dependency addDependency(String id, String groupId, String artifactId,
-			VersionReference version, DependencyType dependencyType) {
-		Dependency dependency = new Dependency(groupId, artifactId, version,
-				dependencyType);
-		this.dependencies.put(id, dependency);
-		return dependency;
-	}
-
-	public Map<String, Dependency> getDependencies() {
-		return Collections.unmodifiableMap(this.dependencies);
+	public DependencyContainer dependencies() {
+		return this.dependencies;
 	}
 
 	public void addBom(BillOfMaterials bom) {

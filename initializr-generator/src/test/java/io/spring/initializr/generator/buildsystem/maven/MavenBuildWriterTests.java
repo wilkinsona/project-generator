@@ -120,7 +120,7 @@ class MavenBuildWriterTests {
 		MavenBuild build = new MavenBuild();
 		build.setGroup("com.example.demo");
 		build.setArtifact("demo");
-		build.addDependency("annotation-processor", "org.springframework.boot",
+		build.dependencies().add("annotation-processor", "org.springframework.boot",
 				"spring-boot-configuration-processor",
 				DependencyType.ANNOTATION_PROCESSOR);
 		generatePom(build, (pom) -> {
@@ -140,8 +140,8 @@ class MavenBuildWriterTests {
 		MavenBuild build = new MavenBuild();
 		build.setGroup("com.example.demo");
 		build.setArtifact("demo");
-		build.addDependency("root", "org.springframework.boot", "spring-boot-starter",
-				DependencyType.COMPILE);
+		build.dependencies().add("root", "org.springframework.boot",
+				"spring-boot-starter", DependencyType.COMPILE);
 		generatePom(build, (pom) -> {
 			NodeAssert dependency = pom.nodeAtPath("/project/dependencies/dependency");
 			assertThat(dependency).textAtPath("groupId")
@@ -159,7 +159,7 @@ class MavenBuildWriterTests {
 		MavenBuild build = new MavenBuild();
 		build.setGroup("com.example.demo");
 		build.setArtifact("demo");
-		build.addDependency("tomcat", "org.springframework.boot",
+		build.dependencies().add("tomcat", "org.springframework.boot",
 				"spring-boot-starter-tomcat", DependencyType.PROVIDED_RUNTIME);
 		generatePom(build, (pom) -> {
 			NodeAssert dependency = pom.nodeAtPath("/project/dependencies/dependency");
@@ -178,7 +178,8 @@ class MavenBuildWriterTests {
 		MavenBuild build = new MavenBuild();
 		build.setGroup("com.example.demo");
 		build.setArtifact("demo");
-		build.addDependency("hikari", "com.zaxxer", "HikariCP", DependencyType.RUNTIME);
+		build.dependencies().add("hikari", "com.zaxxer", "HikariCP",
+				DependencyType.RUNTIME);
 		generatePom(build, (pom) -> {
 			NodeAssert dependency = pom.nodeAtPath("/project/dependencies/dependency");
 			assertThat(dependency).textAtPath("groupId").isEqualTo("com.zaxxer");
@@ -194,7 +195,7 @@ class MavenBuildWriterTests {
 		MavenBuild build = new MavenBuild();
 		build.setGroup("com.example.demo");
 		build.setArtifact("demo");
-		build.addDependency("test", "org.springframework.boot",
+		build.dependencies().add("test", "org.springframework.boot",
 				"spring-boot-starter-test", DependencyType.TEST_COMPILE);
 		generatePom(build, (pom) -> {
 			NodeAssert dependency = pom.nodeAtPath("/project/dependencies/dependency");
@@ -213,7 +214,7 @@ class MavenBuildWriterTests {
 		MavenBuild build = new MavenBuild();
 		build.setGroup("com.example.demo");
 		build.setArtifact("demo");
-		build.addDependency("embed-mongo", "de.flapdoodle.embed",
+		build.dependencies().add("embed-mongo", "de.flapdoodle.embed",
 				"de.flapdoodle.embed.mongo", DependencyType.TEST_RUNTIME);
 		generatePom(build, (pom) -> {
 			NodeAssert dependency = pom.nodeAtPath("/project/dependencies/dependency");

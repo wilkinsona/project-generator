@@ -36,7 +36,7 @@ class AzureHelpDocumentCustomizerTests {
 	@Test
 	void customizeWithAzureDependency() {
 		Build build = new MavenBuild();
-		build.addDependency("azure",
+		build.dependencies().add("azure",
 				new Dependency("com.microsoft.azure", "azure", DependencyType.COMPILE));
 		HelpDocument document = createHelpDocument();
 		new AzureHelpDocumentCustomizer(build).customize(document);
@@ -46,7 +46,7 @@ class AzureHelpDocumentCustomizerTests {
 	@Test
 	void customizeWithoutAzureDependency() {
 		Build build = new MavenBuild();
-		build.addDependency("test",
+		build.dependencies().add("test",
 				new Dependency("com.example.another", "test", DependencyType.COMPILE));
 		HelpDocument document = createHelpDocument();
 		new AzureHelpDocumentCustomizer(build).customize(document);

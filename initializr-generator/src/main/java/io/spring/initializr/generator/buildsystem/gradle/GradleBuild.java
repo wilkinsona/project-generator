@@ -25,6 +25,7 @@ import java.util.Map;
 import java.util.function.Consumer;
 
 import io.spring.initializr.generator.buildsystem.Build;
+import io.spring.initializr.generator.buildsystem.BuildItemResolver;
 
 /**
  * Gradle build configuration for a project.
@@ -42,6 +43,13 @@ public class GradleBuild extends Build {
 	private final Map<String, TaskCustomization> taskCustomizations = new LinkedHashMap<>();
 
 	private final Buildscript buildscript = new Buildscript();
+
+	public GradleBuild(BuildItemResolver buildItemResolver) {
+		super(buildItemResolver);
+	}
+
+	public GradleBuild() {
+	}
 
 	public void setSourceCompatibility(String sourceCompatibility) {
 		this.sourceCompatibility = sourceCompatibility;

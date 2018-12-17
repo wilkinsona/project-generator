@@ -23,6 +23,7 @@ import java.util.Map;
 import java.util.TreeMap;
 
 import io.spring.initializr.generator.buildsystem.Build;
+import io.spring.initializr.generator.buildsystem.BuildItemResolver;
 
 /**
  * Maven build for a project.
@@ -46,6 +47,13 @@ public class MavenBuild extends Build {
 	private final List<MavenPlugin> plugins = new ArrayList<>();
 
 	private String packaging;
+
+	public MavenBuild(BuildItemResolver buildItemResolver) {
+		super(buildItemResolver);
+	}
+
+	public MavenBuild() {
+	}
 
 	public Parent parent(String groupId, String artifactId, String version) {
 		this.parent = new Parent(groupId, artifactId, version);

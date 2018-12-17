@@ -33,6 +33,7 @@ import java.util.stream.Collectors;
 import io.spring.initializr.generator.buildsystem.BillOfMaterials;
 import io.spring.initializr.generator.buildsystem.Dependency;
 import io.spring.initializr.generator.buildsystem.DependencyComparator;
+import io.spring.initializr.generator.buildsystem.DependencyContainer;
 import io.spring.initializr.generator.buildsystem.DependencyType;
 import io.spring.initializr.generator.buildsystem.MavenRepository;
 import io.spring.initializr.generator.buildsystem.gradle.GradleBuild.TaskCustomization;
@@ -137,19 +138,21 @@ public class GradleBuildWriter {
 	}
 
 	private void writeDependencies(IndentingWriter writer, GradleBuild build) {
-		Collection<Dependency> allDependencies = build.getDependencies().values();
-		Set<Dependency> dependencies = new LinkedHashSet<>();
-		dependencies.addAll(filterDependencies(allDependencies, DependencyType.COMPILE));
-		dependencies.addAll(filterDependencies(allDependencies, DependencyType.RUNTIME));
-		dependencies.addAll(
-				filterDependencies(allDependencies, DependencyType.ANNOTATION_PROCESSOR));
-		dependencies.addAll(
-				filterDependencies(allDependencies, DependencyType.PROVIDED_RUNTIME));
-		dependencies
-				.addAll(filterDependencies(allDependencies, DependencyType.TEST_COMPILE));
-		dependencies
-				.addAll(filterDependencies(allDependencies, DependencyType.TEST_RUNTIME));
-		writeNestedCollection(writer, "dependencies", dependencies,
+		Set<Dependency> sortedDependencies = new LinkedHashSet<>();
+		DependencyContainer dependencies = build.dependencies();
+		sortedDependencies
+				.addAll(filterDependencies(dependencies, DependencyType.COMPILE));
+		sortedDependencies
+				.addAll(filterDependencies(dependencies, DependencyType.RUNTIME));
+		sortedDependencies.addAll(
+				filterDependencies(dependencies, DependencyType.ANNOTATION_PROCESSOR));
+		sortedDependencies.addAll(
+				filterDependencies(dependencies, DependencyType.PROVIDED_RUNTIME));
+		sortedDependencies
+				.addAll(filterDependencies(dependencies, DependencyType.TEST_COMPILE));
+		sortedDependencies
+				.addAll(filterDependencies(dependencies, DependencyType.TEST_RUNTIME));
+		writeNestedCollection(writer, "dependencies", sortedDependencies,
 				this::dependencyAsString, writer::println);
 	}
 
@@ -277,9 +280,9 @@ public class GradleBuildWriter {
 	}
 
 	private static Collection<Dependency> filterDependencies(
-			Collection<Dependency> dependencies, DependencyType... types) {
+			DependencyContainer dependencies, DependencyType... types) {
 		List<DependencyType> candidates = Arrays.asList(types);
-		return dependencies.stream().filter((dep) -> candidates.contains(dep.getType()))
+		return dependencies.items().filter((dep) -> candidates.contains(dep.getType()))
 				.sorted(DependencyComparator.INSTANCE).collect(Collectors.toList());
 	}
 

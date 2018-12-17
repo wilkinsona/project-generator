@@ -14,24 +14,20 @@
  * limitations under the License.
  */
 
-package io.spring.initializr.generator.project.code.groovy;
-
-import io.spring.initializr.generator.buildsystem.Build;
-import io.spring.initializr.generator.buildsystem.DependencyType;
-import io.spring.initializr.generator.project.build.BuildCustomizer;
+package io.spring.initializr.generator.buildsystem;
 
 /**
- * {@link BuildCustomizer} that adds the dependencies required by projects written in
- * Groovy.
+ * Resolve an item of the {@link Build} against an identifer.
  *
  * @author Stephane Nicoll
  */
-class GroovyDependenciesConfigurer implements BuildCustomizer<Build> {
+public interface BuildItemResolver {
 
-	@Override
-	public void customize(Build build) {
-		build.dependencies().add("groovy", "org.codehaus.groovy", "groovy",
-				DependencyType.COMPILE);
-	}
+	/**
+	 * Resolve the {@link Dependency} with the specified {@code id}.
+	 * @param id the id of the dependency
+	 * @return the matching {@link Dependency} or {@code null} if none is found
+	 */
+	Dependency resolveDependency(String id);
 
 }

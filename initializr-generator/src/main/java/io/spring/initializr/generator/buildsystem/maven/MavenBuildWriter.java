@@ -28,6 +28,7 @@ import java.util.stream.Collectors;
 import io.spring.initializr.generator.buildsystem.BillOfMaterials;
 import io.spring.initializr.generator.buildsystem.Dependency;
 import io.spring.initializr.generator.buildsystem.DependencyComparator;
+import io.spring.initializr.generator.buildsystem.DependencyContainer;
 import io.spring.initializr.generator.buildsystem.DependencyType;
 import io.spring.initializr.generator.buildsystem.MavenRepository;
 import io.spring.initializr.generator.buildsystem.maven.MavenPlugin.Configuration;
@@ -120,10 +121,10 @@ public class MavenBuildWriter {
 	}
 
 	private void writeDependencies(IndentingWriter writer, MavenBuild build) {
-		Collection<Dependency> dependencies = build.getDependencies().values();
-		if (dependencies.isEmpty()) {
+		if (build.dependencies().isEmpty()) {
 			return;
 		}
+		DependencyContainer dependencies = build.dependencies();
 		writer.println();
 		writeElement(writer, "dependencies", () -> {
 			Collection<Dependency> compiledDependencies = writeDependencies(writer,
@@ -140,7 +141,7 @@ public class MavenBuildWriter {
 	}
 
 	private Collection<Dependency> writeDependencies(IndentingWriter writer,
-			Collection<Dependency> dependencies, DependencyType... types) {
+			DependencyContainer dependencies, DependencyType... types) {
 		Collection<Dependency> candidates = filterDependencies(dependencies, types);
 		writeCollection(writer, candidates, this::writeDependency);
 		return candidates;
@@ -160,9 +161,9 @@ public class MavenBuildWriter {
 	}
 
 	private static Collection<Dependency> filterDependencies(
-			Collection<Dependency> dependencies, DependencyType... types) {
+			DependencyContainer dependencies, DependencyType... types) {
 		List<DependencyType> candidates = Arrays.asList(types);
-		return dependencies.stream().filter((dep) -> candidates.contains(dep.getType()))
+		return dependencies.items().filter((dep) -> candidates.contains(dep.getType()))
 				.sorted(DependencyComparator.INSTANCE).collect(Collectors.toList());
 	}
 

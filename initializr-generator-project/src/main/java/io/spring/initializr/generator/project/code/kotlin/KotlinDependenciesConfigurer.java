@@ -40,10 +40,10 @@ class KotlinDependenciesConfigurer implements BuildCustomizer<Build> {
 	@Override
 	public void customize(Build build) {
 		VersionReference version = determineDependencyVersion(build);
-		build.addDependency("kotlin-stdlib", "org.jetbrains.kotlin", "kotlin-stdlib-jdk8",
-				version, DependencyType.COMPILE);
-		build.addDependency("kotlin-reflect", "org.jetbrains.kotlin", "kotlin-reflect",
-				version, DependencyType.COMPILE);
+		build.dependencies().add("kotlin-stdlib", "org.jetbrains.kotlin",
+				"kotlin-stdlib-jdk8", version, DependencyType.COMPILE);
+		build.dependencies().add("kotlin-reflect", "org.jetbrains.kotlin",
+				"kotlin-reflect", version, DependencyType.COMPILE);
 	}
 
 	private VersionReference determineDependencyVersion(Build build) {
