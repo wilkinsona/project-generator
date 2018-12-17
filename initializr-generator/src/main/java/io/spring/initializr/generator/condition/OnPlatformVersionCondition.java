@@ -14,10 +14,9 @@
  * limitations under the License.
  */
 
-package io.spring.initializr.generator.springboot;
+package io.spring.initializr.generator.condition;
 
 import io.spring.initializr.generator.ProjectDescription;
-import io.spring.initializr.generator.condition.ProjectGenerationCondition;
 import io.spring.initializr.generator.util.VersionParser;
 import io.spring.initializr.generator.util.VersionRange;
 
@@ -26,11 +25,11 @@ import org.springframework.core.type.AnnotatedTypeMetadata;
 
 /**
  * {@link ProjectGenerationCondition} implementation for
- * {@link ConditionalOnSpringBootVersion}.
+ * {@link ConditionalOnPlatformVersion}.
  *
  * @author Andy Wilkinson
  */
-class OnSpringBootVersionCondition extends ProjectGenerationCondition {
+class OnPlatformVersionCondition extends ProjectGenerationCondition {
 
 	@Override
 	protected boolean matches(ProjectDescription projectDescription,
@@ -39,7 +38,7 @@ class OnSpringBootVersionCondition extends ProjectGenerationCondition {
 			return false;
 		}
 		VersionRange range = VersionParser.DEFAULT.parseRange((String) metadata
-				.getAnnotationAttributes(ConditionalOnSpringBootVersion.class.getName())
+				.getAnnotationAttributes(ConditionalOnPlatformVersion.class.getName())
 				.get("value"));
 		return range.match(projectDescription.getPlatformVersion());
 	}

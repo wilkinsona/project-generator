@@ -23,12 +23,12 @@ import io.spring.initializr.generator.ProjectDescription;
 import io.spring.initializr.generator.buildsystem.Build;
 import io.spring.initializr.generator.buildsystem.gradle.ConditionalOnGradle;
 import io.spring.initializr.generator.buildsystem.gradle.GradleBuild;
+import io.spring.initializr.generator.condition.ConditionalOnPlatformVersion;
 import io.spring.initializr.generator.io.IndentingWriterFactory;
 import io.spring.initializr.generator.language.java.ConditionalOnJavaLanguage;
 import io.spring.initializr.generator.packaging.war.ConditionalOnWarPackaging;
 import io.spring.initializr.generator.project.build.BuildCustomizer;
 import io.spring.initializr.generator.project.scm.git.GitIgnoreContributor;
-import io.spring.initializr.generator.springboot.ConditionalOnSpringBootVersion;
 import io.spring.initializr.generator.util.LambdaSafe;
 
 import org.springframework.beans.factory.ObjectProvider;
@@ -84,7 +84,7 @@ public class GradleProjectGenerationConfiguration {
 	}
 
 	@Bean
-	@ConditionalOnSpringBootVersion("2.0.0.M1")
+	@ConditionalOnPlatformVersion("2.0.0.M1")
 	public BuildCustomizer<GradleBuild> applyDependencyManagementPluginContributor() {
 		return (gradleBuild) -> gradleBuild
 				.applyPlugin("io.spring.dependency-management");

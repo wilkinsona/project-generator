@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package io.spring.initializr.generator.springboot;
+package io.spring.initializr.generator.condition;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
@@ -25,16 +25,16 @@ import java.lang.annotation.Target;
 import org.springframework.context.annotation.Conditional;
 
 /**
- * Condition that matches when a generated project is using a matching version of Spring
- * Boot.
+ * Condition that matches when a generated project is using a matching version of the
+ * platform.
  *
  * @author Andy Wilkinson
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ ElementType.TYPE, ElementType.METHOD })
 @Documented
-@Conditional(OnSpringBootVersionCondition.class)
-public @interface ConditionalOnSpringBootVersion {
+@Conditional(OnPlatformVersionCondition.class)
+public @interface ConditionalOnPlatformVersion {
 
 	/**
 	 * The version range to match.

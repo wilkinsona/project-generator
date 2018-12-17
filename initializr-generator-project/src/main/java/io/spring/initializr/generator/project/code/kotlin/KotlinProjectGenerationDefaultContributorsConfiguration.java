@@ -20,6 +20,7 @@ import io.spring.initializr.generator.ProjectDescription;
 import io.spring.initializr.generator.buildsystem.Build;
 import io.spring.initializr.generator.buildsystem.gradle.ConditionalOnGradle;
 import io.spring.initializr.generator.buildsystem.maven.ConditionalOnMaven;
+import io.spring.initializr.generator.condition.ConditionalOnPlatformVersion;
 import io.spring.initializr.generator.language.Annotation;
 import io.spring.initializr.generator.language.Parameter;
 import io.spring.initializr.generator.language.kotlin.KotlinCompilationUnit;
@@ -35,7 +36,6 @@ import io.spring.initializr.generator.project.build.BuildCustomizer;
 import io.spring.initializr.generator.project.code.MainCompilationUnitCustomizer;
 import io.spring.initializr.generator.project.code.ServletInitializerCustomizer;
 import io.spring.initializr.generator.project.code.TestApplicationTypeCustomizer;
-import io.spring.initializr.generator.springboot.ConditionalOnSpringBootVersion;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -69,7 +69,7 @@ class KotlinProjectGenerationDefaultContributorsConfiguration {
 	 * Configuration for Kotlin projects using Spring Boot 1.5.
 	 */
 	@Configuration
-	@ConditionalOnSpringBootVersion("[1.5.0.M1, 2.0.0.M1)")
+	@ConditionalOnPlatformVersion("[1.5.0.M1, 2.0.0.M1)")
 	static class SpringBoot15KotlinProjectGenerationConfiguration {
 
 		@Bean
@@ -97,7 +97,7 @@ class KotlinProjectGenerationDefaultContributorsConfiguration {
 	 * Configuration for Kotlin projects using Spring Boot 2.0 and later.
 	 */
 	@Configuration
-	@ConditionalOnSpringBootVersion("2.0.0.M1")
+	@ConditionalOnPlatformVersion("2.0.0.M1")
 	static class SpringBoot2AndLaterKotlinProjectGenerationConfiguration {
 
 		@Bean
