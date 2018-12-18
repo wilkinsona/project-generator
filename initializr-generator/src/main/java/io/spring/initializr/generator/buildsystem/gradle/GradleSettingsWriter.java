@@ -54,9 +54,8 @@ public class GradleSettingsWriter {
 
 	private void writeResolutionStrategyIfNecessary(IndentingWriter writer,
 			GradleBuild build) {
-		if (!build.pluginRepositories().items()
-				.filter((repository) -> !MavenRepository.MAVEN_CENTRAL.equals(repository))
-				.findFirst().isPresent()) {
+		if (build.pluginRepositories().items()
+				.allMatch(MavenRepository.MAVEN_CENTRAL::equals)) {
 			return;
 		}
 		writer.println("resolutionStrategy {");
