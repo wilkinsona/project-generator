@@ -21,6 +21,7 @@ import java.util.stream.Collectors;
 
 import io.spring.initializr.generator.ProjectDescription;
 import io.spring.initializr.generator.buildsystem.Build;
+import io.spring.initializr.generator.buildsystem.BuildItemResolver;
 import io.spring.initializr.generator.buildsystem.maven.ConditionalOnMaven;
 import io.spring.initializr.generator.buildsystem.maven.MavenBuild;
 import io.spring.initializr.generator.io.IndentingWriterFactory;
@@ -54,10 +55,25 @@ public class MavenProjectGenerationConfiguration {
 	}
 
 	@Bean
-	public MavenBuild mavenBuild(ObjectProvider<BuildCustomizer<?>> buildCustomizers) {
-		MavenBuild mavenBuild = new MavenBuild();
+	public MavenBuild mavenBuild(ObjectProvider<BuildItemResolver> buildItemResolver,
+			ObjectProvider<BuildCustomizer<?>> buildCustomizers) {
+		MavenBuild mavenBuild = createMavenBuild(buildItemResolver.getIfAvailable());
 		customizeBuild(buildCustomizers, mavenBuild);
 		return mavenBuild;
+	}
+
+	private MavenBuild createMavenBuild(BuildItemResolver buildItemResolver) {
+		return (buildItemResolver != null) ? new MavenBuild(buildItemResolver)
+				: new MavenBuild();
+	}
+
+	@SuppressWarnings("unchecked")
+	private void customizeBuild(ObjectProvider<BuildCustomizer<?>> buildCustomizers,
+			MavenBuild mavenBuild) {
+		List<BuildCustomizer<? extends Build>> customizers = buildCustomizers
+				.orderedStream().collect(Collectors.toList());
+		LambdaSafe.callbacks(BuildCustomizer.class, customizers, mavenBuild)
+				.invoke((customizer) -> customizer.customize(mavenBuild));
 	}
 
 	@Bean
@@ -75,15 +91,6 @@ public class MavenProjectGenerationConfiguration {
 	public MavenBuildProjectContributor mavenBuildProjectContributor(
 			MavenBuild mavenBuild, IndentingWriterFactory indentingWriterFactory) {
 		return new MavenBuildProjectContributor(mavenBuild, indentingWriterFactory);
-	}
-
-	@SuppressWarnings("unchecked")
-	private void customizeBuild(ObjectProvider<BuildCustomizer<?>> buildCustomizers,
-			MavenBuild mavenBuild) {
-		List<BuildCustomizer<? extends Build>> customizers = buildCustomizers
-				.orderedStream().collect(Collectors.toList());
-		LambdaSafe.callbacks(BuildCustomizer.class, customizers, mavenBuild)
-				.invoke((customizer) -> customizer.customize(mavenBuild));
 	}
 
 	@Bean

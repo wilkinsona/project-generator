@@ -21,6 +21,7 @@ import java.util.stream.Collectors;
 
 import io.spring.initializr.generator.ProjectDescription;
 import io.spring.initializr.generator.buildsystem.Build;
+import io.spring.initializr.generator.buildsystem.BuildItemResolver;
 import io.spring.initializr.generator.buildsystem.gradle.ConditionalOnGradle;
 import io.spring.initializr.generator.buildsystem.gradle.GradleBuild;
 import io.spring.initializr.generator.condition.ConditionalOnPlatformVersion;
@@ -58,10 +59,25 @@ public class GradleProjectGenerationConfiguration {
 	}
 
 	@Bean
-	public GradleBuild gradleBuild(ObjectProvider<BuildCustomizer<?>> buildCustomizers) {
-		GradleBuild gradleBuild = new GradleBuild();
+	public GradleBuild gradleBuild(ObjectProvider<BuildItemResolver> buildItemResolver,
+			ObjectProvider<BuildCustomizer<?>> buildCustomizers) {
+		GradleBuild gradleBuild = createGradleBuild(buildItemResolver.getIfAvailable());
 		customizeBuild(buildCustomizers, gradleBuild);
 		return gradleBuild;
+	}
+
+	private GradleBuild createGradleBuild(BuildItemResolver buildItemResolver) {
+		return (buildItemResolver != null) ? new GradleBuild(buildItemResolver)
+				: new GradleBuild();
+	}
+
+	@SuppressWarnings("unchecked")
+	private void customizeBuild(ObjectProvider<BuildCustomizer<?>> buildCustomizers,
+			GradleBuild gradleBuild) {
+		List<BuildCustomizer<? extends Build>> customizers = buildCustomizers
+				.orderedStream().collect(Collectors.toList());
+		LambdaSafe.callbacks(BuildCustomizer.class, customizers, gradleBuild)
+				.invoke((customizer) -> customizer.customize(gradleBuild));
 	}
 
 	@Bean
@@ -88,15 +104,6 @@ public class GradleProjectGenerationConfiguration {
 	public BuildCustomizer<GradleBuild> applyDependencyManagementPluginContributor() {
 		return (gradleBuild) -> gradleBuild
 				.applyPlugin("io.spring.dependency-management");
-	}
-
-	@SuppressWarnings("unchecked")
-	private void customizeBuild(ObjectProvider<BuildCustomizer<?>> buildCustomizers,
-			GradleBuild gradleBuild) {
-		List<BuildCustomizer<? extends Build>> customizers = buildCustomizers
-				.orderedStream().collect(Collectors.toList());
-		LambdaSafe.callbacks(BuildCustomizer.class, customizers, gradleBuild)
-				.invoke((customizer) -> customizer.customize(gradleBuild));
 	}
 
 	@Bean
