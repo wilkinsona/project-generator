@@ -37,4 +37,11 @@ public interface BuildItemResolver {
 	 */
 	BillOfMaterials resolveBom(String id);
 
+	/**
+	 * Resolve the {@link MavenRepository repository} with the specified {@code id}.
+	 * @param id the id of the bom
+	 * @return the matching {@link MavenRepository} or {@code null} if none is found
+	 */
+	MavenRepository resolveRepository(String id);
+
 }

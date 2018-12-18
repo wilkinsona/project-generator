@@ -29,10 +29,14 @@ public class SimpleBuildItemResolver implements BuildItemResolver {
 
 	private final Function<String, BillOfMaterials> bomResolver;
 
+	private final Function<String, MavenRepository> repositoryResolver;
+
 	public SimpleBuildItemResolver(Function<String, Dependency> dependencyResolver,
-			Function<String, BillOfMaterials> bomResolver) {
+			Function<String, BillOfMaterials> bomResolver,
+			Function<String, MavenRepository> repositoryResolver) {
 		this.dependencyResolver = dependencyResolver;
 		this.bomResolver = bomResolver;
+		this.repositoryResolver = repositoryResolver;
 	}
 
 	@Override
@@ -43,6 +47,11 @@ public class SimpleBuildItemResolver implements BuildItemResolver {
 	@Override
 	public BillOfMaterials resolveBom(String id) {
 		return this.bomResolver.apply(id);
+	}
+
+	@Override
+	public MavenRepository resolveRepository(String id) {
+		return this.repositoryResolver.apply(id);
 	}
 
 }

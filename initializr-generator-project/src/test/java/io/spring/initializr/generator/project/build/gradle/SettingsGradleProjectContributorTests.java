@@ -21,7 +21,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
 
-import io.spring.initializr.generator.buildsystem.MavenRepository;
 import io.spring.initializr.generator.buildsystem.gradle.GradleBuild;
 import io.spring.initializr.generator.io.IndentingWriterFactory;
 import io.spring.initializr.generator.io.SimpleIndentStrategy;
@@ -49,7 +48,7 @@ class SettingsGradleProjectContributorTests {
 	@Test
 	void gradleSettingsIsContributedToProject() throws IOException {
 		GradleBuild build = new GradleBuild();
-		build.addPluginRepository(MavenRepository.MAVEN_CENTRAL);
+		build.pluginRepositories().add("maven-central");
 		List<String> lines = generateSettings(build);
 		assertThat(lines).containsSequence("pluginManagement {", "    repositories {",
 				"        mavenCentral()", "        gradlePluginPortal()", "    }", "}");
@@ -62,7 +61,7 @@ class SettingsGradleProjectContributorTests {
 					factory.indentingStrategy("gradle", new SimpleIndentStrategy("  "));
 				});
 		GradleBuild build = new GradleBuild();
-		build.addPluginRepository(MavenRepository.MAVEN_CENTRAL);
+		build.pluginRepositories().add("maven-central");
 		List<String> lines = generateSettings(build, indentingWriterFactory);
 		assertThat(lines).containsSequence("pluginManagement {", "  repositories {",
 				"    mavenCentral()", "    gradlePluginPortal()", "  }", "}");
@@ -71,7 +70,7 @@ class SettingsGradleProjectContributorTests {
 	@Test
 	void gradleSettingsDoesNotUseRepositories() throws IOException {
 		GradleBuild build = new GradleBuild();
-		build.addRepository(MavenRepository.MAVEN_CENTRAL);
+		build.repositories().add("maven-central");
 		List<String> lines = generateSettings(build);
 		assertThat(lines).containsSequence("pluginManagement {", "    repositories {",
 				"        gradlePluginPortal()", "    }", "}");

@@ -21,7 +21,6 @@ import java.io.StringWriter;
 import java.util.Arrays;
 import java.util.List;
 
-import io.spring.initializr.generator.buildsystem.MavenRepository;
 import io.spring.initializr.generator.io.IndentingWriter;
 import org.junit.jupiter.api.Test;
 
@@ -37,7 +36,7 @@ class GradleSettingsWriterTests {
 	@Test
 	void gradleBuildWithMavenCentralPluginRepository() throws IOException {
 		GradleBuild build = new GradleBuild();
-		build.addPluginRepository(MavenRepository.MAVEN_CENTRAL);
+		build.pluginRepositories().add("maven-central");
 		List<String> lines = generateSettings(build);
 		assertThat(lines).containsSequence("pluginManagement {", "    repositories {",
 				"        mavenCentral()", "        gradlePluginPortal()", "    }", "}");
@@ -46,7 +45,7 @@ class GradleSettingsWriterTests {
 	@Test
 	void gradleBuildWithPluginRepository() throws IOException {
 		GradleBuild build = new GradleBuild();
-		build.addPluginRepository("spring-milestones", "Spring Milestones",
+		build.pluginRepositories().add("spring-milestones", "Spring Milestones",
 				"https://repo.spring.io/milestone");
 		List<String> lines = generateSettings(build);
 		assertThat(lines).containsSequence("pluginManagement {", "    repositories {",
@@ -61,7 +60,7 @@ class GradleSettingsWriterTests {
 	@Test
 	void gradleBuildWithSnapshotPluginRepository() throws IOException {
 		GradleBuild build = new GradleBuild();
-		build.addPluginRepository("spring-snapshots", "Spring Snapshots",
+		build.pluginRepositories().add("spring-snapshots", "Spring Snapshots",
 				"https://repo.spring.io/snapshot", true);
 		List<String> lines = generateSettings(build);
 		assertThat(lines).containsSequence("pluginManagement {", "    repositories {",

@@ -16,9 +16,7 @@
 
 package io.spring.initializr.generator.buildsystem;
 
-import java.util.ArrayList;
 import java.util.Collections;
-import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -28,6 +26,7 @@ import io.spring.initializr.generator.util.VersionProperty;
  * Build configuration for a project.
  *
  * @author Andy Wilkinson
+ * @author Stephane Nicoll
  */
 public abstract class Build {
 
@@ -43,17 +42,23 @@ public abstract class Build {
 
 	private final BomContainer boms;
 
-	private final List<MavenRepository> repositories = new ArrayList<>();
+	private final MavenRepositoryContainer repositories;
 
-	private final List<MavenRepository> pluginRepositories = new ArrayList<>();
+	private final MavenRepositoryContainer pluginRepositories;
 
 	protected Build(BuildItemResolver buildItemResolver) {
 		this.dependencies = new DependencyContainer(buildItemResolver::resolveDependency);
 		this.boms = new BomContainer(buildItemResolver::resolveBom);
+		this.repositories = new MavenRepositoryContainer(
+				buildItemResolver::resolveRepository);
+		this.pluginRepositories = new MavenRepositoryContainer(
+				buildItemResolver::resolveRepository);
 	}
 
 	protected Build() {
-		this(new SimpleBuildItemResolver((id) -> null, (id) -> null));
+		this(new SimpleBuildItemResolver((id) -> null, (id) -> null,
+				(id) -> id.equals("maven-central") ? MavenRepository.MAVEN_CENTRAL
+						: null));
 	}
 
 	/**
@@ -112,42 +117,12 @@ public abstract class Build {
 		return this.boms;
 	}
 
-	public void addRepository(MavenRepository repository) {
-		this.repositories.add(repository);
+	public MavenRepositoryContainer repositories() {
+		return this.repositories;
 	}
 
-	public MavenRepository addRepository(String id, String name, String url) {
-		return addRepository(id, name, url, false);
-	}
-
-	public MavenRepository addRepository(String id, String name, String url,
-			boolean snapshotsEnabled) {
-		MavenRepository repository = new MavenRepository(id, name, url, snapshotsEnabled);
-		this.repositories.add(repository);
-		return repository;
-	}
-
-	public List<MavenRepository> getRepositories() {
-		return Collections.unmodifiableList(this.repositories);
-	}
-
-	public void addPluginRepository(MavenRepository pluginRepository) {
-		this.pluginRepositories.add(pluginRepository);
-	}
-
-	public MavenRepository addPluginRepository(String id, String name, String url) {
-		return addPluginRepository(id, name, url, false);
-	}
-
-	public MavenRepository addPluginRepository(String id, String name, String url,
-			boolean snapshotsEnabled) {
-		MavenRepository repository = new MavenRepository(id, name, url, snapshotsEnabled);
-		this.pluginRepositories.add(repository);
-		return repository;
-	}
-
-	public List<MavenRepository> getPluginRepositories() {
-		return Collections.unmodifiableList(this.pluginRepositories);
+	public MavenRepositoryContainer pluginRepositories() {
+		return this.pluginRepositories;
 	}
 
 }

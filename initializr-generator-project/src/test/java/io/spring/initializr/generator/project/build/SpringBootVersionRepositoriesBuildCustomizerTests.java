@@ -16,6 +16,9 @@
 
 package io.spring.initializr.generator.project.build;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 import io.spring.initializr.generator.buildsystem.MavenRepository;
 import io.spring.initializr.generator.buildsystem.maven.MavenBuild;
 import io.spring.initializr.generator.util.Version;
@@ -35,7 +38,7 @@ class SpringBootVersionRepositoriesBuildCustomizerTests {
 		MavenBuild build = new MavenBuild();
 		new SpringBootVersionRepositoriesBuildCustomizer(Version.parse("2.1.0.RELEASE"))
 				.customize(build);
-		assertThat(build.getRepositories())
+		assertThat(build.repositories().items())
 				.containsExactly(MavenRepository.MAVEN_CENTRAL);
 	}
 
@@ -64,15 +67,16 @@ class SpringBootVersionRepositoriesBuildCustomizerTests {
 	}
 
 	private void assertNonReleaseRepositories(MavenBuild build) {
-		assertThat(build.getRepositories()).hasSize(3);
-		assertThat(build.getRepositories().get(0))
-				.isEqualTo(MavenRepository.MAVEN_CENTRAL);
-		assertThat(build.getRepositories().get(1))
+		List<MavenRepository> repositories = build.repositories().items()
+				.collect(Collectors.toList());
+		assertThat(repositories).hasSize(3);
+		assertThat(repositories.get(0)).isEqualTo(MavenRepository.MAVEN_CENTRAL);
+		assertThat(repositories.get(1))
 				.hasFieldOrPropertyWithValue("id", "spring-snapshots")
 				.hasFieldOrPropertyWithValue("name", "Spring Snapshots")
 				.hasFieldOrPropertyWithValue("url", "https://repo.spring.io/snapshot")
 				.hasFieldOrPropertyWithValue("snapshotsEnabled", true);
-		assertThat(build.getRepositories().get(2))
+		assertThat(repositories.get(2))
 				.hasFieldOrPropertyWithValue("id", "spring-milestones")
 				.hasFieldOrPropertyWithValue("name", "Spring Milestones")
 				.hasFieldOrPropertyWithValue("url", "https://repo.spring.io/milestone")

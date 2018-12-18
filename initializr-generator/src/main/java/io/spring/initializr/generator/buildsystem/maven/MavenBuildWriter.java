@@ -23,6 +23,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.function.BiConsumer;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import io.spring.initializr.generator.buildsystem.BillOfMaterials;
 import io.spring.initializr.generator.buildsystem.Dependency;
@@ -307,9 +308,10 @@ public class MavenBuildWriter {
 	}
 
 	private void writeRepositories(IndentingWriter writer, MavenBuild build) {
-		List<MavenRepository> repositories = filterRepositories(build.getRepositories());
+		List<MavenRepository> repositories = filterRepositories(
+				build.repositories().items());
 		List<MavenRepository> pluginRepositories = filterRepositories(
-				build.getPluginRepositories());
+				build.pluginRepositories().items());
 		if (repositories.isEmpty() && pluginRepositories.isEmpty()) {
 			return;
 		}
@@ -323,8 +325,9 @@ public class MavenBuildWriter {
 		}
 	}
 
-	private List<MavenRepository> filterRepositories(List<MavenRepository> repositories) {
-		return repositories.stream()
+	private List<MavenRepository> filterRepositories(
+			Stream<MavenRepository> repositories) {
+		return repositories
 				.filter((repository) -> !MavenRepository.MAVEN_CENTRAL.equals(repository))
 				.collect(Collectors.toList());
 	}

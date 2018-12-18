@@ -20,7 +20,6 @@ import java.io.StringWriter;
 import java.util.function.Consumer;
 
 import io.spring.initializr.generator.buildsystem.DependencyType;
-import io.spring.initializr.generator.buildsystem.MavenRepository;
 import io.spring.initializr.generator.io.IndentingWriter;
 import io.spring.initializr.generator.test.assertj.NodeAssert;
 import io.spring.initializr.generator.util.VersionProperty;
@@ -347,7 +346,7 @@ class MavenBuildWriterTests {
 		MavenBuild build = new MavenBuild();
 		build.setGroup("com.example.demo");
 		build.setArtifact("demo");
-		build.addRepository(MavenRepository.MAVEN_CENTRAL);
+		build.repositories().add("maven-central");
 		generatePom(build, (pom) -> {
 			assertThat(pom).nodeAtPath("/project/repositories").isNull();
 			assertThat(pom).nodeAtPath("/project/pluginRepositories").isNull();
@@ -359,7 +358,7 @@ class MavenBuildWriterTests {
 		MavenBuild build = new MavenBuild();
 		build.setGroup("com.example.demo");
 		build.setArtifact("demo");
-		build.addRepository("spring-milestones", "Spring Milestones",
+		build.repositories().add("spring-milestones", "Spring Milestones",
 				"https://repo.spring.io/milestone");
 		generatePom(build, (pom) -> {
 			assertThat(pom).textAtPath("/project/repositories/repository/id")
@@ -379,7 +378,7 @@ class MavenBuildWriterTests {
 		MavenBuild build = new MavenBuild();
 		build.setGroup("com.example.demo");
 		build.setArtifact("demo");
-		build.addPluginRepository("spring-milestones", "Spring Milestones",
+		build.pluginRepositories().add("spring-milestones", "Spring Milestones",
 				"https://repo.spring.io/milestone");
 		generatePom(build, (pom) -> {
 			assertThat(pom).textAtPath("/project/pluginRepositories/pluginRepository/id")
@@ -400,7 +399,7 @@ class MavenBuildWriterTests {
 		MavenBuild build = new MavenBuild();
 		build.setGroup("com.example.demo");
 		build.setArtifact("demo");
-		build.addRepository("spring-snapshots", "Spring Snapshots",
+		build.repositories().add("spring-snapshots", "Spring Snapshots",
 				"https://repo.spring.io/snapshot", true);
 		generatePom(build, (pom) -> {
 			assertThat(pom).textAtPath("/project/repositories/repository/id")
@@ -421,7 +420,7 @@ class MavenBuildWriterTests {
 		MavenBuild build = new MavenBuild();
 		build.setGroup("com.example.demo");
 		build.setArtifact("demo");
-		build.addPluginRepository("spring-snapshots", "Spring Snapshots",
+		build.pluginRepositories().add("spring-snapshots", "Spring Snapshots",
 				"https://repo.spring.io/snapshot", true);
 		generatePom(build, (pom) -> {
 			assertThat(pom).textAtPath("/project/pluginRepositories/pluginRepository/id")
