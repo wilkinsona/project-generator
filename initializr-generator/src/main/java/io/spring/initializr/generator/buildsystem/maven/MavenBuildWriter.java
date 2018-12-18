@@ -17,7 +17,6 @@
 package io.spring.initializr.generator.buildsystem.maven;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Comparator;
@@ -192,11 +191,12 @@ public class MavenBuildWriter {
 	}
 
 	private void writeDependencyManagement(IndentingWriter writer, MavenBuild build) {
-		List<BillOfMaterials> boms = new ArrayList<>(build.getBoms());
-		if (boms.isEmpty()) {
+		if (build.boms().isEmpty()) {
 			return;
 		}
-		boms.sort(Comparator.comparing(BillOfMaterials::getOrder));
+		List<BillOfMaterials> boms = build.boms().items()
+				.sorted(Comparator.comparing(BillOfMaterials::getOrder))
+				.collect(Collectors.toList());
 		writer.println();
 		writeElement(writer, "dependencyManagement", () -> writeElement(writer,
 				"dependencies", () -> writeCollection(writer, boms, this::writeBom)));

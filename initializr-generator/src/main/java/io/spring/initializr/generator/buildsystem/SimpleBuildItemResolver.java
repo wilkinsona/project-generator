@@ -27,13 +27,22 @@ public class SimpleBuildItemResolver implements BuildItemResolver {
 
 	private final Function<String, Dependency> dependencyResolver;
 
-	public SimpleBuildItemResolver(Function<String, Dependency> dependencyResolver) {
+	private final Function<String, BillOfMaterials> bomResolver;
+
+	public SimpleBuildItemResolver(Function<String, Dependency> dependencyResolver,
+			Function<String, BillOfMaterials> bomResolver) {
 		this.dependencyResolver = dependencyResolver;
+		this.bomResolver = bomResolver;
 	}
 
 	@Override
 	public Dependency resolveDependency(String id) {
 		return this.dependencyResolver.apply(id);
+	}
+
+	@Override
+	public BillOfMaterials resolveBom(String id) {
+		return this.bomResolver.apply(id);
 	}
 
 }

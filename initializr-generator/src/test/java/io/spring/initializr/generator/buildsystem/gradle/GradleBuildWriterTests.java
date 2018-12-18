@@ -21,7 +21,6 @@ import java.io.StringWriter;
 import java.util.Arrays;
 import java.util.List;
 
-import io.spring.initializr.generator.buildsystem.BillOfMaterials;
 import io.spring.initializr.generator.buildsystem.DependencyType;
 import io.spring.initializr.generator.buildsystem.MavenRepository;
 import io.spring.initializr.generator.io.IndentingWriter;
@@ -205,8 +204,8 @@ class GradleBuildWriterTests {
 	@Test
 	void gradleBuildWithBom() throws IOException {
 		GradleBuild build = new GradleBuild();
-		build.addBom(new BillOfMaterials("com.example", "my-project-dependencies",
-				VersionReference.ofValue("1.0.0.RELEASE")));
+		build.boms().add("test", "com.example", "my-project-dependencies",
+				VersionReference.ofValue("1.0.0.RELEASE"));
 		List<String> lines = generateBuild(build);
 		assertThat(lines).containsSequence("dependencyManagement {", "    imports {",
 				"        mavenBom 'com.example:my-project-dependencies:1.0.0.RELEASE'",
@@ -216,10 +215,10 @@ class GradleBuildWriterTests {
 	@Test
 	void gradleBuildWithOrderedBoms() throws IOException {
 		GradleBuild build = new GradleBuild();
-		build.addBom(new BillOfMaterials("com.example", "my-project-dependencies",
-				VersionReference.ofValue("1.0.0.RELEASE"), 5));
-		build.addBom(new BillOfMaterials("com.example", "root-dependencies",
-				VersionReference.ofProperty("root.version"), 2));
+		build.boms().add("bom1", "com.example", "my-project-dependencies",
+				VersionReference.ofValue("1.0.0.RELEASE"), 5);
+		build.boms().add("bom2", "com.example", "root-dependencies",
+				VersionReference.ofProperty("root.version"), 2);
 		List<String> lines = generateBuild(build);
 		assertThat(lines).containsSequence("dependencyManagement {", "    imports {",
 				"        mavenBom 'com.example:my-project-dependencies:1.0.0.RELEASE'",

@@ -41,7 +41,7 @@ public abstract class Build {
 
 	private final DependencyContainer dependencies;
 
-	private final List<BillOfMaterials> boms = new ArrayList<>();
+	private final BomContainer boms;
 
 	private final List<MavenRepository> repositories = new ArrayList<>();
 
@@ -49,10 +49,11 @@ public abstract class Build {
 
 	protected Build(BuildItemResolver buildItemResolver) {
 		this.dependencies = new DependencyContainer(buildItemResolver::resolveDependency);
+		this.boms = new BomContainer(buildItemResolver::resolveBom);
 	}
 
 	protected Build() {
-		this(new SimpleBuildItemResolver((id) -> null));
+		this(new SimpleBuildItemResolver((id) -> null, (id) -> null));
 	}
 
 	/**
@@ -107,12 +108,8 @@ public abstract class Build {
 		return this.dependencies;
 	}
 
-	public void addBom(BillOfMaterials bom) {
-		this.boms.add(bom);
-	}
-
-	public List<BillOfMaterials> getBoms() {
-		return Collections.unmodifiableList(this.boms);
+	public BomContainer boms() {
+		return this.boms;
 	}
 
 	public void addRepository(MavenRepository repository) {

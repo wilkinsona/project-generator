@@ -17,7 +17,6 @@
 package io.spring.initializr.generator.buildsystem.gradle;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Comparator;
@@ -165,11 +164,12 @@ public class GradleBuildWriter {
 	}
 
 	private void writeBoms(IndentingWriter writer, GradleBuild build) {
-		List<BillOfMaterials> boms = new ArrayList<>(build.getBoms());
-		if (boms.isEmpty()) {
+		if (build.boms().isEmpty()) {
 			return;
 		}
-		boms.sort(Comparator.comparingInt(BillOfMaterials::getOrder).reversed());
+		List<BillOfMaterials> boms = build.boms().items()
+				.sorted(Comparator.comparingInt(BillOfMaterials::getOrder).reversed())
+				.collect(Collectors.toList());
 		writer.println("dependencyManagement {");
 		writer.indented(
 				() -> writeNestedCollection(writer, "imports", boms, this::bomAsString));

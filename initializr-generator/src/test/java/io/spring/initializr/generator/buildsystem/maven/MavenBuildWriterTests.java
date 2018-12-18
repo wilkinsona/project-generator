@@ -19,7 +19,6 @@ package io.spring.initializr.generator.buildsystem.maven;
 import java.io.StringWriter;
 import java.util.function.Consumer;
 
-import io.spring.initializr.generator.buildsystem.BillOfMaterials;
 import io.spring.initializr.generator.buildsystem.DependencyType;
 import io.spring.initializr.generator.buildsystem.MavenRepository;
 import io.spring.initializr.generator.io.IndentingWriter;
@@ -232,8 +231,8 @@ class MavenBuildWriterTests {
 		MavenBuild build = new MavenBuild();
 		build.setGroup("com.example.demo");
 		build.setArtifact("demo");
-		build.addBom(new BillOfMaterials("com.example", "my-project-dependencies",
-				VersionReference.ofValue("1.0.0.RELEASE")));
+		build.boms().add("test", "com.example", "my-project-dependencies",
+				VersionReference.ofValue("1.0.0.RELEASE"));
 		generatePom(build, (pom) -> {
 			NodeAssert dependency = pom
 					.nodeAtPath("/project/dependencyManagement/dependencies/dependency");
@@ -247,10 +246,10 @@ class MavenBuildWriterTests {
 		MavenBuild build = new MavenBuild();
 		build.setGroup("com.example.demo");
 		build.setArtifact("demo");
-		build.addBom(new BillOfMaterials("com.example", "my-project-dependencies",
-				VersionReference.ofValue("1.0.0.RELEASE"), 5));
-		build.addBom(new BillOfMaterials("com.example", "root-dependencies",
-				VersionReference.ofProperty("root.version"), 2));
+		build.boms().add("bom1", "com.example", "my-project-dependencies",
+				VersionReference.ofValue("1.0.0.RELEASE"), 5);
+		build.boms().add("bom2", "com.example", "root-dependencies",
+				VersionReference.ofProperty("root.version"), 2);
 		generatePom(build, (pom) -> {
 			NodeAssert dependencies = pom
 					.nodeAtPath("/project/dependencyManagement/dependencies");

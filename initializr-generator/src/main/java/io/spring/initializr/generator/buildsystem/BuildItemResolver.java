@@ -30,4 +30,11 @@ public interface BuildItemResolver {
 	 */
 	Dependency resolveDependency(String id);
 
+	/**
+	 * Resolve the {@link BillOfMaterials} with the specified {@code id}.
+	 * @param id the id of the bom
+	 * @return the matching {@link BillOfMaterials} or {@code null} if none is found
+	 */
+	BillOfMaterials resolveBom(String id);
+
 }
