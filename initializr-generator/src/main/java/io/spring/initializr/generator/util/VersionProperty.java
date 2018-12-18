@@ -19,6 +19,7 @@ package io.spring.initializr.generator.util;
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 
 import org.springframework.util.StringUtils;
 
@@ -119,15 +120,13 @@ public final class VersionProperty implements Serializable, Comparable<VersionPr
 		if (o == null || getClass() != o.getClass()) {
 			return false;
 		}
-
 		VersionProperty that = (VersionProperty) o;
-
-		return this.property.equals(that.property);
+		return this.internal == that.internal && this.property.equals(that.property);
 	}
 
 	@Override
 	public int hashCode() {
-		return this.property.hashCode();
+		return Objects.hash(this.property, this.internal);
 	}
 
 	@Override

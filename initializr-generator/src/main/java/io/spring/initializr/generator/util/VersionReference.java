@@ -16,6 +16,8 @@
 
 package io.spring.initializr.generator.util;
 
+import java.util.Objects;
+
 /**
  * A version reference to either a property or an actual version.
  *
@@ -67,6 +69,24 @@ public final class VersionReference {
 	 */
 	public String getValue() {
 		return this.value;
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) {
+			return true;
+		}
+		if (o == null || getClass() != o.getClass()) {
+			return false;
+		}
+		VersionReference that = (VersionReference) o;
+		return Objects.equals(this.property, that.property)
+				&& Objects.equals(this.value, that.value);
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(this.property, this.value);
 	}
 
 	@Override

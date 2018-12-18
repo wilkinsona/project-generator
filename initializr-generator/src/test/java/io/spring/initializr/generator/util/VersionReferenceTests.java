@@ -55,4 +55,35 @@ class VersionReferenceTests {
 		assertThat(reference).hasToString("1.2.3.RELEASE");
 	}
 
+	@Test
+	void equalsWithSameValue() {
+		assertThat(VersionReference.ofValue("1"))
+				.isEqualTo(VersionReference.ofValue("1"));
+	}
+
+	@Test
+	void equalsWithDifferentValue() {
+		assertThat(VersionReference.ofValue("1"))
+				.isNotEqualTo(VersionReference.ofValue("2"));
+	}
+
+	@Test
+	void equalsWithSameProperty() {
+		assertThat(VersionReference.ofProperty("test.version"))
+				.isEqualTo(VersionReference.ofProperty("test.version"));
+	}
+
+	@Test
+	void equalsWithDifferentProperty() {
+		assertThat(VersionReference.ofProperty("test.version"))
+				.isNotEqualTo(VersionReference.ofProperty("another.version"));
+	}
+
+	@Test
+	void equalsWithDifferentPropertyScope() {
+		assertThat(VersionReference.ofProperty(VersionProperty.of("test.version", false)))
+				.isNotEqualTo(VersionReference
+						.ofProperty(VersionProperty.of("test.version", true)));
+	}
+
 }
