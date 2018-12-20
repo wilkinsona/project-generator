@@ -32,7 +32,7 @@ import io.spring.initializr.generator.io.IndentingWriterFactory;
  *
  * @author Andy Wilkinson
  */
-class GradleBuildProjectContributor implements ProjectContributor {
+public class GradleBuildProjectContributor implements ProjectContributor {
 
 	private final GradleBuild build;
 
