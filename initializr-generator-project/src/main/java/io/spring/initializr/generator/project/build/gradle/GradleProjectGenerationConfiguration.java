@@ -20,7 +20,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import io.spring.initializr.generator.ProjectDescription;
-import io.spring.initializr.generator.buildsystem.Build;
 import io.spring.initializr.generator.buildsystem.BuildItemResolver;
 import io.spring.initializr.generator.buildsystem.gradle.ConditionalOnGradle;
 import io.spring.initializr.generator.buildsystem.gradle.GradleBuild;
@@ -61,56 +60,49 @@ public class GradleProjectGenerationConfiguration {
 	@Bean
 	public GradleBuild gradleBuild(ObjectProvider<BuildItemResolver> buildItemResolver,
 			ObjectProvider<BuildCustomizer<?>> buildCustomizers) {
-		GradleBuild gradleBuild = createGradleBuild(buildItemResolver.getIfAvailable());
-		customizeBuild(buildCustomizers, gradleBuild);
-		return gradleBuild;
-	}
-
-	private GradleBuild createGradleBuild(BuildItemResolver buildItemResolver) {
-		return (buildItemResolver != null) ? new GradleBuild(buildItemResolver)
-				: new GradleBuild();
+		return createGradleBuild(buildItemResolver.getIfAvailable(),
+				buildCustomizers.orderedStream().collect(Collectors.toList()));
 	}
 
 	@SuppressWarnings("unchecked")
-	private void customizeBuild(ObjectProvider<BuildCustomizer<?>> buildCustomizers,
-			GradleBuild gradleBuild) {
-		List<BuildCustomizer<? extends Build>> customizers = buildCustomizers
-				.orderedStream().collect(Collectors.toList());
-		LambdaSafe.callbacks(BuildCustomizer.class, customizers, gradleBuild)
-				.invoke((customizer) -> customizer.customize(gradleBuild));
+	private GradleBuild createGradleBuild(BuildItemResolver buildItemResolver,
+			List<BuildCustomizer<?>> buildCustomizers) {
+		GradleBuild build = (buildItemResolver != null)
+				? new GradleBuild(buildItemResolver) : new GradleBuild();
+		LambdaSafe.callbacks(BuildCustomizer.class, buildCustomizers, build)
+				.invoke((customizer) -> customizer.customize(build));
+		return build;
 	}
 
 	@Bean
 	public BuildCustomizer<GradleBuild> defaultGradleBuildCustomizer(
 			ProjectDescription projectDescription) {
-		return (gradleBuild) -> gradleBuild
+		return (build) -> build
 				.setSourceCompatibility(projectDescription.getJavaVersion());
 	}
 
 	@Bean
 	@ConditionalOnJavaLanguage
 	public BuildCustomizer<GradleBuild> javaPluginContributor() {
-		return (gradleBuild) -> gradleBuild.addPlugin("java");
+		return (build) -> build.addPlugin("java");
 	}
 
 	@Bean
 	@ConditionalOnWarPackaging
 	public BuildCustomizer<GradleBuild> warPluginContributor() {
-		return (gradleBuild) -> gradleBuild.addPlugin("war");
+		return (build) -> build.addPlugin("war");
 	}
 
 	@Bean
 	@ConditionalOnPlatformVersion("2.0.0.M1")
 	public BuildCustomizer<GradleBuild> applyDependencyManagementPluginContributor() {
-		return (gradleBuild) -> gradleBuild
-				.applyPlugin("io.spring.dependency-management");
+		return (build) -> build.applyPlugin("io.spring.dependency-management");
 	}
 
 	@Bean
 	public GradleBuildProjectContributor gradleBuildProjectContributor(
-			GradleBuild gradleBuild) {
-		return new GradleBuildProjectContributor(gradleBuild,
-				this.indentingWriterFactory);
+			GradleBuild build) {
+		return new GradleBuildProjectContributor(build, this.indentingWriterFactory);
 	}
 
 	/**
@@ -127,18 +119,18 @@ public class GradleProjectGenerationConfiguration {
 
 		@Bean
 		public Gradle3SettingsGradleProjectContributor settingsGradleProjectContributor(
-				GradleBuild gradleBuild) {
-			return new Gradle3SettingsGradleProjectContributor(gradleBuild);
+				GradleBuild build) {
+			return new Gradle3SettingsGradleProjectContributor(build);
 		}
 
 		@Bean
 		public BuildCustomizer<GradleBuild> springBootPluginContributor(
 				ProjectDescription projectDescription) {
-			return (gradleBuild) -> {
-				gradleBuild.buildscript((buildscript) -> buildscript
+			return (build) -> {
+				build.buildscript((buildscript) -> buildscript
 						.dependency("org.springframework.boot:spring-boot-gradle-plugin:"
 								+ projectDescription.getPlatformVersion()));
-				gradleBuild.applyPlugin("org.springframework.boot");
+				build.applyPlugin("org.springframework.boot");
 			};
 		}
 
@@ -158,15 +150,14 @@ public class GradleProjectGenerationConfiguration {
 
 		@Bean
 		public SettingsGradleProjectContributor settingsGradleProjectContributor(
-				GradleBuild gradleBuild, IndentingWriterFactory indentingWriterFactory) {
-			return new SettingsGradleProjectContributor(gradleBuild,
-					indentingWriterFactory);
+				GradleBuild build, IndentingWriterFactory indentingWriterFactory) {
+			return new SettingsGradleProjectContributor(build, indentingWriterFactory);
 		}
 
 		@Bean
 		public BuildCustomizer<GradleBuild> springBootPluginContributor(
 				ProjectDescription projectDescription) {
-			return (gradleBuild) -> gradleBuild.addPlugin("org.springframework.boot",
+			return (build) -> build.addPlugin("org.springframework.boot",
 					projectDescription.getPlatformVersion().toString());
 		}
 

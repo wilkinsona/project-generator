@@ -20,7 +20,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import io.spring.initializr.generator.ProjectDescription;
-import io.spring.initializr.generator.buildsystem.Build;
 import io.spring.initializr.generator.buildsystem.BuildItemResolver;
 import io.spring.initializr.generator.buildsystem.maven.ConditionalOnMaven;
 import io.spring.initializr.generator.buildsystem.maven.MavenBuild;
@@ -57,40 +56,35 @@ public class MavenProjectGenerationConfiguration {
 	@Bean
 	public MavenBuild mavenBuild(ObjectProvider<BuildItemResolver> buildItemResolver,
 			ObjectProvider<BuildCustomizer<?>> buildCustomizers) {
-		MavenBuild mavenBuild = createMavenBuild(buildItemResolver.getIfAvailable());
-		customizeBuild(buildCustomizers, mavenBuild);
-		return mavenBuild;
-	}
-
-	private MavenBuild createMavenBuild(BuildItemResolver buildItemResolver) {
-		return (buildItemResolver != null) ? new MavenBuild(buildItemResolver)
-				: new MavenBuild();
+		return createBuild(buildItemResolver.getIfAvailable(),
+				buildCustomizers.orderedStream().collect(Collectors.toList()));
 	}
 
 	@SuppressWarnings("unchecked")
-	private void customizeBuild(ObjectProvider<BuildCustomizer<?>> buildCustomizers,
-			MavenBuild mavenBuild) {
-		List<BuildCustomizer<? extends Build>> customizers = buildCustomizers
-				.orderedStream().collect(Collectors.toList());
-		LambdaSafe.callbacks(BuildCustomizer.class, customizers, mavenBuild)
-				.invoke((customizer) -> customizer.customize(mavenBuild));
+	private MavenBuild createBuild(BuildItemResolver buildItemResolver,
+			List<BuildCustomizer<?>> buildCustomizers) {
+		MavenBuild build = (buildItemResolver != null) ? new MavenBuild(buildItemResolver)
+				: new MavenBuild();
+		LambdaSafe.callbacks(BuildCustomizer.class, buildCustomizers, build)
+				.invoke((customizer) -> customizer.customize(build));
+		return build;
 	}
 
 	@Bean
 	public BuildCustomizer<MavenBuild> defaultMavenConfigurationContributor(
 			ProjectDescription projectDescription) {
-		return (mavenBuild) -> {
-			mavenBuild.setName(projectDescription.getName());
-			mavenBuild.setDescription(projectDescription.getDescription());
-			mavenBuild.setProperty("java.version", projectDescription.getJavaVersion());
-			mavenBuild.plugin("org.springframework.boot", "spring-boot-maven-plugin");
+		return (build) -> {
+			build.setName(projectDescription.getName());
+			build.setDescription(projectDescription.getDescription());
+			build.setProperty("java.version", projectDescription.getJavaVersion());
+			build.plugin("org.springframework.boot", "spring-boot-maven-plugin");
 		};
 	}
 
 	@Bean
-	public MavenBuildProjectContributor mavenBuildProjectContributor(
-			MavenBuild mavenBuild, IndentingWriterFactory indentingWriterFactory) {
-		return new MavenBuildProjectContributor(mavenBuild, indentingWriterFactory);
+	public MavenBuildProjectContributor mavenBuildProjectContributor(MavenBuild build,
+			IndentingWriterFactory indentingWriterFactory) {
+		return new MavenBuildProjectContributor(build, indentingWriterFactory);
 	}
 
 	@Bean

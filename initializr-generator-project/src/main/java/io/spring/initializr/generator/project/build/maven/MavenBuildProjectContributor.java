@@ -35,15 +35,15 @@ import io.spring.initializr.generator.io.IndentingWriterFactory;
  */
 public class MavenBuildProjectContributor implements ProjectContributor {
 
-	private final MavenBuild mavenBuild;
+	private final MavenBuild build;
 
 	private final IndentingWriterFactory indentingWriterFactory;
 
 	private final MavenBuildWriter buildWriter;
 
-	public MavenBuildProjectContributor(MavenBuild mavenBuild,
+	public MavenBuildProjectContributor(MavenBuild build,
 			IndentingWriterFactory indentingWriterFactory) {
-		this.mavenBuild = mavenBuild;
+		this.build = build;
 		this.indentingWriterFactory = indentingWriterFactory;
 		this.buildWriter = new MavenBuildWriter();
 	}
@@ -57,7 +57,7 @@ public class MavenBuildProjectContributor implements ProjectContributor {
 	public void writeBuild(Writer out) throws IOException {
 		try (IndentingWriter writer = this.indentingWriterFactory
 				.createIndentingWriter("maven", out)) {
-			this.buildWriter.writeTo(writer, this.mavenBuild);
+			this.buildWriter.writeTo(writer, this.build);
 		}
 	}
 
