@@ -54,16 +54,24 @@ public class ProjectGenerator {
 	}
 
 	public Path generate(ProjectDescription description) throws IOException {
-		try (AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext()) {
-			context.registerBean(ProjectDescription.class, () -> description);
-			context.register(CoreConfiguration.class);
-			this.projectGenerationContext.accept(context);
-			context.refresh();
+		return generate(description, (context) -> {
 			Path projectRoot = context.getBean(ProjectDirectoryFactory.class)
 					.createProjectDirectory(description);
 			Path projectDirectory = initializerProjectDirectory(projectRoot, description);
 			context.getBean(ProjectContributors.class).contribute(projectDirectory);
 			return projectRoot;
+		});
+	}
+
+	public <T> T generate(ProjectDescription description,
+			ProjectGenerationContextProcessor<T> projectGenerationContext)
+			throws IOException {
+		try (ProjectGenerationContext context = new ProjectGenerationContext()) {
+			context.registerBean(ProjectDescription.class, () -> description);
+			context.register(CoreConfiguration.class);
+			this.projectGenerationContext.accept(context);
+			context.refresh();
+			return projectGenerationContext.process(context);
 		}
 	}
 

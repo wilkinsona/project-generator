@@ -30,6 +30,7 @@ import io.spring.initializr.generator.ProjectDescription;
 import io.spring.initializr.generator.buildsystem.Dependency;
 import io.spring.initializr.generator.buildsystem.DependencyType;
 import io.spring.initializr.generator.buildsystem.gradle.GradleBuildSystem;
+import io.spring.initializr.generator.buildsystem.maven.MavenBuild;
 import io.spring.initializr.generator.buildsystem.maven.MavenBuildSystem;
 import io.spring.initializr.generator.language.java.JavaLanguage;
 import io.spring.initializr.generator.language.kotlin.KotlinLanguage;
@@ -43,6 +44,7 @@ import org.junitpioneer.jupiter.TempDirectory.TempDir;
 import org.springframework.context.support.StaticApplicationContext;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.entry;
 
 /**
  * Tests for {@link ProjectGenerator}.
@@ -375,6 +377,19 @@ class ProjectGeneratorTests {
 				"test/demo-app/src/main/java/com/example/DemoApplication.java",
 				"test/demo-app/src/main/resources/application.properties",
 				"test/demo-app/src/test/java/com/example/DemoApplicationTests.java");
+	}
+
+	@Test
+	void processorIsInvoked() throws IOException {
+		ProjectDescription description = initProjectDescription();
+		description.setBuildSystem(new MavenBuildSystem());
+		description.setPlatformVersion(Version.parse("2.1.0.RELEASE"));
+		description.setJavaVersion("11");
+		MavenBuild pom = this.projectGenerator.generate(description,
+				(projectGenerationContext) -> projectGenerationContext
+						.getBean(MavenBuild.class));
+		assertThat(pom).isNotNull();
+		assertThat(pom.getProperties()).contains(entry("java.version", "11"));
 	}
 
 	private ProjectDescription initProjectDescription() {
