@@ -17,6 +17,7 @@
 package io.spring.initializr.generator.project.build.gradle;
 
 import java.io.IOException;
+import java.io.Writer;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
@@ -49,8 +50,12 @@ class GradleBuildProjectContributor implements ProjectContributor {
 	@Override
 	public void contribute(Path projectRoot) throws IOException {
 		Path buildGradle = Files.createFile(projectRoot.resolve("build.gradle"));
+		writeBuild(Files.newBufferedWriter(buildGradle));
+	}
+
+	public void writeBuild(Writer out) throws IOException {
 		try (IndentingWriter writer = this.indentingWriterFactory
-				.createIndentingWriter("gradle", Files.newBufferedWriter(buildGradle))) {
+				.createIndentingWriter("gradle", out)) {
 			this.buildWriter.writeTo(writer, this.build);
 		}
 	}

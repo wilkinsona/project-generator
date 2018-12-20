@@ -16,8 +16,10 @@
 
 package io.spring.initializr.generator.project.build.maven;
 
-import java.nio.file.Files;
+import java.io.IOException;
+import java.io.StringWriter;
 import java.nio.file.Path;
+import java.util.Arrays;
 import java.util.List;
 
 import io.spring.initializr.generator.buildsystem.maven.MavenBuild;
@@ -39,10 +41,14 @@ import static org.assertj.core.api.Assertions.assertThat;
 @ExtendWith(TempDirectory.class)
 class MavenBuildProjectContributorTests {
 
-	private final Path directory;
-
-	MavenBuildProjectContributorTests(@TempDir Path directory) {
-		this.directory = directory;
+	@Test
+	void mavenBuildIsContributedInProjectStructure(@TempDir Path projectDir)
+			throws IOException {
+		MavenBuild build = new MavenBuild();
+		new MavenBuildProjectContributor(build,
+				IndentingWriterFactory.withDefaultSettings()).contribute(projectDir);
+		Path buildGradle = projectDir.resolve("pom.xml");
+		assertThat(buildGradle).isRegularFile();
 	}
 
 	@Test
@@ -83,12 +89,10 @@ class MavenBuildProjectContributorTests {
 
 	private List<String> generatePom(MavenBuild mavenBuild,
 			IndentingWriterFactory indentingWriterFactory) throws Exception {
-		Path projectDir = Files.createTempDirectory(this.directory, "project-");
+		StringWriter writer = new StringWriter();
 		new MavenBuildProjectContributor(mavenBuild, indentingWriterFactory)
-				.contribute(projectDir);
-		Path pomFile = projectDir.resolve("pom.xml");
-		assertThat(pomFile).isRegularFile();
-		return Files.readAllLines(pomFile);
+				.writeBuild(writer);
+		return Arrays.asList(writer.toString().split("\n"));
 	}
 
 }

@@ -17,6 +17,7 @@
 package io.spring.initializr.generator.project.build.maven;
 
 import java.io.IOException;
+import java.io.Writer;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
@@ -50,8 +51,12 @@ public class MavenBuildProjectContributor implements ProjectContributor {
 	@Override
 	public void contribute(Path projectRoot) throws IOException {
 		Path pomFile = Files.createFile(projectRoot.resolve("pom.xml"));
+		writeBuild(Files.newBufferedWriter(pomFile));
+	}
+
+	public void writeBuild(Writer out) throws IOException {
 		try (IndentingWriter writer = this.indentingWriterFactory
-				.createIndentingWriter("maven", Files.newBufferedWriter(pomFile))) {
+				.createIndentingWriter("maven", out)) {
 			this.buildWriter.writeTo(writer, this.mavenBuild);
 		}
 	}

@@ -17,8 +17,9 @@
 package io.spring.initializr.generator.project.build.gradle;
 
 import java.io.IOException;
-import java.nio.file.Files;
+import java.io.StringWriter;
 import java.nio.file.Path;
+import java.util.Arrays;
 import java.util.List;
 
 import io.spring.initializr.generator.buildsystem.gradle.GradleBuild;
@@ -40,10 +41,14 @@ import static org.assertj.core.api.Assertions.assertThat;
 @ExtendWith(TempDirectory.class)
 class GradleBuildProjectContributorTests {
 
-	private final Path directory;
-
-	GradleBuildProjectContributorTests(@TempDir Path directory) {
-		this.directory = directory;
+	@Test
+	void gradleBuildIsContributedInProjectStructure(@TempDir Path projectDir)
+			throws IOException {
+		GradleBuild build = new GradleBuild();
+		new GradleBuildProjectContributor(build,
+				IndentingWriterFactory.withDefaultSettings()).contribute(projectDir);
+		Path buildGradle = projectDir.resolve("build.gradle");
+		assertThat(buildGradle).isRegularFile();
 	}
 
 	@Test
@@ -78,12 +83,10 @@ class GradleBuildProjectContributorTests {
 
 	private List<String> generateBuild(GradleBuild build,
 			IndentingWriterFactory indentingWriterFactory) throws IOException {
-		Path projectDir = Files.createTempDirectory(this.directory, "project-");
+		StringWriter writer = new StringWriter();
 		new GradleBuildProjectContributor(build, indentingWriterFactory)
-				.contribute(projectDir);
-		Path buildGradle = projectDir.resolve("build.gradle");
-		assertThat(buildGradle).isRegularFile();
-		return Files.readAllLines(buildGradle);
+				.writeBuild(writer);
+		return Arrays.asList(writer.toString().split("\n"));
 	}
 
 }
