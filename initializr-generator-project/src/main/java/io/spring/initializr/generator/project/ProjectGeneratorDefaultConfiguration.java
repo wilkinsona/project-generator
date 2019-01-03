@@ -27,8 +27,10 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 /**
- * {@link ProjectGenerator} default configuration used for configure the infrastructure
- * locally. For internal purpose only.
+ * {@link ProjectGenerator} default infrastructure configuration, typically provided in a
+ * parent {@code ApplicationContext} to the {@link ProjectGenerationContext}.
+ * <p>
+ * Used by integration tests and for internal purpose only.
  *
  * @author Stephane Nicoll
  */
