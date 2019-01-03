@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -41,8 +41,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.junitpioneer.jupiter.TempDirectory;
 import org.junitpioneer.jupiter.TempDirectory.TempDir;
 
-import org.springframework.context.support.StaticApplicationContext;
-
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.entry;
 
@@ -58,14 +56,11 @@ class ProjectGeneratorTests {
 	private final ProjectGenerator projectGenerator;
 
 	ProjectGeneratorTests(@TempDir Path directory) {
-		StaticApplicationContext parentContext = new StaticApplicationContext();
-		parentContext.refresh();
 		this.projectGenerator = new ProjectGenerator((projectGenerationContext) -> {
 			projectGenerationContext.register(ProjectGeneratorDefaultConfiguration.class);
 			projectGenerationContext.registerBean(ProjectDirectoryFactory.class,
 					() -> (description) -> Files.createTempDirectory(directory,
 							"project-"));
-			projectGenerationContext.setParent(parentContext);
 		});
 	}
 
