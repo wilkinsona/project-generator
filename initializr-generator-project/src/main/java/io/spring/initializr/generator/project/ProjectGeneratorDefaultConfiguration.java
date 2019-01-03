@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,7 +20,6 @@ import java.nio.file.Files;
 
 import io.spring.initializr.generator.io.IndentingWriterFactory;
 import io.spring.initializr.generator.io.SimpleIndentStrategy;
-import io.spring.initializr.generator.language.kotlin.ConditionalOnKotlinLanguage;
 import io.spring.initializr.generator.project.code.kotlin.KotlinProjectSettings;
 import io.spring.initializr.generator.project.code.kotlin.SimpleKotlinProjectSettings;
 
@@ -37,7 +36,6 @@ import org.springframework.context.annotation.Configuration;
 public class ProjectGeneratorDefaultConfiguration {
 
 	@Bean
-	@ConditionalOnKotlinLanguage
 	public KotlinProjectSettings kotlinProjectSettings() {
 		return new SimpleKotlinProjectSettings("1.2.70");
 	}
