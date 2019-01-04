@@ -16,7 +16,7 @@
 
 package io.spring.initializr.generator.project.build;
 
-import io.spring.initializr.generator.ProjectDescription;
+import io.spring.initializr.generator.ResolvedProjectDescription;
 import io.spring.initializr.generator.buildsystem.Build;
 import io.spring.initializr.generator.buildsystem.DependencyType;
 import io.spring.initializr.generator.project.ProjectGenerationConfiguration;
@@ -39,13 +39,13 @@ public class BuildProjectGenerationConfiguration {
 
 	@Bean
 	public ProjectDescriptionBuildCustomizer projectDescriptionBuildCustomizer(
-			ProjectDescription projectDescription) {
+			ResolvedProjectDescription projectDescription) {
 		return new ProjectDescriptionBuildCustomizer(projectDescription);
 	}
 
 	@Bean
 	public SpringBootVersionRepositoriesBuildCustomizer repositoriesBuilderCustomizer(
-			ProjectDescription description) {
+			ResolvedProjectDescription description) {
 		return new SpringBootVersionRepositoriesBuildCustomizer(
 				description.getPlatformVersion());
 	}

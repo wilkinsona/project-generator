@@ -19,7 +19,7 @@ package io.spring.initializr.generator.project.build.maven;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import io.spring.initializr.generator.ProjectDescription;
+import io.spring.initializr.generator.ResolvedProjectDescription;
 import io.spring.initializr.generator.buildsystem.BuildItemResolver;
 import io.spring.initializr.generator.buildsystem.maven.ConditionalOnMaven;
 import io.spring.initializr.generator.buildsystem.maven.MavenBuild;
@@ -72,7 +72,7 @@ public class MavenProjectGenerationConfiguration {
 
 	@Bean
 	public BuildCustomizer<MavenBuild> defaultMavenConfigurationContributor(
-			ProjectDescription projectDescription) {
+			ResolvedProjectDescription projectDescription) {
 		return (build) -> {
 			build.setName(projectDescription.getName());
 			build.setDescription(projectDescription.getDescription());

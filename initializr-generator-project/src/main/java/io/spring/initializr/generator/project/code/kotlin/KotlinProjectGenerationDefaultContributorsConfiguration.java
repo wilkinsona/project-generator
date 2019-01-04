@@ -16,7 +16,7 @@
 
 package io.spring.initializr.generator.project.code.kotlin;
 
-import io.spring.initializr.generator.ProjectDescription;
+import io.spring.initializr.generator.ResolvedProjectDescription;
 import io.spring.initializr.generator.buildsystem.Build;
 import io.spring.initializr.generator.buildsystem.gradle.ConditionalOnGradle;
 import io.spring.initializr.generator.buildsystem.maven.ConditionalOnMaven;
@@ -61,8 +61,8 @@ class KotlinProjectGenerationDefaultContributorsConfiguration {
 
 	@Bean
 	public BuildCustomizer<Build> kotlinDependenciesConfigurer(
-			ProjectDescription project) {
-		return new KotlinDependenciesConfigurer(project.getPlatformVersion());
+			ResolvedProjectDescription projectDescription) {
+		return new KotlinDependenciesConfigurer(projectDescription.getPlatformVersion());
 	}
 
 	/**

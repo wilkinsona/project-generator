@@ -102,4 +102,8 @@ public class BuildItemContainer<I, V> {
 		this.items.put(id, item);
 	}
 
+	protected Map<I, V> getItems() {
+		return this.items;
+	}
+
 }

@@ -166,4 +166,8 @@ public class ProjectDescription {
 		this.baseDirectory = baseDirectory;
 	}
 
+	public ResolvedProjectDescription resolve() {
+		return new ResolvedProjectDescription(this);
+	}
+
 }

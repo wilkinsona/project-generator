@@ -16,22 +16,23 @@
 
 package io.spring.initializr.generator.project.build;
 
-import io.spring.initializr.generator.ProjectDescription;
+import io.spring.initializr.generator.ResolvedProjectDescription;
 import io.spring.initializr.generator.buildsystem.Build;
 
 import org.springframework.core.Ordered;
 
 /**
- * Customize the {@link Build} based on the state of a {@link ProjectDescription}.
+ * Customize the {@link Build} based on the state of a {@link ResolvedProjectDescription}.
  *
  * @author Andy Wilkinson
  * @author Stephane Nicoll
  */
 public class ProjectDescriptionBuildCustomizer implements BuildCustomizer<Build> {
 
-	private final ProjectDescription projectDescription;
+	private final ResolvedProjectDescription projectDescription;
 
-	public ProjectDescriptionBuildCustomizer(ProjectDescription projectDescription) {
+	public ProjectDescriptionBuildCustomizer(
+			ResolvedProjectDescription projectDescription) {
 		this.projectDescription = projectDescription;
 	}
 

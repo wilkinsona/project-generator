@@ -16,7 +16,7 @@
 
 package io.spring.initializr.generator.packaging;
 
-import io.spring.initializr.generator.ProjectDescription;
+import io.spring.initializr.generator.ResolvedProjectDescription;
 import io.spring.initializr.generator.condition.ProjectGenerationCondition;
 
 import org.springframework.context.annotation.ConditionContext;
@@ -31,7 +31,7 @@ import org.springframework.core.type.AnnotatedTypeMetadata;
 class OnPackagingCondition extends ProjectGenerationCondition {
 
 	@Override
-	protected boolean matches(ProjectDescription projectDescription,
+	protected boolean matches(ResolvedProjectDescription projectDescription,
 			ConditionContext context, AnnotatedTypeMetadata metadata) {
 		if (projectDescription.getPackaging() == null) {
 			return false;

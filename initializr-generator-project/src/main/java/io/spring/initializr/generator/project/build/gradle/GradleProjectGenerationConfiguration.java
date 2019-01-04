@@ -19,7 +19,7 @@ package io.spring.initializr.generator.project.build.gradle;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import io.spring.initializr.generator.ProjectDescription;
+import io.spring.initializr.generator.ResolvedProjectDescription;
 import io.spring.initializr.generator.buildsystem.BuildItemResolver;
 import io.spring.initializr.generator.buildsystem.gradle.ConditionalOnGradle;
 import io.spring.initializr.generator.buildsystem.gradle.GradleBuild;
@@ -76,7 +76,7 @@ public class GradleProjectGenerationConfiguration {
 
 	@Bean
 	public BuildCustomizer<GradleBuild> defaultGradleBuildCustomizer(
-			ProjectDescription projectDescription) {
+			ResolvedProjectDescription projectDescription) {
 		return (build) -> build
 				.setSourceCompatibility(projectDescription.getJavaVersion());
 	}
@@ -125,7 +125,7 @@ public class GradleProjectGenerationConfiguration {
 
 		@Bean
 		public BuildCustomizer<GradleBuild> springBootPluginContributor(
-				ProjectDescription projectDescription) {
+				ResolvedProjectDescription projectDescription) {
 			return (build) -> {
 				build.buildscript((buildscript) -> buildscript
 						.dependency("org.springframework.boot:spring-boot-gradle-plugin:"
@@ -156,7 +156,7 @@ public class GradleProjectGenerationConfiguration {
 
 		@Bean
 		public BuildCustomizer<GradleBuild> springBootPluginContributor(
-				ProjectDescription projectDescription) {
+				ResolvedProjectDescription projectDescription) {
 			return (build) -> build.addPlugin("org.springframework.boot",
 					projectDescription.getPlatformVersion().toString());
 		}

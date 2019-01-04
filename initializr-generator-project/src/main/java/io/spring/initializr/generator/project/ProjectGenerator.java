@@ -24,6 +24,7 @@ import java.util.function.Consumer;
 
 import io.spring.initializr.generator.ProjectContributor;
 import io.spring.initializr.generator.ProjectDescription;
+import io.spring.initializr.generator.ResolvedProjectDescription;
 
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
@@ -55,9 +56,12 @@ public class ProjectGenerator {
 
 	public Path generate(ProjectDescription description) throws IOException {
 		return generate(description, (context) -> {
+			ResolvedProjectDescription resolvedProjectDescription = context
+					.getBean(ResolvedProjectDescription.class);
 			Path projectRoot = context.getBean(ProjectDirectoryFactory.class)
-					.createProjectDirectory(description);
-			Path projectDirectory = initializerProjectDirectory(projectRoot, description);
+					.createProjectDirectory(resolvedProjectDescription);
+			Path projectDirectory = initializerProjectDirectory(projectRoot,
+					resolvedProjectDescription);
 			context.getBean(ProjectContributors.class).contribute(projectDirectory);
 			return projectRoot;
 		});
@@ -67,7 +71,7 @@ public class ProjectGenerator {
 			ProjectGenerationContextProcessor<T> projectGenerationContext)
 			throws IOException {
 		try (ProjectGenerationContext context = new ProjectGenerationContext()) {
-			context.registerBean(ProjectDescription.class, () -> description);
+			context.registerBean(ResolvedProjectDescription.class, description::resolve);
 			context.register(CoreConfiguration.class);
 			this.projectGenerationContext.accept(context);
 			context.refresh();
@@ -75,8 +79,8 @@ public class ProjectGenerator {
 		}
 	}
 
-	private Path initializerProjectDirectory(Path rootDir, ProjectDescription description)
-			throws IOException {
+	private Path initializerProjectDirectory(Path rootDir,
+			ResolvedProjectDescription description) throws IOException {
 		if (description.getBaseDirectory() != null) {
 			Path dir = rootDir.resolve(description.getBaseDirectory());
 			Files.createDirectories(dir);

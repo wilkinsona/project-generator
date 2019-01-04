@@ -19,7 +19,7 @@ package io.spring.initializr.generator.project;
 import java.io.IOException;
 import java.nio.file.Path;
 
-import io.spring.initializr.generator.ProjectDescription;
+import io.spring.initializr.generator.ResolvedProjectDescription;
 
 /**
  * A factory of project directory.
@@ -30,11 +30,13 @@ import io.spring.initializr.generator.ProjectDescription;
 public interface ProjectDirectoryFactory {
 
 	/**
-	 * Create a dedicated project directory for the specified {@link ProjectDescription}.
+	 * Create a dedicated project directory for the specified
+	 * {@link ResolvedProjectDescription}.
 	 * @param description the description of a project to generate
 	 * @return a dedicated existing directory
 	 * @throws IOException if creating the directory failed
 	 */
-	Path createProjectDirectory(ProjectDescription description) throws IOException;
+	Path createProjectDirectory(ResolvedProjectDescription description)
+			throws IOException;
 
 }

@@ -16,7 +16,7 @@
 
 package io.spring.initializr.generator.condition;
 
-import io.spring.initializr.generator.ProjectDescription;
+import io.spring.initializr.generator.ResolvedProjectDescription;
 
 import org.springframework.context.annotation.ConditionContext;
 import org.springframework.core.type.AnnotatedTypeMetadata;
@@ -30,7 +30,7 @@ import org.springframework.core.type.AnnotatedTypeMetadata;
 class OnDependencyCondition extends ProjectGenerationCondition {
 
 	@Override
-	protected boolean matches(ProjectDescription projectDescription,
+	protected boolean matches(ResolvedProjectDescription projectDescription,
 			ConditionContext context, AnnotatedTypeMetadata metadata) {
 		String id = (String) metadata
 				.getAnnotationAttributes(ConditionalOnRequestedDependency.class.getName())

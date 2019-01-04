@@ -16,7 +16,6 @@
 
 package io.spring.initializr.generator.project.documentation;
 
-import io.spring.initializr.generator.ProjectDescription;
 import io.spring.initializr.generator.project.ProjectGenerationConfiguration;
 import io.spring.initializr.generator.util.template.MustacheTemplateRenderer;
 
@@ -33,7 +32,6 @@ public class HelpDocumentProjectGenerationConfiguration {
 
 	@Bean
 	public HelpDocumentProjectContributor helpDocumentProjectContributor(
-			ProjectDescription projectDescription,
 			ObjectProvider<HelpDocumentCustomizer> helpDocumentCustomizers) {
 		HelpDocument helpDocument = new HelpDocument(helpMustacheTemplateRenderer());
 		helpDocumentCustomizers.orderedStream()

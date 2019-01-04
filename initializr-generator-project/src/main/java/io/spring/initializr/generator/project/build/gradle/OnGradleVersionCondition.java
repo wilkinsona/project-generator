@@ -16,7 +16,7 @@
 
 package io.spring.initializr.generator.project.build.gradle;
 
-import io.spring.initializr.generator.ProjectDescription;
+import io.spring.initializr.generator.ResolvedProjectDescription;
 import io.spring.initializr.generator.condition.ProjectGenerationCondition;
 import io.spring.initializr.generator.util.Version;
 import io.spring.initializr.generator.util.VersionParser;
@@ -40,7 +40,7 @@ public class OnGradleVersionCondition extends ProjectGenerationCondition {
 			.parseRange("2.0.0.M1");
 
 	@Override
-	protected boolean matches(ProjectDescription projectDescription,
+	protected boolean matches(ResolvedProjectDescription projectDescription,
 			ConditionContext context, AnnotatedTypeMetadata metadata) {
 		Version springBootVersion = projectDescription.getPlatformVersion();
 		String gradleVersion;

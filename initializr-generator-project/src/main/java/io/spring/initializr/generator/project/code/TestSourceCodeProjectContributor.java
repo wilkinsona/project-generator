@@ -23,7 +23,7 @@ import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 import io.spring.initializr.generator.ProjectContributor;
-import io.spring.initializr.generator.ProjectDescription;
+import io.spring.initializr.generator.ResolvedProjectDescription;
 import io.spring.initializr.generator.language.CompilationUnit;
 import io.spring.initializr.generator.language.SourceCode;
 import io.spring.initializr.generator.language.SourceCodeWriter;
@@ -43,7 +43,7 @@ import org.springframework.beans.factory.ObjectProvider;
 public class TestSourceCodeProjectContributor<T extends TypeDeclaration, C extends CompilationUnit<T>, S extends SourceCode<T, C>>
 		implements ProjectContributor {
 
-	private final ProjectDescription projectDescription;
+	private final ResolvedProjectDescription projectDescription;
 
 	private final Supplier<S> sourceFactory;
 
@@ -53,7 +53,7 @@ public class TestSourceCodeProjectContributor<T extends TypeDeclaration, C exten
 
 	private final ObjectProvider<TestSourceCodeCustomizer<?, ?, ?>> testSourceCodeCustomizers;
 
-	public TestSourceCodeProjectContributor(ProjectDescription projectDescription,
+	public TestSourceCodeProjectContributor(ResolvedProjectDescription projectDescription,
 			Supplier<S> sourceFactory, SourceCodeWriter<S> sourceWriter,
 			ObjectProvider<TestApplicationTypeCustomizer<?>> testApplicationTypeCustomizers,
 			ObjectProvider<TestSourceCodeCustomizer<?, ?, ?>> testSourceCodeCustomizers) {

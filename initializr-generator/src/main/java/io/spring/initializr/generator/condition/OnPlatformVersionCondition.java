@@ -16,7 +16,7 @@
 
 package io.spring.initializr.generator.condition;
 
-import io.spring.initializr.generator.ProjectDescription;
+import io.spring.initializr.generator.ResolvedProjectDescription;
 import io.spring.initializr.generator.util.VersionParser;
 import io.spring.initializr.generator.util.VersionRange;
 
@@ -32,7 +32,7 @@ import org.springframework.core.type.AnnotatedTypeMetadata;
 class OnPlatformVersionCondition extends ProjectGenerationCondition {
 
 	@Override
-	protected boolean matches(ProjectDescription projectDescription,
+	protected boolean matches(ResolvedProjectDescription projectDescription,
 			ConditionContext context, AnnotatedTypeMetadata metadata) {
 		if (projectDescription.getPlatformVersion() == null) {
 			return false;

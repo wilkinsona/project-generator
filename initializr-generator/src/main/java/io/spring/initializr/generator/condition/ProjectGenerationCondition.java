@@ -16,7 +16,7 @@
 
 package io.spring.initializr.generator.condition;
 
-import io.spring.initializr.generator.ProjectDescription;
+import io.spring.initializr.generator.ResolvedProjectDescription;
 
 import org.springframework.context.annotation.Condition;
 import org.springframework.context.annotation.ConditionContext;
@@ -31,12 +31,12 @@ public abstract class ProjectGenerationCondition implements Condition {
 
 	@Override
 	public boolean matches(ConditionContext context, AnnotatedTypeMetadata metadata) {
-		ProjectDescription projectDescription = context.getBeanFactory()
-				.getBean(ProjectDescription.class);
+		ResolvedProjectDescription projectDescription = context.getBeanFactory()
+				.getBean(ResolvedProjectDescription.class);
 		return matches(projectDescription, context, metadata);
 	}
 
-	protected abstract boolean matches(ProjectDescription projectDescription,
+	protected abstract boolean matches(ResolvedProjectDescription projectDescription,
 			ConditionContext context, AnnotatedTypeMetadata metadata);
 
 }
