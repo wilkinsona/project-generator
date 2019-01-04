@@ -19,6 +19,8 @@ package io.spring.initializr.generator.project.build;
 import io.spring.initializr.generator.ProjectDescription;
 import io.spring.initializr.generator.buildsystem.Build;
 
+import org.springframework.core.Ordered;
+
 /**
  * Customize the {@link Build} based on the state of a {@link ProjectDescription}.
  *
@@ -40,6 +42,11 @@ public class ProjectDescriptionBuildCustomizer implements BuildCustomizer<Build>
 		build.setVersion("0.0.1-SNAPSHOT");
 		this.projectDescription.getRequestedDependencies()
 				.forEach((id, dependency) -> build.dependencies().add(id, dependency));
+	}
+
+	@Override
+	public int getOrder() {
+		return Ordered.HIGHEST_PRECEDENCE;
 	}
 
 }
