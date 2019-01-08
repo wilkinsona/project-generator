@@ -159,9 +159,11 @@ public class GradleBuildWriter {
 	private String dependencyAsString(Dependency dependency) {
 		String quoteStyle = determineQuoteStyle(dependency.getVersion());
 		String version = determineVersion(dependency.getVersion());
+		String artifactType = dependency.getArtifactType();
 		return configurationForType(dependency.getType()) + " " + quoteStyle
 				+ dependency.getGroupId() + ":" + dependency.getArtifactId()
-				+ ((version != null) ? ":" + version : "") + quoteStyle;
+				+ ((version != null) ? ":" + version : "")
+				+ ((artifactType != null) ? "@" + artifactType : "") + quoteStyle;
 	}
 
 	private void writeBoms(IndentingWriter writer, GradleBuild build) {

@@ -157,6 +157,7 @@ public class MavenBuildWriter {
 			if (isOptional(dependency.getType())) {
 				writeSingleElement(writer, "optional", Boolean.toString(true));
 			}
+			writeSingleElement(writer, "type", dependency.getArtifactType());
 		});
 	}
 

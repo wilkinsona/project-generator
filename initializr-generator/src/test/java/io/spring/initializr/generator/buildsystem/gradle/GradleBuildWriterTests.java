@@ -201,6 +201,17 @@ class GradleBuildWriterTests {
 	}
 
 	@Test
+	void gradleBuildWithNonNullArtifactTypeDependency() throws IOException {
+		GradleBuild build = new GradleBuild();
+		build.dependencies().add("root", "org.springframework.boot",
+				"spring-boot-starter", null, DependencyType.COMPILE, "tar.gz");
+		List<String> lines = generateBuild(build);
+		assertThat(lines).containsSequence("dependencies {",
+				"    implementation 'org.springframework.boot:spring-boot-starter@tar.gz'",
+				"}");
+	}
+
+	@Test
 	void gradleBuildWithBom() throws IOException {
 		GradleBuild build = new GradleBuild();
 		build.boms().add("test", "com.example", "my-project-dependencies",

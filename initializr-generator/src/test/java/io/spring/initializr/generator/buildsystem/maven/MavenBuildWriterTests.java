@@ -226,6 +226,19 @@ class MavenBuildWriterTests {
 	}
 
 	@Test
+	void pomWithNonNullArtifactTypeDependency() throws Exception {
+		MavenBuild build = new MavenBuild();
+		build.setGroup("com.example.demo");
+		build.setArtifact("demo");
+		build.dependencies().add("root", "org.springframework.boot",
+				"spring-boot-starter", null, DependencyType.COMPILE, "tar.gz");
+		generatePom(build, (pom) -> {
+			NodeAssert dependency = pom.nodeAtPath("/project/dependencies/dependency");
+			assertThat(dependency).textAtPath("type").isEqualTo("tar.gz");
+		});
+	}
+
+	@Test
 	void pomWithBom() throws Exception {
 		MavenBuild build = new MavenBuild();
 		build.setGroup("com.example.demo");

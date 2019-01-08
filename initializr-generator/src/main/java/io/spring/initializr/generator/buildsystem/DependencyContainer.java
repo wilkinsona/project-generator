@@ -57,4 +57,20 @@ public class DependencyContainer extends BuildItemContainer<String, Dependency> 
 		add(id, new Dependency(groupId, artifactId, version, dependencyType));
 	}
 
+	/**
+	 * Register a {@link Dependency} with the specified {@code id} and artifact type.
+	 * @param id the id of the dependency
+	 * @param groupId the groupId
+	 * @param artifactId the artifactId
+	 * @param version the {@link VersionReference}
+	 * @param dependencyType the {@link DependencyType}
+	 * @param artifactType the artifact type
+	 */
+	public void add(String id, String groupId, String artifactId,
+			VersionReference version, DependencyType dependencyType,
+			String artifactType) {
+		add(id, new Dependency(groupId, artifactId, version, dependencyType,
+				artifactType));
+	}
+
 }

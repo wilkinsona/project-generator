@@ -33,16 +33,24 @@ public class Dependency {
 
 	private final DependencyType type;
 
+	private final String artifactType;
+
 	public Dependency(String groupId, String artifactId, DependencyType type) {
 		this(groupId, artifactId, null, type);
 	}
 
 	public Dependency(String groupId, String artifactId, VersionReference version,
 			DependencyType type) {
+		this(groupId, artifactId, version, type, null);
+	}
+
+	public Dependency(String groupId, String artifactId, VersionReference version,
+			DependencyType type, String artifactType) {
 		this.groupId = groupId;
 		this.artifactId = artifactId;
 		this.version = version;
 		this.type = type;
+		this.artifactType = artifactType;
 	}
 
 	/**
@@ -76,6 +84,15 @@ public class Dependency {
 	 */
 	public DependencyType getType() {
 		return this.type;
+	}
+
+	/**
+	 * The type of the dependency. Can be {@code null} to indicate that the default type
+	 * should be used (i.e. {@code jar}).
+	 * @return the type or {@code null}
+	 */
+	public String getArtifactType() {
+		return this.artifactType;
 	}
 
 }
