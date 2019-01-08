@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -60,6 +60,14 @@ public class ProjectDescription {
 	private String packageName;
 
 	private String baseDirectory;
+
+	/**
+	 * Resolve the state of this instance to a {@link ResolvedProjectDescription}.
+	 * @return an immutable description.
+	 */
+	public ResolvedProjectDescription resolve() {
+		return new ResolvedProjectDescription(this);
+	}
 
 	public Version getPlatformVersion() {
 		return this.platformVersion;
@@ -150,8 +158,7 @@ public class ProjectDescription {
 	}
 
 	public String getPackageName() {
-		// TODO: move to "resolve" logic
-		return (this.packageName != null) ? this.packageName : this.groupId;
+		return this.packageName;
 	}
 
 	public void setPackageName(String packageName) {
@@ -164,10 +171,6 @@ public class ProjectDescription {
 
 	public void setBaseDirectory(String baseDirectory) {
 		this.baseDirectory = baseDirectory;
-	}
-
-	public ResolvedProjectDescription resolve() {
-		return new ResolvedProjectDescription(this);
 	}
 
 }

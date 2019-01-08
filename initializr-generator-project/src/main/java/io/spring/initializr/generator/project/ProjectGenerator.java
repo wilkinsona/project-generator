@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -56,12 +56,10 @@ public class ProjectGenerator {
 
 	public Path generate(ProjectDescription description) throws IOException {
 		return generate(description, (context) -> {
-			ResolvedProjectDescription resolvedProjectDescription = context
-					.getBean(ResolvedProjectDescription.class);
 			Path projectRoot = context.getBean(ProjectDirectoryFactory.class)
-					.createProjectDirectory(resolvedProjectDescription);
+					.createProjectDirectory(context.getProjectDescription());
 			Path projectDirectory = initializerProjectDirectory(projectRoot,
-					resolvedProjectDescription);
+					context.getProjectDescription());
 			context.getBean(ProjectContributors.class).contribute(projectDirectory);
 			return projectRoot;
 		});
@@ -70,8 +68,11 @@ public class ProjectGenerator {
 	public <T> T generate(ProjectDescription description,
 			ProjectGenerationContextProcessor<T> projectGenerationContext)
 			throws IOException {
-		try (ProjectGenerationContext context = new ProjectGenerationContext()) {
-			context.registerBean(ResolvedProjectDescription.class, description::resolve);
+		ResolvedProjectDescription resolvedProjectDescription = description.resolve();
+		try (ProjectGenerationContext context = new ProjectGenerationContext(
+				resolvedProjectDescription)) {
+			context.registerBean(ResolvedProjectDescription.class,
+					() -> resolvedProjectDescription);
 			context.register(CoreConfiguration.class);
 			this.projectGenerationContext.accept(context);
 			context.refresh();
