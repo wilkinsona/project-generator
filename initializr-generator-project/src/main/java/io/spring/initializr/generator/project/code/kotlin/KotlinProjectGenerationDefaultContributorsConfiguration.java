@@ -130,7 +130,8 @@ class KotlinProjectGenerationDefaultContributorsConfiguration {
 	static class WarPackagingConfiguration {
 
 		@Bean
-		public ServletInitializerCustomizer<KotlinTypeDeclaration> javaServletInitializerCustomizer() {
+		public ServletInitializerCustomizer<KotlinTypeDeclaration> javaServletInitializerCustomizer(
+				ResolvedProjectDescription projectDescription) {
 			return (typeDeclaration) -> {
 				KotlinFunctionDeclaration configure = KotlinFunctionDeclaration
 						.function("configure").modifiers(KotlinModifier.OVERRIDE)
@@ -141,7 +142,8 @@ class KotlinProjectGenerationDefaultContributorsConfiguration {
 								"application"))
 						.body(new KotlinReturnStatement(
 								new KotlinFunctionInvocation("application", "sources",
-										"DemoApplication::class.java")));
+										projectDescription.getApplicationName()
+												+ "::class.java")));
 				typeDeclaration.addFunctionDeclaration(configure);
 			};
 		}

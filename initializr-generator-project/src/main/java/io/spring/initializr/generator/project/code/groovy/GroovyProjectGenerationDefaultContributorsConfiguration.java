@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,6 +18,7 @@ package io.spring.initializr.generator.project.code.groovy;
 
 import java.lang.reflect.Modifier;
 
+import io.spring.initializr.generator.ResolvedProjectDescription;
 import io.spring.initializr.generator.buildsystem.Build;
 import io.spring.initializr.generator.buildsystem.gradle.ConditionalOnGradle;
 import io.spring.initializr.generator.buildsystem.maven.ConditionalOnMaven;
@@ -80,7 +81,8 @@ class GroovyProjectGenerationDefaultContributorsConfiguration {
 	static class WarPackagingConfiguration {
 
 		@Bean
-		public ServletInitializerCustomizer<GroovyTypeDeclaration> javaServletInitializerCustomizer() {
+		public ServletInitializerCustomizer<GroovyTypeDeclaration> javaServletInitializerCustomizer(
+				ResolvedProjectDescription projectDescription) {
 			return (typeDeclaration) -> {
 				GroovyMethodDeclaration configure = GroovyMethodDeclaration
 						.method("configure").modifiers(Modifier.PROTECTED)
@@ -89,8 +91,9 @@ class GroovyProjectGenerationDefaultContributorsConfiguration {
 						.parameters(new Parameter(
 								"org.springframework.boot.builder.SpringApplicationBuilder",
 								"application"))
-						.body(new GroovyReturnStatement(new GroovyMethodInvocation(
-								"application", "sources", "DemoApplication")));
+						.body(new GroovyReturnStatement(
+								new GroovyMethodInvocation("application", "sources",
+										projectDescription.getApplicationName())));
 				configure.annotate(Annotation.name("java.lang.Override"));
 				typeDeclaration.addMethodDeclaration(configure);
 			};

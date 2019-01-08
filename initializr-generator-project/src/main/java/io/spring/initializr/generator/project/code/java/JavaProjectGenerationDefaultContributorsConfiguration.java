@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,6 +18,7 @@ package io.spring.initializr.generator.project.code.java;
 
 import java.lang.reflect.Modifier;
 
+import io.spring.initializr.generator.ResolvedProjectDescription;
 import io.spring.initializr.generator.language.Annotation;
 import io.spring.initializr.generator.language.Parameter;
 import io.spring.initializr.generator.language.java.JavaExpressionStatement;
@@ -71,7 +72,8 @@ class JavaProjectGenerationDefaultContributorsConfiguration {
 	static class WarPackagingConfiguration {
 
 		@Bean
-		public ServletInitializerCustomizer<JavaTypeDeclaration> javaServletInitializerCustomizer() {
+		public ServletInitializerCustomizer<JavaTypeDeclaration> javaServletInitializerCustomizer(
+				ResolvedProjectDescription projectDescription) {
 			return (typeDeclaration) -> {
 				JavaMethodDeclaration configure = JavaMethodDeclaration
 						.method("configure").modifiers(Modifier.PROTECTED)
@@ -81,7 +83,8 @@ class JavaProjectGenerationDefaultContributorsConfiguration {
 								"org.springframework.boot.builder.SpringApplicationBuilder",
 								"application"))
 						.body(new JavaReturnStatement(new JavaMethodInvocation(
-								"application", "sources", "DemoApplication.class")));
+								"application", "sources",
+								projectDescription.getApplicationName() + ".class")));
 				configure.annotate(Annotation.name("java.lang.Override"));
 				typeDeclaration.addMethodDeclaration(configure);
 			};

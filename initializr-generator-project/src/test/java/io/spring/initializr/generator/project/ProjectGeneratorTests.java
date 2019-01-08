@@ -32,6 +32,7 @@ import io.spring.initializr.generator.buildsystem.DependencyType;
 import io.spring.initializr.generator.buildsystem.gradle.GradleBuildSystem;
 import io.spring.initializr.generator.buildsystem.maven.MavenBuild;
 import io.spring.initializr.generator.buildsystem.maven.MavenBuildSystem;
+import io.spring.initializr.generator.language.groovy.GroovyLanguage;
 import io.spring.initializr.generator.language.java.JavaLanguage;
 import io.spring.initializr.generator.language.kotlin.KotlinLanguage;
 import io.spring.initializr.generator.packaging.war.WarPackaging;
@@ -204,6 +205,7 @@ class ProjectGeneratorTests {
 		description.setLanguage(new JavaLanguage());
 		description.setPackaging(new WarPackaging());
 		description.setGroupId("com.example");
+		description.setApplicationName("MyDemoApplication");
 		Path project = this.projectGenerator.generate(description);
 		List<String> relativePaths = getRelativePathsOfProjectFiles(project);
 		assertThat(relativePaths)
@@ -217,8 +219,8 @@ class ProjectGeneratorTests {
 				"public class ServletInitializer extends SpringBootServletInitializer {",
 				"", "    @Override",
 				"    protected SpringApplicationBuilder configure(SpringApplicationBuilder application) {",
-				"        return application.sources(DemoApplication.class);", "    }", "",
-				"}", "");
+				"        return application.sources(MyDemoApplication.class);", "    }",
+				"", "}", "");
 	}
 
 	@Test
@@ -230,6 +232,7 @@ class ProjectGeneratorTests {
 		description.setLanguage(new KotlinLanguage());
 		description.setPackaging(new WarPackaging());
 		description.setGroupId("com.example");
+		description.setApplicationName("KotlinDemoApplication");
 		Path project = this.projectGenerator.generate(description);
 		List<String> relativePaths = getRelativePathsOfProjectFiles(project);
 		assertThat(relativePaths)
@@ -241,8 +244,33 @@ class ProjectGeneratorTests {
 				"import org.springframework.boot.web.servlet.support.SpringBootServletInitializer",
 				"", "class ServletInitializer : SpringBootServletInitializer() {", "",
 				"    override fun configure(application: SpringApplicationBuilder): SpringApplicationBuilder {",
-				"        return application.sources(DemoApplication::class.java)",
+				"        return application.sources(KotlinDemoApplication::class.java)",
 				"    }", "", "}", "");
+	}
+
+	@Test
+	void servletInitializerIsContributedWhenGeneratingGroovyProjectThatUsesWarPackaging()
+			throws IOException {
+		ProjectDescription description = initProjectDescription();
+		description.setPlatformVersion(Version.parse("2.1.0.RELEASE"));
+		description.setBuildSystem(new MavenBuildSystem());
+		description.setLanguage(new GroovyLanguage());
+		description.setPackaging(new WarPackaging());
+		description.setGroupId("com.example");
+		description.setApplicationName("Demo2Application");
+		Path project = this.projectGenerator.generate(description);
+		List<String> relativePaths = getRelativePathsOfProjectFiles(project);
+		assertThat(relativePaths)
+				.contains("src/main/groovy/com/example/ServletInitializer.groovy");
+		List<String> lines = Files.readAllLines(
+				project.resolve("src/main/groovy/com/example/ServletInitializer.groovy"));
+		assertThat(lines).containsExactly("package com.example", "",
+				"import org.springframework.boot.builder.SpringApplicationBuilder",
+				"import org.springframework.boot.web.servlet.support.SpringBootServletInitializer",
+				"", "class ServletInitializer extends SpringBootServletInitializer {", "",
+				"    @Override",
+				"    protected SpringApplicationBuilder configure(SpringApplicationBuilder application) {",
+				"        application.sources(Demo2Application)", "    }", "", "}", "");
 	}
 
 	@Test
