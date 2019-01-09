@@ -49,12 +49,11 @@ import io.spring.initializr.generator.util.VersionReference;
 public class GradleBuildWriter {
 
 	public void writeTo(IndentingWriter writer, GradleBuild build) throws IOException {
-		writeBuildscript(writer, build);
-		writePlugins(writer, build);
+		boolean buildScriptWritten = writeBuildscript(writer, build);
+		writePlugins(writer, build, buildScriptWritten);
 		writeProperty(writer, "group", build.getGroup());
 		writeProperty(writer, "version", build.getVersion());
 		writeProperty(writer, "sourceCompatibility", build.getSourceCompatibility());
-		writer.println();
 		writeRepositories(writer, build, writer::println);
 		writeVersions(writer, build);
 		writeDependencies(writer, build);
@@ -62,11 +61,11 @@ public class GradleBuildWriter {
 		writeTaskCustomizations(writer, build);
 	}
 
-	private void writeBuildscript(IndentingWriter writer, GradleBuild build) {
+	private boolean writeBuildscript(IndentingWriter writer, GradleBuild build) {
 		List<String> dependencies = build.getBuildscript().getDependencies();
 		Map<String, String> ext = build.getBuildscript().getExt();
 		if (dependencies.isEmpty() && ext.isEmpty()) {
-			return;
+			return false;
 		}
 		writer.println("buildscript {");
 		writer.indented(() -> {
@@ -75,7 +74,7 @@ public class GradleBuildWriter {
 			writeBuildscriptDependencies(writer, build);
 		});
 		writer.println("}");
-		writer.println("");
+		return true;
 	}
 
 	private void writeBuildscriptExt(IndentingWriter writer, GradleBuild build) {
@@ -93,11 +92,21 @@ public class GradleBuildWriter {
 				(dependency) -> "classpath '" + dependency + "'");
 	}
 
-	private void writePlugins(IndentingWriter writer, GradleBuild build) {
+	private void writePlugins(IndentingWriter writer, GradleBuild build,
+			boolean buildScriptWritten) {
 		writeNestedCollection(writer, "plugins", build.getPlugins(), this::pluginAsString,
-				writer::println);
+				determineBeforeWriting(buildScriptWritten, writer));
 		writeCollection(writer, build.getAppliedPlugins(),
 				(plugin) -> "apply plugin: '" + plugin + "'", writer::println);
+		writer.println();
+	}
+
+	private Runnable determineBeforeWriting(boolean buildScriptWritten,
+			IndentingWriter writer) {
+		if (buildScriptWritten) {
+			return writer::println;
+		}
+		return null;
 	}
 
 	private String pluginAsString(GradlePlugin plugin) {
@@ -113,10 +122,10 @@ public class GradleBuildWriter {
 	}
 
 	private void writeRepositories(IndentingWriter writer, GradleBuild build,
-			Runnable whenWritten) {
+			Runnable beforeWriting) {
 		writeNestedCollection(writer, "repositories",
 				build.repositories().items().collect(Collectors.toList()),
-				this::repositoryAsString, whenWritten);
+				this::repositoryAsString, beforeWriting);
 	}
 
 	private String repositoryAsString(MavenRepository repository) {
@@ -173,6 +182,7 @@ public class GradleBuildWriter {
 		List<BillOfMaterials> boms = build.boms().items()
 				.sorted(Comparator.comparingInt(BillOfMaterials::getOrder).reversed())
 				.collect(Collectors.toList());
+		writer.println();
 		writer.println("dependencyManagement {");
 		writer.indented(
 				() -> writeNestedCollection(writer, "imports", boms, this::bomAsString));
@@ -207,10 +217,10 @@ public class GradleBuildWriter {
 	private void writeTaskCustomizations(IndentingWriter writer, GradleBuild build) {
 		Map<String, TaskCustomization> taskCustomizations = build.getTaskCustomizations();
 		taskCustomizations.forEach((name, customization) -> {
+			writer.println();
 			writer.println(name + " {");
 			writer.indented(() -> writeTaskCustomization(writer, customization));
 			writer.println("}");
-			writer.println();
 		});
 	}
 
@@ -235,15 +245,15 @@ public class GradleBuildWriter {
 
 	private <T> void writeNestedCollection(IndentingWriter writer, String name,
 			Collection<T> collection, Function<T, String> converter,
-			Runnable whenWritten) {
+			Runnable beforeWriting) {
 		if (!collection.isEmpty()) {
+			if (beforeWriting != null) {
+				beforeWriting.run();
+			}
 			writer.println(name + " {");
 			writer.indented(() -> writeCollection(writer, collection, converter));
 			writer.println("}");
-			if (whenWritten != null) {
-				whenWritten.run();
 
-			}
 		}
 	}
 
@@ -253,12 +263,12 @@ public class GradleBuildWriter {
 	}
 
 	private <T> void writeCollection(IndentingWriter writer, Collection<T> collection,
-			Function<T, String> itemToStringConverter, Runnable whenWritten) {
+			Function<T, String> itemToStringConverter, Runnable beforeWriting) {
 		if (!collection.isEmpty()) {
-			collection.stream().map(itemToStringConverter).forEach(writer::println);
-			if (whenWritten != null) {
-				whenWritten.run();
+			if (beforeWriting != null) {
+				beforeWriting.run();
 			}
+			collection.stream().map(itemToStringConverter).forEach(writer::println);
 		}
 	}
 
