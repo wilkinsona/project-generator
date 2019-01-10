@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,7 +33,7 @@ import io.spring.initializr.generator.buildsystem.BillOfMaterials;
 import io.spring.initializr.generator.buildsystem.Dependency;
 import io.spring.initializr.generator.buildsystem.DependencyComparator;
 import io.spring.initializr.generator.buildsystem.DependencyContainer;
-import io.spring.initializr.generator.buildsystem.DependencyType;
+import io.spring.initializr.generator.buildsystem.DependencyScope;
 import io.spring.initializr.generator.buildsystem.MavenRepository;
 import io.spring.initializr.generator.buildsystem.gradle.GradleBuild.TaskCustomization;
 import io.spring.initializr.generator.io.IndentingWriter;
@@ -141,17 +141,17 @@ public class GradleBuildWriter {
 		Set<Dependency> sortedDependencies = new LinkedHashSet<>();
 		DependencyContainer dependencies = build.dependencies();
 		sortedDependencies
-				.addAll(filterDependencies(dependencies, DependencyType.COMPILE));
+				.addAll(filterDependencies(dependencies, DependencyScope.COMPILE));
 		sortedDependencies
-				.addAll(filterDependencies(dependencies, DependencyType.RUNTIME));
+				.addAll(filterDependencies(dependencies, DependencyScope.RUNTIME));
 		sortedDependencies.addAll(
-				filterDependencies(dependencies, DependencyType.ANNOTATION_PROCESSOR));
+				filterDependencies(dependencies, DependencyScope.ANNOTATION_PROCESSOR));
 		sortedDependencies.addAll(
-				filterDependencies(dependencies, DependencyType.PROVIDED_RUNTIME));
+				filterDependencies(dependencies, DependencyScope.PROVIDED_RUNTIME));
 		sortedDependencies
-				.addAll(filterDependencies(dependencies, DependencyType.TEST_COMPILE));
+				.addAll(filterDependencies(dependencies, DependencyScope.TEST_COMPILE));
 		sortedDependencies
-				.addAll(filterDependencies(dependencies, DependencyType.TEST_RUNTIME));
+				.addAll(filterDependencies(dependencies, DependencyScope.TEST_RUNTIME));
 		writeNestedCollection(writer, "dependencies", sortedDependencies,
 				this::dependencyAsString, writer::println);
 	}
@@ -159,11 +159,11 @@ public class GradleBuildWriter {
 	private String dependencyAsString(Dependency dependency) {
 		String quoteStyle = determineQuoteStyle(dependency.getVersion());
 		String version = determineVersion(dependency.getVersion());
-		String artifactType = dependency.getArtifactType();
-		return configurationForType(dependency.getType()) + " " + quoteStyle
+		String type = dependency.getType();
+		return configurationForScope(dependency.getScope()) + " " + quoteStyle
 				+ dependency.getGroupId() + ":" + dependency.getArtifactId()
 				+ ((version != null) ? ":" + version : "")
-				+ ((artifactType != null) ? "@" + artifactType : "") + quoteStyle;
+				+ ((type != null) ? "@" + type : "") + quoteStyle;
 	}
 
 	private void writeBoms(IndentingWriter writer, GradleBuild build) {
@@ -283,13 +283,13 @@ public class GradleBuildWriter {
 	}
 
 	private static Collection<Dependency> filterDependencies(
-			DependencyContainer dependencies, DependencyType... types) {
-		List<DependencyType> candidates = Arrays.asList(types);
-		return dependencies.items().filter((dep) -> candidates.contains(dep.getType()))
+			DependencyContainer dependencies, DependencyScope... types) {
+		List<DependencyScope> candidates = Arrays.asList(types);
+		return dependencies.items().filter((dep) -> candidates.contains(dep.getScope()))
 				.sorted(DependencyComparator.INSTANCE).collect(Collectors.toList());
 	}
 
-	private String configurationForType(DependencyType type) {
+	private String configurationForScope(DependencyScope type) {
 		switch (type) {
 		case ANNOTATION_PROCESSOR:
 			return "annotationProcessor";

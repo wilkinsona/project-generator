@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,7 +29,7 @@ import io.spring.initializr.generator.buildsystem.BillOfMaterials;
 import io.spring.initializr.generator.buildsystem.Dependency;
 import io.spring.initializr.generator.buildsystem.DependencyComparator;
 import io.spring.initializr.generator.buildsystem.DependencyContainer;
-import io.spring.initializr.generator.buildsystem.DependencyType;
+import io.spring.initializr.generator.buildsystem.DependencyScope;
 import io.spring.initializr.generator.buildsystem.MavenRepository;
 import io.spring.initializr.generator.buildsystem.maven.MavenPlugin.Configuration;
 import io.spring.initializr.generator.buildsystem.maven.MavenPlugin.Execution;
@@ -128,20 +128,20 @@ public class MavenBuildWriter {
 		writer.println();
 		writeElement(writer, "dependencies", () -> {
 			Collection<Dependency> compiledDependencies = writeDependencies(writer,
-					dependencies, DependencyType.COMPILE);
+					dependencies, DependencyScope.COMPILE);
 			if (!compiledDependencies.isEmpty()) {
 				writer.println();
 			}
-			writeDependencies(writer, dependencies, DependencyType.RUNTIME);
-			writeDependencies(writer, dependencies, DependencyType.ANNOTATION_PROCESSOR);
-			writeDependencies(writer, dependencies, DependencyType.PROVIDED_RUNTIME);
-			writeDependencies(writer, dependencies, DependencyType.TEST_COMPILE,
-					DependencyType.TEST_RUNTIME);
+			writeDependencies(writer, dependencies, DependencyScope.RUNTIME);
+			writeDependencies(writer, dependencies, DependencyScope.ANNOTATION_PROCESSOR);
+			writeDependencies(writer, dependencies, DependencyScope.PROVIDED_RUNTIME);
+			writeDependencies(writer, dependencies, DependencyScope.TEST_COMPILE,
+					DependencyScope.TEST_RUNTIME);
 		});
 	}
 
 	private Collection<Dependency> writeDependencies(IndentingWriter writer,
-			DependencyContainer dependencies, DependencyType... types) {
+			DependencyContainer dependencies, DependencyScope... types) {
 		Collection<Dependency> candidates = filterDependencies(dependencies, types);
 		writeCollection(writer, candidates, this::writeDependency);
 		return candidates;
@@ -153,22 +153,22 @@ public class MavenBuildWriter {
 			writeSingleElement(writer, "artifactId", dependency.getArtifactId());
 			writeSingleElement(writer, "version",
 					determineVersion(dependency.getVersion()));
-			writeSingleElement(writer, "scope", scopeForType(dependency.getType()));
-			if (isOptional(dependency.getType())) {
+			writeSingleElement(writer, "scope", scopeForType(dependency.getScope()));
+			if (isOptional(dependency.getScope())) {
 				writeSingleElement(writer, "optional", Boolean.toString(true));
 			}
-			writeSingleElement(writer, "type", dependency.getArtifactType());
+			writeSingleElement(writer, "type", dependency.getType());
 		});
 	}
 
 	private static Collection<Dependency> filterDependencies(
-			DependencyContainer dependencies, DependencyType... types) {
-		List<DependencyType> candidates = Arrays.asList(types);
-		return dependencies.items().filter((dep) -> candidates.contains(dep.getType()))
+			DependencyContainer dependencies, DependencyScope... scopes) {
+		List<DependencyScope> candidates = Arrays.asList(scopes);
+		return dependencies.items().filter((dep) -> candidates.contains(dep.getScope()))
 				.sorted(DependencyComparator.INSTANCE).collect(Collectors.toList());
 	}
 
-	private String scopeForType(DependencyType type) {
+	private String scopeForType(DependencyScope type) {
 		switch (type) {
 		case ANNOTATION_PROCESSOR:
 			return null;
@@ -188,8 +188,8 @@ public class MavenBuildWriter {
 		}
 	}
 
-	private boolean isOptional(DependencyType type) {
-		return type == DependencyType.ANNOTATION_PROCESSOR;
+	private boolean isOptional(DependencyScope type) {
+		return type == DependencyScope.ANNOTATION_PROCESSOR;
 	}
 
 	private void writeDependencyManagement(IndentingWriter writer, MavenBuild build) {

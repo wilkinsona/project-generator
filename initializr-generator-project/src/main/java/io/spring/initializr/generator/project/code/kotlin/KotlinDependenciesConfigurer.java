@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,7 +17,7 @@
 package io.spring.initializr.generator.project.code.kotlin;
 
 import io.spring.initializr.generator.buildsystem.Build;
-import io.spring.initializr.generator.buildsystem.DependencyType;
+import io.spring.initializr.generator.buildsystem.DependencyScope;
 import io.spring.initializr.generator.buildsystem.maven.MavenBuild;
 import io.spring.initializr.generator.project.build.BuildCustomizer;
 import io.spring.initializr.generator.util.Version;
@@ -41,9 +41,9 @@ class KotlinDependenciesConfigurer implements BuildCustomizer<Build> {
 	public void customize(Build build) {
 		VersionReference version = determineDependencyVersion(build);
 		build.dependencies().add("kotlin-stdlib", "org.jetbrains.kotlin",
-				"kotlin-stdlib-jdk8", version, DependencyType.COMPILE);
+				"kotlin-stdlib-jdk8", version, DependencyScope.COMPILE);
 		build.dependencies().add("kotlin-reflect", "org.jetbrains.kotlin",
-				"kotlin-reflect", version, DependencyType.COMPILE);
+				"kotlin-reflect", version, DependencyScope.COMPILE);
 	}
 
 	private VersionReference determineDependencyVersion(Build build) {

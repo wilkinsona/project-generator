@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,7 +32,7 @@ class DependencyContainerTests {
 	void addDependency() {
 		DependencyContainer container = createTestContainer();
 		container.add("web", "org.springframework.boot", "spring-boot-starter-web",
-				DependencyType.COMPILE);
+				DependencyScope.COMPILE);
 		assertThat(container.ids()).containsOnly("web");
 		assertThat(container.items()).hasSize(1);
 		assertThat(container.isEmpty()).isFalse();
@@ -42,14 +42,14 @@ class DependencyContainerTests {
 		assertThat(web.getGroupId()).isEqualTo("org.springframework.boot");
 		assertThat(web.getArtifactId()).isEqualTo("spring-boot-starter-web");
 		assertThat(web.getVersion()).isNull();
-		assertThat(web.getType()).isEqualTo(DependencyType.COMPILE);
+		assertThat(web.getScope()).isEqualTo(DependencyScope.COMPILE);
 	}
 
 	@Test
 	void addDependencyWithVersion() {
 		DependencyContainer container = createTestContainer();
 		container.add("custom", "com.example", "acme", VersionReference.ofValue("1.0.0"),
-				DependencyType.COMPILE);
+				DependencyScope.COMPILE);
 		assertThat(container.ids()).containsOnly("custom");
 		assertThat(container.items()).hasSize(1);
 		assertThat(container.isEmpty()).isFalse();
@@ -59,7 +59,7 @@ class DependencyContainerTests {
 		assertThat(custom.getGroupId()).isEqualTo("com.example");
 		assertThat(custom.getArtifactId()).isEqualTo("acme");
 		assertThat(custom.getVersion()).isEqualTo(VersionReference.ofValue("1.0.0"));
-		assertThat(custom.getType()).isEqualTo(DependencyType.COMPILE);
+		assertThat(custom.getScope()).isEqualTo(DependencyScope.COMPILE);
 	}
 
 	private DependencyContainer createTestContainer() {

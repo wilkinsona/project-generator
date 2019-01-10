@@ -28,7 +28,7 @@ import java.util.stream.Stream;
 
 import io.spring.initializr.generator.ProjectDescription;
 import io.spring.initializr.generator.buildsystem.Dependency;
-import io.spring.initializr.generator.buildsystem.DependencyType;
+import io.spring.initializr.generator.buildsystem.DependencyScope;
 import io.spring.initializr.generator.buildsystem.gradle.GradleBuildSystem;
 import io.spring.initializr.generator.buildsystem.maven.MavenBuild;
 import io.spring.initializr.generator.buildsystem.maven.MavenBuildSystem;
@@ -111,7 +111,7 @@ class ProjectGeneratorTests {
 		description.setArtifactId("demo");
 		description.setJavaVersion("11");
 		description.addDependency("acme",
-				new Dependency("com.example", "acme", DependencyType.COMPILE));
+				new Dependency("com.example", "acme", DependencyScope.COMPILE));
 		Path project = this.projectGenerator.generate(description);
 		List<String> relativePaths = getRelativePathsOfProjectFiles(project);
 		assertThat(relativePaths).contains("build.gradle");

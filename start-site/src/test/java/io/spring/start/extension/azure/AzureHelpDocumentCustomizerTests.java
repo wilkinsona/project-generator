@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,7 +18,7 @@ package io.spring.start.extension.azure;
 
 import io.spring.initializr.generator.buildsystem.Build;
 import io.spring.initializr.generator.buildsystem.Dependency;
-import io.spring.initializr.generator.buildsystem.DependencyType;
+import io.spring.initializr.generator.buildsystem.DependencyScope;
 import io.spring.initializr.generator.buildsystem.maven.MavenBuild;
 import io.spring.initializr.generator.project.documentation.HelpDocument;
 import io.spring.initializr.generator.util.template.MustacheTemplateRenderer;
@@ -37,7 +37,7 @@ class AzureHelpDocumentCustomizerTests {
 	void customizeWithAzureDependency() {
 		Build build = new MavenBuild();
 		build.dependencies().add("azure",
-				new Dependency("com.microsoft.azure", "azure", DependencyType.COMPILE));
+				new Dependency("com.microsoft.azure", "azure", DependencyScope.COMPILE));
 		HelpDocument document = createHelpDocument();
 		new AzureHelpDocumentCustomizer(build).customize(document);
 		assertThat(document.getSections()).hasSize(1);
@@ -47,7 +47,7 @@ class AzureHelpDocumentCustomizerTests {
 	void customizeWithoutAzureDependency() {
 		Build build = new MavenBuild();
 		build.dependencies().add("test",
-				new Dependency("com.example.another", "test", DependencyType.COMPILE));
+				new Dependency("com.example.another", "test", DependencyScope.COMPILE));
 		HelpDocument document = createHelpDocument();
 		new AzureHelpDocumentCustomizer(build).customize(document);
 		assertThat(document.getSections()).isEmpty();

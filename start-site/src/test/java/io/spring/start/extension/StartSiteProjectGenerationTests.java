@@ -27,7 +27,7 @@ import java.util.List;
 
 import io.spring.initializr.generator.ProjectDescription;
 import io.spring.initializr.generator.buildsystem.Dependency;
-import io.spring.initializr.generator.buildsystem.DependencyType;
+import io.spring.initializr.generator.buildsystem.DependencyScope;
 import io.spring.initializr.generator.buildsystem.gradle.GradleBuildSystem;
 import io.spring.initializr.generator.buildsystem.maven.MavenBuildSystem;
 import io.spring.initializr.generator.language.java.JavaLanguage;
@@ -70,7 +70,7 @@ class StartSiteProjectGenerationTests {
 		description.setGroupId("com.example");
 		description.addDependency("restdocs",
 				new Dependency("org.springframework.restdocs", "spring-restdocs-mockmvc",
-						DependencyType.TEST_COMPILE));
+						DependencyScope.TEST_COMPILE));
 		Path project = this.projectGenerator.generate(description);
 		List<String> relativePaths = getRelativePathsOfProjectFiles(project);
 		assertThat(relativePaths).contains("build.gradle");
@@ -86,7 +86,7 @@ class StartSiteProjectGenerationTests {
 		description.setBuildSystem(new MavenBuildSystem());
 		description.addDependency("restdocs",
 				new Dependency("org.springframework.restdocs", "spring-restdocs-mockmvc",
-						DependencyType.TEST_COMPILE));
+						DependencyScope.TEST_COMPILE));
 		Path project = this.projectGenerator.generate(description);
 		NodeAssert pom = new NodeAssert(project.resolve("pom.xml"));
 		assertThat(pom).textAtPath("/project/build/plugins/plugin[1]/groupId")
@@ -102,7 +102,7 @@ class StartSiteProjectGenerationTests {
 		description.setPlatformVersion(Version.parse("2.1.0.RELEASE"));
 		description.addDependency("cloud-config-server",
 				new Dependency("org.springframework.cloud", "spring-cloud-config-server",
-						DependencyType.COMPILE));
+						DependencyScope.COMPILE));
 		Path project = this.projectGenerator.generate(description);
 		List<String> relativePaths = getRelativePathsOfProjectFiles(project);
 		assertThat(relativePaths)

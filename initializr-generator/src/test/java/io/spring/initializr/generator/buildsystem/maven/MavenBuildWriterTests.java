@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,7 +19,7 @@ package io.spring.initializr.generator.buildsystem.maven;
 import java.io.StringWriter;
 import java.util.function.Consumer;
 
-import io.spring.initializr.generator.buildsystem.DependencyType;
+import io.spring.initializr.generator.buildsystem.DependencyScope;
 import io.spring.initializr.generator.io.IndentingWriter;
 import io.spring.initializr.generator.test.assertj.NodeAssert;
 import io.spring.initializr.generator.util.VersionProperty;
@@ -120,7 +120,7 @@ class MavenBuildWriterTests {
 		build.setArtifact("demo");
 		build.dependencies().add("annotation-processor", "org.springframework.boot",
 				"spring-boot-configuration-processor",
-				DependencyType.ANNOTATION_PROCESSOR);
+				DependencyScope.ANNOTATION_PROCESSOR);
 		generatePom(build, (pom) -> {
 			NodeAssert dependency = pom.nodeAtPath("/project/dependencies/dependency");
 			assertThat(dependency).textAtPath("groupId")
@@ -139,7 +139,7 @@ class MavenBuildWriterTests {
 		build.setGroup("com.example.demo");
 		build.setArtifact("demo");
 		build.dependencies().add("root", "org.springframework.boot",
-				"spring-boot-starter", DependencyType.COMPILE);
+				"spring-boot-starter", DependencyScope.COMPILE);
 		generatePom(build, (pom) -> {
 			NodeAssert dependency = pom.nodeAtPath("/project/dependencies/dependency");
 			assertThat(dependency).textAtPath("groupId")
@@ -158,7 +158,7 @@ class MavenBuildWriterTests {
 		build.setGroup("com.example.demo");
 		build.setArtifact("demo");
 		build.dependencies().add("tomcat", "org.springframework.boot",
-				"spring-boot-starter-tomcat", DependencyType.PROVIDED_RUNTIME);
+				"spring-boot-starter-tomcat", DependencyScope.PROVIDED_RUNTIME);
 		generatePom(build, (pom) -> {
 			NodeAssert dependency = pom.nodeAtPath("/project/dependencies/dependency");
 			assertThat(dependency).textAtPath("groupId")
@@ -177,7 +177,7 @@ class MavenBuildWriterTests {
 		build.setGroup("com.example.demo");
 		build.setArtifact("demo");
 		build.dependencies().add("hikari", "com.zaxxer", "HikariCP",
-				DependencyType.RUNTIME);
+				DependencyScope.RUNTIME);
 		generatePom(build, (pom) -> {
 			NodeAssert dependency = pom.nodeAtPath("/project/dependencies/dependency");
 			assertThat(dependency).textAtPath("groupId").isEqualTo("com.zaxxer");
@@ -194,7 +194,7 @@ class MavenBuildWriterTests {
 		build.setGroup("com.example.demo");
 		build.setArtifact("demo");
 		build.dependencies().add("test", "org.springframework.boot",
-				"spring-boot-starter-test", DependencyType.TEST_COMPILE);
+				"spring-boot-starter-test", DependencyScope.TEST_COMPILE);
 		generatePom(build, (pom) -> {
 			NodeAssert dependency = pom.nodeAtPath("/project/dependencies/dependency");
 			assertThat(dependency).textAtPath("groupId")
@@ -213,7 +213,7 @@ class MavenBuildWriterTests {
 		build.setGroup("com.example.demo");
 		build.setArtifact("demo");
 		build.dependencies().add("embed-mongo", "de.flapdoodle.embed",
-				"de.flapdoodle.embed.mongo", DependencyType.TEST_RUNTIME);
+				"de.flapdoodle.embed.mongo", DependencyScope.TEST_RUNTIME);
 		generatePom(build, (pom) -> {
 			NodeAssert dependency = pom.nodeAtPath("/project/dependencies/dependency");
 			assertThat(dependency).textAtPath("groupId").isEqualTo("de.flapdoodle.embed");
@@ -231,7 +231,7 @@ class MavenBuildWriterTests {
 		build.setGroup("com.example.demo");
 		build.setArtifact("demo");
 		build.dependencies().add("root", "org.springframework.boot",
-				"spring-boot-starter", null, DependencyType.COMPILE, "tar.gz");
+				"spring-boot-starter", null, DependencyScope.COMPILE, "tar.gz");
 		generatePom(build, (pom) -> {
 			NodeAssert dependency = pom.nodeAtPath("/project/dependencies/dependency");
 			assertThat(dependency).textAtPath("type").isEqualTo("tar.gz");

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,7 +21,7 @@ import java.io.StringWriter;
 import java.util.Arrays;
 import java.util.List;
 
-import io.spring.initializr.generator.buildsystem.DependencyType;
+import io.spring.initializr.generator.buildsystem.DependencyScope;
 import io.spring.initializr.generator.io.IndentingWriter;
 import io.spring.initializr.generator.util.VersionProperty;
 import io.spring.initializr.generator.util.VersionReference;
@@ -171,7 +171,7 @@ class GradleBuildWriterTests {
 		GradleBuild build = new GradleBuild();
 		build.dependencies().add("kotlin-stdlib", "org.jetbrains.kotlin",
 				"kotlin-stdlib-jdk8", VersionReference.ofProperty("kotlin.version"),
-				DependencyType.COMPILE);
+				DependencyScope.COMPILE);
 		List<String> lines = generateBuild(build);
 		assertThat(lines).containsSequence("dependencies {",
 				"    implementation \"org.jetbrains.kotlin:kotlin-stdlib-jdk8:${kotlinVersion}\"",
@@ -183,7 +183,7 @@ class GradleBuildWriterTests {
 		GradleBuild build = new GradleBuild();
 		build.dependencies().add("acme", "com.example", "acme",
 				VersionReference.ofProperty(VersionProperty.of("acme.version", false)),
-				DependencyType.COMPILE);
+				DependencyScope.COMPILE);
 		List<String> lines = generateBuild(build);
 		assertThat(lines).containsSequence("dependencies {",
 				"    implementation \"com.example:acme:${property('acme.version')}\"",
@@ -194,7 +194,7 @@ class GradleBuildWriterTests {
 	void gradleBuildWithDependency() throws IOException {
 		GradleBuild build = new GradleBuild();
 		build.dependencies().add("root", "org.springframework.boot",
-				"spring-boot-starter", DependencyType.COMPILE);
+				"spring-boot-starter", DependencyScope.COMPILE);
 		List<String> lines = generateBuild(build);
 		assertThat(lines).containsSequence("dependencies {",
 				"    implementation 'org.springframework.boot:spring-boot-starter'", "}");
@@ -204,7 +204,7 @@ class GradleBuildWriterTests {
 	void gradleBuildWithNonNullArtifactTypeDependency() throws IOException {
 		GradleBuild build = new GradleBuild();
 		build.dependencies().add("root", "org.springframework.boot",
-				"spring-boot-starter", null, DependencyType.COMPILE, "tar.gz");
+				"spring-boot-starter", null, DependencyScope.COMPILE, "tar.gz");
 		List<String> lines = generateBuild(build);
 		assertThat(lines).containsSequence("dependencies {",
 				"    implementation 'org.springframework.boot:spring-boot-starter@tar.gz'",

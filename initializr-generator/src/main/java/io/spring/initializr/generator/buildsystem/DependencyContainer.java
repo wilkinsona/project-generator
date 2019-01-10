@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,40 +37,39 @@ public class DependencyContainer extends BuildItemContainer<String, Dependency> 
 	 * @param id the id of the dependency
 	 * @param groupId the groupId
 	 * @param artifactId the artifactId
-	 * @param dependencyType the {@link DependencyType}
+	 * @param scope the {@link DependencyScope}
 	 */
-	public void add(String id, String groupId, String artifactId,
-			DependencyType dependencyType) {
-		add(id, new Dependency(groupId, artifactId, dependencyType));
+	public void add(String id, String groupId, String artifactId, DependencyScope scope) {
+		add(id, new Dependency(groupId, artifactId, scope));
 	}
 
 	/**
-	 * Register a {@link Dependency} with the specified {@code id} and a version.
+	 * Register a {@link Dependency} with the specified {@code id}, version and
+	 * {@link DependencyScope scope}.
 	 * @param id the id of the dependency
 	 * @param groupId the groupId
 	 * @param artifactId the artifactId
 	 * @param version the {@link VersionReference}
-	 * @param dependencyType the {@link DependencyType}
+	 * @param scope the {@link DependencyScope}
 	 */
 	public void add(String id, String groupId, String artifactId,
-			VersionReference version, DependencyType dependencyType) {
-		add(id, new Dependency(groupId, artifactId, version, dependencyType));
+			VersionReference version, DependencyScope scope) {
+		add(id, new Dependency(groupId, artifactId, version, scope));
 	}
 
 	/**
-	 * Register a {@link Dependency} with the specified {@code id} and artifact type.
+	 * Register a {@link Dependency} with the specified {@code id}, version,
+	 * {@link DependencyScope scope} and type.
 	 * @param id the id of the dependency
 	 * @param groupId the groupId
 	 * @param artifactId the artifactId
 	 * @param version the {@link VersionReference}
-	 * @param dependencyType the {@link DependencyType}
-	 * @param artifactType the artifact type
+	 * @param scope the {@link DependencyScope}
+	 * @param type the artifact type
 	 */
 	public void add(String id, String groupId, String artifactId,
-			VersionReference version, DependencyType dependencyType,
-			String artifactType) {
-		add(id, new Dependency(groupId, artifactId, version, dependencyType,
-				artifactType));
+			VersionReference version, DependencyScope scope, String type) {
+		add(id, new Dependency(groupId, artifactId, version, scope, type));
 	}
 
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,26 +31,26 @@ public class Dependency {
 
 	private final VersionReference version;
 
-	private final DependencyType type;
+	private final DependencyScope scope;
 
-	private final String artifactType;
+	private final String type;
 
-	public Dependency(String groupId, String artifactId, DependencyType type) {
-		this(groupId, artifactId, null, type);
+	public Dependency(String groupId, String artifactId, DependencyScope scope) {
+		this(groupId, artifactId, null, scope);
 	}
 
 	public Dependency(String groupId, String artifactId, VersionReference version,
-			DependencyType type) {
-		this(groupId, artifactId, version, type, null);
+			DependencyScope scope) {
+		this(groupId, artifactId, version, scope, null);
 	}
 
 	public Dependency(String groupId, String artifactId, VersionReference version,
-			DependencyType type, String artifactType) {
+			DependencyScope scope, String type) {
 		this.groupId = groupId;
 		this.artifactId = artifactId;
 		this.version = version;
+		this.scope = scope;
 		this.type = type;
-		this.artifactType = artifactType;
 	}
 
 	/**
@@ -79,11 +79,11 @@ public class Dependency {
 	}
 
 	/**
-	 * The {@link DependencyType type} of the dependency.
-	 * @return the type
+	 * The {@link DependencyScope scope} of the dependency.
+	 * @return the scope
 	 */
-	public DependencyType getType() {
-		return this.type;
+	public DependencyScope getScope() {
+		return this.scope;
 	}
 
 	/**
@@ -91,8 +91,8 @@ public class Dependency {
 	 * should be used (i.e. {@code jar}).
 	 * @return the type or {@code null}
 	 */
-	public String getArtifactType() {
-		return this.artifactType;
+	public String getType() {
+		return this.type;
 	}
 
 }
