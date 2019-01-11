@@ -21,7 +21,9 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 
-import org.springframework.core.io.Resource;
+import io.spring.initializr.generator.util.resource.ResourceMapper;
+import io.spring.initializr.generator.util.resource.ResourceResolver;
+
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.springframework.util.FileCopyUtils;
 
@@ -34,13 +36,15 @@ import org.springframework.util.FileCopyUtils;
  */
 public class SingleResourceProjectContributor implements ProjectContributor {
 
-	private final PathMatchingResourcePatternResolver resolver = new PathMatchingResourcePatternResolver();
+	private final ResourceResolver resourceResolver;
 
 	private final String filename;
 
 	private final String resourcePattern;
 
-	public SingleResourceProjectContributor(String filename, String resourcePattern) {
+	public SingleResourceProjectContributor(ResourceResolver resourceResolver,
+			String filename, String resourcePattern) {
+		this.resourceResolver = resourceResolver;
 		this.filename = filename;
 		this.resourcePattern = resourcePattern;
 	}
@@ -52,8 +56,9 @@ public class SingleResourceProjectContributor implements ProjectContributor {
 			Files.createDirectories(output.getParent());
 			Files.createFile(output);
 		}
-		Resource resource = this.resolver.getResource(this.resourcePattern);
-		FileCopyUtils.copy(resource.getInputStream(),
+		byte[] content = this.resourceResolver.resolveResource(getClass().getName(),
+				this.resourcePattern, ResourceMapper.toBytes());
+		FileCopyUtils.copy(content,
 				Files.newOutputStream(output, StandardOpenOption.APPEND));
 	}
 

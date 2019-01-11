@@ -22,6 +22,7 @@ import io.spring.initializr.generator.io.IndentingWriterFactory;
 import io.spring.initializr.generator.io.SimpleIndentStrategy;
 import io.spring.initializr.generator.project.code.kotlin.KotlinProjectSettings;
 import io.spring.initializr.generator.project.code.kotlin.SimpleKotlinProjectSettings;
+import io.spring.initializr.generator.util.resource.ResourceResolver;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -50,6 +51,11 @@ public class ProjectGeneratorDefaultConfiguration {
 	@Bean
 	public IndentingWriterFactory indentingWriterFactory() {
 		return IndentingWriterFactory.create(new SimpleIndentStrategy("    "));
+	}
+
+	@Bean
+	public ResourceResolver resourceResolver() {
+		return new ResourceResolver();
 	}
 
 }

@@ -17,6 +17,7 @@
 package io.spring.initializr.generator.project.build.maven;
 
 import io.spring.initializr.generator.MultipleResourcesProjectContributor;
+import io.spring.initializr.generator.util.resource.ResourceResolver;
 
 /**
  * A {@link MultipleResourcesProjectContributor} that contributes Maven's wrapper to a
@@ -26,8 +27,8 @@ import io.spring.initializr.generator.MultipleResourcesProjectContributor;
  */
 class MavenWrapperContributor extends MultipleResourcesProjectContributor {
 
-	MavenWrapperContributor() {
-		super("classpath:maven/wrapper",
+	MavenWrapperContributor(ResourceResolver resourceResolver) {
+		super(resourceResolver, "classpath:maven/wrapper",
 				(filename) -> filename.equals("mvnw") || filename.equals("mvnw.cmd"));
 	}
 

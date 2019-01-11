@@ -17,6 +17,7 @@
 package io.spring.initializr.generator.project.build.gradle;
 
 import io.spring.initializr.generator.MultipleResourcesProjectContributor;
+import io.spring.initializr.generator.util.resource.ResourceResolver;
 
 /**
  * A {@link MultipleResourcesProjectContributor} that contributes Gradle's wrapper to a
@@ -26,8 +27,8 @@ import io.spring.initializr.generator.MultipleResourcesProjectContributor;
  */
 class GradleWrapperContributor extends MultipleResourcesProjectContributor {
 
-	GradleWrapperContributor(String gradleVersion) {
-		super("classpath:gradle/" + gradleVersion + "/wrapper",
+	GradleWrapperContributor(ResourceResolver resourceResolver, String gradleVersion) {
+		super(resourceResolver, "classpath:gradle/" + gradleVersion + "/wrapper",
 				(filename) -> filename.equals("gradlew")
 						|| filename.equals("gradlew.bat"));
 	}

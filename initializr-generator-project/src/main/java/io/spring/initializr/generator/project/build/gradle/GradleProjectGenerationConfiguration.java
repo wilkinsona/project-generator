@@ -30,6 +30,7 @@ import io.spring.initializr.generator.packaging.war.ConditionalOnWarPackaging;
 import io.spring.initializr.generator.project.build.BuildCustomizer;
 import io.spring.initializr.generator.project.scm.git.GitIgnoreContributor;
 import io.spring.initializr.generator.util.LambdaSafe;
+import io.spring.initializr.generator.util.resource.ResourceResolver;
 
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.context.annotation.Bean;
@@ -53,8 +54,9 @@ public class GradleProjectGenerationConfiguration {
 	}
 
 	@Bean
-	public GitIgnoreContributor gradleGitIgnoreContributor() {
-		return new GitIgnoreContributor("classpath:gradle/gitignore");
+	public GitIgnoreContributor gradleGitIgnoreContributor(
+			ResourceResolver resourceResolver) {
+		return new GitIgnoreContributor(resourceResolver, "classpath:gradle/gitignore");
 	}
 
 	@Bean
@@ -113,8 +115,9 @@ public class GradleProjectGenerationConfiguration {
 	static class Gradle3ProjectGenerationConfiguration {
 
 		@Bean
-		public GradleWrapperContributor gradle3WrapperContributor() {
-			return new GradleWrapperContributor("3");
+		public GradleWrapperContributor gradle3WrapperContributor(
+				ResourceResolver resourceResolver) {
+			return new GradleWrapperContributor(resourceResolver, "3");
 		}
 
 		@Bean
@@ -144,8 +147,9 @@ public class GradleProjectGenerationConfiguration {
 	static class Gradle4ProjectGenerationConfiguration {
 
 		@Bean
-		public GradleWrapperContributor gradle4WrapperContributor() {
-			return new GradleWrapperContributor("4");
+		public GradleWrapperContributor gradle4WrapperContributor(
+				ResourceResolver resourceResolver) {
+			return new GradleWrapperContributor(resourceResolver, "4");
 		}
 
 		@Bean

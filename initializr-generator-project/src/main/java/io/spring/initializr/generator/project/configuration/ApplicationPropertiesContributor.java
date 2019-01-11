@@ -17,6 +17,7 @@
 package io.spring.initializr.generator.project.configuration;
 
 import io.spring.initializr.generator.SingleResourceProjectContributor;
+import io.spring.initializr.generator.util.resource.ResourceResolver;
 
 /**
  * A {@link SingleResourceProjectContributor} that contributes a
@@ -26,12 +27,14 @@ import io.spring.initializr.generator.SingleResourceProjectContributor;
  */
 public class ApplicationPropertiesContributor extends SingleResourceProjectContributor {
 
-	public ApplicationPropertiesContributor() {
-		this("classpath:configuration/application.properties");
+	public ApplicationPropertiesContributor(ResourceResolver resourceResolver) {
+		this(resourceResolver, "classpath:configuration/application.properties");
 	}
 
-	public ApplicationPropertiesContributor(String resourcePattern) {
-		super("src/main/resources/application.properties", resourcePattern);
+	public ApplicationPropertiesContributor(ResourceResolver resourceResolver,
+			String resourcePattern) {
+		super(resourceResolver, "src/main/resources/application.properties",
+				resourcePattern);
 	}
 
 }

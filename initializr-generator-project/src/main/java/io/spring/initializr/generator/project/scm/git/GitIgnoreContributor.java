@@ -17,6 +17,7 @@
 package io.spring.initializr.generator.project.scm.git;
 
 import io.spring.initializr.generator.SingleResourceProjectContributor;
+import io.spring.initializr.generator.util.resource.ResourceResolver;
 
 import org.springframework.core.Ordered;
 
@@ -28,12 +29,13 @@ import org.springframework.core.Ordered;
  */
 public class GitIgnoreContributor extends SingleResourceProjectContributor {
 
-	public GitIgnoreContributor() {
-		this("classpath:git/gitignore");
+	public GitIgnoreContributor(ResourceResolver resourceResolver) {
+		this(resourceResolver, "classpath:git/gitignore");
 	}
 
-	public GitIgnoreContributor(String resourcePattern) {
-		super(".gitignore", resourcePattern);
+	public GitIgnoreContributor(ResourceResolver resourceResolver,
+			String resourcePattern) {
+		super(resourceResolver, ".gitignore", resourcePattern);
 	}
 
 	@Override

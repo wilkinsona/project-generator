@@ -17,9 +17,16 @@
 package io.spring.initializr.generator;
 
 import java.io.IOException;
+import java.io.Serializable;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.function.Predicate;
+
+import io.spring.initializr.generator.util.resource.ResourceMapper;
+import io.spring.initializr.generator.util.resource.ResourceResolver;
 
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
@@ -34,39 +41,59 @@ import org.springframework.util.FileCopyUtils;
  */
 public class MultipleResourcesProjectContributor implements ProjectContributor {
 
-	private final PathMatchingResourcePatternResolver resolver = new PathMatchingResourcePatternResolver();
+	private final ResourceResolver resourceResolver;
 
 	private final String rootResource;
 
 	private final Predicate<String> executable;
 
-	public MultipleResourcesProjectContributor(String rootResource) {
-		this(rootResource, (filename) -> false);
-	}
-
-	public MultipleResourcesProjectContributor(String rootResource,
-			Predicate<String> executable) {
+	public MultipleResourcesProjectContributor(ResourceResolver resourceResolver,
+			String rootResource, Predicate<String> executable) {
+		this.resourceResolver = resourceResolver;
 		this.rootResource = rootResource;
 		this.executable = executable;
 	}
 
 	@Override
 	public void contribute(Path projectRoot) throws IOException {
-		Resource root = this.resolver.getResource(this.rootResource);
-		Resource[] resources = this.resolver.getResources(this.rootResource + "/**");
+		ResolvedResources resolvedResources = this.resourceResolver.resolveResources(
+				getClass().getName(), this.rootResource + "/**", this::resolve);
+		for (Entry<String, byte[]> entry : resolvedResources.content.entrySet()) {
+			Path output = projectRoot.resolve(entry.getKey());
+			Files.createDirectories(output.getParent());
+			Files.createFile(output);
+			FileCopyUtils.copy(entry.getValue(), Files.newOutputStream(output));
+			// TODO Set executable using NIO
+			output.toFile().setExecutable(this.executable.test(entry.getKey()));
+		}
+	}
+
+	private ResolvedResources resolve(Resource[] resources) throws IOException {
+		String rootUri = this.resourceResolver.resolveResource(getClass().getName(),
+				this.rootResource, (root) -> root.getURI().toString());
+		ResolvedResources resolvedResources = new ResolvedResources();
 		for (Resource resource : resources) {
 			String filename = resource.getURI().toString()
-					.substring(root.getURI().toString().length() + 1);
+					.substring(rootUri.length() + 1);
 			if (resource.isReadable()) {
-				Path output = projectRoot.resolve(filename);
-				Files.createDirectories(output.getParent());
-				Files.createFile(output);
-				FileCopyUtils.copy(resource.getInputStream(),
-						Files.newOutputStream(output));
-				// TODO Set executable using NIO
-				output.toFile().setExecutable(this.executable.test(filename));
+				resolvedResources.add(filename, resource);
 			}
 		}
+		return resolvedResources;
+	}
+
+	private static class ResolvedResources implements Serializable {
+
+		private final Map<String, byte[]> content;
+
+		ResolvedResources() {
+			this.content = new LinkedHashMap<>();
+		}
+
+		void add(String filename, Resource resource) throws IOException {
+			this.content.put(filename, ResourceMapper.toBytes().mapResource(resource));
+		}
+
 	}
 
 }

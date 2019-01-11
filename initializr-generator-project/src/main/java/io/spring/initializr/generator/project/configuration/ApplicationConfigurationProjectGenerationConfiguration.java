@@ -17,6 +17,7 @@
 package io.spring.initializr.generator.project.configuration;
 
 import io.spring.initializr.generator.project.ProjectGenerationConfiguration;
+import io.spring.initializr.generator.util.resource.ResourceResolver;
 
 import org.springframework.context.annotation.Bean;
 
@@ -29,8 +30,9 @@ import org.springframework.context.annotation.Bean;
 public class ApplicationConfigurationProjectGenerationConfiguration {
 
 	@Bean
-	public ApplicationPropertiesContributor applicationPropertiesContributor() {
-		return new ApplicationPropertiesContributor();
+	public ApplicationPropertiesContributor applicationPropertiesContributor(
+			ResourceResolver resourceResolver) {
+		return new ApplicationPropertiesContributor(resourceResolver);
 	}
 
 }

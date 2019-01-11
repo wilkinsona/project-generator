@@ -21,6 +21,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
 
+import io.spring.initializr.generator.util.resource.ResourceResolver;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junitpioneer.jupiter.TempDirectory;
@@ -45,7 +46,8 @@ class ApplicationPropertiesContributorTests {
 	@Test
 	void applicationConfigurationWithDefaultSettings() throws IOException {
 		Path projectDir = Files.createTempDirectory(this.directory, "project-");
-		new ApplicationPropertiesContributor().contribute(projectDir);
+		new ApplicationPropertiesContributor(new ResourceResolver())
+				.contribute(projectDir);
 		Path configuration = projectDir
 				.resolve("src/main/resources/application.properties");
 		assertThat(configuration).isRegularFile();

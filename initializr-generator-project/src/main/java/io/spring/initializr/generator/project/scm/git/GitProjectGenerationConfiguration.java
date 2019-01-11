@@ -17,6 +17,7 @@
 package io.spring.initializr.generator.project.scm.git;
 
 import io.spring.initializr.generator.project.ProjectGenerationConfiguration;
+import io.spring.initializr.generator.util.resource.ResourceResolver;
 
 import org.springframework.context.annotation.Bean;
 
@@ -29,8 +30,8 @@ import org.springframework.context.annotation.Bean;
 public class GitProjectGenerationConfiguration {
 
 	@Bean
-	public GitIgnoreContributor gitIgnoreContributor() {
-		return new GitIgnoreContributor();
+	public GitIgnoreContributor gitIgnoreContributor(ResourceResolver resourceResolver) {
+		return new GitIgnoreContributor(resourceResolver);
 	}
 
 }

@@ -29,6 +29,7 @@ import io.spring.initializr.generator.project.ProjectGenerationConfiguration;
 import io.spring.initializr.generator.project.build.BuildCustomizer;
 import io.spring.initializr.generator.project.scm.git.GitIgnoreContributor;
 import io.spring.initializr.generator.util.LambdaSafe;
+import io.spring.initializr.generator.util.resource.ResourceResolver;
 
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.context.annotation.Bean;
@@ -44,13 +45,15 @@ import org.springframework.context.annotation.Bean;
 public class MavenProjectGenerationConfiguration {
 
 	@Bean
-	public MavenWrapperContributor mavenWrapperContributor() {
-		return new MavenWrapperContributor();
+	public MavenWrapperContributor mavenWrapperContributor(
+			ResourceResolver resourceResolver) {
+		return new MavenWrapperContributor(resourceResolver);
 	}
 
 	@Bean
-	public GitIgnoreContributor mavenGitIgnoreContributor() {
-		return new GitIgnoreContributor("classpath:maven/gitignore");
+	public GitIgnoreContributor mavenGitIgnoreContributor(
+			ResourceResolver resourceResolver) {
+		return new GitIgnoreContributor(resourceResolver, "classpath:maven/gitignore");
 	}
 
 	@Bean
