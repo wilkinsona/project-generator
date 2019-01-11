@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,7 +22,6 @@ import java.util.Map;
 import io.spring.initializr.generator.buildsystem.Build;
 import io.spring.initializr.generator.project.documentation.HelpDocument;
 import io.spring.initializr.generator.project.documentation.HelpDocumentCustomizer;
-import io.spring.initializr.generator.project.documentation.MustacheSection;
 
 /**
  * {@link HelpDocumentCustomizer} for Azure.
@@ -40,8 +39,7 @@ class AzureHelpDocumentCustomizer implements HelpDocumentCustomizer {
 	@Override
 	public void customize(HelpDocument document) {
 		if (hasAzureSupport()) {
-			document.addSection(new MustacheSection(document.getTemplateRenderer(),
-					"azure", createModel()));
+			document.addSection("azure", createModel());
 		}
 	}
 
