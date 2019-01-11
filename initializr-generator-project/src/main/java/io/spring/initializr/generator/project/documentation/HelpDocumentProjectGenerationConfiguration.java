@@ -20,6 +20,8 @@ import io.spring.initializr.generator.project.ProjectGenerationConfiguration;
 import io.spring.initializr.generator.util.template.MustacheTemplateRenderer;
 
 import org.springframework.beans.factory.ObjectProvider;
+import org.springframework.cache.Cache;
+import org.springframework.cache.CacheManager;
 import org.springframework.context.annotation.Bean;
 
 /**
@@ -29,6 +31,13 @@ import org.springframework.context.annotation.Bean;
  */
 @ProjectGenerationConfiguration
 public class HelpDocumentProjectGenerationConfiguration {
+
+	private final CacheManager cacheManager;
+
+	public HelpDocumentProjectGenerationConfiguration(
+			ObjectProvider<CacheManager> cacheManagerProvider) {
+		this.cacheManager = cacheManagerProvider.getIfUnique();
+	}
 
 	@Bean
 	public HelpDocumentProjectContributor helpDocumentProjectContributor(
@@ -41,7 +50,10 @@ public class HelpDocumentProjectGenerationConfiguration {
 
 	@Bean
 	public MustacheTemplateRenderer helpMustacheTemplateRenderer() {
-		return new MustacheTemplateRenderer("classpath:/documentation/help");
+		Cache templateCache = (this.cacheManager != null)
+				? this.cacheManager.getCache("initializr.templates") : null;
+		return new MustacheTemplateRenderer("classpath:/documentation/help",
+				templateCache);
 	}
 
 }

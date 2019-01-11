@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,10 +17,12 @@
 package io.spring.initializr.generator.util.template;
 
 import java.io.IOException;
-import java.io.StringReader;
 import java.util.Collections;
 
 import org.junit.jupiter.api.Test;
+
+import org.springframework.cache.Cache;
+import org.springframework.cache.concurrent.ConcurrentMapCache;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
@@ -32,16 +34,22 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
  */
 class MustacheTemplateRendererTests {
 
+	private final Cache templatesCache = new ConcurrentMapCache("test");
+
 	@Test
-	void renderWithCustomTemplateLoader() throws IOException {
+	void renderTemplate() throws IOException {
 		MustacheTemplateRenderer render = new MustacheTemplateRenderer(
-				(name) -> new StringReader("{{key}}"));
+				"classpath:/templates/mustache", this.templatesCache);
+		assertThat(this.templatesCache.get("classpath:/templates/mustache/test"))
+				.isNull();
 		assertThat(render.render("test", Collections.singletonMap("key", "value")))
 				.isEqualTo("value");
+		assertThat(this.templatesCache.get("classpath:/templates/mustache/test"))
+				.isNotNull();
 	}
 
 	@Test
-	void renderWithDefaultTemplateLoader() throws IOException {
+	void renderTemplateWithoutCache() throws IOException {
 		MustacheTemplateRenderer render = new MustacheTemplateRenderer(
 				"classpath:/templates/mustache");
 		assertThat(render.render("test", Collections.singletonMap("key", "value")))
@@ -51,7 +59,7 @@ class MustacheTemplateRendererTests {
 	@Test
 	void renderUnknownTemplate() throws IOException {
 		MustacheTemplateRenderer render = new MustacheTemplateRenderer(
-				"classpath:/templates/mustache");
+				"classpath:/templates/mustache", this.templatesCache);
 		assertThatExceptionOfType(IllegalStateException.class)
 				.isThrownBy(() -> render.render("does-not-exist", Collections.emptyMap()))
 				.withMessageContaining("Cannot load template")
