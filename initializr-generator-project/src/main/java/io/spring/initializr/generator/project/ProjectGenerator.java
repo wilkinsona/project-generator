@@ -54,6 +54,12 @@ public class ProjectGenerator {
 		this.projectGenerationContext = projectGenerationContext;
 	}
 
+	/**
+	 * Generate a project structure based on the specified {@link ProjectDescription}.
+	 * @param description the description of the project to generate
+	 * @return the root directory of the generated project structure
+	 * @throws IOException if an error occurs while handling resource
+	 */
 	public Path generate(ProjectDescription description) throws IOException {
 		return generate(description, (context) -> {
 			Path projectRoot = context.getBean(ProjectDirectoryFactory.class)
@@ -65,6 +71,16 @@ public class ProjectGenerator {
 		});
 	}
 
+	/**
+	 * Generate a project structure using the specified
+	 * {@link ProjectGenerationContextProcessor}.
+	 * @param description the description of the project to generate
+	 * @param projectGenerationContext the {@link ProjectGenerationContextProcessor} to
+	 * invoke
+	 * @param <T> the return type of the generation
+	 * @return the generated content
+	 * @throws IOException if an error occurs while handling resource
+	 */
 	public <T> T generate(ProjectDescription description,
 			ProjectGenerationContextProcessor<T> projectGenerationContext)
 			throws IOException {
