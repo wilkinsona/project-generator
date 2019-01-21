@@ -35,6 +35,10 @@ public class Dependency {
 
 	private final String type;
 
+	public Dependency(String groupId, String artifactId) {
+		this(groupId, artifactId, DependencyScope.COMPILE);
+	}
+
 	public Dependency(String groupId, String artifactId, DependencyScope scope) {
 		this(groupId, artifactId, null, scope);
 	}
