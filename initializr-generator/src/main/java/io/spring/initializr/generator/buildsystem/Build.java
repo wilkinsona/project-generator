@@ -38,7 +38,7 @@ public abstract class Build {
 
 	private final Map<VersionProperty, String> versionProperties = new TreeMap<>();
 
-	private final FilteredDependencyContainer dependencies;
+	private final DependencyContainer dependencies;
 
 	private final BomContainer boms;
 
@@ -48,7 +48,7 @@ public abstract class Build {
 
 	protected Build(BuildItemResolver buildItemResolver) {
 		BuildItemResolver resolver = determineBuildItemResolver(buildItemResolver);
-		this.dependencies = new FilteredDependencyContainer(resolver::resolveDependency);
+		this.dependencies = new DependencyContainer(resolver::resolveDependency);
 		this.boms = new BomContainer(resolver::resolveBom);
 		this.repositories = new MavenRepositoryContainer(resolver::resolveRepository);
 		this.pluginRepositories = new MavenRepositoryContainer(
@@ -113,7 +113,7 @@ public abstract class Build {
 		return Collections.unmodifiableMap(this.versionProperties);
 	}
 
-	public FilteredDependencyContainer dependencies() {
+	public DependencyContainer dependencies() {
 		return this.dependencies;
 	}
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -78,6 +78,28 @@ class BuildItemContainerTests {
 				new LinkedHashMap<>(), (id) -> id.equals("test") ? "value" : null);
 		assertThatIllegalArgumentException().isThrownBy(() -> container.add("unknown"))
 				.withMessageContaining("unknown");
+	}
+
+	@Test
+	void removeExistingElement() {
+		BuildItemContainer<String, String> container = createTestContainer(
+				new LinkedHashMap<>());
+		container.add("test", "value");
+		assertThat(container.remove("test")).isTrue();
+		assertThat(container.ids()).isEmpty();
+		assertThat(container.items()).isEmpty();
+		assertThat(container.isEmpty()).isTrue();
+	}
+
+	@Test
+	void removeUnknownElement() {
+		BuildItemContainer<String, String> container = createTestContainer(
+				new LinkedHashMap<>());
+		container.add("test", "value");
+		assertThat(container.remove("unknown")).isFalse();
+		assertThat(container.ids()).containsOnly("test");
+		assertThat(container.items()).containsOnly("value");
+		assertThat(container.isEmpty()).isFalse();
 	}
 
 	private BuildItemContainer<String, String> createTestContainer(

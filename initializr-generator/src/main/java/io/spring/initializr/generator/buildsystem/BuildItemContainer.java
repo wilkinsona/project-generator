@@ -102,8 +102,13 @@ public class BuildItemContainer<I, V> {
 		this.items.put(id, item);
 	}
 
-	protected Map<I, V> getItems() {
-		return this.items;
+	/**
+	 * Remove the item with the specified {@code id}.
+	 * @param id the id of the item to remove
+	 * @return {@code true} if such an item was registered, {@code false} otherwise
+	 */
+	public boolean remove(I id) {
+		return this.items.remove(id) != null;
 	}
 
 }
