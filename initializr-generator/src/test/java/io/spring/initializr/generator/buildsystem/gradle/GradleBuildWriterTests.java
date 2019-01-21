@@ -77,6 +77,32 @@ class GradleBuildWriterTests {
 	}
 
 	@Test
+	void gradleBuildWithPlugin() throws IOException {
+		GradleBuild build = new GradleBuild();
+		build.addPlugin("java");
+		List<String> lines = generateBuild(build);
+		assertThat(lines).containsSequence("plugins {", "    id 'java'", "}");
+	}
+
+	@Test
+	void gradleBuildWithPluginAndVersion() throws IOException {
+		GradleBuild build = new GradleBuild();
+		build.addPlugin("org.springframework.boot", "2.1.0.RELEASE");
+		List<String> lines = generateBuild(build);
+		assertThat(lines).containsSequence("plugins {",
+				"    id 'org.springframework.boot' version '2.1.0.RELEASE'", "}");
+	}
+
+	@Test
+	void gradleBuildWithApplyPlugin() throws IOException {
+		GradleBuild build = new GradleBuild();
+		build.applyPlugin("io.spring.dependency-management");
+		List<String> lines = generateBuild(build);
+		assertThat(lines)
+				.containsSequence("apply plugin: 'io.spring.dependency-management'");
+	}
+
+	@Test
 	void gradleBuildWithMavenCentralRepository() throws IOException {
 		GradleBuild build = new GradleBuild();
 		build.repositories().add("maven-central");
