@@ -57,7 +57,6 @@ public class MavenBuildWriter {
 			writeBuild(writer, build);
 			writeRepositories(writer, build);
 		});
-
 	}
 
 	private void writeProject(IndentingWriter writer, Runnable whenWritten) {
@@ -75,7 +74,7 @@ public class MavenBuildWriter {
 	}
 
 	private void writeParent(IndentingWriter writer, MavenBuild build) {
-		Parent parent = build.getParent();
+		MavenParent parent = build.getParent();
 		if (parent == null) {
 			return;
 		}

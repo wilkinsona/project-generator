@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -49,6 +49,7 @@ public class GradleBuild extends Build {
 	}
 
 	public GradleBuild() {
+		this(null);
 	}
 
 	public void setSourceCompatibility(String sourceCompatibility) {
@@ -100,8 +101,6 @@ public class GradleBuild extends Build {
 
 	/**
 	 * The {@code buildscript} block in the {@code build.gradle} file.
-	 *
-	 * @author Andy Wilkinson
 	 */
 	public static class Buildscript {
 
@@ -131,7 +130,6 @@ public class GradleBuild extends Build {
 
 	/**
 	 * Customization of a task in a Gradle build.
-	 *
 	 */
 	public static class TaskCustomization {
 

@@ -47,19 +47,22 @@ public abstract class Build {
 	private final MavenRepositoryContainer pluginRepositories;
 
 	protected Build(BuildItemResolver buildItemResolver) {
-		this.dependencies = new FilteredDependencyContainer(
-				buildItemResolver::resolveDependency);
-		this.boms = new BomContainer(buildItemResolver::resolveBom);
-		this.repositories = new MavenRepositoryContainer(
-				buildItemResolver::resolveRepository);
+		BuildItemResolver resolver = determineBuildItemResolver(buildItemResolver);
+		this.dependencies = new FilteredDependencyContainer(resolver::resolveDependency);
+		this.boms = new BomContainer(resolver::resolveBom);
+		this.repositories = new MavenRepositoryContainer(resolver::resolveRepository);
 		this.pluginRepositories = new MavenRepositoryContainer(
-				buildItemResolver::resolveRepository);
+				resolver::resolveRepository);
 	}
 
-	protected Build() {
-		this(new SimpleBuildItemResolver((id) -> null, (id) -> null,
+	private static BuildItemResolver determineBuildItemResolver(
+			BuildItemResolver buildItemResolver) {
+		if (buildItemResolver != null) {
+			return buildItemResolver;
+		}
+		return new SimpleBuildItemResolver((id) -> null, (id) -> null,
 				(id) -> id.equals("maven-central") ? MavenRepository.MAVEN_CENTRAL
-						: null));
+						: null);
 	}
 
 	/**

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,7 +32,7 @@ import io.spring.initializr.generator.buildsystem.BuildItemResolver;
  */
 public class MavenBuild extends Build {
 
-	private Parent parent;
+	private MavenParent parent;
 
 	private String name;
 
@@ -53,14 +53,15 @@ public class MavenBuild extends Build {
 	}
 
 	public MavenBuild() {
+		this(null);
 	}
 
-	public Parent parent(String groupId, String artifactId, String version) {
-		this.parent = new Parent(groupId, artifactId, version);
+	public MavenParent parent(String groupId, String artifactId, String version) {
+		this.parent = new MavenParent(groupId, artifactId, version);
 		return this.parent;
 	}
 
-	public Parent getParent() {
+	public MavenParent getParent() {
 		return this.parent;
 	}
 

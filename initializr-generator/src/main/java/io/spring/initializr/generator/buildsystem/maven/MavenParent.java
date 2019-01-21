@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,7 +21,7 @@ package io.spring.initializr.generator.buildsystem.maven;
  *
  * @author Andy Wilkinson
  */
-public class Parent {
+public class MavenParent {
 
 	private final String groupId;
 
@@ -29,7 +29,7 @@ public class Parent {
 
 	private final String version;
 
-	Parent(String groupId, String artifactId, String version) {
+	MavenParent(String groupId, String artifactId, String version) {
 		this.groupId = groupId;
 		this.artifactId = artifactId;
 		this.version = version;
