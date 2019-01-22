@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package io.spring.initializr.generator.util.template;
+package io.spring.initializr.generator.io.template;
 
 import java.io.IOException;
 import java.util.Collections;

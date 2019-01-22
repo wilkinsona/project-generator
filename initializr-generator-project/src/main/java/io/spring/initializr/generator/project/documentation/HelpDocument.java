@@ -23,7 +23,9 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import io.spring.initializr.generator.util.template.MustacheTemplateRenderer;
+import io.spring.initializr.generator.io.template.MustacheTemplateRenderer;
+import io.spring.initializr.generator.io.text.MustacheSection;
+import io.spring.initializr.generator.io.text.Section;
 
 /**
  * Project's help document intended to give additional references to the users. Contains a
