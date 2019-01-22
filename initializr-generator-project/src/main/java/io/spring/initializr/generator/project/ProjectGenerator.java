@@ -87,8 +87,6 @@ public class ProjectGenerator {
 		ResolvedProjectDescription resolvedProjectDescription = description.resolve();
 		try (ProjectGenerationContext context = new ProjectGenerationContext(
 				resolvedProjectDescription)) {
-			context.registerBean(ResolvedProjectDescription.class,
-					() -> resolvedProjectDescription);
 			context.register(CoreConfiguration.class);
 			this.projectGenerationContext.accept(context);
 			context.refresh();

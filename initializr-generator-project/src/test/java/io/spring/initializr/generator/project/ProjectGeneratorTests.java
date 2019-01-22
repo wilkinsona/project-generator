@@ -27,8 +27,6 @@ import java.util.List;
 import java.util.stream.Stream;
 
 import io.spring.initializr.generator.ProjectDescription;
-import io.spring.initializr.generator.buildsystem.Dependency;
-import io.spring.initializr.generator.buildsystem.DependencyScope;
 import io.spring.initializr.generator.buildsystem.gradle.GradleBuildSystem;
 import io.spring.initializr.generator.buildsystem.maven.MavenBuild;
 import io.spring.initializr.generator.buildsystem.maven.MavenBuildSystem;
@@ -63,111 +61,6 @@ class ProjectGeneratorTests {
 					() -> (description) -> Files.createTempDirectory(directory,
 							"project-"));
 		});
-	}
-
-	@Test
-	void gradle3WrapperIsContributedWhenGeneratingGradleProjectWithBoot15()
-			throws IOException {
-		ProjectDescription description = initProjectDescription();
-		description.setBuildSystem(new GradleBuildSystem());
-		description.setPlatformVersion(Version.parse("1.5.17.RELEASE"));
-		Path project = this.projectGenerator.generate(description);
-		List<String> relativePaths = getRelativePathsOfProjectFiles(project);
-		assertThat(relativePaths).contains("gradlew", "gradlew.bat",
-				"gradle/wrapper/gradle-wrapper.properties",
-				"gradle/wrapper/gradle-wrapper.jar");
-		try (Stream<String> lines = Files
-				.lines(project.resolve("gradle/wrapper/gradle-wrapper.properties"))) {
-			assertThat(lines.filter((line) -> line.contains("gradle-3.5.1-bin.zip")))
-					.hasSize(1);
-		}
-	}
-
-	@Test
-	void gradle4WrapperIsContributedWhenGeneratingGradleProjectWithBoot20()
-			throws IOException {
-		ProjectDescription description = initProjectDescription();
-		description.setBuildSystem(new GradleBuildSystem());
-		description.setPlatformVersion(Version.parse("2.0.6.RELEASE"));
-		Path project = this.projectGenerator.generate(description);
-		List<String> relativePaths = getRelativePathsOfProjectFiles(project);
-		assertThat(relativePaths).contains("gradlew", "gradlew.bat",
-				"gradle/wrapper/gradle-wrapper.properties",
-				"gradle/wrapper/gradle-wrapper.jar");
-		try (Stream<String> lines = Files
-				.lines(project.resolve("gradle/wrapper/gradle-wrapper.properties"))) {
-			assertThat(lines.filter((line) -> line.contains("gradle-4.10.2-bin.zip")))
-					.hasSize(1);
-		}
-	}
-
-	@Test
-	void buildDotGradleIsContributedWhenGeneratingGradleProject() throws IOException {
-		ProjectDescription description = initProjectDescription();
-		description.setBuildSystem(new GradleBuildSystem());
-		description.setPlatformVersion(Version.parse("2.1.0.RELEASE"));
-		description.setLanguage(new JavaLanguage());
-		description.setGroupId("com.example");
-		description.setArtifactId("demo");
-		description.setJavaVersion("11");
-		description.addDependency("acme",
-				new Dependency("com.example", "acme", DependencyScope.COMPILE));
-		Path project = this.projectGenerator.generate(description);
-		List<String> relativePaths = getRelativePathsOfProjectFiles(project);
-		assertThat(relativePaths).contains("build.gradle");
-		List<String> lines = Files.readAllLines(project.resolve("build.gradle"));
-		assertThat(lines).containsExactly("plugins {",
-				"    id 'org.springframework.boot' version '2.1.0.RELEASE'",
-				"    id 'java'", "}", "",
-				"apply plugin: 'io.spring.dependency-management'", "",
-				"group = 'com.example'", "version = '0.0.1-SNAPSHOT'",
-				"sourceCompatibility = '11'", "", "repositories {", "    mavenCentral()",
-				"}", "", "dependencies {", "    implementation 'com.example:acme'",
-				"    testImplementation 'org.springframework.boot:spring-boot-starter-test'",
-				"}", "");
-	}
-
-	@Test
-	void mavenWrapperIsContributedWhenGeneratingMavenProject() throws IOException {
-		ProjectDescription description = initProjectDescription();
-		description.setBuildSystem(new MavenBuildSystem());
-		description.setPlatformVersion(Version.parse("2.1.0.RELEASE"));
-		Path project = this.projectGenerator.generate(description);
-		List<String> relativePaths = getRelativePathsOfProjectFiles(project);
-		assertThat(relativePaths).contains("mvnw", "mvnw.cmd",
-				".mvn/wrapper/MavenWrapperDownloader.java",
-				".mvn/wrapper/maven-wrapper.properties",
-				".mvn/wrapper/maven-wrapper.jar");
-	}
-
-	@Test
-	void mavenPomIsContributedWhenGeneratingMavenProject() throws IOException {
-		ProjectDescription description = initProjectDescription();
-		description.setBuildSystem(new MavenBuildSystem());
-		description.setPlatformVersion(Version.parse("2.1.0.RELEASE"));
-		Path project = this.projectGenerator.generate(description);
-		List<String> relativePaths = getRelativePathsOfProjectFiles(project);
-		assertThat(relativePaths).contains("pom.xml");
-	}
-
-	@Test
-	void gitIgnoreIsContributedWhenGeneratingGradleProject() throws IOException {
-		ProjectDescription description = initProjectDescription();
-		description.setBuildSystem(new GradleBuildSystem());
-		description.setPlatformVersion(Version.parse("2.1.0.RELEASE"));
-		Path project = this.projectGenerator.generate(description);
-		assertThat(Files.readAllLines(project.resolve(".gitignore"))).contains(".gradle",
-				"### STS ###");
-	}
-
-	@Test
-	void gitIgnoreIsContributedWhenGeneratingMavenProject() throws IOException {
-		ProjectDescription description = initProjectDescription();
-		description.setBuildSystem(new MavenBuildSystem());
-		description.setPlatformVersion(Version.parse("2.1.0.RELEASE"));
-		Path project = this.projectGenerator.generate(description);
-		assertThat(Files.readAllLines(project.resolve(".gitignore"))).contains("/target/",
-				"### STS ###");
 	}
 
 	@Test

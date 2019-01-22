@@ -31,6 +31,7 @@ public class ProjectGenerationContext extends AnnotationConfigApplicationContext
 
 	public ProjectGenerationContext(ResolvedProjectDescription projectDescription) {
 		this.projectDescription = projectDescription;
+		registerBean(ResolvedProjectDescription.class, () -> projectDescription);
 	}
 
 	public ResolvedProjectDescription getProjectDescription() {
