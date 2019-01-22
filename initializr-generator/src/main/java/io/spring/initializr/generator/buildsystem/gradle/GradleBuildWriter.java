@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Comparator;
+import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
@@ -55,7 +56,7 @@ public class GradleBuildWriter {
 		writeProperty(writer, "version", build.getVersion());
 		writeProperty(writer, "sourceCompatibility", build.getSourceCompatibility());
 		writeRepositories(writer, build, writer::println);
-		writeVersions(writer, build);
+		writeProperties(writer, build);
 		writeDependencies(writer, build);
 		writeBoms(writer, build);
 		writeTaskCustomizations(writer, build);
@@ -135,15 +136,28 @@ public class GradleBuildWriter {
 		return "maven { url '" + repository.getUrl() + "' }";
 	}
 
-	private void writeVersions(IndentingWriter writer, GradleBuild build) {
-		writeNestedCollection(writer, "ext", build.getVersionProperties().entrySet(),
-				this::versionPropertyAsString, writer::println);
+	private void writeProperties(IndentingWriter writer, GradleBuild build) {
+		if (build.getProperties().isEmpty() && build.getVersionProperties().isEmpty()) {
+			return;
+		}
+		Map<String, String> combinedProperties = new LinkedHashMap<>(
+				build.getProperties());
+		build.getVersionProperties().entrySet().forEach((e) -> {
+			String key = getVersionPropertyKey(e);
+			String value = e.getValue();
+			combinedProperties.put(key, value);
+		});
+		writeNestedCollection(writer, "ext", combinedProperties.entrySet(),
+				(e) -> getFormattedProperty(e.getKey(), e.getValue()), writer::println);
 	}
 
-	private String versionPropertyAsString(Entry<VersionProperty, String> entry) {
-		String key = (entry.getKey().isInternal() ? entry.getKey().toCamelCaseFormat()
-				: entry.getKey().toStandardFormat());
-		return String.format("set('%s', '%s')", key, entry.getValue());
+	private String getVersionPropertyKey(Entry<VersionProperty, String> entry) {
+		return entry.getKey().isInternal() ? entry.getKey().toCamelCaseFormat()
+				: entry.getKey().toStandardFormat();
+	}
+
+	private String getFormattedProperty(String key, String value) {
+		return String.format("set('%s', '%s')", key, value);
 	}
 
 	private void writeDependencies(IndentingWriter writer, GradleBuild build) {

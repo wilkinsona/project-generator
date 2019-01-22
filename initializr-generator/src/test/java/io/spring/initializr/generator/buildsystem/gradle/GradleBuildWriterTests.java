@@ -54,6 +54,18 @@ class GradleBuildWriterTests {
 	}
 
 	@Test
+	void gradleBuildWithProperties() throws Exception {
+		GradleBuild build = new GradleBuild();
+		build.setGroup("com.example.demo");
+		build.setArtifact("demo");
+		build.setProperty("java.version", "1.8");
+		build.setProperty("alpha", "a");
+		List<String> lines = generateBuild(build);
+		assertThat(lines).contains("    set('alpha', 'a')");
+		assertThat(lines).contains("    set('java.version', '1.8')");
+	}
+
+	@Test
 	void gradleBuildWithBuildscriptDependency() throws IOException {
 		GradleBuild build = new GradleBuild();
 		build.repositories().add("maven-central");

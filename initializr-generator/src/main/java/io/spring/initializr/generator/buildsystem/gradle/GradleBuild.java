@@ -22,6 +22,7 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 import java.util.function.Consumer;
 
 import io.spring.initializr.generator.buildsystem.Build;
@@ -35,6 +36,8 @@ import io.spring.initializr.generator.buildsystem.BuildItemResolver;
 public class GradleBuild extends Build {
 
 	private String sourceCompatibility;
+
+	private final Map<String, String> properties = new TreeMap<>();
 
 	private final List<GradlePlugin> plugins = new ArrayList<>();
 
@@ -58,6 +61,14 @@ public class GradleBuild extends Build {
 
 	public String getSourceCompatibility() {
 		return this.sourceCompatibility;
+	}
+
+	public void setProperty(String key, String value) {
+		this.properties.put(key, value);
+	}
+
+	public Map<String, String> getProperties() {
+		return this.properties;
 	}
 
 	public GradlePlugin addPlugin(String id) {
