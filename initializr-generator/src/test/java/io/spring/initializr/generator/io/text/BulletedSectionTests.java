@@ -22,7 +22,7 @@ import java.io.StringWriter;
 import java.util.Collections;
 import java.util.Map;
 
-import io.spring.initializr.generator.io.template.MustacheTemplateRenderer;
+import io.spring.initializr.generator.io.template.TemplateRenderer;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
@@ -48,7 +48,7 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
 class BulletedSectionTests {
 
 	@Mock
-	private MustacheTemplateRenderer renderer;
+	private TemplateRenderer renderer;
 
 	@Captor
 	private ArgumentCaptor<Map<String, Object>> modelCaptor;

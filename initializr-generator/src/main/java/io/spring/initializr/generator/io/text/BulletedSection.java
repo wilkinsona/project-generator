@@ -24,28 +24,32 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import io.spring.initializr.generator.io.template.MustacheTemplateRenderer;
+import io.spring.initializr.generator.io.template.TemplateRenderer;
 
 /**
- * {@link MustacheSection} for list of items.
+ * {@link Section} for list of items using a {@link TemplateRenderer}.
  *
  * @param <T> the type of the item in the bullets
  * @author Madhura Bhave
  */
-public class BulletedSection<T> extends MustacheSection {
+public class BulletedSection<T> implements Section {
+
+	private final TemplateRenderer templateRenderer;
+
+	private final String templateName;
 
 	private final String itemName;
 
 	private List<T> items = new ArrayList<>();
 
-	public BulletedSection(MustacheTemplateRenderer templateRenderer,
-			String templateName) {
+	public BulletedSection(TemplateRenderer templateRenderer, String templateName) {
 		this(templateRenderer, templateName, "items");
 	}
 
-	public BulletedSection(MustacheTemplateRenderer templateRenderer, String templateName,
+	public BulletedSection(TemplateRenderer templateRenderer, String templateName,
 			String itemName) {
-		super(templateRenderer, templateName, new HashMap<>());
+		this.templateRenderer = templateRenderer;
+		this.templateName = templateName;
 		this.itemName = itemName;
 	}
 
@@ -65,14 +69,10 @@ public class BulletedSection<T> extends MustacheSection {
 	@Override
 	public void write(PrintWriter writer) throws IOException {
 		if (!isEmpty()) {
-			super.write(writer);
+			Map<String, Object> model = new HashMap<>();
+			model.put(this.itemName, this.items);
+			writer.println(this.templateRenderer.render(this.templateName, model));
 		}
-	}
-
-	@Override
-	protected Map<String, Object> resolveModel(Map<String, Object> model) {
-		model.put(this.itemName, this.items);
-		return model;
 	}
 
 }
