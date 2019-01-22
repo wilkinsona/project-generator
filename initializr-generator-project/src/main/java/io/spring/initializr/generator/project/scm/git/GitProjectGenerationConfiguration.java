@@ -16,21 +16,58 @@
 
 package io.spring.initializr.generator.project.scm.git;
 
+import io.spring.initializr.generator.buildsystem.gradle.ConditionalOnGradle;
+import io.spring.initializr.generator.buildsystem.maven.ConditionalOnMaven;
 import io.spring.initializr.generator.project.ProjectGenerationConfiguration;
 
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.context.annotation.Bean;
 
 /**
  * Configuration for Git-related contributions to a generated project.
  *
  * @author Andy Wilkinson
+ * @author Stephane Nicoll
  */
 @ProjectGenerationConfiguration
 public class GitProjectGenerationConfiguration {
 
 	@Bean
-	public GitIgnoreContributor gitIgnoreContributor() {
-		return new GitIgnoreContributor();
+	public GitIgnoreContributor gitIgnoreContributor(
+			ObjectProvider<GitIgnoreCustomizer> gitIgnoreCustomizers) {
+		GitIgnore gitIgnore = createGitIgnore();
+		gitIgnoreCustomizers.orderedStream()
+				.forEach((customizer) -> customizer.customize(gitIgnore));
+		return new GitIgnoreContributor(gitIgnore);
+	}
+
+	@Bean
+	@ConditionalOnMaven
+	public GitIgnoreCustomizer mavenGitIgnoreCustomizer() {
+		return (gitIgnore) -> {
+			gitIgnore.getGeneral().add("/target/", "!.mvn/wrapper/maven-wrapper.jar");
+			gitIgnore.getNetBeans().add("/build/");
+		};
+	}
+
+	@Bean
+	@ConditionalOnGradle
+	public GitIgnoreCustomizer gradleGitIgnoreCustomizer() {
+		return (gitIgnore) -> {
+			gitIgnore.getGeneral().add(".gradle", "/build/",
+					"!gradle/wrapper/gradle-wrapper.jar");
+			gitIgnore.getIntellijIdea().add("/out/");
+		};
+	}
+
+	private GitIgnore createGitIgnore() {
+		GitIgnore gitIgnore = new GitIgnore();
+		gitIgnore.getSts().add(".apt_generated", ".classpath", ".factorypath", ".project",
+				".settings", ".springBeans", ".sts4-cache");
+		gitIgnore.getIntellijIdea().add(".idea", "*.iws", "*.iml", "*.ipr");
+		gitIgnore.getNetBeans().add("/nbproject/private/", "/nbbuild/", "/dist/",
+				"/nbdist/", "/.nb-gradle/");
+		return gitIgnore;
 	}
 
 }

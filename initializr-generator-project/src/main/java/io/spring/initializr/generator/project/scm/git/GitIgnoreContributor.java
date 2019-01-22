@@ -16,29 +16,38 @@
 
 package io.spring.initializr.generator.project.scm.git;
 
-import io.spring.initializr.generator.SingleResourceProjectContributor;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.nio.file.Files;
+import java.nio.file.Path;
 
-import org.springframework.core.Ordered;
+import io.spring.initializr.generator.ProjectContributor;
+import io.spring.initializr.generator.SingleResourceProjectContributor;
 
 /**
  * A {@link SingleResourceProjectContributor} that contributes a {@code .gitignore} file
  * to a project.
  *
  * @author Andy Wilkinson
+ * @author Stephane Nicoll
  */
-public class GitIgnoreContributor extends SingleResourceProjectContributor {
+public class GitIgnoreContributor implements ProjectContributor {
 
-	public GitIgnoreContributor() {
-		this("classpath:git/gitignore");
-	}
+	private final GitIgnore gitIgnore;
 
-	public GitIgnoreContributor(String resourcePattern) {
-		super(".gitignore", resourcePattern);
+	public GitIgnoreContributor(GitIgnore gitIgnore) {
+		this.gitIgnore = gitIgnore;
 	}
 
 	@Override
-	public int getOrder() {
-		return Ordered.HIGHEST_PRECEDENCE;
+	public void contribute(Path projectRoot) throws IOException {
+		if (this.gitIgnore.isEmpty()) {
+			return;
+		}
+		Path file = Files.createFile(projectRoot.resolve(".gitignore"));
+		try (PrintWriter writer = new PrintWriter(Files.newBufferedWriter(file))) {
+			this.gitIgnore.write(writer);
+		}
 	}
 
 }

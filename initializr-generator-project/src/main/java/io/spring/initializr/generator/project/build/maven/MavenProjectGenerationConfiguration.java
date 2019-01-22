@@ -27,7 +27,6 @@ import io.spring.initializr.generator.io.IndentingWriterFactory;
 import io.spring.initializr.generator.packaging.war.ConditionalOnWarPackaging;
 import io.spring.initializr.generator.project.ProjectGenerationConfiguration;
 import io.spring.initializr.generator.project.build.BuildCustomizer;
-import io.spring.initializr.generator.project.scm.git.GitIgnoreContributor;
 import io.spring.initializr.generator.util.LambdaSafe;
 
 import org.springframework.beans.factory.ObjectProvider;
@@ -46,11 +45,6 @@ public class MavenProjectGenerationConfiguration {
 	@Bean
 	public MavenWrapperContributor mavenWrapperContributor() {
 		return new MavenWrapperContributor();
-	}
-
-	@Bean
-	public GitIgnoreContributor mavenGitIgnoreContributor() {
-		return new GitIgnoreContributor("classpath:maven/gitignore");
 	}
 
 	@Bean
