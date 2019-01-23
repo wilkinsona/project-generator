@@ -38,27 +38,55 @@ import org.springframework.context.annotation.Configuration;
  */
 public class ProjectGenerationTester {
 
-	private final ProjectGenerator projectGenerator;
-
 	private final Path directory;
+
+	private final Consumer<ProjectGenerationContext> projectGenerationContext;
 
 	private final Consumer<ProjectDescription> projectDescriptionInitializer;
 
+	private final ProjectGenerator projectGenerator;
+
 	public ProjectGenerationTester(Path directory) {
-		this(directory, ProjectGenerationTester::initializeProjectDescription);
+		this(directory, defaultProjectGenerationContext(directory));
 	}
 
 	public ProjectGenerationTester(Path directory,
+			Consumer<ProjectGenerationContext> projectGenerationContext) {
+		this(directory, projectGenerationContext, defaultProjectDescriptionInitializer());
+	}
+
+	public ProjectGenerationTester(Path directory,
+			Consumer<ProjectGenerationContext> projectGenerationContext,
 			Consumer<ProjectDescription> projectDescriptionInitializer) {
-		this.projectGenerator = new ProjectGenerator((projectGenerationContext) -> {
+		this.directory = directory;
+		this.projectDescriptionInitializer = projectDescriptionInitializer;
+		this.projectGenerationContext = projectGenerationContext;
+		this.projectGenerator = new ProjectGenerator(projectGenerationContext);
+
+	}
+
+	public static Consumer<ProjectGenerationContext> defaultProjectGenerationContext(
+			Path directory) {
+		return (projectGenerationContext) -> {
 			projectGenerationContext.register(ProjectGeneratorDefaultConfiguration.class);
 			projectGenerationContext.registerBean(ProjectDirectoryFactory.class,
 					() -> (description) -> Files.createTempDirectory(directory,
 							"project-"));
-		});
-		this.directory = directory;
-		this.projectDescriptionInitializer = projectDescriptionInitializer;
+		};
+	}
 
+	public static Consumer<ProjectDescription> defaultProjectDescriptionInitializer() {
+		return (projectDescription) -> {
+			if (projectDescription.getGroupId() == null) {
+				projectDescription.setGroupId("com.example");
+			}
+			if (projectDescription.getArtifactId() == null) {
+				projectDescription.setArtifactId("demo");
+			}
+			if (projectDescription.getApplicationName() == null) {
+				projectDescription.setApplicationName("DemoApplication");
+			}
+		};
 	}
 
 	/**
@@ -88,7 +116,7 @@ public class ProjectGenerationTester {
 		this.projectDescriptionInitializer.accept(description);
 		try (ProjectGenerationContext context = new ProjectGenerationContext(
 				description.resolve())) {
-			context.register(ProjectGeneratorDefaultConfiguration.class);
+			this.projectGenerationContext.accept(context);
 			if (configurationClasses.length > 0) {
 				context.register(configurationClasses);
 			}
@@ -118,19 +146,6 @@ public class ProjectGenerationTester {
 			}
 		});
 		return relativePaths;
-	}
-
-	private static void initializeProjectDescription(
-			ProjectDescription projectDescription) {
-		if (projectDescription.getGroupId() == null) {
-			projectDescription.setGroupId("com.example");
-		}
-		if (projectDescription.getArtifactId() == null) {
-			projectDescription.setArtifactId("demo");
-		}
-		if (projectDescription.getApplicationName() == null) {
-			projectDescription.setApplicationName("DemoApplication");
-		}
 	}
 
 }
