@@ -16,12 +16,12 @@
 
 package io.spring.initializr.generator.project.code;
 
+import io.spring.initializr.generator.ProjectGenerationConfiguration;
 import io.spring.initializr.generator.ResolvedProjectDescription;
 import io.spring.initializr.generator.condition.ConditionalOnPlatformVersion;
 import io.spring.initializr.generator.language.Annotation;
 import io.spring.initializr.generator.language.TypeDeclaration;
 import io.spring.initializr.generator.packaging.war.ConditionalOnWarPackaging;
-import io.spring.initializr.generator.project.ProjectGenerationConfiguration;
 
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.context.annotation.Bean;

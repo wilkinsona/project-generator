@@ -14,31 +14,25 @@
  * limitations under the License.
  */
 
-package io.spring.initializr.generator.project;
+package io.spring.initializr.generator;
 
-import java.io.IOException;
-import java.nio.file.Path;
-import java.util.Collection;
+import java.lang.annotation.Documented;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
-import io.spring.initializr.generator.ProjectContributor;
+import org.springframework.context.annotation.Configuration;
 
 /**
- * A collection of {@link ProjectContributor project contributors}.
+ * Specialization of {@link Configuration} for configuration of project generation.
  *
  * @author Andy Wilkinson
  */
-class ProjectContributors {
-
-	private final Collection<ProjectContributor> contributors;
-
-	ProjectContributors(Collection<ProjectContributor> contributors) {
-		this.contributors = contributors;
-	}
-
-	void contribute(Path projectRoot) throws IOException {
-		for (ProjectContributor contributor : this.contributors) {
-			contributor.contribute(projectRoot);
-		}
-	}
+@Target(ElementType.TYPE)
+@Retention(RetentionPolicy.RUNTIME)
+@Documented
+@Configuration
+public @interface ProjectGenerationConfiguration {
 
 }

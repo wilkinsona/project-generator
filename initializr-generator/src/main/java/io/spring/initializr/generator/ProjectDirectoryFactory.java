@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,25 +14,27 @@
  * limitations under the License.
  */
 
-package io.spring.initializr.generator.project;
+package io.spring.initializr.generator;
 
 import java.io.IOException;
+import java.nio.file.Path;
 
 /**
- * Process a {@link ProjectGenerationContext}.
+ * A factory of project directory.
  *
- * @param <T> the type of project assets this processor handles
  * @author Stephane Nicoll
  */
 @FunctionalInterface
-public interface ProjectGenerationContextProcessor<T> {
+public interface ProjectDirectoryFactory {
 
 	/**
-	 * Generate project assets using the specified {@link ProjectGenerationContext}.
-	 * @param projectGenerationContext the context to use
-	 * @return the generated project assets
-	 * @throws IOException if writing project assets failed
+	 * Create a dedicated project directory for the specified
+	 * {@link ResolvedProjectDescription}.
+	 * @param description the description of a project to generate
+	 * @return a dedicated existing directory
+	 * @throws IOException if creating the directory failed
 	 */
-	T process(ProjectGenerationContext projectGenerationContext) throws IOException;
+	Path createProjectDirectory(ResolvedProjectDescription description)
+			throws IOException;
 
 }

@@ -1,4 +1,4 @@
-io.spring.initializr.generator.project.ProjectGenerationConfiguration=\
+io.spring.initializr.generator.ProjectGenerationConfiguration=\
 io.spring.start.extension.actuator.ActuatorProjectGenerationConfiguration,\
 io.spring.start.extension.azure.AzureProjectGenerationConfiguration,\
 io.spring.start.extension.springcloud.SpringCloudProjectGenerationConfiguration,\

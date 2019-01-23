@@ -14,15 +14,25 @@
  * limitations under the License.
  */
 
-package io.spring.initializr.generator.project;
+package io.spring.initializr.generator;
 
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import java.io.IOException;
 
 /**
- * Provide configuration and infrastructure to generate a project.
+ * Process a {@link ProjectGenerationContext}.
  *
+ * @param <T> the type of project assets this processor handles
  * @author Stephane Nicoll
  */
-public class ProjectGenerationContext extends AnnotationConfigApplicationContext {
+@FunctionalInterface
+public interface ProjectGenerationContextProcessor<T> {
+
+	/**
+	 * Generate project assets using the specified {@link ProjectGenerationContext}.
+	 * @param projectGenerationContext the context to use
+	 * @return the generated project assets
+	 * @throws IOException if writing project assets failed
+	 */
+	T process(ProjectGenerationContext projectGenerationContext) throws IOException;
 
 }

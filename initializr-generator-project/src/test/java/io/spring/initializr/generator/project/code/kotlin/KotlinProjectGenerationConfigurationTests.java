@@ -25,8 +25,8 @@ import io.spring.initializr.generator.ProjectDescription;
 import io.spring.initializr.generator.buildsystem.maven.MavenBuildSystem;
 import io.spring.initializr.generator.language.kotlin.KotlinLanguage;
 import io.spring.initializr.generator.packaging.war.WarPackaging;
-import io.spring.initializr.generator.project.ProjectGenerationTester;
 import io.spring.initializr.generator.project.code.SourceCodeProjectGenerationConfiguration;
+import io.spring.initializr.generator.test.ProjectGenerationTester;
 import io.spring.initializr.generator.util.Version;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -46,7 +46,11 @@ class KotlinProjectGenerationConfigurationTests {
 	private final ProjectGenerationTester projectGenerationTester;
 
 	KotlinProjectGenerationConfigurationTests(@TempDir Path directory) {
-		this.projectGenerationTester = new ProjectGenerationTester(directory);
+		this.projectGenerationTester = new ProjectGenerationTester(directory,
+				ProjectGenerationTester.defaultProjectGenerationContext(directory)
+						.andThen((context) -> context.registerBean(
+								KotlinProjectSettings.class,
+								() -> new SimpleKotlinProjectSettings("1.2.70"))));
 	}
 
 	@Test

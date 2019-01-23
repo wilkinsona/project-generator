@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package io.spring.initializr.generator.project;
+package io.spring.initializr.generator.test;
 
 import java.io.IOException;
 import java.nio.file.FileVisitResult;
@@ -25,10 +25,17 @@ import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 import io.spring.initializr.generator.ProjectContributor;
 import io.spring.initializr.generator.ProjectDescription;
+import io.spring.initializr.generator.ProjectDirectoryFactory;
+import io.spring.initializr.generator.ProjectGenerationConfiguration;
+import io.spring.initializr.generator.ProjectGenerationContext;
+import io.spring.initializr.generator.ProjectGenerator;
 import io.spring.initializr.generator.ResolvedProjectDescription;
+import io.spring.initializr.generator.io.IndentingWriterFactory;
+import io.spring.initializr.generator.io.SimpleIndentStrategy;
 
 import org.springframework.context.annotation.Configuration;
 
@@ -69,10 +76,12 @@ public class ProjectGenerationTester {
 	public static Consumer<ProjectGenerationContext> defaultProjectGenerationContext(
 			Path directory) {
 		return (projectGenerationContext) -> {
-			projectGenerationContext.register(ProjectGeneratorDefaultConfiguration.class);
 			projectGenerationContext.registerBean(ProjectDirectoryFactory.class,
 					() -> (description) -> Files.createTempDirectory(directory,
 							"project-"));
+			projectGenerationContext.registerBean(IndentingWriterFactory.class,
+					() -> IndentingWriterFactory
+							.create(new SimpleIndentStrategy("    ")));
 		};
 	}
 
@@ -128,9 +137,12 @@ public class ProjectGenerationTester {
 			}
 			context.refresh();
 			Path projectDirectory = Files.createTempDirectory(this.directory, "project-");
-			new ProjectContributors(
-					context.getBeansOfType(ProjectContributor.class).values())
-							.contribute(projectDirectory);
+			List<ProjectContributor> projectContributors = context
+					.getBeanProvider(ProjectContributor.class).orderedStream()
+					.collect(Collectors.toList());
+			for (ProjectContributor projectContributor : projectContributors) {
+				projectContributor.contribute(projectDirectory);
+			}
 			return projectDirectory;
 		}
 	}

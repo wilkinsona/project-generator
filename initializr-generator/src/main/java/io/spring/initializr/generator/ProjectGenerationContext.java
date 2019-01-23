@@ -14,29 +14,15 @@
  * limitations under the License.
  */
 
-package io.spring.initializr.generator.project;
+package io.spring.initializr.generator;
 
-import java.io.IOException;
-import java.nio.file.Path;
-
-import io.spring.initializr.generator.ResolvedProjectDescription;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
 /**
- * A factory of project directory.
+ * Provide configuration and infrastructure to generate a project.
  *
  * @author Stephane Nicoll
  */
-@FunctionalInterface
-public interface ProjectDirectoryFactory {
-
-	/**
-	 * Create a dedicated project directory for the specified
-	 * {@link ResolvedProjectDescription}.
-	 * @param description the description of a project to generate
-	 * @return a dedicated existing directory
-	 * @throws IOException if creating the directory failed
-	 */
-	Path createProjectDirectory(ResolvedProjectDescription description)
-			throws IOException;
+public class ProjectGenerationContext extends AnnotationConfigApplicationContext {
 
 }

@@ -16,8 +16,8 @@
 
 package io.spring.initializr.generator.project.documentation;
 
+import io.spring.initializr.generator.ProjectGenerationConfiguration;
 import io.spring.initializr.generator.io.template.MustacheTemplateRenderer;
-import io.spring.initializr.generator.project.ProjectGenerationConfiguration;
 
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.cache.Cache;

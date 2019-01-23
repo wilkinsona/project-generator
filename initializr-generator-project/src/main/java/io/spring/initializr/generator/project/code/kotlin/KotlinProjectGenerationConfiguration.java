@@ -16,6 +16,7 @@
 
 package io.spring.initializr.generator.project.code.kotlin;
 
+import io.spring.initializr.generator.ProjectGenerationConfiguration;
 import io.spring.initializr.generator.ResolvedProjectDescription;
 import io.spring.initializr.generator.io.IndentingWriterFactory;
 import io.spring.initializr.generator.language.kotlin.ConditionalOnKotlinLanguage;
@@ -23,7 +24,6 @@ import io.spring.initializr.generator.language.kotlin.KotlinCompilationUnit;
 import io.spring.initializr.generator.language.kotlin.KotlinSourceCode;
 import io.spring.initializr.generator.language.kotlin.KotlinSourceCodeWriter;
 import io.spring.initializr.generator.language.kotlin.KotlinTypeDeclaration;
-import io.spring.initializr.generator.project.ProjectGenerationConfiguration;
 import io.spring.initializr.generator.project.code.MainApplicationTypeCustomizer;
 import io.spring.initializr.generator.project.code.MainCompilationUnitCustomizer;
 import io.spring.initializr.generator.project.code.MainSourceCodeCustomizer;

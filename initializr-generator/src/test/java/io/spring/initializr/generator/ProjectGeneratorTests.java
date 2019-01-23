@@ -14,17 +14,14 @@
  * limitations under the License.
  */
 
-package io.spring.initializr.generator.project;
+package io.spring.initializr.generator;
 
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.function.Consumer;
 
-import io.spring.initializr.generator.ProjectDescription;
-import io.spring.initializr.generator.ProjectDescriptionCustomizer;
-import io.spring.initializr.generator.ResolvedProjectDescription;
-import io.spring.initializr.generator.buildsystem.maven.MavenBuild;
 import io.spring.initializr.generator.buildsystem.maven.MavenBuildSystem;
+import io.spring.initializr.generator.test.ProjectGenerationTester;
 import io.spring.initializr.generator.util.Version;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -32,7 +29,6 @@ import org.junitpioneer.jupiter.TempDirectory;
 import org.junitpioneer.jupiter.TempDirectory.TempDir;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.entry;
 
 /**
  * Tests for {@link ProjectGenerator}.
@@ -56,13 +52,16 @@ class ProjectGeneratorTests {
 	void processorIsInvoked() throws IOException {
 		ProjectDescription description = new ProjectDescription();
 		description.setBuildSystem(new MavenBuildSystem());
-		description.setPlatformVersion(Version.parse("2.1.0.RELEASE"));
+		Version platformVersion = Version.parse("2.1.0.RELEASE");
+		description.setPlatformVersion(platformVersion);
 		description.setJavaVersion("11");
-		MavenBuild pom = this.projectGenerationTester.getProjectGenerator().generate(
-				description, (projectGenerationContext) -> projectGenerationContext
-						.getBean(MavenBuild.class));
-		assertThat(pom).isNotNull();
-		assertThat(pom.getProperties()).contains(entry("java.version", "11"));
+		ResolvedProjectDescription resolvedProjectDescription = this.projectGenerationTester
+				.getProjectGenerator().generate(description,
+						(projectGenerationContext) -> projectGenerationContext
+								.getBean(ResolvedProjectDescription.class));
+		assertThat(resolvedProjectDescription.getPlatformVersion())
+				.isEqualTo(platformVersion);
+		assertThat(resolvedProjectDescription.getJavaVersion()).isEqualTo("11");
 	}
 
 	@Test

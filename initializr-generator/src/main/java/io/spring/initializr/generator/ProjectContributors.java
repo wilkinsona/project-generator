@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,25 +14,29 @@
  * limitations under the License.
  */
 
-package io.spring.initializr.generator.project;
+package io.spring.initializr.generator;
 
-import java.lang.annotation.Documented;
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
-
-import org.springframework.context.annotation.Configuration;
+import java.io.IOException;
+import java.nio.file.Path;
+import java.util.Collection;
 
 /**
- * Specialization of {@link Configuration} for configuration of project generation.
+ * A collection of {@link ProjectContributor project contributors}.
  *
  * @author Andy Wilkinson
  */
-@Target(ElementType.TYPE)
-@Retention(RetentionPolicy.RUNTIME)
-@Documented
-@Configuration
-public @interface ProjectGenerationConfiguration {
+class ProjectContributors {
+
+	private final Collection<ProjectContributor> contributors;
+
+	ProjectContributors(Collection<ProjectContributor> contributors) {
+		this.contributors = contributors;
+	}
+
+	void contribute(Path projectRoot) throws IOException {
+		for (ProjectContributor contributor : this.contributors) {
+			contributor.contribute(projectRoot);
+		}
+	}
 
 }
