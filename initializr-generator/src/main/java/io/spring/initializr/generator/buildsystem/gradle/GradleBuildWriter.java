@@ -20,12 +20,12 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Comparator;
-import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.TreeMap;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -137,17 +137,13 @@ public class GradleBuildWriter {
 	}
 
 	private void writeProperties(IndentingWriter writer, GradleBuild build) {
-		if (build.getProperties().isEmpty() && build.getVersionProperties().isEmpty()) {
+		if (build.getExt().isEmpty() && build.getVersionProperties().isEmpty()) {
 			return;
 		}
-		Map<String, String> combinedProperties = new LinkedHashMap<>(
-				build.getProperties());
-		build.getVersionProperties().entrySet().forEach((e) -> {
-			String key = getVersionPropertyKey(e);
-			String value = e.getValue();
-			combinedProperties.put(key, value);
-		});
-		writeNestedCollection(writer, "ext", combinedProperties.entrySet(),
+		Map<String, String> allProperties = new TreeMap<>(build.getExt());
+		build.getVersionProperties().entrySet().forEach((entry) -> allProperties
+				.put(getVersionPropertyKey(entry), entry.getValue()));
+		writeNestedCollection(writer, "ext", allProperties.entrySet(),
 				(e) -> getFormattedProperty(e.getKey(), e.getValue()), writer::println);
 	}
 

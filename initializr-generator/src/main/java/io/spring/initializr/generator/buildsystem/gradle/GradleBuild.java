@@ -37,7 +37,7 @@ public class GradleBuild extends Build {
 
 	private String sourceCompatibility;
 
-	private final Map<String, String> properties = new TreeMap<>();
+	private final Map<String, String> ext = new TreeMap<>();
 
 	private final List<GradlePlugin> plugins = new ArrayList<>();
 
@@ -63,12 +63,13 @@ public class GradleBuild extends Build {
 		return this.sourceCompatibility;
 	}
 
-	public void setProperty(String key, String value) {
-		this.properties.put(key, value);
+	public GradleBuild ext(String key, String value) {
+		this.ext.put(key, value);
+		return this;
 	}
 
-	public Map<String, String> getProperties() {
-		return this.properties;
+	public Map<String, String> getExt() {
+		return Collections.unmodifiableMap(this.ext);
 	}
 
 	public GradlePlugin addPlugin(String id) {

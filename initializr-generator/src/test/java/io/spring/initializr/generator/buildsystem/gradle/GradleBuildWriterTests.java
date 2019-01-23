@@ -54,18 +54,6 @@ class GradleBuildWriterTests {
 	}
 
 	@Test
-	void gradleBuildWithProperties() throws Exception {
-		GradleBuild build = new GradleBuild();
-		build.setGroup("com.example.demo");
-		build.setArtifact("demo");
-		build.setProperty("java.version", "1.8");
-		build.setProperty("alpha", "a");
-		List<String> lines = generateBuild(build);
-		assertThat(lines).contains("    set('alpha', 'a')");
-		assertThat(lines).contains("    set('java.version', '1.8')");
-	}
-
-	@Test
 	void gradleBuildWithBuildscriptDependency() throws IOException {
 		GradleBuild build = new GradleBuild();
 		build.repositories().add("maven-central");
@@ -192,6 +180,17 @@ class GradleBuildWriterTests {
 	}
 
 	@Test
+	void gradleBuildWithExt() throws Exception {
+		GradleBuild build = new GradleBuild();
+		build.setGroup("com.example.demo");
+		build.setArtifact("demo");
+		build.ext("java.version", "1.8").ext("alpha", "a");
+		List<String> lines = generateBuild(build);
+		assertThat(lines).containsSequence("    set('alpha', 'a')",
+				"    set('java.version', '1.8')");
+	}
+
+	@Test
 	void gradleBuildWithVersionProperties() throws IOException {
 		GradleBuild build = new GradleBuild();
 		build.addVersionProperty(VersionProperty.of("version.property"), "1.2.3");
@@ -226,6 +225,19 @@ class GradleBuildWriterTests {
 		assertThat(lines).containsSequence("dependencies {",
 				"    implementation \"com.example:acme:${property('acme.version')}\"",
 				"}");
+	}
+
+	@Test
+	void gradleBuildWithExtAndVersionProperties() throws Exception {
+		GradleBuild build = new GradleBuild();
+		build.setGroup("com.example.demo");
+		build.setArtifact("demo");
+		build.addInternalVersionProperty("test-version", "1.0");
+		build.ext("myProperty", "42");
+		build.addExternalVersionProperty("alpha-version", "0.1");
+		List<String> lines = generateBuild(build);
+		assertThat(lines).containsSequence("    set('alpha-version', '0.1')",
+				"    set('myProperty', '42')", "    set('testVersion', '1.0')");
 	}
 
 	@Test
