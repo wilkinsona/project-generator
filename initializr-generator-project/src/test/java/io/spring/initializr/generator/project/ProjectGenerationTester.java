@@ -24,6 +24,7 @@ import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Consumer;
 
 import io.spring.initializr.generator.ProjectContributor;
 import io.spring.initializr.generator.ProjectDescription;
@@ -37,22 +38,54 @@ import org.springframework.context.annotation.Configuration;
  */
 public class ProjectGenerationTester {
 
+	private final ProjectGenerator projectGenerator;
+
 	private final Path directory;
 
+	private final Consumer<ProjectDescription> projectDescriptionInitializer;
+
 	public ProjectGenerationTester(Path directory) {
+		this(directory, ProjectGenerationTester::initializeProjectDescription);
+	}
+
+	public ProjectGenerationTester(Path directory,
+			Consumer<ProjectDescription> projectDescriptionInitializer) {
+		this.projectGenerator = new ProjectGenerator((projectGenerationContext) -> {
+			projectGenerationContext.register(ProjectGeneratorDefaultConfiguration.class);
+			projectGenerationContext.registerBean(ProjectDirectoryFactory.class,
+					() -> (description) -> Files.createTempDirectory(directory,
+							"project-"));
+		});
 		this.directory = directory;
+		this.projectDescriptionInitializer = projectDescriptionInitializer;
+
 	}
 
 	/**
-	 * Generate a project with only the specified configuration classes. Can be a mix or
-	 * regular {@link Configuration} and {@link ProjectGenerationConfiguration}.
+	 * Generate a full project with all that available
+	 * {@link ProjectGenerationConfiguration} instances.
+	 * @param description the description of the project to generate
+	 * @return the root directory of the generated project structure
+	 * @throws IOException if an error occurs while handling resource
+	 * @see #generate(ProjectDescription, Class[])
+	 */
+	public Path generateProject(ProjectDescription description) throws IOException {
+		this.projectDescriptionInitializer.accept(description);
+		return this.projectGenerator.generate(description);
+	}
+
+	/**
+	 * Generate project's content with only the specified configuration classes. Can be a
+	 * mix or regular {@link Configuration} and {@link ProjectGenerationConfiguration}.
 	 * @param description the description of the project to generate
 	 * @param configurationClasses the configuration classes to use
 	 * @return the root directory of the generated project structure
 	 * @throws IOException if an error occurs while handling resource
+	 * @see #generateProject(ProjectDescription)
 	 */
 	public Path generate(ProjectDescription description, Class<?>... configurationClasses)
 			throws IOException {
+		this.projectDescriptionInitializer.accept(description);
 		try (ProjectGenerationContext context = new ProjectGenerationContext(
 				description.resolve())) {
 			context.register(ProjectGeneratorDefaultConfiguration.class);
@@ -85,6 +118,19 @@ public class ProjectGenerationTester {
 			}
 		});
 		return relativePaths;
+	}
+
+	private static void initializeProjectDescription(
+			ProjectDescription projectDescription) {
+		if (projectDescription.getGroupId() == null) {
+			projectDescription.setGroupId("com.example");
+		}
+		if (projectDescription.getArtifactId() == null) {
+			projectDescription.setArtifactId("demo");
+		}
+		if (projectDescription.getApplicationName() == null) {
+			projectDescription.setApplicationName("DemoApplication");
+		}
 	}
 
 }

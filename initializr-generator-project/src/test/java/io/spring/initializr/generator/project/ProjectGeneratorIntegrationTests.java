@@ -17,12 +17,12 @@
 package io.spring.initializr.generator.project;
 
 import java.io.IOException;
-import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.List;
 
 import io.spring.initializr.generator.ProjectDescription;
-import io.spring.initializr.generator.buildsystem.maven.MavenBuild;
 import io.spring.initializr.generator.buildsystem.maven.MavenBuildSystem;
+import io.spring.initializr.generator.language.java.JavaLanguage;
 import io.spring.initializr.generator.util.Version;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -30,39 +30,41 @@ import org.junitpioneer.jupiter.TempDirectory;
 import org.junitpioneer.jupiter.TempDirectory.TempDir;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.entry;
 
 /**
- * Tests for {@link ProjectGenerator}.
+ * Tests for {@link ProjectGenerator} that uses all available
+ * {@link ProjectGenerationConfiguration} instances.
  *
- * @author Andy Wilkinson
  * @author Stephane Nicoll
  */
 @ExtendWith(TempDirectory.class)
-class ProjectGeneratorTests {
+class ProjectGeneratorIntegrationTests {
 
-	private final ProjectGenerator projectGenerator;
+	private final ProjectGenerationTester projectGenerationTester;
 
-	ProjectGeneratorTests(@TempDir Path directory) {
-		this.projectGenerator = new ProjectGenerator((projectGenerationContext) -> {
-			projectGenerationContext.register(ProjectGeneratorDefaultConfiguration.class);
-			projectGenerationContext.registerBean(ProjectDirectoryFactory.class,
-					() -> (description) -> Files.createTempDirectory(directory,
-							"project-"));
-		});
+	ProjectGeneratorIntegrationTests(@TempDir Path directory) {
+		this.projectGenerationTester = new ProjectGenerationTester(directory);
 	}
 
 	@Test
-	void processorIsInvoked() throws IOException {
+	void customBaseDirectionIsUsedWhenGeneratingProject() throws IOException {
 		ProjectDescription description = initProjectDescription();
 		description.setBuildSystem(new MavenBuildSystem());
 		description.setPlatformVersion(Version.parse("2.1.0.RELEASE"));
-		description.setJavaVersion("11");
-		MavenBuild pom = this.projectGenerator.generate(description,
-				(projectGenerationContext) -> projectGenerationContext
-						.getBean(MavenBuild.class));
-		assertThat(pom).isNotNull();
-		assertThat(pom.getProperties()).contains(entry("java.version", "11"));
+		description.setLanguage(new JavaLanguage());
+		description.setGroupId("com.example");
+		description.setBaseDirectory("test/demo-app");
+		Path project = this.projectGenerationTester.generateProject(description);
+		List<String> relativePaths = this.projectGenerationTester
+				.getRelativePathsOfProjectFiles(project);
+		assertThat(relativePaths).containsOnly("test/demo-app/.gitignore",
+				"test/demo-app/pom.xml", "test/demo-app/mvnw", "test/demo-app/mvnw.cmd",
+				"test/demo-app/.mvn/wrapper/MavenWrapperDownloader.java",
+				"test/demo-app/.mvn/wrapper/maven-wrapper.properties",
+				"test/demo-app/.mvn/wrapper/maven-wrapper.jar",
+				"test/demo-app/src/main/java/com/example/DemoApplication.java",
+				"test/demo-app/src/main/resources/application.properties",
+				"test/demo-app/src/test/java/com/example/DemoApplicationTests.java");
 	}
 
 	private ProjectDescription initProjectDescription() {

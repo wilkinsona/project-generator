@@ -14,20 +14,19 @@
  * limitations under the License.
  */
 
-package io.spring.initializr.generator.project.build.maven;
+package io.spring.initializr.generator.project.code.kotlin;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
-import java.util.stream.Stream;
 
 import io.spring.initializr.generator.ProjectDescription;
 import io.spring.initializr.generator.buildsystem.maven.MavenBuildSystem;
-import io.spring.initializr.generator.language.java.JavaLanguage;
+import io.spring.initializr.generator.language.kotlin.KotlinLanguage;
 import io.spring.initializr.generator.packaging.war.WarPackaging;
 import io.spring.initializr.generator.project.ProjectGenerationTester;
-import io.spring.initializr.generator.project.build.BuildProjectGenerationConfiguration;
+import io.spring.initializr.generator.project.code.SourceCodeProjectGenerationConfiguration;
 import io.spring.initializr.generator.util.Version;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -37,67 +36,80 @@ import org.junitpioneer.jupiter.TempDirectory.TempDir;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for {@link MavenProjectGenerationConfiguration}.
+ * Tests for {@link KotlinProjectGenerationConfiguration}.
  *
  * @author Stephane Nicoll
  */
 @ExtendWith(TempDirectory.class)
-class MavenProjectGenerationConfigurationTests {
+class KotlinProjectGenerationConfigurationTests {
 
 	private final ProjectGenerationTester projectGenerationTester;
 
-	MavenProjectGenerationConfigurationTests(@TempDir Path directory) {
+	KotlinProjectGenerationConfigurationTests(@TempDir Path directory) {
 		this.projectGenerationTester = new ProjectGenerationTester(directory);
 	}
 
 	@Test
-	void mavenWrapperIsContributedWhenGeneratingMavenProject() throws IOException {
+	void mainClassIsContributedWhenGeneratingProject() throws IOException {
 		ProjectDescription description = initProjectDescription();
-		description.setPlatformVersion(Version.parse("2.1.0.RELEASE"));
 		Path project = generateProject(description);
 		List<String> relativePaths = this.projectGenerationTester
 				.getRelativePathsOfProjectFiles(project);
-		assertThat(relativePaths).contains("mvnw", "mvnw.cmd",
-				".mvn/wrapper/MavenWrapperDownloader.java",
-				".mvn/wrapper/maven-wrapper.properties",
-				".mvn/wrapper/maven-wrapper.jar");
+		assertThat(relativePaths)
+				.contains("src/main/kotlin/com/example/DemoApplication.kt");
 	}
 
 	@Test
-	void mavenPomIsContributedWhenGeneratingMavenProject() throws IOException {
+	void testClassIsContributed() throws IOException {
 		ProjectDescription description = initProjectDescription();
-		description.setPlatformVersion(Version.parse("2.1.0.RELEASE"));
 		Path project = generateProject(description);
 		List<String> relativePaths = this.projectGenerationTester
 				.getRelativePathsOfProjectFiles(project);
-		assertThat(relativePaths).contains("pom.xml");
+		assertThat(relativePaths)
+				.contains("src/test/kotlin/com/example/DemoApplicationTests.kt");
+		List<String> lines = Files.readAllLines(
+				project.resolve("src/test/kotlin/com/example/DemoApplicationTests.kt"));
+		assertThat(lines).containsExactly("package com.example", "",
+				"import org.junit.Test", "import org.junit.runner.RunWith",
+				"import org.springframework.boot.test.context.SpringBootTest",
+				"import org.springframework.test.context.junit4.SpringRunner", "",
+				"@RunWith(SpringRunner::class)", "@SpringBootTest",
+				"class DemoApplicationTests {", "", "    @Test",
+				"    fun contextLoads() {", "    }", "", "}", "");
 	}
 
 	@Test
-	void warPackagingIsUsedWhenBuildingProjectThatUsesWarPackaging() throws IOException {
+	void servletInitializerIsContributedWhenGeneratingProjectThatUsesWarPackaging()
+			throws IOException {
 		ProjectDescription description = initProjectDescription();
-		description.setPlatformVersion(Version.parse("2.1.0.RELEASE"));
-		description.setLanguage(new JavaLanguage());
 		description.setPackaging(new WarPackaging());
+		description.setApplicationName("KotlinDemoApplication");
 		Path project = generateProject(description);
 		List<String> relativePaths = this.projectGenerationTester
 				.getRelativePathsOfProjectFiles(project);
-		assertThat(relativePaths).contains("pom.xml");
-		try (Stream<String> lines = Files.lines(project.resolve("pom.xml"))) {
-			assertThat(lines
-					.filter((line) -> line.contains("    <packaging>war</packaging>")))
-							.hasSize(1);
-		}
+		assertThat(relativePaths)
+				.contains("src/main/kotlin/com/example/ServletInitializer.kt");
+		List<String> lines = Files.readAllLines(
+				project.resolve("src/main/kotlin/com/example/ServletInitializer.kt"));
+		assertThat(lines).containsExactly("package com.example", "",
+				"import org.springframework.boot.builder.SpringApplicationBuilder",
+				"import org.springframework.boot.web.servlet.support.SpringBootServletInitializer",
+				"", "class ServletInitializer : SpringBootServletInitializer() {", "",
+				"    override fun configure(application: SpringApplicationBuilder): SpringApplicationBuilder {",
+				"        return application.sources(KotlinDemoApplication::class.java)",
+				"    }", "", "}", "");
 	}
 
 	private Path generateProject(ProjectDescription description) throws IOException {
 		return this.projectGenerationTester.generate(description,
-				BuildProjectGenerationConfiguration.class,
-				MavenProjectGenerationConfiguration.class);
+				SourceCodeProjectGenerationConfiguration.class,
+				KotlinProjectGenerationConfiguration.class);
 	}
 
 	private ProjectDescription initProjectDescription() {
 		ProjectDescription description = new ProjectDescription();
+		description.setLanguage(new KotlinLanguage());
+		description.setPlatformVersion(Version.parse("2.1.0.RELEASE"));
 		description.setBuildSystem(new MavenBuildSystem());
 		return description;
 	}
