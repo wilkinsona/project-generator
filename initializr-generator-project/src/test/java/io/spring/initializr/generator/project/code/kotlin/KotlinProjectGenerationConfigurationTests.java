@@ -46,7 +46,7 @@ class KotlinProjectGenerationConfigurationTests {
 	private final ProjectGenerationTester projectGenerationTester;
 
 	KotlinProjectGenerationConfigurationTests(@TempDir Path directory) {
-		this.projectGenerationTester = new ProjectGenerationTester(directory,
+		this.projectGenerationTester = new ProjectGenerationTester(
 				ProjectGenerationTester.defaultProjectGenerationContext(directory)
 						.andThen((context) -> context.registerBean(
 								KotlinProjectSettings.class,

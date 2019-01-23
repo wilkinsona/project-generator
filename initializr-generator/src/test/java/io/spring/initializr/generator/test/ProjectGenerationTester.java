@@ -46,8 +46,6 @@ import org.springframework.context.annotation.Configuration;
  */
 public class ProjectGenerationTester {
 
-	private final Path directory;
-
 	private final Consumer<ProjectGenerationContext> projectGenerationContext;
 
 	private final Consumer<ProjectDescription> projectDescriptionInitializer;
@@ -55,18 +53,17 @@ public class ProjectGenerationTester {
 	private final ProjectGenerator projectGenerator;
 
 	public ProjectGenerationTester(Path directory) {
-		this(directory, defaultProjectGenerationContext(directory));
+		this(defaultProjectGenerationContext(directory));
 	}
 
-	public ProjectGenerationTester(Path directory,
+	public ProjectGenerationTester(
 			Consumer<ProjectGenerationContext> projectGenerationContext) {
-		this(directory, projectGenerationContext, defaultProjectDescriptionInitializer());
+		this(projectGenerationContext, defaultProjectDescriptionInitializer());
 	}
 
-	public ProjectGenerationTester(Path directory,
+	public ProjectGenerationTester(
 			Consumer<ProjectGenerationContext> projectGenerationContext,
 			Consumer<ProjectDescription> projectDescriptionInitializer) {
-		this.directory = directory;
 		this.projectDescriptionInitializer = projectDescriptionInitializer;
 		this.projectGenerationContext = projectGenerationContext;
 		this.projectGenerator = new ProjectGenerator(projectGenerationContext);
@@ -129,14 +126,17 @@ public class ProjectGenerationTester {
 			throws IOException {
 		this.projectDescriptionInitializer.accept(description);
 		try (ProjectGenerationContext context = new ProjectGenerationContext()) {
+			ResolvedProjectDescription resolvedProjectDescription = new ResolvedProjectDescription(
+					description);
 			context.registerBean(ResolvedProjectDescription.class,
-					() -> new ResolvedProjectDescription(description));
+					() -> resolvedProjectDescription);
 			this.projectGenerationContext.accept(context);
 			if (configurationClasses.length > 0) {
 				context.register(configurationClasses);
 			}
 			context.refresh();
-			Path projectDirectory = Files.createTempDirectory(this.directory, "project-");
+			Path projectDirectory = context.getBean(ProjectDirectoryFactory.class)
+					.createProjectDirectory(resolvedProjectDescription);
 			List<ProjectContributor> projectContributors = context
 					.getBeanProvider(ProjectContributor.class).orderedStream()
 					.collect(Collectors.toList());

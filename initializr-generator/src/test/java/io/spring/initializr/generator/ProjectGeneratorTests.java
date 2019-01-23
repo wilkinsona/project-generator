@@ -66,7 +66,7 @@ class ProjectGeneratorTests {
 
 	@Test
 	void projectGenerationInvokesCustomizers() throws IOException {
-		ProjectGenerationTester tester = new ProjectGenerationTester(this.directory,
+		ProjectGenerationTester tester = new ProjectGenerationTester(
 				ProjectGenerationTester.defaultProjectGenerationContext(this.directory)
 						.andThen((context) -> {
 							context.registerBean("customizer1",
