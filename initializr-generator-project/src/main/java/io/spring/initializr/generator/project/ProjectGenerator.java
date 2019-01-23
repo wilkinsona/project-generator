@@ -26,7 +26,6 @@ import io.spring.initializr.generator.ProjectContributor;
 import io.spring.initializr.generator.ProjectDescription;
 import io.spring.initializr.generator.ResolvedProjectDescription;
 
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
@@ -42,7 +41,7 @@ import org.springframework.core.type.AnnotationMetadata;
  */
 public class ProjectGenerator {
 
-	private final Consumer<AnnotationConfigApplicationContext> projectGenerationContext;
+	private final Consumer<ProjectGenerationContext> projectGenerationContext;
 
 	/**
 	 * Create an instance with a customizer for the project generator application context.
@@ -50,7 +49,7 @@ public class ProjectGenerator {
 	 * it is refreshed.
 	 */
 	public ProjectGenerator(
-			Consumer<AnnotationConfigApplicationContext> projectGenerationContext) {
+			Consumer<ProjectGenerationContext> projectGenerationContext) {
 		this.projectGenerationContext = projectGenerationContext;
 	}
 
