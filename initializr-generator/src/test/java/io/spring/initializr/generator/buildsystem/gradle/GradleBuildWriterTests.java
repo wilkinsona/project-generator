@@ -290,7 +290,7 @@ class GradleBuildWriterTests {
 		GradleBuildWriter writer = new GradleBuildWriter();
 		StringWriter out = new StringWriter();
 		writer.writeTo(new IndentingWriter(out), build);
-		return Arrays.asList(out.toString().split("\n"));
+		return Arrays.asList(out.toString().split("\\r?\\n"));
 	}
 
 }
