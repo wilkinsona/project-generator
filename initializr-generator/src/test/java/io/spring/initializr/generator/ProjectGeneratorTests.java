@@ -49,7 +49,7 @@ class ProjectGeneratorTests {
 	}
 
 	@Test
-	void processorIsInvoked() throws IOException {
+	void generateInvokedProcessor() throws IOException {
 		ProjectDescription description = new ProjectDescription();
 		description.setBuildSystem(new MavenBuildSystem());
 		Version platformVersion = Version.parse("2.1.0.RELEASE");
@@ -65,7 +65,7 @@ class ProjectGeneratorTests {
 	}
 
 	@Test
-	void projectGenerationInvokesCustomizers() throws IOException {
+	void generateInvokesCustomizers() throws IOException {
 		ProjectGenerationTester tester = new ProjectGenerationTester(
 				ProjectGenerationTester.defaultProjectGenerationContext(this.directory)
 						.andThen((context) -> {
