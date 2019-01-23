@@ -17,7 +17,6 @@
 package io.spring.initializr.generator.project;
 
 import java.io.IOException;
-import java.nio.file.Files;
 import java.nio.file.Path;
 
 import io.spring.initializr.generator.ProjectDescription;
@@ -41,34 +40,23 @@ import static org.assertj.core.api.Assertions.entry;
 @ExtendWith(TempDirectory.class)
 class ProjectGeneratorTests {
 
-	private final ProjectGenerator projectGenerator;
+	private final ProjectGenerationTester projectGenerationTester;
 
 	ProjectGeneratorTests(@TempDir Path directory) {
-		this.projectGenerator = new ProjectGenerator((projectGenerationContext) -> {
-			projectGenerationContext.register(ProjectGeneratorDefaultConfiguration.class);
-			projectGenerationContext.registerBean(ProjectDirectoryFactory.class,
-					() -> (description) -> Files.createTempDirectory(directory,
-							"project-"));
-		});
+		this.projectGenerationTester = new ProjectGenerationTester(directory);
 	}
 
 	@Test
 	void processorIsInvoked() throws IOException {
-		ProjectDescription description = initProjectDescription();
+		ProjectDescription description = new ProjectDescription();
 		description.setBuildSystem(new MavenBuildSystem());
 		description.setPlatformVersion(Version.parse("2.1.0.RELEASE"));
 		description.setJavaVersion("11");
-		MavenBuild pom = this.projectGenerator.generate(description,
-				(projectGenerationContext) -> projectGenerationContext
+		MavenBuild pom = this.projectGenerationTester.getProjectGenerator().generate(
+				description, (projectGenerationContext) -> projectGenerationContext
 						.getBean(MavenBuild.class));
 		assertThat(pom).isNotNull();
 		assertThat(pom.getProperties()).contains(entry("java.version", "11"));
-	}
-
-	private ProjectDescription initProjectDescription() {
-		ProjectDescription description = new ProjectDescription();
-		description.setApplicationName("DemoApplication");
-		return description;
 	}
 
 }

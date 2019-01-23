@@ -89,6 +89,10 @@ public class ProjectGenerationTester {
 		};
 	}
 
+	public ProjectGenerator getProjectGenerator() {
+		return this.projectGenerator;
+	}
+
 	/**
 	 * Generate a full project with all that available
 	 * {@link ProjectGenerationConfiguration} instances.
