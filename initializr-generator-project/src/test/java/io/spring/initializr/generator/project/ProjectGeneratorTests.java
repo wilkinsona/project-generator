@@ -18,8 +18,11 @@ package io.spring.initializr.generator.project;
 
 import java.io.IOException;
 import java.nio.file.Path;
+import java.util.function.Consumer;
 
 import io.spring.initializr.generator.ProjectDescription;
+import io.spring.initializr.generator.ProjectDescriptionCustomizer;
+import io.spring.initializr.generator.ResolvedProjectDescription;
 import io.spring.initializr.generator.buildsystem.maven.MavenBuild;
 import io.spring.initializr.generator.buildsystem.maven.MavenBuildSystem;
 import io.spring.initializr.generator.util.Version;
@@ -40,9 +43,12 @@ import static org.assertj.core.api.Assertions.entry;
 @ExtendWith(TempDirectory.class)
 class ProjectGeneratorTests {
 
+	private final Path directory;
+
 	private final ProjectGenerationTester projectGenerationTester;
 
 	ProjectGeneratorTests(@TempDir Path directory) {
+		this.directory = directory;
 		this.projectGenerationTester = new ProjectGenerationTester(directory);
 	}
 
@@ -57,6 +63,64 @@ class ProjectGeneratorTests {
 						.getBean(MavenBuild.class));
 		assertThat(pom).isNotNull();
 		assertThat(pom.getProperties()).contains(entry("java.version", "11"));
+	}
+
+	@Test
+	void projectGenerationInvokesCustomizers() throws IOException {
+		ProjectGenerationTester tester = new ProjectGenerationTester(this.directory,
+				ProjectGenerationTester.defaultProjectGenerationContext(this.directory)
+						.andThen((context) -> {
+							context.registerBean("customizer1",
+									TestProjectDescriptionCustomizer.class,
+									() -> new TestProjectDescriptionCustomizer(5,
+											(description) -> description
+													.setName("Test")));
+							context.registerBean("customizer2",
+									TestProjectDescriptionCustomizer.class,
+									() -> new TestProjectDescriptionCustomizer(3,
+											(description) -> {
+												description.setName("First");
+												description.setGroupId("com.acme");
+											}));
+						}));
+		ProjectDescription description = new ProjectDescription();
+		description.setBuildSystem(new MavenBuildSystem());
+		description.setPlatformVersion(Version.parse("2.1.0.RELEASE"));
+		description.setGroupId("com.example.demo");
+		description.setName("Original");
+		description.setPlatformVersion(Version.parse("2.1.0.RELEASE"));
+
+		ResolvedProjectDescription resolvedProjectDescription = tester
+				.getProjectGenerator().generate(description,
+						(projectGenerationContext) -> projectGenerationContext
+								.getBean(ResolvedProjectDescription.class));
+		assertThat(resolvedProjectDescription.getGroupId()).isEqualTo("com.acme");
+		assertThat(resolvedProjectDescription.getName()).isEqualTo("Test");
+	}
+
+	private static class TestProjectDescriptionCustomizer
+			implements ProjectDescriptionCustomizer {
+
+		private final Integer order;
+
+		private final Consumer<ProjectDescription> projectDescription;
+
+		TestProjectDescriptionCustomizer(Integer order,
+				Consumer<ProjectDescription> projectDescription) {
+			this.order = order;
+			this.projectDescription = projectDescription;
+		}
+
+		@Override
+		public void customize(ProjectDescription description) {
+			this.projectDescription.accept(description);
+		}
+
+		@Override
+		public int getOrder() {
+			return this.order;
+		}
+
 	}
 
 }

@@ -28,6 +28,7 @@ import java.util.function.Consumer;
 
 import io.spring.initializr.generator.ProjectContributor;
 import io.spring.initializr.generator.ProjectDescription;
+import io.spring.initializr.generator.ResolvedProjectDescription;
 
 import org.springframework.context.annotation.Configuration;
 
@@ -118,8 +119,9 @@ public class ProjectGenerationTester {
 	public Path generate(ProjectDescription description, Class<?>... configurationClasses)
 			throws IOException {
 		this.projectDescriptionInitializer.accept(description);
-		try (ProjectGenerationContext context = new ProjectGenerationContext(
-				description.resolve())) {
+		try (ProjectGenerationContext context = new ProjectGenerationContext()) {
+			context.registerBean(ResolvedProjectDescription.class,
+					() -> new ResolvedProjectDescription(description));
 			this.projectGenerationContext.accept(context);
 			if (configurationClasses.length > 0) {
 				context.register(configurationClasses);

@@ -21,9 +21,11 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 import io.spring.initializr.generator.ProjectContributor;
 import io.spring.initializr.generator.ProjectDescription;
+import io.spring.initializr.generator.ProjectDescriptionCustomizer;
 import io.spring.initializr.generator.ResolvedProjectDescription;
 
 import org.springframework.context.annotation.Bean;
@@ -48,8 +50,7 @@ public class ProjectGenerator {
 	 * @param projectGenerationContext a consumer of the project generation context before
 	 * it is refreshed.
 	 */
-	public ProjectGenerator(
-			Consumer<ProjectGenerationContext> projectGenerationContext) {
+	public ProjectGenerator(Consumer<ProjectGenerationContext> projectGenerationContext) {
 		this.projectGenerationContext = projectGenerationContext;
 	}
 
@@ -61,10 +62,12 @@ public class ProjectGenerator {
 	 */
 	public Path generate(ProjectDescription description) throws IOException {
 		return generate(description, (context) -> {
+			ResolvedProjectDescription resolvedProjectDescription = context
+					.getBean(ResolvedProjectDescription.class);
 			Path projectRoot = context.getBean(ProjectDirectoryFactory.class)
-					.createProjectDirectory(context.getProjectDescription());
+					.createProjectDirectory(resolvedProjectDescription);
 			Path projectDirectory = initializerProjectDirectory(projectRoot,
-					context.getProjectDescription());
+					resolvedProjectDescription);
 			context.getBean(ProjectContributors.class).contribute(projectDirectory);
 			return projectRoot;
 		});
@@ -83,14 +86,23 @@ public class ProjectGenerator {
 	public <T> T generate(ProjectDescription description,
 			ProjectGenerationContextProcessor<T> projectGenerationContext)
 			throws IOException {
-		ResolvedProjectDescription resolvedProjectDescription = description.resolve();
-		try (ProjectGenerationContext context = new ProjectGenerationContext(
-				resolvedProjectDescription)) {
+		try (ProjectGenerationContext context = new ProjectGenerationContext()) {
+			context.registerBean(ResolvedProjectDescription.class,
+					resolve(description, context));
 			context.register(CoreConfiguration.class);
 			this.projectGenerationContext.accept(context);
 			context.refresh();
 			return projectGenerationContext.process(context);
 		}
+	}
+
+	private Supplier<ResolvedProjectDescription> resolve(ProjectDescription description,
+			ProjectGenerationContext context) {
+		return () -> {
+			context.getBeanProvider(ProjectDescriptionCustomizer.class).orderedStream()
+					.forEach((customizer) -> customizer.customize(description));
+			return new ResolvedProjectDescription(description);
+		};
 	}
 
 	private Path initializerProjectDirectory(Path rootDir,

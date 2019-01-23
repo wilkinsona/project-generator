@@ -14,15 +14,25 @@
  * limitations under the License.
  */
 
-package io.spring.initializr.generator.project;
+package io.spring.initializr.generator;
 
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.core.Ordered;
 
 /**
- * Provide configuration and infrastructure to generate a project.
+ * Callback for customizing a {@link ProjectDescription}. Invoked with an {@link Ordered
+ * order} of {@code 0} by default, considering overriding {@link #getOrder()} to customize
+ * this behaviour.
  *
  * @author Stephane Nicoll
  */
-public class ProjectGenerationContext extends AnnotationConfigApplicationContext {
+@FunctionalInterface
+public interface ProjectDescriptionCustomizer extends Ordered {
+
+	void customize(ProjectDescription description);
+
+	@Override
+	default int getOrder() {
+		return 0;
+	}
 
 }
