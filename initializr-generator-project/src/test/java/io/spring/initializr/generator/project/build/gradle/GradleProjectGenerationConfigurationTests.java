@@ -19,7 +19,7 @@ package io.spring.initializr.generator.project.build.gradle;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
@@ -114,9 +114,7 @@ class GradleProjectGenerationConfigurationTests {
 				.getRelativePathsOfProjectFiles(project);
 		assertThat(relativePaths).contains("build.gradle");
 		Path path = project.resolve("build.gradle");
-		String content = StreamUtils.copyToString(
-				new FileInputStream(new File(path.toString())), Charset.forName("UTF-8"));
-		String[] lines = content.split("\n");
+		String[] lines = readAllLines(path);
 		assertThat(lines).containsExactly("plugins {",
 				"    id 'org.springframework.boot' version '2.1.0.RELEASE'",
 				"    id 'java'", "}", "",
@@ -126,7 +124,14 @@ class GradleProjectGenerationConfigurationTests {
 				"}", "", "dependencies {", "    implementation 'com.example:acme'",
 				"    testImplementation 'org.springframework.boot:spring-boot-starter-test'",
 				"}");
-		assertThat(content.endsWith("\n")).isTrue();
+	}
+
+	private static String[] readAllLines(Path file) throws IOException {
+		String content = StreamUtils.copyToString(
+				new FileInputStream(new File(file.toString())), StandardCharsets.UTF_8);
+		String[] lines = content.split("\\r?\\n");
+		assertThat(content).endsWith(System.lineSeparator());
+		return lines;
 	}
 
 }
