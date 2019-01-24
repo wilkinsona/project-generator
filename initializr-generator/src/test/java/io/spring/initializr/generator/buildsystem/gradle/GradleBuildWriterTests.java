@@ -233,11 +233,11 @@ class GradleBuildWriterTests {
 		build.setGroup("com.example.demo");
 		build.setArtifact("demo");
 		build.addInternalVersionProperty("test-version", "1.0");
-		build.ext("myProperty", "42");
 		build.addExternalVersionProperty("alpha-version", "0.1");
+		build.ext("myProperty", "42");
 		List<String> lines = generateBuild(build);
-		assertThat(lines).containsSequence("    set('alpha-version', '0.1')",
-				"    set('myProperty', '42')", "    set('testVersion', '1.0')");
+		assertThat(lines).containsSequence("    set('myProperty', '42')",
+				"    set('alpha-version', '0.1')", "    set('testVersion', '1.0')");
 	}
 
 	@Test
