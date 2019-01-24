@@ -164,6 +164,23 @@ class MavenBuildWriterTests {
 	}
 
 	@Test
+	void pomWithRuntimeDependency() throws Exception {
+		MavenBuild build = new MavenBuild();
+		build.setGroup("com.example.demo");
+		build.setArtifact("demo");
+		build.dependencies().add("hikari", "com.zaxxer", "HikariCP",
+				DependencyScope.RUNTIME);
+		generatePom(build, (pom) -> {
+			NodeAssert dependency = pom.nodeAtPath("/project/dependencies/dependency");
+			assertThat(dependency).textAtPath("groupId").isEqualTo("com.zaxxer");
+			assertThat(dependency).textAtPath("artifactId").isEqualTo("HikariCP");
+			assertThat(dependency).textAtPath("version").isNullOrEmpty();
+			assertThat(dependency).textAtPath("scope").isEqualTo("runtime");
+			assertThat(dependency).textAtPath("optional").isNullOrEmpty();
+		});
+	}
+
+	@Test
 	void pomWithProvidedRuntimeDependency() throws Exception {
 		MavenBuild build = new MavenBuild();
 		build.setGroup("com.example.demo");
@@ -178,23 +195,6 @@ class MavenBuildWriterTests {
 					.isEqualTo("spring-boot-starter-tomcat");
 			assertThat(dependency).textAtPath("version").isNullOrEmpty();
 			assertThat(dependency).textAtPath("scope").isEqualTo("provided");
-			assertThat(dependency).textAtPath("optional").isNullOrEmpty();
-		});
-	}
-
-	@Test
-	void pomWithRuntimeDependency() throws Exception {
-		MavenBuild build = new MavenBuild();
-		build.setGroup("com.example.demo");
-		build.setArtifact("demo");
-		build.dependencies().add("hikari", "com.zaxxer", "HikariCP",
-				DependencyScope.RUNTIME);
-		generatePom(build, (pom) -> {
-			NodeAssert dependency = pom.nodeAtPath("/project/dependencies/dependency");
-			assertThat(dependency).textAtPath("groupId").isEqualTo("com.zaxxer");
-			assertThat(dependency).textAtPath("artifactId").isEqualTo("HikariCP");
-			assertThat(dependency).textAtPath("version").isNullOrEmpty();
-			assertThat(dependency).textAtPath("scope").isEqualTo("runtime");
 			assertThat(dependency).textAtPath("optional").isNullOrEmpty();
 		});
 	}
