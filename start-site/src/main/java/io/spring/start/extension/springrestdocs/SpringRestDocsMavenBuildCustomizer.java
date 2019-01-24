@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,7 +18,7 @@ package io.spring.start.extension.springrestdocs;
 
 import io.spring.initializr.generator.buildsystem.maven.MavenBuild;
 import io.spring.initializr.generator.buildsystem.maven.MavenPlugin;
-import io.spring.initializr.generator.project.build.BuildCustomizer;
+import io.spring.initializr.generator.spring.build.BuildCustomizer;
 
 /**
  * {@link BuildCustomizer Customizer} for a {@link MavenBuild} when the generated project

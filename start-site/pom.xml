@@ -14,7 +14,7 @@
 	<dependencies>
 		<dependency>
 			<groupId>io.spring.initializr.experimental</groupId>
-			<artifactId>initializr-generator-project</artifactId>
+			<artifactId>initializr-generator-spring</artifactId>
 		</dependency>
 
 		<dependency>

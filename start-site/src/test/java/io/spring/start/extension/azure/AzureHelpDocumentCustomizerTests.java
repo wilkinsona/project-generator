@@ -21,7 +21,7 @@ import io.spring.initializr.generator.buildsystem.Dependency;
 import io.spring.initializr.generator.buildsystem.DependencyScope;
 import io.spring.initializr.generator.buildsystem.maven.MavenBuild;
 import io.spring.initializr.generator.io.template.MustacheTemplateRenderer;
-import io.spring.initializr.generator.project.documentation.HelpDocument;
+import io.spring.initializr.generator.spring.documentation.HelpDocument;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;

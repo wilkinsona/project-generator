@@ -20,8 +20,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 import io.spring.initializr.generator.buildsystem.Build;
-import io.spring.initializr.generator.project.documentation.HelpDocument;
-import io.spring.initializr.generator.project.documentation.HelpDocumentCustomizer;
+import io.spring.initializr.generator.spring.documentation.HelpDocument;
+import io.spring.initializr.generator.spring.documentation.HelpDocumentCustomizer;
 
 /**
  * {@link HelpDocumentCustomizer} for Azure.

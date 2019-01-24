@@ -19,7 +19,7 @@
 
 	<modules>
 		<module>initializr-generator</module>
-		<module>initializr-generator-project</module>
+		<module>initializr-generator-spring</module>
 
 		<module>start-site</module>
 	</modules>
@@ -39,7 +39,7 @@
 			</dependency>
 			<dependency>
 				<groupId>io.spring.initializr.experimental</groupId>
-				<artifactId>initializr-generator-project</artifactId>
+				<artifactId>initializr-generator-spring</artifactId>
 				<version>0.1.0.BUILD-SNAPSHOT</version>
 			</dependency>
 			<dependency>

@@ -21,8 +21,8 @@ import io.spring.initializr.generator.condition.ConditionalOnRequestedDependency
 import io.spring.initializr.generator.language.Annotation;
 import io.spring.initializr.generator.language.TypeDeclaration;
 import io.spring.initializr.generator.project.ProjectGenerationConfiguration;
-import io.spring.initializr.generator.project.code.MainApplicationTypeCustomizer;
-import io.spring.initializr.generator.project.documentation.HelpDocumentCustomizer;
+import io.spring.initializr.generator.spring.code.MainApplicationTypeCustomizer;
+import io.spring.initializr.generator.spring.documentation.HelpDocumentCustomizer;
 
 import org.springframework.context.annotation.Bean;
 
