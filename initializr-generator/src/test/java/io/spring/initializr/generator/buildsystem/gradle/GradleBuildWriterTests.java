@@ -241,13 +241,68 @@ class GradleBuildWriterTests {
 	}
 
 	@Test
-	void gradleBuildWithDependency() throws IOException {
+	void gradleBuildWithAnnotationProcessorDependency() throws IOException {
+		GradleBuild build = new GradleBuild();
+		build.dependencies().add("annotation-processor", "org.springframework.boot",
+				"spring-boot-configuration-processor",
+				DependencyScope.ANNOTATION_PROCESSOR);
+		List<String> lines = generateBuild(build);
+		assertThat(lines).containsSequence("dependencies {",
+				"    annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'",
+				"}");
+	}
+
+	@Test
+	void gradleBuildWithCompileDependency() throws IOException {
 		GradleBuild build = new GradleBuild();
 		build.dependencies().add("root", "org.springframework.boot",
 				"spring-boot-starter", DependencyScope.COMPILE);
 		List<String> lines = generateBuild(build);
 		assertThat(lines).containsSequence("dependencies {",
 				"    implementation 'org.springframework.boot:spring-boot-starter'", "}");
+	}
+
+	@Test
+	void gradleBuildWithRuntimeDependency() throws IOException {
+		GradleBuild build = new GradleBuild();
+		build.dependencies().add("driver", "com.example", "jdbc-driver",
+				VersionReference.ofValue("1.0.0"), DependencyScope.RUNTIME);
+		List<String> lines = generateBuild(build);
+		assertThat(lines).containsSequence("dependencies {",
+				"    runtimeOnly 'com.example:jdbc-driver:1.0.0'", "}");
+	}
+
+	@Test
+	void gradleBuildWithProvidedRuntimeDependency() throws IOException {
+		GradleBuild build = new GradleBuild();
+		build.dependencies().add("tomcat", "org.springframework.boot",
+				"spring-boot-starter-tomcat", DependencyScope.PROVIDED_RUNTIME);
+		List<String> lines = generateBuild(build);
+		assertThat(lines).containsSequence("dependencies {",
+				"    providedRuntime 'org.springframework.boot:spring-boot-starter-tomcat'",
+				"}");
+	}
+
+	@Test
+	void gradleBuildWithTestCompileDependency() throws IOException {
+		GradleBuild build = new GradleBuild();
+		build.dependencies().add("test", "org.springframework.boot",
+				"spring-boot-starter-test", DependencyScope.TEST_COMPILE);
+		List<String> lines = generateBuild(build);
+		assertThat(lines).containsSequence("dependencies {",
+				"    testImplementation 'org.springframework.boot:spring-boot-starter-test'",
+				"}");
+	}
+
+	@Test
+	void gradleBuildWithTestRuntimeDependency() throws IOException {
+		GradleBuild build = new GradleBuild();
+		build.dependencies().add("embed-mongo", "de.flapdoodle.embed",
+				"de.flapdoodle.embed.mongo", DependencyScope.TEST_RUNTIME);
+		List<String> lines = generateBuild(build);
+		assertThat(lines).containsSequence("dependencies {",
+				"    testRuntimeOnly 'de.flapdoodle.embed:de.flapdoodle.embed.mongo'",
+				"}");
 	}
 
 	@Test
