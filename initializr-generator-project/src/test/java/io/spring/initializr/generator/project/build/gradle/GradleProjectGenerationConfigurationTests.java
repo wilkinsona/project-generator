@@ -134,7 +134,7 @@ class GradleProjectGenerationConfigurationTests {
 		}
 	}
 
-	private Path generateProject(ProjectDescription description) throws IOException {
+	private Path generateProject(ProjectDescription description) {
 		return this.projectGenerationTester.generateProject(description,
 				BuildProjectGenerationConfiguration.class,
 				GradleProjectGenerationConfiguration.class);

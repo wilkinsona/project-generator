@@ -16,7 +16,6 @@
 
 package io.spring.initializr.generator.project;
 
-import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
@@ -51,7 +50,7 @@ class ProjectGeneratorTests {
 	}
 
 	@Test
-	void generateInvokedProcessor() throws IOException {
+	void generateInvokedProcessor() {
 		ProjectDescription description = new ProjectDescription();
 		description.setBuildSystem(new MavenBuildSystem());
 		Version platformVersion = Version.parse("2.1.0.RELEASE");
@@ -67,7 +66,7 @@ class ProjectGeneratorTests {
 	}
 
 	@Test
-	void generateInvokesCustomizers() throws IOException {
+	void generateInvokesCustomizers() {
 		ProjectGenerationTester tester = new ProjectGenerationTester(
 				ProjectGenerationTester.defaultProjectGenerationContext(this.directory)
 						.andThen((context) -> {
@@ -97,7 +96,7 @@ class ProjectGeneratorTests {
 	}
 
 	@Test
-	void generateInvokeProjectContributors() throws IOException {
+	void generateInvokeProjectContributors() {
 		ProjectGenerationTester tester = new ProjectGenerationTester(
 				ProjectGenerationTester.defaultProjectGenerationContext(this.directory)
 						.andThen((context) -> {

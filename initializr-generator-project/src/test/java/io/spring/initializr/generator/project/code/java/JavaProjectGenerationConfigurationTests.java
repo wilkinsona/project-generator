@@ -50,7 +50,7 @@ class JavaProjectGenerationConfigurationTests {
 	}
 
 	@Test
-	void mainClassIsContributed() throws IOException {
+	void mainClassIsContributed() {
 		ProjectDescription description = initProjectDescription();
 		Path project = generateProject(description);
 		List<String> relativePaths = this.projectGenerationTester
@@ -103,7 +103,7 @@ class JavaProjectGenerationConfigurationTests {
 	}
 
 	@Test
-	void customPackageNameIsUsedWhenGeneratingProject() throws IOException {
+	void customPackageNameIsUsedWhenGeneratingProject() {
 		ProjectDescription description = initProjectDescription();
 		description.setPackageName("com.example.demo");
 		Path project = generateProject(description);
@@ -115,7 +115,7 @@ class JavaProjectGenerationConfigurationTests {
 	}
 
 	@Test
-	void customApplicationNameIsUsedWhenGeneratingProject() throws IOException {
+	void customApplicationNameIsUsedWhenGeneratingProject() {
 		ProjectDescription description = initProjectDescription();
 		description.setApplicationName("MyApplication");
 		Path project = generateProject(description);
@@ -125,7 +125,7 @@ class JavaProjectGenerationConfigurationTests {
 				"src/test/java/com/example/MyApplicationTests.java");
 	}
 
-	private Path generateProject(ProjectDescription description) throws IOException {
+	private Path generateProject(ProjectDescription description) {
 		return this.projectGenerationTester.generateProject(description,
 				SourceCodeProjectGenerationConfiguration.class,
 				JavaProjectGenerationConfiguration.class);

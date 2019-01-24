@@ -54,7 +54,7 @@ class KotlinProjectGenerationConfigurationTests {
 	}
 
 	@Test
-	void mainClassIsContributedWhenGeneratingProject() throws IOException {
+	void mainClassIsContributedWhenGeneratingProject() {
 		ProjectDescription description = initProjectDescription();
 		Path project = generateProject(description);
 		List<String> relativePaths = this.projectGenerationTester
@@ -104,7 +104,7 @@ class KotlinProjectGenerationConfigurationTests {
 				"    }", "", "}", "");
 	}
 
-	private Path generateProject(ProjectDescription description) throws IOException {
+	private Path generateProject(ProjectDescription description) {
 		return this.projectGenerationTester.generateProject(description,
 				SourceCodeProjectGenerationConfiguration.class,
 				KotlinProjectGenerationConfiguration.class);

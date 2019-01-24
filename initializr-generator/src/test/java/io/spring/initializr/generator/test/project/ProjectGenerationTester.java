@@ -102,12 +102,16 @@ public class ProjectGenerationTester {
 	 * instances.
 	 * @param description the description of the project to generate
 	 * @return the root directory of the generated project structure
-	 * @throws IOException if an error occurs while handling resource
 	 * @see #generateProject(ProjectDescription, Class[])
 	 */
-	public Path generateProject(ProjectDescription description) throws IOException {
+	public Path generateProject(ProjectDescription description) {
 		this.projectDescriptionInitializer.accept(description);
-		return this.projectGenerator.generate(description);
+		try {
+			return this.projectGenerator.generate(description);
+		}
+		catch (IOException ex) {
+			throw new IllegalStateException("Failed to generated project ", ex);
+		}
 	}
 
 	/**
@@ -116,11 +120,10 @@ public class ProjectGenerationTester {
 	 * @param description the description of the project to generate
 	 * @param configurationClasses the configuration classes to use
 	 * @return the root directory of the generated project structure
-	 * @throws IOException if an error occurs while handling resource
 	 * @see #generateProject(ProjectDescription)
 	 */
 	public Path generateProject(ProjectDescription description,
-			Class<?>... configurationClasses) throws IOException {
+			Class<?>... configurationClasses) {
 		return generate(description, runAllAvailableContributors(), configurationClasses);
 	}
 
@@ -133,13 +136,16 @@ public class ProjectGenerationTester {
 	 * invoke
 	 * @param <T> the project asset type
 	 * @return the project asset
-	 * @throws IOException if an error occurs while handling resource
 	 */
 	public <T> T generate(ProjectDescription description,
-			ProjectGenerationContextProcessor<T> projectGenerationContext)
-			throws IOException {
+			ProjectGenerationContextProcessor<T> projectGenerationContext) {
 		this.projectDescriptionInitializer.accept(description);
-		return this.projectGenerator.generate(description, projectGenerationContext);
+		try {
+			return this.projectGenerator.generate(description, projectGenerationContext);
+		}
+		catch (IOException ex) {
+			throw new IllegalStateException("Failed to generated project ", ex);
+		}
 	}
 
 	/**
@@ -153,11 +159,10 @@ public class ProjectGenerationTester {
 	 * @param configurationClasses the configuration classes to use
 	 * @param <T> the project asset type
 	 * @return the project asset
-	 * @throws IOException if an error occurs while handling resource
 	 */
 	public <T> T generate(ProjectDescription description,
 			ProjectGenerationContextProcessor<T> projectGenerationContext,
-			Class<?>... configurationClasses) throws IOException {
+			Class<?>... configurationClasses) {
 		this.projectDescriptionInitializer.accept(description);
 		try (ProjectGenerationContext context = new ProjectGenerationContext()) {
 			ResolvedProjectDescription resolvedProjectDescription = new ResolvedProjectDescription(
@@ -169,7 +174,12 @@ public class ProjectGenerationTester {
 				context.register(configurationClasses);
 			}
 			context.refresh();
-			return projectGenerationContext.process(context);
+			try {
+				return projectGenerationContext.process(context);
+			}
+			catch (IOException ex) {
+				throw new IllegalStateException("Failed to generated project ", ex);
+			}
 		}
 	}
 
@@ -193,17 +203,21 @@ public class ProjectGenerationTester {
 	 * directory.
 	 * @param project the root directory of the project
 	 * @return the relative path of all files within the specified directory
-	 * @throws IOException if an error occurs browsing the directory
 	 */
-	public List<String> getRelativePathsOfProjectFiles(Path project) throws IOException {
+	public List<String> getRelativePathsOfProjectFiles(Path project) {
 		List<String> relativePaths = new ArrayList<>();
-		Files.walkFileTree(project, new SimpleFileVisitor<Path>() {
-			@Override
-			public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) {
-				relativePaths.add(project.relativize(file).toString());
-				return FileVisitResult.CONTINUE;
-			}
-		});
+		try {
+			Files.walkFileTree(project, new SimpleFileVisitor<Path>() {
+				@Override
+				public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) {
+					relativePaths.add(project.relativize(file).toString());
+					return FileVisitResult.CONTINUE;
+				}
+			});
+		}
+		catch (IOException ex) {
+			throw new IllegalStateException(ex);
+		}
 		return relativePaths;
 	}
 

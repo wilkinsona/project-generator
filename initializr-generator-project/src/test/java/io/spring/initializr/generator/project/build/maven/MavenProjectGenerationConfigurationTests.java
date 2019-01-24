@@ -51,7 +51,7 @@ class MavenProjectGenerationConfigurationTests {
 	}
 
 	@Test
-	void mavenWrapperIsContributedWhenGeneratingMavenProject() throws IOException {
+	void mavenWrapperIsContributedWhenGeneratingMavenProject() {
 		ProjectDescription description = initProjectDescription();
 		description.setPlatformVersion(Version.parse("2.1.0.RELEASE"));
 		Path project = generateProject(description);
@@ -64,7 +64,7 @@ class MavenProjectGenerationConfigurationTests {
 	}
 
 	@Test
-	void mavenPomIsContributedWhenGeneratingMavenProject() throws IOException {
+	void mavenPomIsContributedWhenGeneratingMavenProject() {
 		ProjectDescription description = initProjectDescription();
 		description.setPlatformVersion(Version.parse("2.1.0.RELEASE"));
 		Path project = generateProject(description);
@@ -90,7 +90,7 @@ class MavenProjectGenerationConfigurationTests {
 		}
 	}
 
-	private Path generateProject(ProjectDescription description) throws IOException {
+	private Path generateProject(ProjectDescription description) {
 		return this.projectGenerationTester.generateProject(description,
 				BuildProjectGenerationConfiguration.class,
 				MavenProjectGenerationConfiguration.class);

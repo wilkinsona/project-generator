@@ -16,7 +16,6 @@
 
 package io.spring.initializr.generator.project;
 
-import java.io.IOException;
 import java.nio.file.Path;
 import java.util.List;
 
@@ -47,7 +46,7 @@ class ProjectGeneratorIntegrationTests {
 	}
 
 	@Test
-	void customBaseDirectionIsUsedWhenGeneratingProject() throws IOException {
+	void customBaseDirectionIsUsedWhenGeneratingProject() {
 		ProjectDescription description = initProjectDescription();
 		description.setBuildSystem(new MavenBuildSystem());
 		description.setPlatformVersion(Version.parse("2.1.0.RELEASE"));

@@ -50,7 +50,7 @@ class GroovyProjectGenerationConfigurationTests {
 	}
 
 	@Test
-	void mainClassIsContributed() throws IOException {
+	void mainClassIsContributed() {
 		ProjectDescription description = initProjectDescription();
 		Path project = generateProject(description);
 		List<String> relativePaths = this.projectGenerationTester
@@ -100,7 +100,7 @@ class GroovyProjectGenerationConfigurationTests {
 				"        application.sources(Demo2Application)", "    }", "", "}", "");
 	}
 
-	private Path generateProject(ProjectDescription description) throws IOException {
+	private Path generateProject(ProjectDescription description) {
 		return this.projectGenerationTester.generateProject(description,
 				SourceCodeProjectGenerationConfiguration.class,
 				GroovyProjectGenerationConfiguration.class);

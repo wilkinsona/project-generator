@@ -57,7 +57,7 @@ class MustacheTemplateRendererTests {
 	}
 
 	@Test
-	void renderUnknownTemplate() throws IOException {
+	void renderUnknownTemplate() {
 		MustacheTemplateRenderer render = new MustacheTemplateRenderer(
 				"classpath:/templates/mustache", this.templatesCache);
 		assertThatExceptionOfType(IllegalStateException.class)
