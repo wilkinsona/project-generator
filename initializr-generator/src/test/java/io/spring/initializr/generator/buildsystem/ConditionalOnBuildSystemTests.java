@@ -66,8 +66,11 @@ class ConditionalOnBuildSystemTests {
 
 	private String outcomeFor(ProjectDescription projectDescription) {
 		return this.projectGenerationTester.generate(projectDescription,
-				(projectGenerationContext) -> projectGenerationContext
-						.getBean(String.class));
+				(projectGenerationContext) -> {
+					assertThat(projectGenerationContext.getBeansOfType(String.class))
+							.hasSize(1);
+					return projectGenerationContext.getBean(String.class);
+				});
 	}
 
 	@Configuration
