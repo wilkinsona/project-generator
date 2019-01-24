@@ -29,7 +29,7 @@ import org.springframework.context.annotation.Bean;
  * @author Andy Wilkinson
  */
 @ProjectGenerationConfiguration
-@ConditionalOnRequestedDependency(id = "restdocs")
+@ConditionalOnRequestedDependency("restdocs")
 public class SpringRestDocsProjectGenerationConfiguration {
 
 	@Bean

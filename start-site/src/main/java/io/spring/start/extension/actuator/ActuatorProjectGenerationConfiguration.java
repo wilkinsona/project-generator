@@ -27,7 +27,7 @@ import org.springframework.context.annotation.Bean;
  * @author Madhura Bhave
  */
 @ProjectGenerationConfiguration
-@ConditionalOnRequestedDependency(id = "actuator")
+@ConditionalOnRequestedDependency("actuator")
 public class ActuatorProjectGenerationConfiguration {
 
 	@Bean

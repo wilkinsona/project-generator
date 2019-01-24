@@ -39,13 +39,13 @@ import org.springframework.context.annotation.Conditional;
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ ElementType.TYPE, ElementType.METHOD })
 @Documented
-@Conditional(OnDependencyCondition.class)
+@Conditional(OnRequestedDependencyCondition.class)
 public @interface ConditionalOnRequestedDependency {
 
 	/**
 	 * The identifier of the dependency.
 	 * @return the dependency ID
 	 */
-	String id();
+	String value();
 
 }

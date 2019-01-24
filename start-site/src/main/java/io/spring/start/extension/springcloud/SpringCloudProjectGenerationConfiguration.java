@@ -35,14 +35,14 @@ import org.springframework.context.annotation.Bean;
 public class SpringCloudProjectGenerationConfiguration {
 
 	@Bean
-	@ConditionalOnRequestedDependency(id = "cloud-config-server")
+	@ConditionalOnRequestedDependency("cloud-config-server")
 	public MainApplicationTypeCustomizer<TypeDeclaration> enableConfigServerAnnotator() {
 		return (typeDeclaration) -> typeDeclaration.annotate(Annotation
 				.name("org.springframework.cloud.config.server.EnableConfigServer"));
 	}
 
 	@Bean
-	@ConditionalOnRequestedDependency(id = "cloud-eureka")
+	@ConditionalOnRequestedDependency("cloud-eureka")
 	public HelpDocumentCustomizer eurekaHelpDocumentCustomizer() {
 		return new EurekaHelpDocumentCustomizer();
 	}
