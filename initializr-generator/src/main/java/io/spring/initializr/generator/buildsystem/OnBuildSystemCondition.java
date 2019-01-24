@@ -16,8 +16,8 @@
 
 package io.spring.initializr.generator.buildsystem;
 
-import io.spring.initializr.generator.ResolvedProjectDescription;
 import io.spring.initializr.generator.condition.ProjectGenerationCondition;
+import io.spring.initializr.generator.project.ResolvedProjectDescription;
 
 import org.springframework.context.annotation.ConditionContext;
 import org.springframework.core.type.AnnotatedTypeMetadata;

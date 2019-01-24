@@ -14,25 +14,27 @@
  * limitations under the License.
  */
 
-package io.spring.initializr.generator;
+package io.spring.initializr.generator.project;
 
-import java.lang.annotation.Documented;
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
-
-import org.springframework.context.annotation.Configuration;
+import java.io.IOException;
+import java.nio.file.Path;
 
 /**
- * Specialization of {@link Configuration} for configuration of project generation.
+ * A factory of project directory.
  *
- * @author Andy Wilkinson
+ * @author Stephane Nicoll
  */
-@Target(ElementType.TYPE)
-@Retention(RetentionPolicy.RUNTIME)
-@Documented
-@Configuration
-public @interface ProjectGenerationConfiguration {
+@FunctionalInterface
+public interface ProjectDirectoryFactory {
+
+	/**
+	 * Create a dedicated project directory for the specified
+	 * {@link ResolvedProjectDescription}.
+	 * @param description the description of a project to generate
+	 * @return a dedicated existing directory
+	 * @throws IOException if creating the directory failed
+	 */
+	Path createProjectDirectory(ResolvedProjectDescription description)
+			throws IOException;
 
 }

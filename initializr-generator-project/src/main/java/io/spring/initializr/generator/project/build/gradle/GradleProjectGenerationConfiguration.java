@@ -19,7 +19,6 @@ package io.spring.initializr.generator.project.build.gradle;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import io.spring.initializr.generator.ResolvedProjectDescription;
 import io.spring.initializr.generator.buildsystem.BuildItemResolver;
 import io.spring.initializr.generator.buildsystem.gradle.ConditionalOnGradle;
 import io.spring.initializr.generator.buildsystem.gradle.GradleBuild;
@@ -27,6 +26,7 @@ import io.spring.initializr.generator.condition.ConditionalOnPlatformVersion;
 import io.spring.initializr.generator.io.IndentingWriterFactory;
 import io.spring.initializr.generator.language.java.ConditionalOnJavaLanguage;
 import io.spring.initializr.generator.packaging.war.ConditionalOnWarPackaging;
+import io.spring.initializr.generator.project.ResolvedProjectDescription;
 import io.spring.initializr.generator.project.build.BuildCustomizer;
 import io.spring.initializr.generator.util.LambdaSafe;
 

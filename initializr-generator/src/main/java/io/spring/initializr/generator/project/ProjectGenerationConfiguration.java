@@ -14,15 +14,25 @@
  * limitations under the License.
  */
 
-package io.spring.initializr.generator;
+package io.spring.initializr.generator.project;
 
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import java.lang.annotation.Documented;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+
+import org.springframework.context.annotation.Configuration;
 
 /**
- * Provide configuration and infrastructure to generate a project.
+ * Specialization of {@link Configuration} for configuration of project generation.
  *
- * @author Stephane Nicoll
+ * @author Andy Wilkinson
  */
-public class ProjectGenerationContext extends AnnotationConfigApplicationContext {
+@Target(ElementType.TYPE)
+@Retention(RetentionPolicy.RUNTIME)
+@Documented
+@Configuration
+public @interface ProjectGenerationConfiguration {
 
 }

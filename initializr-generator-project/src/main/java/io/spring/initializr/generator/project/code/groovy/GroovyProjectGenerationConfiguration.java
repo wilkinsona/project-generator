@@ -16,14 +16,14 @@
 
 package io.spring.initializr.generator.project.code.groovy;
 
-import io.spring.initializr.generator.ProjectGenerationConfiguration;
-import io.spring.initializr.generator.ResolvedProjectDescription;
 import io.spring.initializr.generator.io.IndentingWriterFactory;
 import io.spring.initializr.generator.language.groovy.ConditionalOnGroovyLanguage;
 import io.spring.initializr.generator.language.groovy.GroovyCompilationUnit;
 import io.spring.initializr.generator.language.groovy.GroovySourceCode;
 import io.spring.initializr.generator.language.groovy.GroovySourceCodeWriter;
 import io.spring.initializr.generator.language.groovy.GroovyTypeDeclaration;
+import io.spring.initializr.generator.project.ProjectGenerationConfiguration;
+import io.spring.initializr.generator.project.ResolvedProjectDescription;
 import io.spring.initializr.generator.project.code.MainApplicationTypeCustomizer;
 import io.spring.initializr.generator.project.code.MainCompilationUnitCustomizer;
 import io.spring.initializr.generator.project.code.MainSourceCodeCustomizer;

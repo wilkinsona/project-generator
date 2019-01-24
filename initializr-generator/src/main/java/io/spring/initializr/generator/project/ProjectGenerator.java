@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package io.spring.initializr.generator;
+package io.spring.initializr.generator.project;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -130,8 +130,8 @@ public class ProjectGenerator {
 
 	/**
 	 * {@link ImportSelector} for loading classes configured in {@code spring.factories}
-	 * using the {@code io.spring.initializr.generator.ProjectGenerationConfiguration}
-	 * key.
+	 * using the
+	 * {@code io.spring.initializr.generator.project.ProjectGenerationConfiguration} key.
 	 */
 	static class ProjectGenerationImportSelector implements ImportSelector {
 

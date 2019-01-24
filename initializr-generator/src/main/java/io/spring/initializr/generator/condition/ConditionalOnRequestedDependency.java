@@ -22,7 +22,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import io.spring.initializr.generator.ResolvedProjectDescription;
+import io.spring.initializr.generator.project.ResolvedProjectDescription;
 
 import org.springframework.context.annotation.Conditional;
 

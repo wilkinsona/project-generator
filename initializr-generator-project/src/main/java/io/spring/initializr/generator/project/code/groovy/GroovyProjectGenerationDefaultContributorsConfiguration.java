@@ -18,7 +18,6 @@ package io.spring.initializr.generator.project.code.groovy;
 
 import java.lang.reflect.Modifier;
 
-import io.spring.initializr.generator.ResolvedProjectDescription;
 import io.spring.initializr.generator.buildsystem.Build;
 import io.spring.initializr.generator.buildsystem.gradle.ConditionalOnGradle;
 import io.spring.initializr.generator.buildsystem.maven.ConditionalOnMaven;
@@ -30,6 +29,7 @@ import io.spring.initializr.generator.language.groovy.GroovyMethodInvocation;
 import io.spring.initializr.generator.language.groovy.GroovyReturnStatement;
 import io.spring.initializr.generator.language.groovy.GroovyTypeDeclaration;
 import io.spring.initializr.generator.packaging.war.ConditionalOnWarPackaging;
+import io.spring.initializr.generator.project.ResolvedProjectDescription;
 import io.spring.initializr.generator.project.build.BuildCustomizer;
 import io.spring.initializr.generator.project.code.MainApplicationTypeCustomizer;
 import io.spring.initializr.generator.project.code.ServletInitializerCustomizer;

@@ -16,9 +16,9 @@
 
 package io.spring.initializr.generator.project.scm.git;
 
-import io.spring.initializr.generator.ProjectGenerationConfiguration;
 import io.spring.initializr.generator.buildsystem.gradle.ConditionalOnGradle;
 import io.spring.initializr.generator.buildsystem.maven.ConditionalOnMaven;
+import io.spring.initializr.generator.project.ProjectGenerationConfiguration;
 
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.context.annotation.Bean;

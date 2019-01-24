@@ -16,11 +16,11 @@
 
 package io.spring.start.extension.springcloud;
 
-import io.spring.initializr.generator.ProjectGenerationConfiguration;
 import io.spring.initializr.generator.buildsystem.Build;
 import io.spring.initializr.generator.condition.ConditionalOnRequestedDependency;
 import io.spring.initializr.generator.language.Annotation;
 import io.spring.initializr.generator.language.TypeDeclaration;
+import io.spring.initializr.generator.project.ProjectGenerationConfiguration;
 import io.spring.initializr.generator.project.code.MainApplicationTypeCustomizer;
 import io.spring.initializr.generator.project.documentation.HelpDocumentCustomizer;
 

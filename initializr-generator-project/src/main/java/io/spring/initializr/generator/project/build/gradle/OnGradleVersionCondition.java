@@ -16,8 +16,8 @@
 
 package io.spring.initializr.generator.project.build.gradle;
 
-import io.spring.initializr.generator.ResolvedProjectDescription;
 import io.spring.initializr.generator.condition.ProjectGenerationCondition;
+import io.spring.initializr.generator.project.ResolvedProjectDescription;
 import io.spring.initializr.generator.util.Version;
 import io.spring.initializr.generator.util.VersionParser;
 import io.spring.initializr.generator.util.VersionRange;

@@ -16,7 +16,6 @@
 
 package io.spring.initializr.generator.project.code.kotlin;
 
-import io.spring.initializr.generator.ResolvedProjectDescription;
 import io.spring.initializr.generator.buildsystem.Build;
 import io.spring.initializr.generator.buildsystem.gradle.ConditionalOnGradle;
 import io.spring.initializr.generator.buildsystem.maven.ConditionalOnMaven;
@@ -32,6 +31,7 @@ import io.spring.initializr.generator.language.kotlin.KotlinReifiedFunctionInvoc
 import io.spring.initializr.generator.language.kotlin.KotlinReturnStatement;
 import io.spring.initializr.generator.language.kotlin.KotlinTypeDeclaration;
 import io.spring.initializr.generator.packaging.war.ConditionalOnWarPackaging;
+import io.spring.initializr.generator.project.ResolvedProjectDescription;
 import io.spring.initializr.generator.project.build.BuildCustomizer;
 import io.spring.initializr.generator.project.code.MainCompilationUnitCustomizer;
 import io.spring.initializr.generator.project.code.ServletInitializerCustomizer;

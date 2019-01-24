@@ -16,8 +16,8 @@
 
 package io.spring.start.extension.actuator;
 
-import io.spring.initializr.generator.ProjectGenerationConfiguration;
 import io.spring.initializr.generator.condition.ConditionalOnRequestedDependency;
+import io.spring.initializr.generator.project.ProjectGenerationConfiguration;
 
 import org.springframework.context.annotation.Bean;
 

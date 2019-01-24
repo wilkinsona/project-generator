@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,8 +21,8 @@ import java.io.PrintWriter;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
-import io.spring.initializr.generator.ProjectContributor;
-import io.spring.initializr.generator.SingleResourceProjectContributor;
+import io.spring.initializr.generator.project.ProjectContributor;
+import io.spring.initializr.generator.project.SingleResourceProjectContributor;
 
 /**
  * A {@link SingleResourceProjectContributor} that contributes a {@code .gitignore} file

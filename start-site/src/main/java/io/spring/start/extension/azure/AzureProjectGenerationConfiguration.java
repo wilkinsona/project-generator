@@ -16,8 +16,8 @@
 
 package io.spring.start.extension.azure;
 
-import io.spring.initializr.generator.ProjectGenerationConfiguration;
 import io.spring.initializr.generator.buildsystem.Build;
+import io.spring.initializr.generator.project.ProjectGenerationConfiguration;
 import io.spring.initializr.generator.project.documentation.HelpDocumentCustomizer;
 
 import org.springframework.context.annotation.Bean;

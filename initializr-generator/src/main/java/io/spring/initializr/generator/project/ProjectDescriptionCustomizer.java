@@ -14,27 +14,25 @@
  * limitations under the License.
  */
 
-package io.spring.initializr.generator;
+package io.spring.initializr.generator.project;
 
-import java.io.IOException;
-import java.nio.file.Path;
+import org.springframework.core.Ordered;
 
 /**
- * A factory of project directory.
+ * Callback for customizing a {@link ProjectDescription}. Invoked with an {@link Ordered
+ * order} of {@code 0} by default, considering overriding {@link #getOrder()} to customize
+ * this behaviour.
  *
  * @author Stephane Nicoll
  */
 @FunctionalInterface
-public interface ProjectDirectoryFactory {
+public interface ProjectDescriptionCustomizer extends Ordered {
 
-	/**
-	 * Create a dedicated project directory for the specified
-	 * {@link ResolvedProjectDescription}.
-	 * @param description the description of a project to generate
-	 * @return a dedicated existing directory
-	 * @throws IOException if creating the directory failed
-	 */
-	Path createProjectDirectory(ResolvedProjectDescription description)
-			throws IOException;
+	void customize(ProjectDescription description);
+
+	@Override
+	default int getOrder() {
+		return 0;
+	}
 
 }

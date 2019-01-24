@@ -16,7 +16,7 @@
 
 package io.spring.initializr.generator.project.configuration;
 
-import io.spring.initializr.generator.ProjectGenerationConfiguration;
+import io.spring.initializr.generator.project.ProjectGenerationConfiguration;
 
 import org.springframework.context.annotation.Bean;
 

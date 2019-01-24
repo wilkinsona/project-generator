@@ -22,12 +22,12 @@ import java.util.List;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
-import io.spring.initializr.generator.ProjectContributor;
-import io.spring.initializr.generator.ResolvedProjectDescription;
 import io.spring.initializr.generator.language.CompilationUnit;
 import io.spring.initializr.generator.language.SourceCode;
 import io.spring.initializr.generator.language.SourceCodeWriter;
 import io.spring.initializr.generator.language.TypeDeclaration;
+import io.spring.initializr.generator.project.ProjectContributor;
+import io.spring.initializr.generator.project.ResolvedProjectDescription;
 import io.spring.initializr.generator.util.LambdaSafe;
 
 import org.springframework.beans.factory.ObjectProvider;

@@ -25,14 +25,14 @@ import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
 import java.util.List;
 
-import io.spring.initializr.generator.ProjectDescription;
 import io.spring.initializr.generator.buildsystem.Dependency;
 import io.spring.initializr.generator.buildsystem.DependencyScope;
 import io.spring.initializr.generator.buildsystem.gradle.GradleBuildSystem;
 import io.spring.initializr.generator.buildsystem.maven.MavenBuildSystem;
 import io.spring.initializr.generator.language.java.JavaLanguage;
-import io.spring.initializr.generator.test.ProjectGenerationTester;
+import io.spring.initializr.generator.project.ProjectDescription;
 import io.spring.initializr.generator.test.assertj.NodeAssert;
+import io.spring.initializr.generator.test.project.ProjectGenerationTester;
 import io.spring.initializr.generator.util.Version;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

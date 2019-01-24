@@ -14,14 +14,16 @@
  * limitations under the License.
  */
 
-package io.spring.initializr.generator;
+package io.spring.initializr.generator.project;
 
 import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.List;
 import java.util.function.Consumer;
 
 import io.spring.initializr.generator.buildsystem.maven.MavenBuildSystem;
-import io.spring.initializr.generator.test.ProjectGenerationTester;
+import io.spring.initializr.generator.test.project.ProjectGenerationTester;
 import io.spring.initializr.generator.util.Version;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -82,9 +84,7 @@ class ProjectGeneratorTests {
 												description.setGroupId("com.acme");
 											}));
 						}));
-		ProjectDescription description = new ProjectDescription();
-		description.setBuildSystem(new MavenBuildSystem());
-		description.setPlatformVersion(Version.parse("2.1.0.RELEASE"));
+		ProjectDescription description = initProjectDescription();
 		description.setGroupId("com.example.demo");
 		description.setName("Original");
 		description.setPlatformVersion(Version.parse("2.1.0.RELEASE"));
@@ -95,6 +95,34 @@ class ProjectGeneratorTests {
 								.getBean(ResolvedProjectDescription.class));
 		assertThat(resolvedProjectDescription.getGroupId()).isEqualTo("com.acme");
 		assertThat(resolvedProjectDescription.getName()).isEqualTo("Test");
+	}
+
+	@Test
+	void generateInvokeProjectContributors() throws IOException {
+		ProjectGenerationTester tester = new ProjectGenerationTester(
+				ProjectGenerationTester.defaultProjectGenerationContext(this.directory)
+						.andThen((context) -> {
+							context.registerBean("contributor1", ProjectContributor.class,
+									() -> (directory) -> Files
+											.createFile(directory.resolve("test.text")));
+							context.registerBean("contributor2", ProjectContributor.class,
+									() -> (directory) -> {
+										Path subDir = directory.resolve("src/main/test");
+										Files.createDirectories(subDir);
+										Files.createFile(subDir.resolve("Test.src"));
+									});
+						}));
+
+		Path directory = tester.generateProject(initProjectDescription());
+		List<String> relativePaths = tester.getRelativePathsOfProjectFiles(directory);
+		assertThat(relativePaths).containsOnly("test.text", "src/main/test/Test.src");
+	}
+
+	private ProjectDescription initProjectDescription() {
+		ProjectDescription description = new ProjectDescription();
+		description.setBuildSystem(new MavenBuildSystem());
+		description.setPlatformVersion(Version.parse("2.1.0.RELEASE"));
+		return description;
 	}
 
 	private static class TestProjectDescriptionCustomizer

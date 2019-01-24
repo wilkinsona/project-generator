@@ -16,10 +16,10 @@
 
 package io.spring.start.extension.springrestdocs;
 
-import io.spring.initializr.generator.ProjectGenerationConfiguration;
 import io.spring.initializr.generator.buildsystem.gradle.ConditionalOnGradle;
 import io.spring.initializr.generator.buildsystem.maven.ConditionalOnMaven;
 import io.spring.initializr.generator.condition.ConditionalOnRequestedDependency;
+import io.spring.initializr.generator.project.ProjectGenerationConfiguration;
 
 import org.springframework.context.annotation.Bean;
 

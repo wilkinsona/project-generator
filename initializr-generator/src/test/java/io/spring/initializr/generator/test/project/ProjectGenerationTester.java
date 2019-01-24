@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package io.spring.initializr.generator.test;
+package io.spring.initializr.generator.test.project;
 
 import java.io.IOException;
 import java.nio.file.FileVisitResult;
@@ -27,15 +27,15 @@ import java.util.List;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
-import io.spring.initializr.generator.ProjectContributor;
-import io.spring.initializr.generator.ProjectDescription;
-import io.spring.initializr.generator.ProjectDirectoryFactory;
-import io.spring.initializr.generator.ProjectGenerationConfiguration;
-import io.spring.initializr.generator.ProjectGenerationContext;
-import io.spring.initializr.generator.ProjectGenerator;
-import io.spring.initializr.generator.ResolvedProjectDescription;
 import io.spring.initializr.generator.io.IndentingWriterFactory;
 import io.spring.initializr.generator.io.SimpleIndentStrategy;
+import io.spring.initializr.generator.project.ProjectContributor;
+import io.spring.initializr.generator.project.ProjectDescription;
+import io.spring.initializr.generator.project.ProjectDirectoryFactory;
+import io.spring.initializr.generator.project.ProjectGenerationConfiguration;
+import io.spring.initializr.generator.project.ProjectGenerationContext;
+import io.spring.initializr.generator.project.ProjectGenerator;
+import io.spring.initializr.generator.project.ResolvedProjectDescription;
 
 import org.springframework.context.annotation.Configuration;
 

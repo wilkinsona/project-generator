@@ -16,8 +16,8 @@
 
 package io.spring.initializr.generator.project.build;
 
-import io.spring.initializr.generator.ResolvedProjectDescription;
 import io.spring.initializr.generator.buildsystem.Build;
+import io.spring.initializr.generator.project.ResolvedProjectDescription;
 
 import org.springframework.core.Ordered;
 
