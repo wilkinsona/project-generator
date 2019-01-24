@@ -62,7 +62,7 @@ class GradleProjectGenerationConfigurationTests {
 			throws IOException {
 		ProjectDescription description = initProjectDescription();
 		description.setPlatformVersion(Version.parse("1.5.17.RELEASE"));
-		Path project = this.projectGenerationTester.generate(description,
+		Path project = this.projectGenerationTester.generateProject(description,
 				GradleProjectGenerationConfiguration.class);
 		List<String> relativePaths = this.projectGenerationTester
 				.getRelativePathsOfProjectFiles(project);
@@ -135,7 +135,7 @@ class GradleProjectGenerationConfigurationTests {
 	}
 
 	private Path generateProject(ProjectDescription description) throws IOException {
-		return this.projectGenerationTester.generate(description,
+		return this.projectGenerationTester.generateProject(description,
 				BuildProjectGenerationConfiguration.class,
 				GradleProjectGenerationConfiguration.class);
 	}

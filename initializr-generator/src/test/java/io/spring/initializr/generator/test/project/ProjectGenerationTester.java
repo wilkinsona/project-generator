@@ -34,6 +34,7 @@ import io.spring.initializr.generator.project.ProjectDescription;
 import io.spring.initializr.generator.project.ProjectDirectoryFactory;
 import io.spring.initializr.generator.project.ProjectGenerationConfiguration;
 import io.spring.initializr.generator.project.ProjectGenerationContext;
+import io.spring.initializr.generator.project.ProjectGenerationContextProcessor;
 import io.spring.initializr.generator.project.ProjectGenerator;
 import io.spring.initializr.generator.project.ResolvedProjectDescription;
 
@@ -96,17 +97,13 @@ public class ProjectGenerationTester {
 		};
 	}
 
-	public ProjectGenerator getProjectGenerator() {
-		return this.projectGenerator;
-	}
-
 	/**
-	 * Generate a full project with all that available
-	 * {@link ProjectGenerationConfiguration} instances.
+	 * Generate a full project with all available {@link ProjectGenerationConfiguration}
+	 * instances.
 	 * @param description the description of the project to generate
 	 * @return the root directory of the generated project structure
 	 * @throws IOException if an error occurs while handling resource
-	 * @see #generate(ProjectDescription, Class[])
+	 * @see #generateProject(ProjectDescription, Class[])
 	 */
 	public Path generateProject(ProjectDescription description) throws IOException {
 		this.projectDescriptionInitializer.accept(description);
@@ -114,16 +111,53 @@ public class ProjectGenerationTester {
 	}
 
 	/**
-	 * Generate project's content with only the specified configuration classes. Can be a
-	 * mix or regular {@link Configuration} and {@link ProjectGenerationConfiguration}.
+	 * Generate a project structure with only the specified configuration classes. Can be
+	 * a mix or regular {@link Configuration} and {@link ProjectGenerationConfiguration}.
 	 * @param description the description of the project to generate
 	 * @param configurationClasses the configuration classes to use
 	 * @return the root directory of the generated project structure
 	 * @throws IOException if an error occurs while handling resource
 	 * @see #generateProject(ProjectDescription)
 	 */
-	public Path generate(ProjectDescription description, Class<?>... configurationClasses)
+	public Path generateProject(ProjectDescription description,
+			Class<?>... configurationClasses) throws IOException {
+		return generate(description, runAllAvailableContributors(), configurationClasses);
+	}
+
+	/**
+	 * Generate a project asset using the specified
+	 * {@link ProjectGenerationContextProcessor} and all available
+	 * {@link ProjectGenerationConfiguration} instances.
+	 * @param description the description of the project to generate
+	 * @param projectGenerationContext the {@link ProjectGenerationContextProcessor} to
+	 * invoke
+	 * @param <T> the project asset type
+	 * @return the project asset
+	 * @throws IOException if an error occurs while handling resource
+	 */
+	public <T> T generate(ProjectDescription description,
+			ProjectGenerationContextProcessor<T> projectGenerationContext)
 			throws IOException {
+		this.projectDescriptionInitializer.accept(description);
+		return this.projectGenerator.generate(description, projectGenerationContext);
+	}
+
+	/**
+	 * Generate a project asset using the specified
+	 * {@link ProjectGenerationContextProcessor} and only the specified configuration
+	 * classes. Can be a mix or regular {@link Configuration} and
+	 * {@link ProjectGenerationConfiguration}.
+	 * @param description the description of the project to generate
+	 * @param projectGenerationContext the {@link ProjectGenerationContextProcessor} to
+	 * invoke
+	 * @param configurationClasses the configuration classes to use
+	 * @param <T> the project asset type
+	 * @return the project asset
+	 * @throws IOException if an error occurs while handling resource
+	 */
+	public <T> T generate(ProjectDescription description,
+			ProjectGenerationContextProcessor<T> projectGenerationContext,
+			Class<?>... configurationClasses) throws IOException {
 		this.projectDescriptionInitializer.accept(description);
 		try (ProjectGenerationContext context = new ProjectGenerationContext()) {
 			ResolvedProjectDescription resolvedProjectDescription = new ResolvedProjectDescription(
@@ -135,8 +169,15 @@ public class ProjectGenerationTester {
 				context.register(configurationClasses);
 			}
 			context.refresh();
+			return projectGenerationContext.process(context);
+		}
+	}
+
+	private ProjectGenerationContextProcessor<Path> runAllAvailableContributors() {
+		return (context) -> {
 			Path projectDirectory = context.getBean(ProjectDirectoryFactory.class)
-					.createProjectDirectory(resolvedProjectDescription);
+					.createProjectDirectory(
+							context.getBean(ResolvedProjectDescription.class));
 			List<ProjectContributor> projectContributors = context
 					.getBeanProvider(ProjectContributor.class).orderedStream()
 					.collect(Collectors.toList());
@@ -144,7 +185,7 @@ public class ProjectGenerationTester {
 				projectContributor.contribute(projectDirectory);
 			}
 			return projectDirectory;
-		}
+		};
 	}
 
 	/**

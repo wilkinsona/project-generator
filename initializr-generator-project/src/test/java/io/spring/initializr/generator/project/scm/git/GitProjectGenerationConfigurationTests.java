@@ -78,7 +78,7 @@ class GitProjectGenerationConfigurationTests {
 
 	private List<String> generateGitIgnore(ProjectDescription description)
 			throws IOException {
-		Path project = this.projectGenerationTester.generate(description,
+		Path project = this.projectGenerationTester.generateProject(description,
 				GitProjectGenerationConfiguration.class);
 		return Files.readAllLines(project.resolve(".gitignore"));
 	}

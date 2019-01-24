@@ -101,7 +101,7 @@ class GroovyProjectGenerationConfigurationTests {
 	}
 
 	private Path generateProject(ProjectDescription description) throws IOException {
-		return this.projectGenerationTester.generate(description,
+		return this.projectGenerationTester.generateProject(description,
 				SourceCodeProjectGenerationConfiguration.class,
 				GroovyProjectGenerationConfiguration.class);
 	}

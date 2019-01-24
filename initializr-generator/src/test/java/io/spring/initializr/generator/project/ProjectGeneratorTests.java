@@ -58,7 +58,7 @@ class ProjectGeneratorTests {
 		description.setPlatformVersion(platformVersion);
 		description.setJavaVersion("11");
 		ResolvedProjectDescription resolvedProjectDescription = this.projectGenerationTester
-				.getProjectGenerator().generate(description,
+				.generate(description,
 						(projectGenerationContext) -> projectGenerationContext
 								.getBean(ResolvedProjectDescription.class));
 		assertThat(resolvedProjectDescription.getPlatformVersion())
@@ -89,10 +89,9 @@ class ProjectGeneratorTests {
 		description.setName("Original");
 		description.setPlatformVersion(Version.parse("2.1.0.RELEASE"));
 
-		ResolvedProjectDescription resolvedProjectDescription = tester
-				.getProjectGenerator().generate(description,
-						(projectGenerationContext) -> projectGenerationContext
-								.getBean(ResolvedProjectDescription.class));
+		ResolvedProjectDescription resolvedProjectDescription = tester.generate(
+				description, (projectGenerationContext) -> projectGenerationContext
+						.getBean(ResolvedProjectDescription.class));
 		assertThat(resolvedProjectDescription.getGroupId()).isEqualTo("com.acme");
 		assertThat(resolvedProjectDescription.getName()).isEqualTo("Test");
 	}

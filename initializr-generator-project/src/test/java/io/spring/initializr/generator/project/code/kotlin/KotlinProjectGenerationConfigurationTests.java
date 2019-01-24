@@ -105,7 +105,7 @@ class KotlinProjectGenerationConfigurationTests {
 	}
 
 	private Path generateProject(ProjectDescription description) throws IOException {
-		return this.projectGenerationTester.generate(description,
+		return this.projectGenerationTester.generateProject(description,
 				SourceCodeProjectGenerationConfiguration.class,
 				KotlinProjectGenerationConfiguration.class);
 	}
