@@ -77,6 +77,17 @@ class ConditionalOnLanguageTests {
 				});
 	}
 
+	@Test
+	void outcomeWithNoAvailableLanguage() {
+		ProjectDescription projectDescription = new ProjectDescription();
+		this.projectGenerationTester.generate(projectDescription,
+				(projectGenerationContext) -> {
+					assertThat(projectGenerationContext.getBeansOfType(String.class))
+							.isEmpty();
+					return null;
+				});
+	}
+
 	private String outcomeFor(ProjectDescription projectDescription) {
 		return this.projectGenerationTester.generate(projectDescription,
 				(projectGenerationContext) -> {
