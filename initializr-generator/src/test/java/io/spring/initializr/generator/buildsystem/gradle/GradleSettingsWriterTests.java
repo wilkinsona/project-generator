@@ -72,6 +72,16 @@ class GradleSettingsWriterTests {
 				"            }", "        }", "    }", "}");
 	}
 
+	@Test
+	void artifactIdShouldBeUsedAsTheRootProjectName() throws Exception {
+		GradleBuild build = new GradleBuild();
+		build.setArtifact("my-application");
+		build.pluginRepositories().add("spring-snapshots", "Spring Snapshots",
+				"https://repo.spring.io/snapshot", true);
+		List<String> lines = generateSettings(build);
+		assertThat(lines).containsSequence("rootProject.name = 'my-application'");
+	}
+
 	private List<String> generateSettings(GradleBuild build) throws IOException {
 		GradleSettingsWriter writer = new GradleSettingsWriter();
 		StringWriter out = new StringWriter();
