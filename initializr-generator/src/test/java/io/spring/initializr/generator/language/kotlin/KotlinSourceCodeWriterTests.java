@@ -68,7 +68,20 @@ class KotlinSourceCodeWriterTests {
 	}
 
 	@Test
-	void simpleFunction() throws IOException {
+	void emptyTypeDeclarationWithSuperClass() throws IOException {
+		KotlinSourceCode sourceCode = new KotlinSourceCode();
+		KotlinCompilationUnit compilationUnit = sourceCode
+				.createCompilationUnit("com.example", "Test");
+		KotlinTypeDeclaration test = compilationUnit.createTypeDeclaration("Test");
+		test.extend("com.example.build.TestParent");
+		List<String> lines = writeSingleType(sourceCode, "com/example/Test.kt");
+		assertThat(lines).containsExactly("package com.example", "",
+				"import com.example.build.TestParent", "", "class Test : TestParent()",
+				"");
+	}
+
+	@Test
+	void function() throws IOException {
 		KotlinSourceCode sourceCode = new KotlinSourceCode();
 		KotlinCompilationUnit compilationUnit = sourceCode
 				.createCompilationUnit("com.example", "Test");
@@ -120,6 +133,16 @@ class KotlinSourceCodeWriterTests {
 				"@SpringBootApplication", "class Test", "",
 				"fun main(args: Array<String>) {", "    runApplication<Test>(*args)", "}",
 				"");
+	}
+
+	@Test
+	void annotationWithSimpleAttribute() throws IOException {
+		List<String> lines = writeClassAnnotation(
+				Annotation.name("org.springframework.test.TestApplication",
+						(builder) -> builder.attribute("counter", Integer.class, "42")));
+		assertThat(lines).containsExactly("package com.example", "",
+				"import org.springframework.test.TestApplication", "",
+				"@TestApplication(counter = 42)", "class Test", "");
 	}
 
 	@Test

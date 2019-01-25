@@ -70,7 +70,20 @@ class GroovySourceCodeWriterTests {
 	}
 
 	@Test
-	void simpleMethod() throws IOException {
+	void emptyTypeDeclarationWithSuperClass() throws IOException {
+		GroovySourceCode sourceCode = new GroovySourceCode();
+		GroovyCompilationUnit compilationUnit = sourceCode
+				.createCompilationUnit("com.example", "Test");
+		GroovyTypeDeclaration test = compilationUnit.createTypeDeclaration("Test");
+		test.extend("com.example.build.TestParent");
+		List<String> lines = writeSingleType(sourceCode, "com/example/Test.groovy");
+		assertThat(lines).containsExactly("package com.example", "",
+				"import com.example.build.TestParent", "",
+				"class Test extends TestParent {", "", "}", "");
+	}
+
+	@Test
+	void method() throws IOException {
 		GroovySourceCode sourceCode = new GroovySourceCode();
 		GroovyCompilationUnit compilationUnit = sourceCode
 				.createCompilationUnit("com.example", "Test");
@@ -107,6 +120,16 @@ class GroovySourceCodeWriterTests {
 				"@SpringBootApplication", "class Test {", "",
 				"    static void main(String[] args) {",
 				"        SpringApplication.run(Test, args)", "    }", "", "}", "");
+	}
+
+	@Test
+	void annotationWithSimpleAttribute() throws IOException {
+		List<String> lines = writeClassAnnotation(
+				Annotation.name("org.springframework.test.TestApplication",
+						(builder) -> builder.attribute("counter", Integer.class, "42")));
+		assertThat(lines).containsExactly("package com.example", "",
+				"import org.springframework.test.TestApplication", "",
+				"@TestApplication(counter = 42)", "class Test {", "", "}", "");
 	}
 
 	@Test

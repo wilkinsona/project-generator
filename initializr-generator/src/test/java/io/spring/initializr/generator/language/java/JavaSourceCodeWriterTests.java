@@ -70,6 +70,36 @@ class JavaSourceCodeWriterTests {
 	}
 
 	@Test
+	void emptyTypeDeclarationWithSuperClass() throws IOException {
+		JavaSourceCode sourceCode = new JavaSourceCode();
+		JavaCompilationUnit compilationUnit = sourceCode
+				.createCompilationUnit("com.example", "Test");
+		JavaTypeDeclaration test = compilationUnit.createTypeDeclaration("Test");
+		test.extend("com.example.build.TestParent");
+		List<String> lines = writeSingleType(sourceCode, "com/example/Test.java");
+		assertThat(lines).containsExactly("package com.example;", "",
+				"import com.example.build.TestParent;", "",
+				"public class Test extends TestParent {", "", "}", "");
+	}
+
+	@Test
+	void method() throws IOException {
+		JavaSourceCode sourceCode = new JavaSourceCode();
+		JavaCompilationUnit compilationUnit = sourceCode
+				.createCompilationUnit("com.example", "Test");
+		JavaTypeDeclaration test = compilationUnit.createTypeDeclaration("Test");
+		test.addMethodDeclaration(
+				JavaMethodDeclaration.method("trim").returning("java.lang.String")
+						.parameters(new Parameter("java.lang.String", "value"))
+						.body(new JavaReturnStatement(
+								new JavaMethodInvocation("value", "trim"))));
+		List<String> lines = writeSingleType(sourceCode, "com/example/Test.java");
+		assertThat(lines).containsExactly("package com.example;", "",
+				"public class Test {", "", "    public String trim(String value) {",
+				"        return value.trim();", "    }", "", "}", "");
+	}
+
+	@Test
 	void springBootApplication() throws IOException {
 		JavaSourceCode sourceCode = new JavaSourceCode();
 		JavaCompilationUnit compilationUnit = sourceCode
@@ -90,6 +120,16 @@ class JavaSourceCodeWriterTests {
 				"", "@SpringBootApplication", "public class Test {", "",
 				"    public static void main(String[] args) {",
 				"        SpringApplication.run(Test.class, args);", "    }", "", "}", "");
+	}
+
+	@Test
+	void annotationWithSimpleAttribute() throws IOException {
+		List<String> lines = writeClassAnnotation(
+				Annotation.name("org.springframework.test.TestApplication",
+						(builder) -> builder.attribute("counter", Integer.class, "42")));
+		assertThat(lines).containsExactly("package com.example;", "",
+				"import org.springframework.test.TestApplication;", "",
+				"@TestApplication(counter = 42)", "public class Test {", "", "}", "");
 	}
 
 	@Test
