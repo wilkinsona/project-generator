@@ -76,8 +76,6 @@ class GradleSettingsWriterTests {
 	void artifactIdShouldBeUsedAsTheRootProjectName() throws Exception {
 		GradleBuild build = new GradleBuild();
 		build.setArtifact("my-application");
-		build.pluginRepositories().add("spring-snapshots", "Spring Snapshots",
-				"https://repo.spring.io/snapshot", true);
 		List<String> lines = generateSettings(build);
 		assertThat(lines).containsSequence("rootProject.name = 'my-application'");
 	}
