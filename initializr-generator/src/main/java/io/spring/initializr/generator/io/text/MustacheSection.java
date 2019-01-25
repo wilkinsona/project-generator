@@ -23,7 +23,8 @@ import java.util.Map;
 import io.spring.initializr.generator.io.template.MustacheTemplateRenderer;
 
 /**
- * {@link Section} that uses a {@link MustacheTemplateRenderer}.
+ * {@link Section} that uses a {@link MustacheTemplateRenderer}. Renders the content with
+ * a newline at the end.
  *
  * @author Madhura Bhave
  */
