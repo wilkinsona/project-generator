@@ -132,16 +132,17 @@ public class ProjectGenerationTester {
 	 * {@link ProjectGenerationContextProcessor} and all available
 	 * {@link ProjectGenerationConfiguration} instances.
 	 * @param description the description of the project to generate
-	 * @param projectGenerationContext the {@link ProjectGenerationContextProcessor} to
-	 * invoke
+	 * @param projectGenerationContextProcessor the
+	 * {@link ProjectGenerationContextProcessor} to invoke
 	 * @param <T> the project asset type
 	 * @return the project asset
 	 */
 	public <T> T generate(ProjectDescription description,
-			ProjectGenerationContextProcessor<T> projectGenerationContext) {
+			ProjectGenerationContextProcessor<T> projectGenerationContextProcessor) {
 		this.projectDescriptionInitializer.accept(description);
 		try {
-			return this.projectGenerator.generate(description, projectGenerationContext);
+			return this.projectGenerator.generate(description,
+					projectGenerationContextProcessor);
 		}
 		catch (IOException ex) {
 			throw new IllegalStateException("Failed to generated project ", ex);
@@ -154,14 +155,14 @@ public class ProjectGenerationTester {
 	 * classes. Can be a mix or regular {@link Configuration} and
 	 * {@link ProjectGenerationConfiguration}.
 	 * @param description the description of the project to generate
-	 * @param projectGenerationContext the {@link ProjectGenerationContextProcessor} to
-	 * invoke
+	 * @param projectGenerationContextProcessor the
+	 * {@link ProjectGenerationContextProcessor} to invoke
 	 * @param configurationClasses the configuration classes to use
 	 * @param <T> the project asset type
 	 * @return the project asset
 	 */
 	public <T> T generate(ProjectDescription description,
-			ProjectGenerationContextProcessor<T> projectGenerationContext,
+			ProjectGenerationContextProcessor<T> projectGenerationContextProcessor,
 			Class<?>... configurationClasses) {
 		this.projectDescriptionInitializer.accept(description);
 		try (ProjectGenerationContext context = new ProjectGenerationContext()) {
@@ -175,7 +176,7 @@ public class ProjectGenerationTester {
 			}
 			context.refresh();
 			try {
-				return projectGenerationContext.process(context);
+				return projectGenerationContextProcessor.process(context);
 			}
 			catch (IOException ex) {
 				throw new IllegalStateException("Failed to generated project ", ex);

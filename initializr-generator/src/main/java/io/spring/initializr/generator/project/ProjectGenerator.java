@@ -72,14 +72,14 @@ public class ProjectGenerator {
 	 * Generate a project structure using the specified
 	 * {@link ProjectGenerationContextProcessor}.
 	 * @param description the description of the project to generate
-	 * @param projectGenerationContext the {@link ProjectGenerationContextProcessor} to
-	 * invoke
+	 * @param projectGenerationContextProcessor the
+	 * {@link ProjectGenerationContextProcessor} to invoke
 	 * @param <T> the return type of the generation
 	 * @return the generated content
 	 * @throws IOException if an error occurs while handling resource
 	 */
 	public <T> T generate(ProjectDescription description,
-			ProjectGenerationContextProcessor<T> projectGenerationContext)
+			ProjectGenerationContextProcessor<T> projectGenerationContextProcessor)
 			throws IOException {
 		try (ProjectGenerationContext context = new ProjectGenerationContext()) {
 			context.registerBean(ResolvedProjectDescription.class,
@@ -87,7 +87,7 @@ public class ProjectGenerator {
 			context.register(CoreConfiguration.class);
 			this.projectGenerationContext.accept(context);
 			context.refresh();
-			return projectGenerationContext.process(context);
+			return projectGenerationContextProcessor.process(context);
 		}
 	}
 
