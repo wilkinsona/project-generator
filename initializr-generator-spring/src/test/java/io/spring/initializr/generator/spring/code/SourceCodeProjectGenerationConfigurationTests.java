@@ -20,12 +20,9 @@ import io.spring.initializr.generator.language.SourceCode;
 import io.spring.initializr.generator.language.TypeDeclaration;
 import io.spring.initializr.generator.packaging.Packaging;
 import io.spring.initializr.generator.project.ProjectDescription;
-import io.spring.initializr.generator.project.ResolvedProjectDescription;
+import io.spring.initializr.generator.test.project.ProjectAssetTester;
 import io.spring.initializr.generator.util.Version;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -40,36 +37,37 @@ import static org.mockito.Mockito.verify;
  */
 class SourceCodeProjectGenerationConfigurationTests {
 
-	private AnnotationConfigApplicationContext context;
-
-	@BeforeEach
-	void setUp() {
-		this.context = new AnnotationConfigApplicationContext();
-	}
+	private final ProjectAssetTester projectTester = new ProjectAssetTester()
+			.withConfiguration(SourceCodeProjectGenerationConfiguration.class);
 
 	@Test
 	@SuppressWarnings("unchecked")
 	void addsACustomizerThatAppliesSpringBootApplicationAnnotationOnMainClass() {
-		setupContext(new ProjectDescription());
-		TypeDeclaration declaration = new TypeDeclaration("Test");
-		MainApplicationTypeCustomizer<TypeDeclaration> bean = this.context
-				.getBean(MainApplicationTypeCustomizer.class);
-		bean.customize(declaration);
+		TypeDeclaration declaration = this.projectTester
+				.generate(new ProjectDescription(), (context) -> {
+					TypeDeclaration type = new TypeDeclaration("Test");
+					MainApplicationTypeCustomizer<TypeDeclaration> bean = context
+							.getBean(MainApplicationTypeCustomizer.class);
+					bean.customize(type);
+					return type;
+				});
 		assertThat(declaration.getAnnotations()).hasSize(1);
 		assertThat(declaration.getAnnotations()).hasOnlyOneElementSatisfying(
 				(annotation) -> assertThat(annotation.getName()).isEqualTo(
 						"org.springframework.boot.autoconfigure.SpringBootApplication"));
-
 	}
 
 	@Test
 	@SuppressWarnings("unchecked")
 	void addsACustomizerThatAppliesTestAnnotationsOnTestClass() {
-		setupContext(new ProjectDescription());
-		TypeDeclaration declaration = new TypeDeclaration("Test");
-		TestApplicationTypeCustomizer<TypeDeclaration> bean = this.context
-				.getBean(TestApplicationTypeCustomizer.class);
-		bean.customize(declaration);
+		TypeDeclaration declaration = this.projectTester
+				.generate(new ProjectDescription(), (context) -> {
+					TypeDeclaration type = new TypeDeclaration("Test");
+					TestApplicationTypeCustomizer<TypeDeclaration> bean = context
+							.getBean(TestApplicationTypeCustomizer.class);
+					bean.customize(type);
+					return type;
+				});
 		assertThat(declaration.getAnnotations()).hasSize(2);
 		assertThat(declaration.getAnnotations().get(0).getName())
 				.isEqualTo("org.junit.runner.RunWith");
@@ -91,32 +89,27 @@ class SourceCodeProjectGenerationConfigurationTests {
 				"org.springframework.boot.web.servlet.support.SpringBootServletInitializer");
 	}
 
-	private void setupContext(ProjectDescription description) {
-		this.context.register(SourceCodeProjectGenerationConfiguration.class);
-		ResolvedProjectDescription resolvedProjectDescription = new ResolvedProjectDescription(
-				description);
-		this.context.registerBean(ResolvedProjectDescription.class,
-				() -> resolvedProjectDescription);
-		this.context.refresh();
-	}
-
 	@SuppressWarnings("unchecked")
 	private void runWarTest(String version, String className) {
 		ProjectDescription description = new ProjectDescription();
 		description.setPackaging(Packaging.forId("war"));
 		description.setPackageName("com.foo");
 		description.setPlatformVersion(Version.parse(version));
-		setupContext(description);
-		ServletInitializerContributor bean = this.context
-				.getBean(ServletInitializerContributor.class);
-		SourceCode sourceCode = mock(SourceCode.class);
-		CompilationUnit compilationUnit = mock(CompilationUnit.class);
-		given(sourceCode.createCompilationUnit(any(), any())).willReturn(compilationUnit);
-		TypeDeclaration typeDeclaration = mock(TypeDeclaration.class);
-		given(compilationUnit.createTypeDeclaration(any())).willReturn(typeDeclaration);
-		bean.customize(sourceCode);
-		verify(sourceCode).createCompilationUnit("com.foo", "ServletInitializer");
-		verify(typeDeclaration).extend(className);
+		this.projectTester.generate(description, (context) -> {
+			ServletInitializerContributor bean = context
+					.getBean(ServletInitializerContributor.class);
+			SourceCode sourceCode = mock(SourceCode.class);
+			CompilationUnit compilationUnit = mock(CompilationUnit.class);
+			given(sourceCode.createCompilationUnit(any(), any()))
+					.willReturn(compilationUnit);
+			TypeDeclaration typeDeclaration = mock(TypeDeclaration.class);
+			given(compilationUnit.createTypeDeclaration(any()))
+					.willReturn(typeDeclaration);
+			bean.customize(sourceCode);
+			verify(sourceCode).createCompilationUnit("com.foo", "ServletInitializer");
+			verify(typeDeclaration).extend(className);
+			return null;
+		});
 	}
 
 }
