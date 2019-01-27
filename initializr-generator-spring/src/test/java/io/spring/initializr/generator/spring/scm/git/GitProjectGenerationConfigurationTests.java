@@ -16,9 +16,10 @@
 
 package io.spring.initializr.generator.spring.scm.git;
 
-import java.io.IOException;
-import java.nio.file.Files;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.nio.file.Path;
+import java.util.Arrays;
 import java.util.List;
 
 import io.spring.initializr.generator.buildsystem.gradle.GradleBuildSystem;
@@ -41,14 +42,25 @@ import static org.assertj.core.api.Assertions.assertThat;
 @ExtendWith(TempDirectory.class)
 class GitProjectGenerationConfigurationTests {
 
-	private final ProjectGenerationTester projectGenerationTester;
+	private final ProjectGenerationTester projectTester = new ProjectGenerationTester()
+			.withConfiguration(GitProjectGenerationConfiguration.class);
 
-	GitProjectGenerationConfigurationTests(@TempDir Path directory) {
-		this.projectGenerationTester = new ProjectGenerationTester(directory);
+	@Test
+	void gitIgnoreIsContributedToProject(@TempDir Path directory) {
+		ProjectDescription description = new ProjectDescription();
+		description.setBuildSystem(new GradleBuildSystem());
+		Path projectDirectory = this.projectTester.withDirectory(directory)
+				.generate(description, (context) -> {
+					GitIgnoreContributor contributor = context
+							.getBean(GitIgnoreContributor.class);
+					contributor.contribute(directory);
+					return directory;
+				});
+		assertThat(projectDirectory.resolve(".gitignore")).isRegularFile();
 	}
 
 	@Test
-	void gitIgnore() throws IOException {
+	void gitIgnore() {
 		ProjectDescription description = new ProjectDescription();
 		description.setBuildSystem(new GradleBuildSystem());
 		assertThat(generateGitIgnore(description)).contains("### STS ###",
@@ -56,7 +68,7 @@ class GitProjectGenerationConfigurationTests {
 	}
 
 	@Test
-	void gitIgnoreGradle() throws IOException {
+	void gitIgnoreGradle() {
 		ProjectDescription description = new ProjectDescription();
 		description.setBuildSystem(new GradleBuildSystem());
 		description.setPlatformVersion(Version.parse("2.1.0.RELEASE"));
@@ -67,7 +79,7 @@ class GitProjectGenerationConfigurationTests {
 	}
 
 	@Test
-	void gitIgnoreMaven() throws IOException {
+	void gitIgnoreMaven() {
 		ProjectDescription description = new ProjectDescription();
 		description.setBuildSystem(new MavenBuildSystem());
 		description.setPlatformVersion(Version.parse("2.1.0.RELEASE"));
@@ -76,11 +88,13 @@ class GitProjectGenerationConfigurationTests {
 				.doesNotContain(".gradle", "!gradle/wrapper/gradle-wrapper.jar", "/out/");
 	}
 
-	private List<String> generateGitIgnore(ProjectDescription description)
-			throws IOException {
-		Path project = this.projectGenerationTester.generateProject(description,
-				GitProjectGenerationConfiguration.class);
-		return Files.readAllLines(project.resolve(".gitignore"));
+	private List<String> generateGitIgnore(ProjectDescription description) {
+		return this.projectTester.generate(description, (context) -> {
+			GitIgnore gitIgnore = context.getBean(GitIgnore.class);
+			StringWriter out = new StringWriter();
+			gitIgnore.write(new PrintWriter(out));
+			return Arrays.asList(out.toString().split("\\r?\\n"));
+		});
 	}
 
 }

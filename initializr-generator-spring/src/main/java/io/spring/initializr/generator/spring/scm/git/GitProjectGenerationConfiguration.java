@@ -33,12 +33,16 @@ import org.springframework.context.annotation.Bean;
 public class GitProjectGenerationConfiguration {
 
 	@Bean
-	public GitIgnoreContributor gitIgnoreContributor(
-			ObjectProvider<GitIgnoreCustomizer> gitIgnoreCustomizers) {
+	public GitIgnoreContributor gitIgnoreContributor(GitIgnore gitIgnore) {
+		return new GitIgnoreContributor(gitIgnore);
+	}
+
+	@Bean
+	public GitIgnore gitIgnore(ObjectProvider<GitIgnoreCustomizer> gitIgnoreCustomizers) {
 		GitIgnore gitIgnore = createGitIgnore();
 		gitIgnoreCustomizers.orderedStream()
 				.forEach((customizer) -> customizer.customize(gitIgnore));
-		return new GitIgnoreContributor(gitIgnore);
+		return gitIgnore;
 	}
 
 	@Bean

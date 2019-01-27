@@ -27,6 +27,7 @@ import io.spring.initializr.generator.packaging.war.WarPackaging;
 import io.spring.initializr.generator.project.ProjectDescription;
 import io.spring.initializr.generator.spring.code.SourceCodeProjectGenerationConfiguration;
 import io.spring.initializr.generator.test.project.ProjectGenerationTester;
+import io.spring.initializr.generator.test.project.ProjectStructure;
 import io.spring.initializr.generator.util.Version;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -43,36 +44,38 @@ import static org.assertj.core.api.Assertions.assertThat;
 @ExtendWith(TempDirectory.class)
 class KotlinProjectGenerationConfigurationTests {
 
-	private final ProjectGenerationTester projectGenerationTester;
+	private final ProjectGenerationTester projectTester;
 
 	KotlinProjectGenerationConfigurationTests(@TempDir Path directory) {
-		this.projectGenerationTester = new ProjectGenerationTester(
-				ProjectGenerationTester.defaultProjectGenerationContext(directory)
-						.andThen((context) -> context.registerBean(
-								KotlinProjectSettings.class,
-								() -> new SimpleKotlinProjectSettings("1.2.70"))));
+		this.projectTester = new ProjectGenerationTester().withDefaultContextInitializer()
+				.withConfiguration(SourceCodeProjectGenerationConfiguration.class,
+						KotlinProjectGenerationConfiguration.class)
+				.withDirectory(directory).withDescriptionCustomizer((description) -> {
+					description.setLanguage(new KotlinLanguage());
+					description.setPlatformVersion(Version.parse("2.1.0.RELEASE"));
+					description.setBuildSystem(new MavenBuildSystem());
+				}).withContextInitializer(
+						(context) -> context.registerBean(KotlinProjectSettings.class,
+								() -> new SimpleKotlinProjectSettings("1.2.70")));
 	}
 
 	@Test
 	void mainClassIsContributedWhenGeneratingProject() {
-		ProjectDescription description = initProjectDescription();
-		Path project = generateProject(description);
-		List<String> relativePaths = this.projectGenerationTester
-				.getRelativePathsOfProjectFiles(project);
+		List<String> relativePaths = this.projectTester.generate(new ProjectDescription())
+				.getRelativePathsOfProjectFiles();
 		assertThat(relativePaths)
 				.contains("src/main/kotlin/com/example/DemoApplication.kt");
 	}
 
 	@Test
 	void testClassIsContributed() throws IOException {
-		ProjectDescription description = initProjectDescription();
-		Path project = generateProject(description);
-		List<String> relativePaths = this.projectGenerationTester
-				.getRelativePathsOfProjectFiles(project);
+		ProjectStructure projectStructure = this.projectTester
+				.generate(new ProjectDescription());
+		List<String> relativePaths = projectStructure.getRelativePathsOfProjectFiles();
 		assertThat(relativePaths)
 				.contains("src/test/kotlin/com/example/DemoApplicationTests.kt");
-		List<String> lines = Files.readAllLines(
-				project.resolve("src/test/kotlin/com/example/DemoApplicationTests.kt"));
+		List<String> lines = Files.readAllLines(projectStructure
+				.resolve("src/test/kotlin/com/example/DemoApplicationTests.kt"));
 		assertThat(lines).containsExactly("package com.example", "",
 				"import org.junit.Test", "import org.junit.runner.RunWith",
 				"import org.springframework.boot.test.context.SpringBootTest",
@@ -85,16 +88,15 @@ class KotlinProjectGenerationConfigurationTests {
 	@Test
 	void servletInitializerIsContributedWhenGeneratingProjectThatUsesWarPackaging()
 			throws IOException {
-		ProjectDescription description = initProjectDescription();
+		ProjectDescription description = new ProjectDescription();
 		description.setPackaging(new WarPackaging());
 		description.setApplicationName("KotlinDemoApplication");
-		Path project = generateProject(description);
-		List<String> relativePaths = this.projectGenerationTester
-				.getRelativePathsOfProjectFiles(project);
+		ProjectStructure projectStructure = this.projectTester.generate(description);
+		List<String> relativePaths = projectStructure.getRelativePathsOfProjectFiles();
 		assertThat(relativePaths)
 				.contains("src/main/kotlin/com/example/ServletInitializer.kt");
-		List<String> lines = Files.readAllLines(
-				project.resolve("src/main/kotlin/com/example/ServletInitializer.kt"));
+		List<String> lines = Files.readAllLines(projectStructure
+				.resolve("src/main/kotlin/com/example/ServletInitializer.kt"));
 		assertThat(lines).containsExactly("package com.example", "",
 				"import org.springframework.boot.builder.SpringApplicationBuilder",
 				"import org.springframework.boot.web.servlet.support.SpringBootServletInitializer",
@@ -102,20 +104,6 @@ class KotlinProjectGenerationConfigurationTests {
 				"    override fun configure(application: SpringApplicationBuilder): SpringApplicationBuilder {",
 				"        return application.sources(KotlinDemoApplication::class.java)",
 				"    }", "", "}", "");
-	}
-
-	private Path generateProject(ProjectDescription description) {
-		return this.projectGenerationTester.generateProject(description,
-				SourceCodeProjectGenerationConfiguration.class,
-				KotlinProjectGenerationConfiguration.class);
-	}
-
-	private ProjectDescription initProjectDescription() {
-		ProjectDescription description = new ProjectDescription();
-		description.setLanguage(new KotlinLanguage());
-		description.setPlatformVersion(Version.parse("2.1.0.RELEASE"));
-		description.setBuildSystem(new MavenBuildSystem());
-		return description;
 	}
 
 }

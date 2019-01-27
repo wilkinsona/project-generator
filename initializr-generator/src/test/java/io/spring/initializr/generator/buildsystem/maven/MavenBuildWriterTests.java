@@ -343,9 +343,9 @@ class MavenBuildWriterTests {
 		build.setArtifact("demo");
 		MavenPlugin asciidoctor = build.plugin("org.asciidoctor",
 				"asciidoctor-maven-plugin", "1.5.3");
-		asciidoctor.execution("generate-docs", (execution) -> {
+		asciidoctor.execution("generateProject-docs", (execution) -> {
 			execution.goal("process-asciidoc");
-			execution.phase("generate-resources");
+			execution.phase("generateProject-resources");
 			execution.configuration((configuration) -> {
 				configuration.add("doctype", "book");
 				configuration.add("backend", "html");
@@ -358,9 +358,10 @@ class MavenBuildWriterTests {
 					.isEqualTo("asciidoctor-maven-plugin");
 			assertThat(plugin).textAtPath("version").isEqualTo("1.5.3");
 			NodeAssert execution = plugin.nodeAtPath("executions/execution");
-			assertThat(execution).textAtPath("id").isEqualTo("generate-docs");
+			assertThat(execution).textAtPath("id").isEqualTo("generateProject-docs");
 			assertThat(execution).textAtPath("goals/goal").isEqualTo("process-asciidoc");
-			assertThat(execution).textAtPath("phase").isEqualTo("generate-resources");
+			assertThat(execution).textAtPath("phase")
+					.isEqualTo("generateProject-resources");
 			NodeAssert configuration = execution.nodeAtPath("configuration");
 			assertThat(configuration).textAtPath("doctype").isEqualTo("book");
 			assertThat(configuration).textAtPath("backend").isEqualTo("html");

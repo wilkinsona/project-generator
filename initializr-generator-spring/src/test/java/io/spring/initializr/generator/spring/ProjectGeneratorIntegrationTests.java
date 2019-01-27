@@ -24,7 +24,7 @@ import io.spring.initializr.generator.language.java.JavaLanguage;
 import io.spring.initializr.generator.project.ProjectDescription;
 import io.spring.initializr.generator.project.ProjectGenerationConfiguration;
 import io.spring.initializr.generator.project.ProjectGenerator;
-import io.spring.initializr.generator.test.project.ProjectGenerationTester;
+import io.spring.initializr.generator.test.project.ProjectGeneratorTester;
 import io.spring.initializr.generator.util.Version;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -42,10 +42,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 @ExtendWith(TempDirectory.class)
 class ProjectGeneratorIntegrationTests {
 
-	private final ProjectGenerationTester projectGenerationTester;
+	private final ProjectGeneratorTester projectTester;
 
 	ProjectGeneratorIntegrationTests(@TempDir Path directory) {
-		this.projectGenerationTester = new ProjectGenerationTester(directory);
+		this.projectTester = new ProjectGeneratorTester().withDirectory(directory);
 	}
 
 	@Test
@@ -56,9 +56,8 @@ class ProjectGeneratorIntegrationTests {
 		description.setLanguage(new JavaLanguage());
 		description.setGroupId("com.example");
 		description.setBaseDirectory("test/demo-app");
-		Path project = this.projectGenerationTester.generateProject(description);
-		List<String> relativePaths = this.projectGenerationTester
-				.getRelativePathsOfProjectFiles(project);
+		List<String> relativePaths = this.projectTester.generate(description)
+				.getRelativePathsOfProjectFiles();
 		assertThat(relativePaths).containsOnly("test/demo-app/.gitignore",
 				"test/demo-app/pom.xml", "test/demo-app/mvnw", "test/demo-app/mvnw.cmd",
 				"test/demo-app/.mvn/wrapper/MavenWrapperDownloader.java",

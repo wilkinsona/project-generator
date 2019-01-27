@@ -16,15 +16,10 @@
 
 package io.spring.initializr.generator.condition;
 
-import java.nio.file.Path;
-
 import io.spring.initializr.generator.project.ProjectDescription;
 import io.spring.initializr.generator.test.project.ProjectGenerationTester;
 import io.spring.initializr.generator.util.Version;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.junitpioneer.jupiter.TempDirectory;
-import org.junitpioneer.jupiter.TempDirectory.TempDir;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -36,16 +31,10 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Stephane Nicoll
  */
-@ExtendWith(TempDirectory.class)
 class ConditionalOnPlatformVersionTests {
 
-	private final ProjectGenerationTester projectGenerationTester;
-
-	ConditionalOnPlatformVersionTests(@TempDir Path directory) {
-		this.projectGenerationTester = new ProjectGenerationTester(ProjectGenerationTester
-				.defaultProjectGenerationContext(directory).andThen((context) -> context
-						.register(PlatformVersionTestConfiguration.class)));
-	}
+	private final ProjectGenerationTester projectTester = new ProjectGenerationTester()
+			.withConfiguration(PlatformVersionTestConfiguration.class);
 
 	@Test
 	void outcomeWithMatchingRange() {
@@ -75,27 +64,23 @@ class ConditionalOnPlatformVersionTests {
 	void outcomeWithNoMatch() {
 		ProjectDescription projectDescription = new ProjectDescription();
 		projectDescription.setPlatformVersion(Version.parse("0.1.0"));
-		this.projectGenerationTester.generate(projectDescription,
-				(projectGenerationContext) -> {
-					assertThat(projectGenerationContext.getBeansOfType(String.class))
-							.isEmpty();
-					return null;
-				});
+		this.projectTester.generate(projectDescription, (projectGenerationContext) -> {
+			assertThat(projectGenerationContext.getBeansOfType(String.class)).isEmpty();
+			return null;
+		});
 	}
 
 	@Test
 	void outcomeWithNoAvailablePlatformVersion() {
 		ProjectDescription projectDescription = new ProjectDescription();
-		this.projectGenerationTester.generate(projectDescription,
-				(projectGenerationContext) -> {
-					assertThat(projectGenerationContext.getBeansOfType(String.class))
-							.isEmpty();
-					return null;
-				});
+		this.projectTester.generate(projectDescription, (projectGenerationContext) -> {
+			assertThat(projectGenerationContext.getBeansOfType(String.class)).isEmpty();
+			return null;
+		});
 	}
 
 	private String outcomeFor(ProjectDescription projectDescription) {
-		return this.projectGenerationTester.generate(projectDescription,
+		return this.projectTester.generate(projectDescription,
 				(projectGenerationContext) -> {
 					assertThat(projectGenerationContext.getBeansOfType(String.class))
 							.hasSize(1);

@@ -28,6 +28,7 @@ import io.spring.initializr.generator.packaging.war.WarPackaging;
 import io.spring.initializr.generator.project.ProjectDescription;
 import io.spring.initializr.generator.spring.build.BuildProjectGenerationConfiguration;
 import io.spring.initializr.generator.test.project.ProjectGenerationTester;
+import io.spring.initializr.generator.test.project.ProjectStructure;
 import io.spring.initializr.generator.util.Version;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -44,19 +45,23 @@ import static org.assertj.core.api.Assertions.assertThat;
 @ExtendWith(TempDirectory.class)
 class MavenProjectGenerationConfigurationTests {
 
-	private final ProjectGenerationTester projectGenerationTester;
+	private final ProjectGenerationTester projectTester;
 
 	MavenProjectGenerationConfigurationTests(@TempDir Path directory) {
-		this.projectGenerationTester = new ProjectGenerationTester(directory);
+		this.projectTester = new ProjectGenerationTester().withDefaultContextInitializer()
+				.withConfiguration(BuildProjectGenerationConfiguration.class,
+						MavenProjectGenerationConfiguration.class)
+				.withDirectory(directory).withDescriptionCustomizer((description) -> {
+					description.setBuildSystem(new MavenBuildSystem());
+				});
 	}
 
 	@Test
 	void mavenWrapperIsContributedWhenGeneratingMavenProject() {
-		ProjectDescription description = initProjectDescription();
+		ProjectDescription description = new ProjectDescription();
 		description.setPlatformVersion(Version.parse("2.1.0.RELEASE"));
-		Path project = generateProject(description);
-		List<String> relativePaths = this.projectGenerationTester
-				.getRelativePathsOfProjectFiles(project);
+		List<String> relativePaths = this.projectTester.generate(description)
+				.getRelativePathsOfProjectFiles();
 		assertThat(relativePaths).contains("mvnw", "mvnw.cmd",
 				".mvn/wrapper/MavenWrapperDownloader.java",
 				".mvn/wrapper/maven-wrapper.properties",
@@ -65,41 +70,27 @@ class MavenProjectGenerationConfigurationTests {
 
 	@Test
 	void mavenPomIsContributedWhenGeneratingMavenProject() {
-		ProjectDescription description = initProjectDescription();
+		ProjectDescription description = new ProjectDescription();
 		description.setPlatformVersion(Version.parse("2.1.0.RELEASE"));
-		Path project = generateProject(description);
-		List<String> relativePaths = this.projectGenerationTester
-				.getRelativePathsOfProjectFiles(project);
+		List<String> relativePaths = this.projectTester.generate(description)
+				.getRelativePathsOfProjectFiles();
 		assertThat(relativePaths).contains("pom.xml");
 	}
 
 	@Test
 	void warPackagingIsUsedWhenBuildingProjectThatUsesWarPackaging() throws IOException {
-		ProjectDescription description = initProjectDescription();
+		ProjectDescription description = new ProjectDescription();
 		description.setPlatformVersion(Version.parse("2.1.0.RELEASE"));
 		description.setLanguage(new JavaLanguage());
 		description.setPackaging(new WarPackaging());
-		Path project = generateProject(description);
-		List<String> relativePaths = this.projectGenerationTester
-				.getRelativePathsOfProjectFiles(project);
+		ProjectStructure projectStructure = this.projectTester.generate(description);
+		List<String> relativePaths = projectStructure.getRelativePathsOfProjectFiles();
 		assertThat(relativePaths).contains("pom.xml");
-		try (Stream<String> lines = Files.lines(project.resolve("pom.xml"))) {
+		try (Stream<String> lines = Files.lines(projectStructure.resolve("pom.xml"))) {
 			assertThat(lines
 					.filter((line) -> line.contains("    <packaging>war</packaging>")))
 							.hasSize(1);
 		}
-	}
-
-	private Path generateProject(ProjectDescription description) {
-		return this.projectGenerationTester.generateProject(description,
-				BuildProjectGenerationConfiguration.class,
-				MavenProjectGenerationConfiguration.class);
-	}
-
-	private ProjectDescription initProjectDescription() {
-		ProjectDescription description = new ProjectDescription();
-		description.setBuildSystem(new MavenBuildSystem());
-		return description;
 	}
 
 }

@@ -16,15 +16,10 @@
 
 package io.spring.initializr.generator.condition;
 
-import java.nio.file.Path;
-
 import io.spring.initializr.generator.buildsystem.Dependency;
 import io.spring.initializr.generator.project.ProjectDescription;
 import io.spring.initializr.generator.test.project.ProjectGenerationTester;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.junitpioneer.jupiter.TempDirectory;
-import org.junitpioneer.jupiter.TempDirectory.TempDir;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -37,22 +32,16 @@ import static org.mockito.Mockito.mock;
  *
  * @author Stephane Nicoll
  */
-@ExtendWith(TempDirectory.class)
 class ConditionalOnRequestedDependencyTests {
 
-	private final ProjectGenerationTester projectGenerationTester;
-
-	ConditionalOnRequestedDependencyTests(@TempDir Path directory) {
-		this.projectGenerationTester = new ProjectGenerationTester(ProjectGenerationTester
-				.defaultProjectGenerationContext(directory).andThen((context) -> context
-						.register(RequestedDependencyTestConfiguration.class)));
-	}
+	private final ProjectGenerationTester projectTester = new ProjectGenerationTester()
+			.withConfiguration(RequestedDependencyTestConfiguration.class);
 
 	@Test
 	void outcomeWithMatchingDependency() {
 		ProjectDescription projectDescription = new ProjectDescription();
 		projectDescription.addDependency("web", mock(Dependency.class));
-		String bean = this.projectGenerationTester.generate(projectDescription,
+		String bean = this.projectTester.generate(projectDescription,
 				(projectGenerationContext) -> {
 					assertThat(projectGenerationContext.getBeansOfType(String.class))
 							.hasSize(1);
@@ -65,12 +54,10 @@ class ConditionalOnRequestedDependencyTests {
 	void outcomeWithNoMatch() {
 		ProjectDescription projectDescription = new ProjectDescription();
 		projectDescription.addDependency("another", mock(Dependency.class));
-		this.projectGenerationTester.generate(projectDescription,
-				(projectGenerationContext) -> {
-					assertThat(projectGenerationContext.getBeansOfType(String.class))
-							.isEmpty();
-					return null;
-				});
+		this.projectTester.generate(projectDescription, (projectGenerationContext) -> {
+			assertThat(projectGenerationContext.getBeansOfType(String.class)).isEmpty();
+			return null;
+		});
 	}
 
 	@Configuration

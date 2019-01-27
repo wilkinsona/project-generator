@@ -33,6 +33,7 @@ import io.spring.initializr.generator.packaging.war.WarPackaging;
 import io.spring.initializr.generator.project.ProjectDescription;
 import io.spring.initializr.generator.spring.build.BuildProjectGenerationConfiguration;
 import io.spring.initializr.generator.test.project.ProjectGenerationTester;
+import io.spring.initializr.generator.test.project.ProjectStructure;
 import io.spring.initializr.generator.util.Version;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -51,26 +52,29 @@ import static org.assertj.core.api.Assertions.assertThat;
 @ExtendWith(TempDirectory.class)
 class GradleProjectGenerationConfigurationTests {
 
-	private final ProjectGenerationTester projectGenerationTester;
+	private final ProjectGenerationTester projectTester;
 
 	GradleProjectGenerationConfigurationTests(@TempDir Path directory) {
-		this.projectGenerationTester = new ProjectGenerationTester(directory);
+		this.projectTester = new ProjectGenerationTester().withDefaultContextInitializer()
+				.withConfiguration(BuildProjectGenerationConfiguration.class,
+						GradleProjectGenerationConfiguration.class)
+				.withDirectory(directory).withDescriptionCustomizer((description) -> {
+					description.setBuildSystem(new GradleBuildSystem());
+				});
 	}
 
 	@Test
 	void gradle3WrapperIsContributedWhenGeneratingGradleProjectWithBoot15()
 			throws IOException {
-		ProjectDescription description = initProjectDescription();
+		ProjectDescription description = new ProjectDescription();
 		description.setPlatformVersion(Version.parse("1.5.17.RELEASE"));
-		Path project = this.projectGenerationTester.generateProject(description,
-				GradleProjectGenerationConfiguration.class);
-		List<String> relativePaths = this.projectGenerationTester
-				.getRelativePathsOfProjectFiles(project);
+		ProjectStructure projectStructure = this.projectTester.generate(description);
+		List<String> relativePaths = projectStructure.getRelativePathsOfProjectFiles();
 		assertThat(relativePaths).contains("gradlew", "gradlew.bat",
 				"gradle/wrapper/gradle-wrapper.properties",
 				"gradle/wrapper/gradle-wrapper.jar");
-		try (Stream<String> lines = Files
-				.lines(project.resolve("gradle/wrapper/gradle-wrapper.properties"))) {
+		try (Stream<String> lines = Files.lines(
+				projectStructure.resolve("gradle/wrapper/gradle-wrapper.properties"))) {
 			assertThat(lines.filter((line) -> line.contains("gradle-3.5.1-bin.zip")))
 					.hasSize(1);
 		}
@@ -79,16 +83,15 @@ class GradleProjectGenerationConfigurationTests {
 	@Test
 	void gradle4WrapperIsContributedWhenGeneratingGradleProjectWithBoot20()
 			throws IOException {
-		ProjectDescription description = initProjectDescription();
+		ProjectDescription description = new ProjectDescription();
 		description.setPlatformVersion(Version.parse("2.0.6.RELEASE"));
-		Path project = generateProject(description);
-		List<String> relativePaths = this.projectGenerationTester
-				.getRelativePathsOfProjectFiles(project);
+		ProjectStructure projectStructure = this.projectTester.generate(description);
+		List<String> relativePaths = projectStructure.getRelativePathsOfProjectFiles();
 		assertThat(relativePaths).contains("gradlew", "gradlew.bat",
 				"gradle/wrapper/gradle-wrapper.properties",
 				"gradle/wrapper/gradle-wrapper.jar");
-		try (Stream<String> lines = Files
-				.lines(project.resolve("gradle/wrapper/gradle-wrapper.properties"))) {
+		try (Stream<String> lines = Files.lines(
+				projectStructure.resolve("gradle/wrapper/gradle-wrapper.properties"))) {
 			assertThat(lines.filter((line) -> line.contains("gradle-4.10.2-bin.zip")))
 					.hasSize(1);
 		}
@@ -96,17 +99,16 @@ class GradleProjectGenerationConfigurationTests {
 
 	@Test
 	void buildDotGradleIsContributedWhenGeneratingGradleProject() throws IOException {
-		ProjectDescription description = initProjectDescription();
+		ProjectDescription description = new ProjectDescription();
 		description.setPlatformVersion(Version.parse("2.1.0.RELEASE"));
 		description.setLanguage(new JavaLanguage());
 		description.setJavaVersion("11");
 		description.addDependency("acme",
 				new Dependency("com.example", "acme", DependencyScope.COMPILE));
-		Path project = generateProject(description);
-		List<String> relativePaths = this.projectGenerationTester
-				.getRelativePathsOfProjectFiles(project);
+		ProjectStructure projectStructure = this.projectTester.generate(description);
+		List<String> relativePaths = projectStructure.getRelativePathsOfProjectFiles();
 		assertThat(relativePaths).contains("build.gradle");
-		Path path = project.resolve("build.gradle");
+		Path path = projectStructure.resolve("build.gradle");
 		String[] lines = readAllLines(path);
 		assertThat(lines).containsExactly("plugins {",
 				"    id 'org.springframework.boot' version '2.1.0.RELEASE'",
@@ -121,29 +123,17 @@ class GradleProjectGenerationConfigurationTests {
 
 	@Test
 	void warPluginIsAppliedWhenBuildingProjectThatUsesWarPackaging() throws IOException {
-		ProjectDescription description = initProjectDescription();
+		ProjectDescription description = new ProjectDescription();
 		description.setPlatformVersion(Version.parse("2.1.0.RELEASE"));
 		description.setLanguage(new JavaLanguage());
 		description.setPackaging(new WarPackaging());
-		Path project = generateProject(description);
-		List<String> relativePaths = this.projectGenerationTester
-				.getRelativePathsOfProjectFiles(project);
+		ProjectStructure projectStructure = this.projectTester.generate(description);
+		List<String> relativePaths = projectStructure.getRelativePathsOfProjectFiles();
 		assertThat(relativePaths).contains("build.gradle");
-		try (Stream<String> lines = Files.lines(project.resolve("build.gradle"))) {
+		try (Stream<String> lines = Files
+				.lines(projectStructure.resolve("build.gradle"))) {
 			assertThat(lines.filter((line) -> line.contains("    id 'war'"))).hasSize(1);
 		}
-	}
-
-	private Path generateProject(ProjectDescription description) {
-		return this.projectGenerationTester.generateProject(description,
-				BuildProjectGenerationConfiguration.class,
-				GradleProjectGenerationConfiguration.class);
-	}
-
-	private ProjectDescription initProjectDescription() {
-		ProjectDescription description = new ProjectDescription();
-		description.setBuildSystem(new GradleBuildSystem());
-		return description;
 	}
 
 	private static String[] readAllLines(Path file) throws IOException {

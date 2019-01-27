@@ -22,7 +22,7 @@ import java.util.List;
 import java.util.function.Consumer;
 
 import io.spring.initializr.generator.buildsystem.maven.MavenBuildSystem;
-import io.spring.initializr.generator.test.project.ProjectGenerationTester;
+import io.spring.initializr.generator.test.project.ProjectGeneratorTester;
 import io.spring.initializr.generator.util.Version;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -40,23 +40,19 @@ import static org.assertj.core.api.Assertions.assertThat;
 @ExtendWith(TempDirectory.class)
 class ProjectGeneratorTests {
 
-	private final Path directory;
-
-	private final ProjectGenerationTester projectGenerationTester;
-
-	ProjectGeneratorTests(@TempDir Path directory) {
-		this.directory = directory;
-		this.projectGenerationTester = new ProjectGenerationTester(directory);
-	}
+	private final ProjectGeneratorTester projectTester = new ProjectGeneratorTester()
+			.withDefaultContextInitializer().withDescriptionCustomizer((description) -> {
+				description.setBuildSystem(new MavenBuildSystem());
+				description.setPlatformVersion(Version.parse("2.1.0.RELEASE"));
+			});
 
 	@Test
 	void generateInvokedProcessor() {
 		ProjectDescription description = new ProjectDescription();
 		description.setBuildSystem(new MavenBuildSystem());
 		Version platformVersion = Version.parse("2.1.0.RELEASE");
-		description.setPlatformVersion(platformVersion);
 		description.setJavaVersion("11");
-		ResolvedProjectDescription resolvedProjectDescription = this.projectGenerationTester
+		ResolvedProjectDescription resolvedProjectDescription = this.projectTester
 				.generate(description,
 						(projectGenerationContext) -> projectGenerationContext
 								.getBean(ResolvedProjectDescription.class));
@@ -67,26 +63,23 @@ class ProjectGeneratorTests {
 
 	@Test
 	void generateInvokesCustomizers() {
-		ProjectGenerationTester tester = new ProjectGenerationTester(
-				ProjectGenerationTester.defaultProjectGenerationContext(this.directory)
-						.andThen((context) -> {
-							context.registerBean("customizer1",
-									TestProjectDescriptionCustomizer.class,
-									() -> new TestProjectDescriptionCustomizer(5,
-											(description) -> description
-													.setName("Test")));
-							context.registerBean("customizer2",
-									TestProjectDescriptionCustomizer.class,
-									() -> new TestProjectDescriptionCustomizer(3,
-											(description) -> {
-												description.setName("First");
-												description.setGroupId("com.acme");
-											}));
-						}));
-		ProjectDescription description = initProjectDescription();
+		ProjectGeneratorTester tester = this.projectTester
+				.withContextInitializer((context) -> {
+					context.registerBean("customizer1",
+							TestProjectDescriptionCustomizer.class,
+							() -> new TestProjectDescriptionCustomizer(5,
+									(description) -> description.setName("Test")));
+					context.registerBean("customizer2",
+							TestProjectDescriptionCustomizer.class,
+							() -> new TestProjectDescriptionCustomizer(3,
+									(description) -> {
+										description.setName("First");
+										description.setGroupId("com.acme");
+									}));
+				});
+		ProjectDescription description = new ProjectDescription();
 		description.setGroupId("com.example.demo");
 		description.setName("Original");
-		description.setPlatformVersion(Version.parse("2.1.0.RELEASE"));
 
 		ResolvedProjectDescription resolvedProjectDescription = tester.generate(
 				description, (projectGenerationContext) -> projectGenerationContext
@@ -96,31 +89,22 @@ class ProjectGeneratorTests {
 	}
 
 	@Test
-	void generateInvokeProjectContributors() {
-		ProjectGenerationTester tester = new ProjectGenerationTester(
-				ProjectGenerationTester.defaultProjectGenerationContext(this.directory)
-						.andThen((context) -> {
-							context.registerBean("contributor1", ProjectContributor.class,
-									() -> (directory) -> Files
-											.createFile(directory.resolve("test.text")));
-							context.registerBean("contributor2", ProjectContributor.class,
-									() -> (directory) -> {
-										Path subDir = directory.resolve("src/main/test");
-										Files.createDirectories(subDir);
-										Files.createFile(subDir.resolve("Test.src"));
-									});
-						}));
-
-		Path directory = tester.generateProject(initProjectDescription());
-		List<String> relativePaths = tester.getRelativePathsOfProjectFiles(directory);
+	void generateInvokeProjectContributors(@TempDir Path directory) {
+		ProjectGeneratorTester tester = this.projectTester.withDirectory(directory)
+				.withContextInitializer((context) -> {
+					context.registerBean("contributor1", ProjectContributor.class,
+							() -> (projectDirectory) -> Files
+									.createFile(projectDirectory.resolve("test.text")));
+					context.registerBean("contributor2", ProjectContributor.class,
+							() -> (projectDirectory) -> {
+								Path subDir = projectDirectory.resolve("src/main/test");
+								Files.createDirectories(subDir);
+								Files.createFile(subDir.resolve("Test.src"));
+							});
+				});
+		List<String> relativePaths = tester.generate(new ProjectDescription())
+				.getRelativePathsOfProjectFiles();
 		assertThat(relativePaths).containsOnly("test.text", "src/main/test/Test.src");
-	}
-
-	private ProjectDescription initProjectDescription() {
-		ProjectDescription description = new ProjectDescription();
-		description.setBuildSystem(new MavenBuildSystem());
-		description.setPlatformVersion(Version.parse("2.1.0.RELEASE"));
-		return description;
 	}
 
 	private static class TestProjectDescriptionCustomizer

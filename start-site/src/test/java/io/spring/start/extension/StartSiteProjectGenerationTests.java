@@ -28,7 +28,8 @@ import io.spring.initializr.generator.buildsystem.maven.MavenBuildSystem;
 import io.spring.initializr.generator.language.java.JavaLanguage;
 import io.spring.initializr.generator.project.ProjectDescription;
 import io.spring.initializr.generator.test.assertj.NodeAssert;
-import io.spring.initializr.generator.test.project.ProjectGenerationTester;
+import io.spring.initializr.generator.test.project.ProjectGeneratorTester;
+import io.spring.initializr.generator.test.project.ProjectStructure;
 import io.spring.initializr.generator.util.Version;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -43,10 +44,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 @ExtendWith(TempDirectory.class)
 class StartSiteProjectGenerationTests {
 
-	private final ProjectGenerationTester projectGenerationTester;
+	private final ProjectGeneratorTester projectTester;
 
 	StartSiteProjectGenerationTests(@TempDir Path directory) {
-		this.projectGenerationTester = new ProjectGenerationTester(directory);
+		this.projectTester = new ProjectGeneratorTester().withDirectory(directory);
 	}
 
 	@Test
@@ -60,11 +61,11 @@ class StartSiteProjectGenerationTests {
 		description.addDependency("restdocs",
 				new Dependency("org.springframework.restdocs", "spring-restdocs-mockmvc",
 						DependencyScope.TEST_COMPILE));
-		Path project = this.projectGenerationTester.generateProject(description);
-		List<String> relativePaths = this.projectGenerationTester
-				.getRelativePathsOfProjectFiles(project);
+		ProjectStructure projectStructure = this.projectTester.generate(description);
+		List<String> relativePaths = projectStructure.getRelativePathsOfProjectFiles();
 		assertThat(relativePaths).contains("build.gradle");
-		List<String> source = Files.readAllLines(project.resolve("build.gradle"));
+		List<String> source = Files
+				.readAllLines(projectStructure.resolve("build.gradle"));
 		assertThat(source).contains("    id 'org.asciidoctor.convert' version '1.5.3'");
 	}
 
@@ -76,8 +77,8 @@ class StartSiteProjectGenerationTests {
 		description.addDependency("restdocs",
 				new Dependency("org.springframework.restdocs", "spring-restdocs-mockmvc",
 						DependencyScope.TEST_COMPILE));
-		Path project = this.projectGenerationTester.generateProject(description);
-		NodeAssert pom = new NodeAssert(project.resolve("pom.xml"));
+		ProjectStructure projectStructure = this.projectTester.generate(description);
+		NodeAssert pom = new NodeAssert(projectStructure.resolve("pom.xml"));
 		assertThat(pom).textAtPath("/project/build/plugins/plugin[1]/groupId")
 				.isEqualTo("org.asciidoctor");
 	}
@@ -92,13 +93,12 @@ class StartSiteProjectGenerationTests {
 		description.addDependency("cloud-config-server",
 				new Dependency("org.springframework.cloud", "spring-cloud-config-server",
 						DependencyScope.COMPILE));
-		Path project = this.projectGenerationTester.generateProject(description);
-		List<String> relativePaths = this.projectGenerationTester
-				.getRelativePathsOfProjectFiles(project);
+		ProjectStructure projectStructure = this.projectTester.generate(description);
+		List<String> relativePaths = projectStructure.getRelativePathsOfProjectFiles();
 		assertThat(relativePaths)
 				.contains("src/main/java/com/example/DemoApplication.java");
-		List<String> source = Files.readAllLines(
-				project.resolve("src/main/java/com/example/DemoApplication.java"));
+		List<String> source = Files.readAllLines(projectStructure
+				.resolve("src/main/java/com/example/DemoApplication.java"));
 		assertThat(source).contains("@EnableConfigServer");
 	}
 

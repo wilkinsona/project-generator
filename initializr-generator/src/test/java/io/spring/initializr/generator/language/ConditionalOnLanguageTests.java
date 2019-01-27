@@ -16,17 +16,12 @@
 
 package io.spring.initializr.generator.language;
 
-import java.nio.file.Path;
-
 import io.spring.initializr.generator.language.groovy.GroovyLanguage;
 import io.spring.initializr.generator.language.java.JavaLanguage;
 import io.spring.initializr.generator.language.kotlin.KotlinLanguage;
 import io.spring.initializr.generator.project.ProjectDescription;
 import io.spring.initializr.generator.test.project.ProjectGenerationTester;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.junitpioneer.jupiter.TempDirectory;
-import org.junitpioneer.jupiter.TempDirectory.TempDir;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -38,16 +33,10 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Stephane Nicoll
  */
-@ExtendWith(TempDirectory.class)
 class ConditionalOnLanguageTests {
 
-	private final ProjectGenerationTester projectGenerationTester;
-
-	ConditionalOnLanguageTests(@TempDir Path directory) {
-		this.projectGenerationTester = new ProjectGenerationTester(ProjectGenerationTester
-				.defaultProjectGenerationContext(directory)
-				.andThen((context) -> context.register(LanguageTestConfiguration.class)));
-	}
+	private final ProjectGenerationTester projectTester = new ProjectGenerationTester()
+			.withConfiguration(LanguageTestConfiguration.class);
 
 	@Test
 	void outcomeWithJavaLanguage() {
@@ -69,27 +58,23 @@ class ConditionalOnLanguageTests {
 	void outcomeWithNoMatch() {
 		ProjectDescription projectDescription = new ProjectDescription();
 		projectDescription.setLanguage(new KotlinLanguage());
-		this.projectGenerationTester.generate(projectDescription,
-				(projectGenerationContext) -> {
-					assertThat(projectGenerationContext.getBeansOfType(String.class))
-							.isEmpty();
-					return null;
-				});
+		this.projectTester.generate(projectDescription, (projectGenerationContext) -> {
+			assertThat(projectGenerationContext.getBeansOfType(String.class)).isEmpty();
+			return null;
+		});
 	}
 
 	@Test
 	void outcomeWithNoAvailableLanguage() {
 		ProjectDescription projectDescription = new ProjectDescription();
-		this.projectGenerationTester.generate(projectDescription,
-				(projectGenerationContext) -> {
-					assertThat(projectGenerationContext.getBeansOfType(String.class))
-							.isEmpty();
-					return null;
-				});
+		this.projectTester.generate(projectDescription, (projectGenerationContext) -> {
+			assertThat(projectGenerationContext.getBeansOfType(String.class)).isEmpty();
+			return null;
+		});
 	}
 
 	private String outcomeFor(ProjectDescription projectDescription) {
-		return this.projectGenerationTester.generate(projectDescription,
+		return this.projectTester.generate(projectDescription,
 				(projectGenerationContext) -> {
 					assertThat(projectGenerationContext.getBeansOfType(String.class))
 							.hasSize(1);

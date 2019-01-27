@@ -16,16 +16,11 @@
 
 package io.spring.initializr.generator.buildsystem;
 
-import java.nio.file.Path;
-
 import io.spring.initializr.generator.buildsystem.gradle.GradleBuildSystem;
 import io.spring.initializr.generator.buildsystem.maven.MavenBuildSystem;
 import io.spring.initializr.generator.project.ProjectDescription;
 import io.spring.initializr.generator.test.project.ProjectGenerationTester;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.junitpioneer.jupiter.TempDirectory;
-import org.junitpioneer.jupiter.TempDirectory.TempDir;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -37,16 +32,10 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Stephane Nicoll
  */
-@ExtendWith(TempDirectory.class)
 class ConditionalOnBuildSystemTests {
 
-	private final ProjectGenerationTester projectGenerationTester;
-
-	ConditionalOnBuildSystemTests(@TempDir Path directory) {
-		this.projectGenerationTester = new ProjectGenerationTester(ProjectGenerationTester
-				.defaultProjectGenerationContext(directory).andThen((context) -> context
-						.register(BuildSystemTestConfiguration.class)));
-	}
+	private final ProjectGenerationTester tester = new ProjectGenerationTester()
+			.withConfiguration(BuildSystemTestConfiguration.class);
 
 	@Test
 	void outcomeWithMavenBuildSystem() {
@@ -65,12 +54,10 @@ class ConditionalOnBuildSystemTests {
 	}
 
 	private String outcomeFor(ProjectDescription projectDescription) {
-		return this.projectGenerationTester.generate(projectDescription,
-				(projectGenerationContext) -> {
-					assertThat(projectGenerationContext.getBeansOfType(String.class))
-							.hasSize(1);
-					return projectGenerationContext.getBean(String.class);
-				});
+		return this.tester.generate(projectDescription, (projectGenerationContext) -> {
+			assertThat(projectGenerationContext.getBeansOfType(String.class)).hasSize(1);
+			return projectGenerationContext.getBean(String.class);
+		});
 	}
 
 	@Configuration

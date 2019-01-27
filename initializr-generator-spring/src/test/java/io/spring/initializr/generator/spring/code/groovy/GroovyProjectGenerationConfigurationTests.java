@@ -27,6 +27,7 @@ import io.spring.initializr.generator.packaging.war.WarPackaging;
 import io.spring.initializr.generator.project.ProjectDescription;
 import io.spring.initializr.generator.spring.code.SourceCodeProjectGenerationConfiguration;
 import io.spring.initializr.generator.test.project.ProjectGenerationTester;
+import io.spring.initializr.generator.test.project.ProjectStructure;
 import io.spring.initializr.generator.util.Version;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -43,31 +44,35 @@ import static org.assertj.core.api.Assertions.assertThat;
 @ExtendWith(TempDirectory.class)
 class GroovyProjectGenerationConfigurationTests {
 
-	private final ProjectGenerationTester projectGenerationTester;
+	private final ProjectGenerationTester projectTester;
 
 	GroovyProjectGenerationConfigurationTests(@TempDir Path directory) {
-		this.projectGenerationTester = new ProjectGenerationTester(directory);
+		this.projectTester = new ProjectGenerationTester().withDefaultContextInitializer()
+				.withConfiguration(SourceCodeProjectGenerationConfiguration.class,
+						GroovyProjectGenerationConfiguration.class)
+				.withDirectory(directory).withDescriptionCustomizer((description) -> {
+					description.setLanguage(new GroovyLanguage());
+					description.setPlatformVersion(Version.parse("2.1.0.RELEASE"));
+					description.setBuildSystem(new MavenBuildSystem());
+				});
 	}
 
 	@Test
 	void mainClassIsContributed() {
-		ProjectDescription description = initProjectDescription();
-		Path project = generateProject(description);
-		List<String> relativePaths = this.projectGenerationTester
-				.getRelativePathsOfProjectFiles(project);
+		List<String> relativePaths = this.projectTester.generate(new ProjectDescription())
+				.getRelativePathsOfProjectFiles();
 		assertThat(relativePaths)
 				.contains("src/main/groovy/com/example/DemoApplication.groovy");
 	}
 
 	@Test
 	void testClassIsContributed() throws IOException {
-		ProjectDescription description = initProjectDescription();
-		Path project = generateProject(description);
-		List<String> relativePaths = this.projectGenerationTester
-				.getRelativePathsOfProjectFiles(project);
+		ProjectStructure projectStructure = this.projectTester
+				.generate(new ProjectDescription());
+		List<String> relativePaths = projectStructure.getRelativePathsOfProjectFiles();
 		assertThat(relativePaths)
 				.contains("src/test/groovy/com/example/DemoApplicationTests.groovy");
-		List<String> lines = Files.readAllLines(project
+		List<String> lines = Files.readAllLines(projectStructure
 				.resolve("src/test/groovy/com/example/DemoApplicationTests.groovy"));
 		assertThat(lines).containsExactly("package com.example", "",
 				"import org.junit.Test", "import org.junit.runner.RunWith",
@@ -81,16 +86,15 @@ class GroovyProjectGenerationConfigurationTests {
 	@Test
 	void servletInitializerIsContributedWhenGeneratingProjectThatUsesWarPackaging()
 			throws IOException {
-		ProjectDescription description = initProjectDescription();
+		ProjectDescription description = new ProjectDescription();
 		description.setPackaging(new WarPackaging());
 		description.setApplicationName("Demo2Application");
-		Path project = generateProject(description);
-		List<String> relativePaths = this.projectGenerationTester
-				.getRelativePathsOfProjectFiles(project);
+		ProjectStructure projectStructure = this.projectTester.generate(description);
+		List<String> relativePaths = projectStructure.getRelativePathsOfProjectFiles();
 		assertThat(relativePaths)
 				.contains("src/main/groovy/com/example/ServletInitializer.groovy");
-		List<String> lines = Files.readAllLines(
-				project.resolve("src/main/groovy/com/example/ServletInitializer.groovy"));
+		List<String> lines = Files.readAllLines(projectStructure
+				.resolve("src/main/groovy/com/example/ServletInitializer.groovy"));
 		assertThat(lines).containsExactly("package com.example", "",
 				"import org.springframework.boot.builder.SpringApplicationBuilder",
 				"import org.springframework.boot.web.servlet.support.SpringBootServletInitializer",
@@ -98,20 +102,6 @@ class GroovyProjectGenerationConfigurationTests {
 				"    @Override",
 				"    protected SpringApplicationBuilder configure(SpringApplicationBuilder application) {",
 				"        application.sources(Demo2Application)", "    }", "", "}", "");
-	}
-
-	private Path generateProject(ProjectDescription description) {
-		return this.projectGenerationTester.generateProject(description,
-				SourceCodeProjectGenerationConfiguration.class,
-				GroovyProjectGenerationConfiguration.class);
-	}
-
-	private ProjectDescription initProjectDescription() {
-		ProjectDescription description = new ProjectDescription();
-		description.setLanguage(new GroovyLanguage());
-		description.setPlatformVersion(Version.parse("2.1.0.RELEASE"));
-		description.setBuildSystem(new MavenBuildSystem());
-		return description;
 	}
 
 }

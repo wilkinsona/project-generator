@@ -27,6 +27,7 @@ import io.spring.initializr.generator.packaging.war.WarPackaging;
 import io.spring.initializr.generator.project.ProjectDescription;
 import io.spring.initializr.generator.spring.code.SourceCodeProjectGenerationConfiguration;
 import io.spring.initializr.generator.test.project.ProjectGenerationTester;
+import io.spring.initializr.generator.test.project.ProjectStructure;
 import io.spring.initializr.generator.util.Version;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -43,32 +44,37 @@ import static org.assertj.core.api.Assertions.assertThat;
 @ExtendWith(TempDirectory.class)
 class JavaProjectGenerationConfigurationTests {
 
-	private final ProjectGenerationTester projectGenerationTester;
+	private final ProjectGenerationTester projectTester;
 
 	JavaProjectGenerationConfigurationTests(@TempDir Path directory) {
-		this.projectGenerationTester = new ProjectGenerationTester(directory);
+		this.projectTester = new ProjectGenerationTester().withDefaultContextInitializer()
+				.withConfiguration(SourceCodeProjectGenerationConfiguration.class,
+						JavaProjectGenerationConfiguration.class)
+				.withDirectory(directory).withDescriptionCustomizer((description) -> {
+					description.setLanguage(new JavaLanguage());
+					description.setPlatformVersion(Version.parse("2.1.0.RELEASE"));
+					description.setBuildSystem(new MavenBuildSystem());
+				});
 	}
 
 	@Test
 	void mainClassIsContributed() {
-		ProjectDescription description = initProjectDescription();
-		Path project = generateProject(description);
-		List<String> relativePaths = this.projectGenerationTester
-				.getRelativePathsOfProjectFiles(project);
+		ProjectDescription description = new ProjectDescription();
+		List<String> relativePaths = this.projectTester.generate(description)
+				.getRelativePathsOfProjectFiles();
 		assertThat(relativePaths)
 				.contains("src/main/java/com/example/DemoApplication.java");
 	}
 
 	@Test
 	void testClassIsContributed() throws IOException {
-		ProjectDescription description = initProjectDescription();
-		Path project = generateProject(description);
-		List<String> relativePaths = this.projectGenerationTester
-				.getRelativePathsOfProjectFiles(project);
+		ProjectDescription description = new ProjectDescription();
+		ProjectStructure projectStructure = this.projectTester.generate(description);
+		List<String> relativePaths = projectStructure.getRelativePathsOfProjectFiles();
 		assertThat(relativePaths)
 				.contains("src/test/java/com/example/DemoApplicationTests.java");
-		List<String> lines = Files.readAllLines(
-				project.resolve("src/test/java/com/example/DemoApplicationTests.java"));
+		List<String> lines = Files.readAllLines(projectStructure
+				.resolve("src/test/java/com/example/DemoApplicationTests.java"));
 		assertThat(lines).containsExactly("package com.example;", "",
 				"import org.junit.Test;", "import org.junit.runner.RunWith;",
 				"import org.springframework.boot.test.context.SpringBootTest;",
@@ -81,16 +87,15 @@ class JavaProjectGenerationConfigurationTests {
 	@Test
 	void servletInitializerIsContributedWhenGeneratingProjectThatUsesWarPackaging()
 			throws IOException {
-		ProjectDescription description = initProjectDescription();
+		ProjectDescription description = new ProjectDescription();
 		description.setPackaging(new WarPackaging());
 		description.setApplicationName("MyDemoApplication");
-		Path project = generateProject(description);
-		List<String> relativePaths = this.projectGenerationTester
-				.getRelativePathsOfProjectFiles(project);
+		ProjectStructure projectStructure = this.projectTester.generate(description);
+		List<String> relativePaths = projectStructure.getRelativePathsOfProjectFiles();
 		assertThat(relativePaths)
 				.contains("src/main/java/com/example/ServletInitializer.java");
-		List<String> lines = Files.readAllLines(
-				project.resolve("src/main/java/com/example/ServletInitializer.java"));
+		List<String> lines = Files.readAllLines(projectStructure
+				.resolve("src/main/java/com/example/ServletInitializer.java"));
 		assertThat(lines).containsExactly("package com.example;", "",
 				"import org.springframework.boot.builder.SpringApplicationBuilder;",
 				"import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;",
@@ -104,11 +109,10 @@ class JavaProjectGenerationConfigurationTests {
 
 	@Test
 	void customPackageNameIsUsedWhenGeneratingProject() {
-		ProjectDescription description = initProjectDescription();
+		ProjectDescription description = new ProjectDescription();
 		description.setPackageName("com.example.demo");
-		Path project = generateProject(description);
-		List<String> relativePaths = this.projectGenerationTester
-				.getRelativePathsOfProjectFiles(project);
+		List<String> relativePaths = this.projectTester.generate(description)
+				.getRelativePathsOfProjectFiles();
 		assertThat(relativePaths).contains(
 				"src/main/java/com/example/demo/DemoApplication.java",
 				"src/test/java/com/example/demo/DemoApplicationTests.java");
@@ -116,27 +120,12 @@ class JavaProjectGenerationConfigurationTests {
 
 	@Test
 	void customApplicationNameIsUsedWhenGeneratingProject() {
-		ProjectDescription description = initProjectDescription();
+		ProjectDescription description = new ProjectDescription();
 		description.setApplicationName("MyApplication");
-		Path project = generateProject(description);
-		List<String> relativePaths = this.projectGenerationTester
-				.getRelativePathsOfProjectFiles(project);
+		List<String> relativePaths = this.projectTester.generate(description)
+				.getRelativePathsOfProjectFiles();
 		assertThat(relativePaths).contains("src/main/java/com/example/MyApplication.java",
 				"src/test/java/com/example/MyApplicationTests.java");
-	}
-
-	private Path generateProject(ProjectDescription description) {
-		return this.projectGenerationTester.generateProject(description,
-				SourceCodeProjectGenerationConfiguration.class,
-				JavaProjectGenerationConfiguration.class);
-	}
-
-	private ProjectDescription initProjectDescription() {
-		ProjectDescription description = new ProjectDescription();
-		description.setLanguage(new JavaLanguage());
-		description.setPlatformVersion(Version.parse("2.1.0.RELEASE"));
-		description.setBuildSystem(new MavenBuildSystem());
-		return description;
 	}
 
 }
