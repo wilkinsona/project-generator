@@ -19,7 +19,7 @@ package io.spring.initializr.generator.buildsystem;
 import io.spring.initializr.generator.buildsystem.gradle.GradleBuildSystem;
 import io.spring.initializr.generator.buildsystem.maven.MavenBuildSystem;
 import io.spring.initializr.generator.project.ProjectDescription;
-import io.spring.initializr.generator.test.project.ProjectGenerationTester;
+import io.spring.initializr.generator.test.project.ProjectAssetTester;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.context.annotation.Bean;
@@ -34,7 +34,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 class ConditionalOnBuildSystemTests {
 
-	private final ProjectGenerationTester tester = new ProjectGenerationTester()
+	private final ProjectAssetTester tester = new ProjectAssetTester()
 			.withConfiguration(BuildSystemTestConfiguration.class);
 
 	@Test

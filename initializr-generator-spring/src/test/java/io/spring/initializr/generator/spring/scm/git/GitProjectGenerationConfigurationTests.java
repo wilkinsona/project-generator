@@ -25,7 +25,7 @@ import java.util.List;
 import io.spring.initializr.generator.buildsystem.gradle.GradleBuildSystem;
 import io.spring.initializr.generator.buildsystem.maven.MavenBuildSystem;
 import io.spring.initializr.generator.project.ProjectDescription;
-import io.spring.initializr.generator.test.project.ProjectGenerationTester;
+import io.spring.initializr.generator.test.project.ProjectAssetTester;
 import io.spring.initializr.generator.util.Version;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -42,7 +42,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @ExtendWith(TempDirectory.class)
 class GitProjectGenerationConfigurationTests {
 
-	private final ProjectGenerationTester projectTester = new ProjectGenerationTester()
+	private final ProjectAssetTester projectTester = new ProjectAssetTester()
 			.withConfiguration(GitProjectGenerationConfiguration.class);
 
 	@Test

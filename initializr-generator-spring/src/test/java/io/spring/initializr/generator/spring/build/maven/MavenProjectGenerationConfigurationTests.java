@@ -27,7 +27,7 @@ import io.spring.initializr.generator.language.java.JavaLanguage;
 import io.spring.initializr.generator.packaging.war.WarPackaging;
 import io.spring.initializr.generator.project.ProjectDescription;
 import io.spring.initializr.generator.spring.build.BuildProjectGenerationConfiguration;
-import io.spring.initializr.generator.test.project.ProjectGenerationTester;
+import io.spring.initializr.generator.test.project.ProjectAssetTester;
 import io.spring.initializr.generator.test.project.ProjectStructure;
 import io.spring.initializr.generator.util.Version;
 import org.junit.jupiter.api.Test;
@@ -45,10 +45,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 @ExtendWith(TempDirectory.class)
 class MavenProjectGenerationConfigurationTests {
 
-	private final ProjectGenerationTester projectTester;
+	private final ProjectAssetTester projectTester;
 
 	MavenProjectGenerationConfigurationTests(@TempDir Path directory) {
-		this.projectTester = new ProjectGenerationTester().withDefaultContextInitializer()
+		this.projectTester = new ProjectAssetTester().withDefaultContextInitializer()
 				.withConfiguration(BuildProjectGenerationConfiguration.class,
 						MavenProjectGenerationConfiguration.class)
 				.withDirectory(directory).withDescriptionCustomizer((description) -> {

@@ -26,7 +26,7 @@ import io.spring.initializr.generator.language.kotlin.KotlinLanguage;
 import io.spring.initializr.generator.packaging.war.WarPackaging;
 import io.spring.initializr.generator.project.ProjectDescription;
 import io.spring.initializr.generator.spring.code.SourceCodeProjectGenerationConfiguration;
-import io.spring.initializr.generator.test.project.ProjectGenerationTester;
+import io.spring.initializr.generator.test.project.ProjectAssetTester;
 import io.spring.initializr.generator.test.project.ProjectStructure;
 import io.spring.initializr.generator.util.Version;
 import org.junit.jupiter.api.Test;
@@ -44,10 +44,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 @ExtendWith(TempDirectory.class)
 class KotlinProjectGenerationConfigurationTests {
 
-	private final ProjectGenerationTester projectTester;
+	private final ProjectAssetTester projectTester;
 
 	KotlinProjectGenerationConfigurationTests(@TempDir Path directory) {
-		this.projectTester = new ProjectGenerationTester().withDefaultContextInitializer()
+		this.projectTester = new ProjectAssetTester().withDefaultContextInitializer()
 				.withConfiguration(SourceCodeProjectGenerationConfiguration.class,
 						KotlinProjectGenerationConfiguration.class)
 				.withDirectory(directory).withDescriptionCustomizer((description) -> {

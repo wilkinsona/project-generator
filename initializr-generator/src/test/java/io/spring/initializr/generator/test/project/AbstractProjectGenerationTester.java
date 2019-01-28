@@ -28,6 +28,8 @@ import io.spring.initializr.generator.project.ProjectDirectoryFactory;
 import io.spring.initializr.generator.project.ProjectGenerationContext;
 
 /**
+ * Base tester for project generation.
+ *
  * @author Stephane Nicoll
  */
 public abstract class AbstractProjectGenerationTester<SELF extends AbstractProjectGenerationTester<SELF>> {

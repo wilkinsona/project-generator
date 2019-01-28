@@ -17,7 +17,7 @@
 package io.spring.initializr.generator.condition;
 
 import io.spring.initializr.generator.project.ProjectDescription;
-import io.spring.initializr.generator.test.project.ProjectGenerationTester;
+import io.spring.initializr.generator.test.project.ProjectAssetTester;
 import io.spring.initializr.generator.util.Version;
 import org.junit.jupiter.api.Test;
 
@@ -33,7 +33,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 class ConditionalOnPlatformVersionTests {
 
-	private final ProjectGenerationTester projectTester = new ProjectGenerationTester()
+	private final ProjectAssetTester projectTester = new ProjectAssetTester()
 			.withConfiguration(PlatformVersionTestConfiguration.class);
 
 	@Test

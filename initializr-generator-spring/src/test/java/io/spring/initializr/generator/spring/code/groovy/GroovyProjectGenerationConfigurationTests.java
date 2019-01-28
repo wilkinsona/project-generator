@@ -26,7 +26,7 @@ import io.spring.initializr.generator.language.groovy.GroovyLanguage;
 import io.spring.initializr.generator.packaging.war.WarPackaging;
 import io.spring.initializr.generator.project.ProjectDescription;
 import io.spring.initializr.generator.spring.code.SourceCodeProjectGenerationConfiguration;
-import io.spring.initializr.generator.test.project.ProjectGenerationTester;
+import io.spring.initializr.generator.test.project.ProjectAssetTester;
 import io.spring.initializr.generator.test.project.ProjectStructure;
 import io.spring.initializr.generator.util.Version;
 import org.junit.jupiter.api.Test;
@@ -44,10 +44,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 @ExtendWith(TempDirectory.class)
 class GroovyProjectGenerationConfigurationTests {
 
-	private final ProjectGenerationTester projectTester;
+	private final ProjectAssetTester projectTester;
 
 	GroovyProjectGenerationConfigurationTests(@TempDir Path directory) {
-		this.projectTester = new ProjectGenerationTester().withDefaultContextInitializer()
+		this.projectTester = new ProjectAssetTester().withDefaultContextInitializer()
 				.withConfiguration(SourceCodeProjectGenerationConfiguration.class,
 						GroovyProjectGenerationConfiguration.class)
 				.withDirectory(directory).withDescriptionCustomizer((description) -> {

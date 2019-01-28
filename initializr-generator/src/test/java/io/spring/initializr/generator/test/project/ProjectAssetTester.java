@@ -29,7 +29,7 @@ import io.spring.initializr.generator.project.ProjectGenerationContextProcessor;
 import io.spring.initializr.generator.project.ResolvedProjectDescription;
 
 /**
- * A tester for project generation that does not detect {@link ProjectContributor
+ * A tester for project asset that does not detect available {@link ProjectContributor
  * contributors}. By default, no contributor is available and can be added using a
  * {@link #withConfiguration(Class[]) configuration class} or a
  * {@link #withContextInitializer(Consumer) customization of the project generation
@@ -37,42 +37,31 @@ import io.spring.initializr.generator.project.ResolvedProjectDescription;
  *
  * @author Stephane Nicoll
  */
-public class ProjectGenerationTester
-		extends AbstractProjectGenerationTester<ProjectGenerationTester> {
+public class ProjectAssetTester
+		extends AbstractProjectGenerationTester<ProjectAssetTester> {
 
-	public ProjectGenerationTester() {
+	public ProjectAssetTester() {
 		super((context) -> {
 		}, defaultDescriptionCustomizer());
 	}
 
-	private ProjectGenerationTester(Consumer<ProjectGenerationContext> contextInitializer,
+	private ProjectAssetTester(Consumer<ProjectGenerationContext> contextInitializer,
 			Consumer<ProjectDescription> descriptionCustomizer) {
 		super(contextInitializer, descriptionCustomizer);
 	}
 
 	@Override
-	protected ProjectGenerationTester newInstance(
+	protected ProjectAssetTester newInstance(
 			Consumer<ProjectGenerationContext> contextInitializer,
 			Consumer<ProjectDescription> descriptionCustomizer) {
-		return new ProjectGenerationTester(contextInitializer, descriptionCustomizer);
+		return new ProjectAssetTester(contextInitializer, descriptionCustomizer);
 	}
 
-	public ProjectGenerationTester withConfiguration(Class<?>... configurationClasses) {
+	public ProjectAssetTester withConfiguration(Class<?>... configurationClasses) {
 		return newInstance(
 				contextInitializer()
 						.andThen((context) -> context.register(configurationClasses)),
 				descriptionCustomizer());
-	}
-
-	/**
-	 * Generate a project structure using only available {@link ProjectContributor
-	 * contributors}
-	 * @param description the description of the project to generateProject
-	 * @return the {@link ProjectStructure} of the generated project
-	 * @see #withConfiguration(Class[])
-	 */
-	public ProjectStructure generate(ProjectDescription description) {
-		return generate(description, runAllAvailableContributors());
 	}
 
 	/**
@@ -99,6 +88,17 @@ public class ProjectGenerationTester
 				return projectGenerationContextProcessor.process(context);
 			}
 		});
+	}
+
+	/**
+	 * Generate a project structure using only explicitly configured
+	 * {@link ProjectContributor contributors}.
+	 * @param description the description of the project to generateProject
+	 * @return the {@link ProjectStructure} of the generated project
+	 * @see #withConfiguration(Class[])
+	 */
+	public ProjectStructure generate(ProjectDescription description) {
+		return generate(description, runAllAvailableContributors());
 	}
 
 	private ProjectGenerationContextProcessor<ProjectStructure> runAllAvailableContributors() {

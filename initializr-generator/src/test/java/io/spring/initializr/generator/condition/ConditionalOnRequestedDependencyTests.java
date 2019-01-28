@@ -18,7 +18,7 @@ package io.spring.initializr.generator.condition;
 
 import io.spring.initializr.generator.buildsystem.Dependency;
 import io.spring.initializr.generator.project.ProjectDescription;
-import io.spring.initializr.generator.test.project.ProjectGenerationTester;
+import io.spring.initializr.generator.test.project.ProjectAssetTester;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.context.annotation.Bean;
@@ -34,7 +34,7 @@ import static org.mockito.Mockito.mock;
  */
 class ConditionalOnRequestedDependencyTests {
 
-	private final ProjectGenerationTester projectTester = new ProjectGenerationTester()
+	private final ProjectAssetTester projectTester = new ProjectAssetTester()
 			.withConfiguration(RequestedDependencyTestConfiguration.class);
 
 	@Test

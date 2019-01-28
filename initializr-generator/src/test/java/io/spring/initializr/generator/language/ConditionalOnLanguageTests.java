@@ -20,7 +20,7 @@ import io.spring.initializr.generator.language.groovy.GroovyLanguage;
 import io.spring.initializr.generator.language.java.JavaLanguage;
 import io.spring.initializr.generator.language.kotlin.KotlinLanguage;
 import io.spring.initializr.generator.project.ProjectDescription;
-import io.spring.initializr.generator.test.project.ProjectGenerationTester;
+import io.spring.initializr.generator.test.project.ProjectAssetTester;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.context.annotation.Bean;
@@ -35,7 +35,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 class ConditionalOnLanguageTests {
 
-	private final ProjectGenerationTester projectTester = new ProjectGenerationTester()
+	private final ProjectAssetTester projectTester = new ProjectAssetTester()
 			.withConfiguration(LanguageTestConfiguration.class);
 
 	@Test
