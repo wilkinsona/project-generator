@@ -34,7 +34,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 class ConditionalOnBuildSystemTests {
 
-	private final ProjectAssetTester tester = new ProjectAssetTester()
+	private final ProjectAssetTester projectTester = new ProjectAssetTester()
 			.withConfiguration(BuildSystemTestConfiguration.class);
 
 	@Test
@@ -54,10 +54,12 @@ class ConditionalOnBuildSystemTests {
 	}
 
 	private String outcomeFor(ProjectDescription projectDescription) {
-		return this.tester.generate(projectDescription, (projectGenerationContext) -> {
-			assertThat(projectGenerationContext.getBeansOfType(String.class)).hasSize(1);
-			return projectGenerationContext.getBean(String.class);
-		});
+		return this.projectTester.generate(projectDescription,
+				(projectGenerationContext) -> {
+					assertThat(projectGenerationContext.getBeansOfType(String.class))
+							.hasSize(1);
+					return projectGenerationContext.getBean(String.class);
+				});
 	}
 
 	@Configuration
