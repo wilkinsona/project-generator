@@ -43,10 +43,6 @@ public class ProjectDescription {
 
 	private final Map<String, Dependency> requestedDependencies = new LinkedHashMap<>();
 
-	// This does not fit very well here as we have a language abstraction. This is also
-	// more or less the same thing as https://github.com/spring-io/initializr/issues/773.
-	private String javaVersion;
-
 	private String groupId;
 
 	private String artifactId;
@@ -107,14 +103,6 @@ public class ProjectDescription {
 
 	public Map<String, Dependency> getRequestedDependencies() {
 		return Collections.unmodifiableMap(this.requestedDependencies);
-	}
-
-	public String getJavaVersion() {
-		return this.javaVersion;
-	}
-
-	public void setJavaVersion(String javaVersion) {
-		this.javaVersion = javaVersion;
 	}
 
 	public String getGroupId() {

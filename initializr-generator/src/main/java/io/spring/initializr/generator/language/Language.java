@@ -27,13 +27,20 @@ import org.springframework.core.io.support.SpringFactoriesLoader;
  */
 public interface Language {
 
+	/**
+	 * The default JVM version to use if none is specified.
+	 */
+	String DEFAULT_JVM_VERSION = "1.8";
+
 	String id();
 
-	static Language forId(String id) {
+	String jvmVersion();
+
+	static Language forId(String id, String jvmVersion) {
 		return SpringFactoriesLoader
 				.loadFactories(LanguageFactory.class,
 						LanguageFactory.class.getClassLoader())
-				.stream().map((factory) -> factory.createLanguage(id))
+				.stream().map((factory) -> factory.createLanguage(id, jvmVersion))
 				.filter(Objects::nonNull).findFirst()
 				.orElseThrow(() -> new IllegalStateException(
 						"Unrecognized language id '" + id + "'"));

@@ -16,6 +16,7 @@
 
 package io.spring.initializr.generator.language.kotlin;
 
+import io.spring.initializr.generator.language.AbstractLanguage;
 import io.spring.initializr.generator.language.Language;
 
 /**
@@ -23,18 +24,16 @@ import io.spring.initializr.generator.language.Language;
  *
  * @author Stephane Nicoll
  */
-public final class KotlinLanguage implements Language {
+public final class KotlinLanguage extends AbstractLanguage {
 
 	static final String ID = "kotlin";
 
-	@Override
-	public String id() {
-		return ID;
+	public KotlinLanguage() {
+		this(DEFAULT_JVM_VERSION);
 	}
 
-	@Override
-	public String toString() {
-		return id();
+	public KotlinLanguage(String jvmVersion) {
+		super(ID, jvmVersion);
 	}
 
 }

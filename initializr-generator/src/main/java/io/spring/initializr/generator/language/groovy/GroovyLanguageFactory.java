@@ -27,9 +27,9 @@ import io.spring.initializr.generator.language.LanguageFactory;
 class GroovyLanguageFactory implements LanguageFactory {
 
 	@Override
-	public Language createLanguage(String id) {
+	public Language createLanguage(String id, String jvmVersion) {
 		if (GroovyLanguage.ID.equals(id)) {
-			return new GroovyLanguage();
+			return new GroovyLanguage(jvmVersion);
 		}
 		return null;
 	}

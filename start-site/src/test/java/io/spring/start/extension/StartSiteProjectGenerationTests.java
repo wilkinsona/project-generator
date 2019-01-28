@@ -49,16 +49,18 @@ class StartSiteProjectGenerationTests {
 
 	@BeforeEach
 	void setup(@TempDir Path directory) {
-		this.projectTester = new ProjectGeneratorTester().withDirectory(directory);
+		this.projectTester = new ProjectGeneratorTester().withDirectory(directory)
+				.withDescriptionCustomizer((description) -> {
+					description.setPlatformVersion(Version.parse("2.1.0.RELEASE"));
+					description.setLanguage(new JavaLanguage());
+				});
 	}
 
 	@Test
 	void buildDotGradleIsCustomizedWhenGeneratingProjectThatDependsOnSpringRestDocs()
 			throws IOException {
 		ProjectDescription description = new ProjectDescription();
-		description.setPlatformVersion(Version.parse("2.1.0.RELEASE"));
 		description.setBuildSystem(new GradleBuildSystem());
-		description.setLanguage(new JavaLanguage());
 		description.setGroupId("com.example");
 		description.addDependency("restdocs",
 				new Dependency("org.springframework.restdocs", "spring-restdocs-mockmvc",
@@ -74,7 +76,6 @@ class StartSiteProjectGenerationTests {
 	@Test
 	void pomIsCustomizedWhenGeneratingProjectThatDependsOnSpringRestDocs() {
 		ProjectDescription description = new ProjectDescription();
-		description.setPlatformVersion(Version.parse("2.1.0.RELEASE"));
 		description.setBuildSystem(new MavenBuildSystem());
 		description.addDependency("restdocs",
 				new Dependency("org.springframework.restdocs", "spring-restdocs-mockmvc",
@@ -89,9 +90,7 @@ class StartSiteProjectGenerationTests {
 	void mainClassIsAnnotatedWithEnableConfigServerWhenGeneratingProjectThatDependsUponSpringCloudConfigServer()
 			throws IOException {
 		ProjectDescription description = new ProjectDescription();
-		description.setLanguage(new JavaLanguage());
 		description.setBuildSystem(new MavenBuildSystem());
-		description.setPlatformVersion(Version.parse("2.1.0.RELEASE"));
 		description.addDependency("cloud-config-server",
 				new Dependency("org.springframework.cloud", "spring-cloud-config-server",
 						DependencyScope.COMPILE));

@@ -16,25 +16,25 @@
 
 package io.spring.initializr.generator.language.java;
 
+import io.spring.initializr.generator.language.AbstractLanguage;
 import io.spring.initializr.generator.language.Language;
 
 /**
  * Java {@link Language}.
  *
  * @author Andy Wilkinson
+ * @author Stephane Nicoll
  */
-public final class JavaLanguage implements Language {
+public final class JavaLanguage extends AbstractLanguage {
 
 	static final String ID = "java";
 
-	@Override
-	public String id() {
-		return ID;
+	public JavaLanguage() {
+		this(DEFAULT_JVM_VERSION);
 	}
 
-	@Override
-	public String toString() {
-		return id();
+	public JavaLanguage(String jvmVersion) {
+		super(ID, jvmVersion);
 	}
 
 }

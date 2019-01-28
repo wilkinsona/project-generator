@@ -37,8 +37,6 @@ public final class ResolvedProjectDescription {
 
 	private final Version platformVersion;
 
-	private final String javaVersion;
-
 	private final BuildSystem buildSystem;
 
 	private final Packaging packaging;
@@ -61,7 +59,6 @@ public final class ResolvedProjectDescription {
 
 	public ResolvedProjectDescription(ProjectDescription description) {
 		this.platformVersion = description.getPlatformVersion();
-		this.javaVersion = description.getJavaVersion();
 		this.buildSystem = description.getBuildSystem();
 		this.packaging = description.getPackaging();
 		this.language = description.getLanguage();
@@ -84,10 +81,6 @@ public final class ResolvedProjectDescription {
 
 	public Version getPlatformVersion() {
 		return this.platformVersion;
-	}
-
-	public String getJavaVersion() {
-		return this.javaVersion;
 	}
 
 	public BuildSystem getBuildSystem() {

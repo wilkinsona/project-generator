@@ -14,26 +14,37 @@
  * limitations under the License.
  */
 
-package io.spring.initializr.generator.language.groovy;
-
-import io.spring.initializr.generator.language.AbstractLanguage;
-import io.spring.initializr.generator.language.Language;
+package io.spring.initializr.generator.language;
 
 /**
- * Groovy {@link Language}.
+ * Base {@link Language} implementation.
  *
  * @author Stephane Nicoll
  */
-public final class GroovyLanguage extends AbstractLanguage {
+public abstract class AbstractLanguage implements Language {
 
-	static final String ID = "groovy";
+	private final String id;
 
-	public GroovyLanguage() {
-		this(DEFAULT_JVM_VERSION);
+	private final String jvmVersion;
+
+	protected AbstractLanguage(String id, String jvmVersion) {
+		this.id = id;
+		this.jvmVersion = (jvmVersion != null) ? jvmVersion : DEFAULT_JVM_VERSION;
 	}
 
-	public GroovyLanguage(String jvmVersion) {
-		super(ID, jvmVersion);
+	@Override
+	public String id() {
+		return this.id;
+	}
+
+	@Override
+	public String jvmVersion() {
+		return this.jvmVersion;
+	}
+
+	@Override
+	public String toString() {
+		return id();
 	}
 
 }

@@ -51,14 +51,15 @@ class ProjectGeneratorTests {
 		ProjectDescription description = new ProjectDescription();
 		description.setBuildSystem(new MavenBuildSystem());
 		Version platformVersion = Version.parse("2.1.0.RELEASE");
-		description.setJavaVersion("11");
+		description.setPackageName("com.example.test");
 		ResolvedProjectDescription resolvedProjectDescription = this.projectTester
 				.generate(description,
 						(projectGenerationContext) -> projectGenerationContext
 								.getBean(ResolvedProjectDescription.class));
 		assertThat(resolvedProjectDescription.getPlatformVersion())
 				.isEqualTo(platformVersion);
-		assertThat(resolvedProjectDescription.getJavaVersion()).isEqualTo("11");
+		assertThat(resolvedProjectDescription.getPackageName())
+				.isEqualTo("com.example.test");
 	}
 
 	@Test

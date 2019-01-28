@@ -73,7 +73,7 @@ public class GradleProjectGenerationConfiguration {
 	public BuildCustomizer<GradleBuild> defaultGradleBuildCustomizer(
 			ResolvedProjectDescription projectDescription) {
 		return (build) -> build
-				.setSourceCompatibility(projectDescription.getJavaVersion());
+				.setSourceCompatibility(projectDescription.getLanguage().jvmVersion());
 	}
 
 	@Bean

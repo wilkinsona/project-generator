@@ -55,6 +55,7 @@ class MavenProjectGenerationConfigurationTests {
 						MavenProjectGenerationConfiguration.class)
 				.withDirectory(directory).withDescriptionCustomizer((description) -> {
 					description.setBuildSystem(new MavenBuildSystem());
+					description.setLanguage(new JavaLanguage());
 				});
 	}
 
@@ -83,7 +84,6 @@ class MavenProjectGenerationConfigurationTests {
 	void warPackagingIsUsedWhenBuildingProjectThatUsesWarPackaging() throws IOException {
 		ProjectDescription description = new ProjectDescription();
 		description.setPlatformVersion(Version.parse("2.1.0.RELEASE"));
-		description.setLanguage(new JavaLanguage());
 		description.setPackaging(new WarPackaging());
 		ProjectStructure projectStructure = this.projectTester.generate(description);
 		List<String> relativePaths = projectStructure.getRelativePathsOfProjectFiles();

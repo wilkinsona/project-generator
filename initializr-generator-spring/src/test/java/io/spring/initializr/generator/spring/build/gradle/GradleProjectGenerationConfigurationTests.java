@@ -70,6 +70,7 @@ class GradleProjectGenerationConfigurationTests {
 			throws IOException {
 		ProjectDescription description = new ProjectDescription();
 		description.setPlatformVersion(Version.parse("1.5.17.RELEASE"));
+		description.setLanguage(new JavaLanguage());
 		ProjectStructure projectStructure = this.projectTester.generate(description);
 		List<String> relativePaths = projectStructure.getRelativePathsOfProjectFiles();
 		assertThat(relativePaths).contains("gradlew", "gradlew.bat",
@@ -87,6 +88,7 @@ class GradleProjectGenerationConfigurationTests {
 			throws IOException {
 		ProjectDescription description = new ProjectDescription();
 		description.setPlatformVersion(Version.parse("2.0.6.RELEASE"));
+		description.setLanguage(new JavaLanguage());
 		ProjectStructure projectStructure = this.projectTester.generate(description);
 		List<String> relativePaths = projectStructure.getRelativePathsOfProjectFiles();
 		assertThat(relativePaths).contains("gradlew", "gradlew.bat",
@@ -103,8 +105,7 @@ class GradleProjectGenerationConfigurationTests {
 	void buildDotGradleIsContributedWhenGeneratingGradleProject() throws IOException {
 		ProjectDescription description = new ProjectDescription();
 		description.setPlatformVersion(Version.parse("2.1.0.RELEASE"));
-		description.setLanguage(new JavaLanguage());
-		description.setJavaVersion("11");
+		description.setLanguage(new JavaLanguage("11"));
 		description.addDependency("acme",
 				new Dependency("com.example", "acme", DependencyScope.COMPILE));
 		ProjectStructure projectStructure = this.projectTester.generate(description);
