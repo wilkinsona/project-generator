@@ -26,16 +26,28 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
+ * Test helper to assert content of a generated project structure.
+ *
  * @author Stephane Nicoll
  */
 public class ProjectStructure {
 
 	private final Path directory;
 
+	/**
+	 * Create an instance based on the specified root project structure.
+	 * @param directory the project's root directory
+	 */
 	public ProjectStructure(Path directory) {
 		this.directory = directory;
 	}
 
+	/**
+	 * Resolve a {@link Path} relative to the root of the project structure.
+	 * @param other the path string to resolve against the root of the project structure
+	 * @return the resulting path
+	 * @see Path#resolve(String)
+	 */
 	public Path resolve(String other) {
 		return this.directory.resolve(other);
 	}
