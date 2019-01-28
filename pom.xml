@@ -15,6 +15,7 @@
 
 	<properties>
 		<spring-javaformat.version>0.0.6</spring-javaformat.version>
+		<junit-jupiter.version>5.4.0-RC1</junit-jupiter.version>
 	</properties>
 
 	<modules>
@@ -41,11 +42,6 @@
 				<groupId>io.spring.initializr.experimental</groupId>
 				<artifactId>initializr-generator-spring</artifactId>
 				<version>0.1.0.BUILD-SNAPSHOT</version>
-			</dependency>
-			<dependency>
-				<groupId>org.junit-pioneer</groupId>
-				<artifactId>junit-pioneer</artifactId>
-				<version>0.1.2</version>
 			</dependency>
 		</dependencies>
 	</dependencyManagement>

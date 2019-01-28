@@ -31,10 +31,11 @@ import io.spring.initializr.generator.test.assertj.NodeAssert;
 import io.spring.initializr.generator.test.project.ProjectGeneratorTester;
 import io.spring.initializr.generator.test.project.ProjectStructure;
 import io.spring.initializr.generator.util.Version;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.junitpioneer.jupiter.TempDirectory;
-import org.junitpioneer.jupiter.TempDirectory.TempDir;
+import org.junit.jupiter.api.support.io.TempDirectory;
+import org.junit.jupiter.api.support.io.TempDirectory.TempDir;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -44,9 +45,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 @ExtendWith(TempDirectory.class)
 class StartSiteProjectGenerationTests {
 
-	private final ProjectGeneratorTester projectTester;
+	private ProjectGeneratorTester projectTester;
 
-	StartSiteProjectGenerationTests(@TempDir Path directory) {
+	@BeforeEach
+	void setup(@TempDir Path directory) {
 		this.projectTester = new ProjectGeneratorTester().withDirectory(directory);
 	}
 

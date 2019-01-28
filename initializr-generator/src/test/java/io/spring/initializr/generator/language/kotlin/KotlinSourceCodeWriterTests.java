@@ -27,8 +27,8 @@ import io.spring.initializr.generator.language.Annotation;
 import io.spring.initializr.generator.language.Parameter;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.junitpioneer.jupiter.TempDirectory;
-import org.junitpioneer.jupiter.TempDirectory.TempDir;
+import org.junit.jupiter.api.support.io.TempDirectory;
+import org.junit.jupiter.api.support.io.TempDirectory.TempDir;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -40,14 +40,11 @@ import static org.assertj.core.api.Assertions.assertThat;
 @ExtendWith(TempDirectory.class)
 class KotlinSourceCodeWriterTests {
 
-	private final Path directory;
+	@TempDir
+	Path directory;
 
 	private final KotlinSourceCodeWriter writer = new KotlinSourceCodeWriter(
 			IndentingWriterFactory.withDefaultSettings());
-
-	KotlinSourceCodeWriterTests(@TempDir Path directory) {
-		this.directory = directory;
-	}
 
 	@Test
 	void emptyCompilationUnit() throws IOException {
