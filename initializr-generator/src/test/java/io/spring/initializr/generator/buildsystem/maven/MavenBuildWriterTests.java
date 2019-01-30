@@ -89,9 +89,8 @@ class MavenBuildWriterTests {
 		build.setGroup("com.example.demo");
 		build.setArtifact("demo");
 		build.setPackaging("war");
-		generatePom(build, (pom) -> {
-			assertThat(pom).textAtPath("/project/packaging").isEqualTo("war");
-		});
+		generatePom(build, (pom) -> assertThat(pom).textAtPath("/project/packaging")
+				.isEqualTo("war"));
 	}
 
 	@Test
@@ -317,12 +316,9 @@ class MavenBuildWriterTests {
 		build.setArtifact("demo");
 		MavenPlugin kotlin = build.plugin("org.jetbrains.kotlin", "kotlin-maven-plugin");
 		kotlin.configuration((configuration) -> {
-			configuration.add("args", (args) -> {
-				args.add("arg", "-Xjsr305=strict");
-			});
-			configuration.add("compilerPlugins", (compilerPlugins) -> {
-				compilerPlugins.add("plugin", "spring");
-			});
+			configuration.add("args", (args) -> args.add("arg", "-Xjsr305=strict"));
+			configuration.add("compilerPlugins",
+					(compilerPlugins) -> compilerPlugins.add("plugin", "spring"));
 		});
 		generatePom(build, (pom) -> {
 			NodeAssert plugin = pom.nodeAtPath("/project/build/plugins/plugin");

@@ -167,12 +167,11 @@ class GradleBuildWriterTests {
 	@Test
 	void gradleBuildWithTaskCustomizedWithNestedCustomization() throws IOException {
 		GradleBuild build = new GradleBuild();
-		build.customizeTask("compileKotlin", (compileKotlin) -> {
-			compileKotlin.nested("kotlinOptions", (kotlinOptions) -> {
-				kotlinOptions.set("freeCompilerArgs", "['-Xjsr305=strict']");
-				kotlinOptions.set("jvmTarget", "'1.8'");
-			});
-		});
+		build.customizeTask("compileKotlin", (compileKotlin) -> compileKotlin
+				.nested("kotlinOptions", (kotlinOptions) -> {
+					kotlinOptions.set("freeCompilerArgs", "['-Xjsr305=strict']");
+					kotlinOptions.set("jvmTarget", "'1.8'");
+				}));
 		List<String> lines = generateBuild(build);
 		assertThat(lines).containsSequence("compileKotlin {", "    kotlinOptions {",
 				"        freeCompilerArgs = ['-Xjsr305=strict']",

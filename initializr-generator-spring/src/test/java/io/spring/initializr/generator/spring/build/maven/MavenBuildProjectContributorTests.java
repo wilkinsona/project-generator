@@ -68,9 +68,8 @@ class MavenBuildProjectContributorTests {
 	@Test
 	void pomIsContributedUsingMavenContentId() throws Exception {
 		IndentingWriterFactory indentingWriterFactory = IndentingWriterFactory
-				.create(new SimpleIndentStrategy("    "), (factory) -> {
-					factory.indentingStrategy("maven", new SimpleIndentStrategy("\t"));
-				});
+				.create(new SimpleIndentStrategy("    "), (factory) -> factory
+						.indentingStrategy("maven", new SimpleIndentStrategy("\t")));
 		MavenBuild build = new MavenBuild();
 		build.setGroup("com.example.demo");
 		build.setArtifact("demo");

@@ -60,9 +60,9 @@ class GradleProjectGenerationConfigurationTests {
 		this.projectTester = new ProjectAssetTester().withDefaultContextInitializer()
 				.withConfiguration(BuildProjectGenerationConfiguration.class,
 						GradleProjectGenerationConfiguration.class)
-				.withDirectory(directory).withDescriptionCustomizer((description) -> {
-					description.setBuildSystem(new GradleBuildSystem());
-				});
+				.withDirectory(directory)
+				.withDescriptionCustomizer((description) -> description
+						.setBuildSystem(new GradleBuildSystem()));
 	}
 
 	@Test

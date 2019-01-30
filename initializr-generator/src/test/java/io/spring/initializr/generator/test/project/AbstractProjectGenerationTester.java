@@ -107,11 +107,9 @@ public abstract class AbstractProjectGenerationTester<SELF extends AbstractProje
 	}
 
 	static Consumer<ProjectGenerationContext> defaultContextInitializer() {
-		return (projectGenerationContext) -> {
-			projectGenerationContext.registerBean(IndentingWriterFactory.class,
-					() -> IndentingWriterFactory
-							.create(new SimpleIndentStrategy("    ")));
-		};
+		return (projectGenerationContext) -> projectGenerationContext.registerBean(
+				IndentingWriterFactory.class,
+				() -> IndentingWriterFactory.create(new SimpleIndentStrategy("    ")));
 	}
 
 	protected interface ProjectGenerationInvoker<T> {

@@ -54,9 +54,8 @@ class SettingsGradleProjectContributorTests {
 	@Test
 	void gradleSettingsIsContributedUsingGradleContentId() throws IOException {
 		IndentingWriterFactory indentingWriterFactory = IndentingWriterFactory
-				.create(new SimpleIndentStrategy("    "), (factory) -> {
-					factory.indentingStrategy("gradle", new SimpleIndentStrategy("  "));
-				});
+				.create(new SimpleIndentStrategy("    "), (factory) -> factory
+						.indentingStrategy("gradle", new SimpleIndentStrategy("  ")));
 		GradleBuild build = new GradleBuild();
 		build.pluginRepositories().add("maven-central");
 		List<String> lines = generateSettings(build, indentingWriterFactory);

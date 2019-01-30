@@ -83,14 +83,14 @@ class KotlinProjectGenerationDefaultContributorsConfiguration {
 
 		@Bean
 		public MainCompilationUnitCustomizer<KotlinTypeDeclaration, KotlinCompilationUnit> boot15MainFunctionContributor() {
-			return (compilationUnit) -> {
-				compilationUnit.addTopLevelFunction(KotlinFunctionDeclaration
-						.function("main")
-						.parameters(new Parameter("Array<String>", "args"))
-						.body(new KotlinExpressionStatement(new KotlinFunctionInvocation(
-								"org.springframework.boot.SpringApplication", "run",
-								"DemoApplication::class.java", "*args"))));
-			};
+			return (compilationUnit) -> compilationUnit
+					.addTopLevelFunction(KotlinFunctionDeclaration.function("main")
+							.parameters(new Parameter("Array<String>", "args"))
+							.body(new KotlinExpressionStatement(
+									new KotlinFunctionInvocation(
+											"org.springframework.boot.SpringApplication",
+											"run", "DemoApplication::class.java",
+											"*args"))));
 		}
 
 	}
@@ -111,15 +111,13 @@ class KotlinProjectGenerationDefaultContributorsConfiguration {
 
 		@Bean
 		public MainCompilationUnitCustomizer<KotlinTypeDeclaration, KotlinCompilationUnit> mainFunctionContributor() {
-			return (compilationUnit) -> {
-				compilationUnit
-						.addTopLevelFunction(KotlinFunctionDeclaration.function("main")
-								.parameters(new Parameter("Array<String>", "args"))
-								.body(new KotlinExpressionStatement(
-										new KotlinReifiedFunctionInvocation(
-												"org.springframework.boot.runApplication",
-												"DemoApplication", "*args"))));
-			};
+			return (compilationUnit) -> compilationUnit
+					.addTopLevelFunction(KotlinFunctionDeclaration.function("main")
+							.parameters(new Parameter("Array<String>", "args"))
+							.body(new KotlinExpressionStatement(
+									new KotlinReifiedFunctionInvocation(
+											"org.springframework.boot.runApplication",
+											"DemoApplication", "*args"))));
 		}
 
 	}

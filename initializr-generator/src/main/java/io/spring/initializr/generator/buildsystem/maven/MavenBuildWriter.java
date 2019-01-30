@@ -267,9 +267,8 @@ public class MavenBuildWriter {
 		if (configuration == null || configuration.getSettings().isEmpty()) {
 			return;
 		}
-		writeElement(writer, "configuration", () -> {
-			writeCollection(writer, configuration.getSettings(), this::writeSetting);
-		});
+		writeElement(writer, "configuration", () -> writeCollection(writer,
+				configuration.getSettings(), this::writeSetting));
 	}
 
 	@SuppressWarnings("unchecked")
@@ -278,10 +277,8 @@ public class MavenBuildWriter {
 			writeSingleElement(writer, setting.getName(), (String) setting.getValue());
 		}
 		else if (setting.getValue() instanceof List) {
-			writeElement(writer, setting.getName(), () -> {
-				writeCollection(writer, (List<Setting>) setting.getValue(),
-						this::writeSetting);
-			});
+			writeElement(writer, setting.getName(), () -> writeCollection(writer,
+					(List<Setting>) setting.getValue(), this::writeSetting));
 		}
 	}
 
@@ -334,9 +331,8 @@ public class MavenBuildWriter {
 
 	private void writeRepositories(IndentingWriter writer, String containerName,
 			String childName, List<MavenRepository> repositories) {
-		writeElement(writer, containerName, () -> {
-			repositories.forEach((repository) -> {
-				writeElement(writer, childName, () -> {
+		writeElement(writer, containerName, () -> repositories
+				.forEach((repository) -> writeElement(writer, childName, () -> {
 					writeSingleElement(writer, "id", repository.getId());
 					writeSingleElement(writer, "name", repository.getName());
 					writeSingleElement(writer, "url", repository.getUrl());
@@ -344,9 +340,7 @@ public class MavenBuildWriter {
 						writeElement(writer, "snapshots", () -> writeSingleElement(writer,
 								"enabled", Boolean.toString(true)));
 					}
-				});
-			});
-		});
+				})));
 	}
 
 	private void writeSingleElement(IndentingWriter writer, String name, String text) {

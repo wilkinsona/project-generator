@@ -67,9 +67,8 @@ class GradleBuildProjectContributorTests {
 	@Test
 	void gradleBuildIsContributedUsingGradleContentId() throws IOException {
 		IndentingWriterFactory indentingWriterFactory = IndentingWriterFactory
-				.create(new SimpleIndentStrategy("    "), (factory) -> {
-					factory.indentingStrategy("gradle", new SimpleIndentStrategy("  "));
-				});
+				.create(new SimpleIndentStrategy("    "), (factory) -> factory
+						.indentingStrategy("gradle", new SimpleIndentStrategy("  ")));
 		GradleBuild build = new GradleBuild();
 		build.buildscript((buildscript) -> buildscript.ext("someVersion", "'1.2.3'"));
 		List<String> lines = generateBuild(build, indentingWriterFactory);

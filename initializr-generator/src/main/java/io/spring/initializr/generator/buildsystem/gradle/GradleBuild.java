@@ -147,7 +147,7 @@ public class GradleBuild extends Build {
 
 		private final List<Invocation> invocations = new ArrayList<>();
 
-		private final Map<String, String> assignments = new LinkedHashMap<String, String>();
+		private final Map<String, String> assignments = new LinkedHashMap<>();
 
 		private final Map<String, TaskCustomization> nested = new LinkedHashMap<>();
 
