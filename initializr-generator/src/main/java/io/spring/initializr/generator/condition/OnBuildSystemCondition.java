@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-package io.spring.initializr.generator.language;
+package io.spring.initializr.generator.condition;
 
-import io.spring.initializr.generator.condition.ProjectGenerationCondition;
+import io.spring.initializr.generator.buildsystem.BuildSystem;
 import io.spring.initializr.generator.project.ResolvedProjectDescription;
 
 import org.springframework.context.annotation.ConditionContext;
@@ -24,23 +24,20 @@ import org.springframework.core.type.AnnotatedTypeMetadata;
 
 /**
  * {@link ProjectGenerationCondition Condition} implementation for
- * {@link ConditionalOnLanguage}.
+ * {@link ConditionalOnBuildSystem}.
  *
  * @author Andy Wilkinson
  */
-class OnLanguageCondition extends ProjectGenerationCondition {
+class OnBuildSystemCondition extends ProjectGenerationCondition {
 
 	@Override
 	protected boolean matches(ResolvedProjectDescription projectDescription,
 			ConditionContext context, AnnotatedTypeMetadata metadata) {
-		if (projectDescription.getLanguage() == null) {
-			return false;
-		}
-		String languageId = (String) metadata
-				.getAllAnnotationAttributes(ConditionalOnLanguage.class.getName())
+		String buildSystemId = (String) metadata
+				.getAllAnnotationAttributes(ConditionalOnBuildSystem.class.getName())
 				.getFirst("value");
-		Language language = Language.forId(languageId, null);
-		return projectDescription.getLanguage().id().equals(language.id());
+		BuildSystem buildSystem = BuildSystem.forId(buildSystemId);
+		return projectDescription.getBuildSystem().id().equals(buildSystem.id());
 	}
 
 }

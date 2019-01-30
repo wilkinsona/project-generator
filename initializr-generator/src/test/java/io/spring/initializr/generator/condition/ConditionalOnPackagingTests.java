@@ -14,11 +14,10 @@
  * limitations under the License.
  */
 
-package io.spring.initializr.generator.language;
+package io.spring.initializr.generator.condition;
 
-import io.spring.initializr.generator.language.groovy.GroovyLanguage;
-import io.spring.initializr.generator.language.java.JavaLanguage;
-import io.spring.initializr.generator.language.kotlin.KotlinLanguage;
+import io.spring.initializr.generator.packaging.jar.JarPackaging;
+import io.spring.initializr.generator.packaging.war.WarPackaging;
 import io.spring.initializr.generator.project.ProjectDescription;
 import io.spring.initializr.generator.test.project.ProjectAssetTester;
 import org.junit.jupiter.api.Test;
@@ -29,43 +28,33 @@ import org.springframework.context.annotation.Configuration;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for {@link ConditionalOnLanguage}.
+ * Tests for {@link ConditionalOnPackaging}.
  *
  * @author Stephane Nicoll
  */
-class ConditionalOnLanguageTests {
+class ConditionalOnPackagingTests {
 
 	private final ProjectAssetTester projectTester = new ProjectAssetTester()
-			.withConfiguration(LanguageTestConfiguration.class);
+			.withConfiguration(PackagingTestConfiguration.class);
 
 	@Test
-	void outcomeWithJavaLanguage() {
+	void outcomeWithJarPackaging() {
 		ProjectDescription projectDescription = new ProjectDescription();
-		projectDescription.setLanguage(new JavaLanguage());
+		projectDescription.setPackaging(new JarPackaging());
 		String bean = outcomeFor(projectDescription);
-		assertThat(bean).isEqualTo("testJava");
+		assertThat(bean).isEqualTo("testJar");
 	}
 
 	@Test
-	void outcomeWithGroovyBuildSystem() {
+	void outcomeWithWarPackaging() {
 		ProjectDescription projectDescription = new ProjectDescription();
-		projectDescription.setLanguage(new GroovyLanguage());
+		projectDescription.setPackaging(new WarPackaging());
 		String bean = outcomeFor(projectDescription);
-		assertThat(bean).isEqualTo("testGroovy");
+		assertThat(bean).isEqualTo("testWar");
 	}
 
 	@Test
-	void outcomeWithNoMatch() {
-		ProjectDescription projectDescription = new ProjectDescription();
-		projectDescription.setLanguage(new KotlinLanguage());
-		this.projectTester.generate(projectDescription, (projectGenerationContext) -> {
-			assertThat(projectGenerationContext.getBeansOfType(String.class)).isEmpty();
-			return null;
-		});
-	}
-
-	@Test
-	void outcomeWithNoAvailableLanguage() {
+	void outcomeWithNoAvailablePackaging() {
 		ProjectDescription projectDescription = new ProjectDescription();
 		this.projectTester.generate(projectDescription, (projectGenerationContext) -> {
 			assertThat(projectGenerationContext.getBeansOfType(String.class)).isEmpty();
@@ -83,18 +72,18 @@ class ConditionalOnLanguageTests {
 	}
 
 	@Configuration
-	static class LanguageTestConfiguration {
+	static class PackagingTestConfiguration {
 
 		@Bean
-		@ConditionalOnLanguage("java")
-		public String java() {
-			return "testJava";
+		@ConditionalOnPackaging("jar")
+		public String jar() {
+			return "testJar";
 		}
 
 		@Bean
-		@ConditionalOnLanguage("groovy")
-		public String groovy() {
-			return "testGroovy";
+		@ConditionalOnPackaging("war")
+		public String war() {
+			return "testWar";
 		}
 
 	}

@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-package io.spring.initializr.generator.packaging;
+package io.spring.initializr.generator.condition;
 
-import io.spring.initializr.generator.condition.ProjectGenerationCondition;
+import io.spring.initializr.generator.packaging.Packaging;
 import io.spring.initializr.generator.project.ResolvedProjectDescription;
 
 import org.springframework.context.annotation.ConditionContext;
