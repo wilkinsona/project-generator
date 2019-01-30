@@ -25,7 +25,10 @@ import io.spring.initializr.generator.packaging.Packaging;
  */
 public final class JarPackaging implements Packaging {
 
-	static final String ID = "jar";
+	/**
+	 * Jar {@link Packaging} identifier.
+	 */
+	public static final String ID = "jar";
 
 	@Override
 	public String id() {

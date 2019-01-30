@@ -20,12 +20,15 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import io.spring.initializr.generator.buildsystem.BuildItemResolver;
-import io.spring.initializr.generator.buildsystem.gradle.ConditionalOnGradle;
 import io.spring.initializr.generator.buildsystem.gradle.GradleBuild;
+import io.spring.initializr.generator.buildsystem.gradle.GradleBuildSystem;
+import io.spring.initializr.generator.condition.ConditionalOnBuildSystem;
+import io.spring.initializr.generator.condition.ConditionalOnLanguage;
+import io.spring.initializr.generator.condition.ConditionalOnPackaging;
 import io.spring.initializr.generator.condition.ConditionalOnPlatformVersion;
 import io.spring.initializr.generator.io.IndentingWriterFactory;
-import io.spring.initializr.generator.language.java.ConditionalOnJavaLanguage;
-import io.spring.initializr.generator.packaging.war.ConditionalOnWarPackaging;
+import io.spring.initializr.generator.language.java.JavaLanguage;
+import io.spring.initializr.generator.packaging.war.WarPackaging;
 import io.spring.initializr.generator.project.ProjectGenerationConfiguration;
 import io.spring.initializr.generator.project.ResolvedProjectDescription;
 import io.spring.initializr.generator.spring.build.BuildCustomizer;
@@ -42,7 +45,7 @@ import org.springframework.context.annotation.Configuration;
  * @author Andy Wilkinson
  */
 @ProjectGenerationConfiguration
-@ConditionalOnGradle
+@ConditionalOnBuildSystem(GradleBuildSystem.ID)
 public class GradleProjectGenerationConfiguration {
 
 	private final IndentingWriterFactory indentingWriterFactory;
@@ -77,13 +80,13 @@ public class GradleProjectGenerationConfiguration {
 	}
 
 	@Bean
-	@ConditionalOnJavaLanguage
+	@ConditionalOnLanguage(JavaLanguage.ID)
 	public BuildCustomizer<GradleBuild> javaPluginContributor() {
 		return (build) -> build.addPlugin("java");
 	}
 
 	@Bean
-	@ConditionalOnWarPackaging
+	@ConditionalOnPackaging(WarPackaging.ID)
 	public BuildCustomizer<GradleBuild> warPluginContributor() {
 		return (build) -> build.addPlugin("war");
 	}

@@ -16,9 +16,10 @@
 
 package io.spring.initializr.generator.spring.code.java;
 
+import io.spring.initializr.generator.condition.ConditionalOnLanguage;
 import io.spring.initializr.generator.io.IndentingWriterFactory;
-import io.spring.initializr.generator.language.java.ConditionalOnJavaLanguage;
 import io.spring.initializr.generator.language.java.JavaCompilationUnit;
+import io.spring.initializr.generator.language.java.JavaLanguage;
 import io.spring.initializr.generator.language.java.JavaSourceCode;
 import io.spring.initializr.generator.language.java.JavaSourceCodeWriter;
 import io.spring.initializr.generator.language.java.JavaTypeDeclaration;
@@ -43,7 +44,7 @@ import org.springframework.context.annotation.Import;
  * @author Andy Wilkinson
  */
 @ProjectGenerationConfiguration
-@ConditionalOnJavaLanguage
+@ConditionalOnLanguage(JavaLanguage.ID)
 @Import(JavaProjectGenerationDefaultContributorsConfiguration.class)
 public class JavaProjectGenerationConfiguration {
 

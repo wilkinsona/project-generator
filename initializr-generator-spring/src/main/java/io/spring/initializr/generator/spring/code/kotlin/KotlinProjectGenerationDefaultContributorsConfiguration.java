@@ -17,8 +17,10 @@
 package io.spring.initializr.generator.spring.code.kotlin;
 
 import io.spring.initializr.generator.buildsystem.Build;
-import io.spring.initializr.generator.buildsystem.gradle.ConditionalOnGradle;
-import io.spring.initializr.generator.buildsystem.maven.ConditionalOnMaven;
+import io.spring.initializr.generator.buildsystem.gradle.GradleBuildSystem;
+import io.spring.initializr.generator.buildsystem.maven.MavenBuildSystem;
+import io.spring.initializr.generator.condition.ConditionalOnBuildSystem;
+import io.spring.initializr.generator.condition.ConditionalOnPackaging;
 import io.spring.initializr.generator.condition.ConditionalOnPlatformVersion;
 import io.spring.initializr.generator.language.Annotation;
 import io.spring.initializr.generator.language.Parameter;
@@ -30,7 +32,7 @@ import io.spring.initializr.generator.language.kotlin.KotlinModifier;
 import io.spring.initializr.generator.language.kotlin.KotlinReifiedFunctionInvocation;
 import io.spring.initializr.generator.language.kotlin.KotlinReturnStatement;
 import io.spring.initializr.generator.language.kotlin.KotlinTypeDeclaration;
-import io.spring.initializr.generator.packaging.war.ConditionalOnWarPackaging;
+import io.spring.initializr.generator.packaging.war.WarPackaging;
 import io.spring.initializr.generator.project.ResolvedProjectDescription;
 import io.spring.initializr.generator.spring.build.BuildCustomizer;
 import io.spring.initializr.generator.spring.code.MainCompilationUnitCustomizer;
@@ -73,7 +75,7 @@ class KotlinProjectGenerationDefaultContributorsConfiguration {
 	static class SpringBoot15KotlinProjectGenerationConfiguration {
 
 		@Bean
-		@ConditionalOnMaven
+		@ConditionalOnBuildSystem(MavenBuildSystem.ID)
 		public KotlinMavenFullBuildCustomizer kotlinBuildCustomizer(
 				KotlinProjectSettings kotlinProjectSettings) {
 			return new KotlinMavenFullBuildCustomizer(kotlinProjectSettings);
@@ -101,7 +103,7 @@ class KotlinProjectGenerationDefaultContributorsConfiguration {
 	static class SpringBoot2AndLaterKotlinProjectGenerationConfiguration {
 
 		@Bean
-		@ConditionalOnMaven
+		@ConditionalOnBuildSystem(MavenBuildSystem.ID)
 		public KotlinMavenBuildCustomizer kotlinBuildCustomizer(
 				KotlinProjectSettings kotlinProjectSettings) {
 			return new KotlinMavenBuildCustomizer(kotlinProjectSettings);
@@ -126,7 +128,7 @@ class KotlinProjectGenerationDefaultContributorsConfiguration {
 	 * Kotlin source code contributions for projects using war packaging.
 	 */
 	@Configuration
-	@ConditionalOnWarPackaging
+	@ConditionalOnPackaging(WarPackaging.ID)
 	static class WarPackagingConfiguration {
 
 		@Bean
@@ -156,7 +158,7 @@ class KotlinProjectGenerationDefaultContributorsConfiguration {
 	 * @author Andy Wilkinson
 	 */
 	@Configuration
-	@ConditionalOnGradle
+	@ConditionalOnBuildSystem(GradleBuildSystem.ID)
 	static class KotlinGradleProjectConfiguration {
 
 		@Bean

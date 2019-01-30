@@ -16,9 +16,10 @@
 
 package io.spring.initializr.generator.spring.code.kotlin;
 
+import io.spring.initializr.generator.condition.ConditionalOnLanguage;
 import io.spring.initializr.generator.io.IndentingWriterFactory;
-import io.spring.initializr.generator.language.kotlin.ConditionalOnKotlinLanguage;
 import io.spring.initializr.generator.language.kotlin.KotlinCompilationUnit;
+import io.spring.initializr.generator.language.kotlin.KotlinLanguage;
 import io.spring.initializr.generator.language.kotlin.KotlinSourceCode;
 import io.spring.initializr.generator.language.kotlin.KotlinSourceCodeWriter;
 import io.spring.initializr.generator.language.kotlin.KotlinTypeDeclaration;
@@ -44,7 +45,7 @@ import org.springframework.context.annotation.Import;
  * @author Stephane Nicoll
  */
 @ProjectGenerationConfiguration
-@ConditionalOnKotlinLanguage
+@ConditionalOnLanguage(KotlinLanguage.ID)
 @Import(KotlinProjectGenerationDefaultContributorsConfiguration.class)
 public class KotlinProjectGenerationConfiguration {
 

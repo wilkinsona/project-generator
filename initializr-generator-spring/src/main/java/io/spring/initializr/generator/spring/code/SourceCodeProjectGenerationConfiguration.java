@@ -16,10 +16,11 @@
 
 package io.spring.initializr.generator.spring.code;
 
+import io.spring.initializr.generator.condition.ConditionalOnPackaging;
 import io.spring.initializr.generator.condition.ConditionalOnPlatformVersion;
 import io.spring.initializr.generator.language.Annotation;
 import io.spring.initializr.generator.language.TypeDeclaration;
-import io.spring.initializr.generator.packaging.war.ConditionalOnWarPackaging;
+import io.spring.initializr.generator.packaging.war.WarPackaging;
 import io.spring.initializr.generator.project.ProjectGenerationConfiguration;
 import io.spring.initializr.generator.project.ResolvedProjectDescription;
 
@@ -56,7 +57,7 @@ public class SourceCodeProjectGenerationConfiguration {
 	 * Language-agnostic source code contributions for projects using war packaging.
 	 */
 	@Configuration
-	@ConditionalOnWarPackaging
+	@ConditionalOnPackaging(WarPackaging.ID)
 	static class WarPackagingConfiguration {
 
 		private final ResolvedProjectDescription projectDescription;

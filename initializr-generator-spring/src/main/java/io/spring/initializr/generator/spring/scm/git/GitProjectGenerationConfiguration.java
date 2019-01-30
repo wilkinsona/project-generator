@@ -16,8 +16,9 @@
 
 package io.spring.initializr.generator.spring.scm.git;
 
-import io.spring.initializr.generator.buildsystem.gradle.ConditionalOnGradle;
-import io.spring.initializr.generator.buildsystem.maven.ConditionalOnMaven;
+import io.spring.initializr.generator.buildsystem.gradle.GradleBuildSystem;
+import io.spring.initializr.generator.buildsystem.maven.MavenBuildSystem;
+import io.spring.initializr.generator.condition.ConditionalOnBuildSystem;
 import io.spring.initializr.generator.project.ProjectGenerationConfiguration;
 
 import org.springframework.beans.factory.ObjectProvider;
@@ -46,7 +47,7 @@ public class GitProjectGenerationConfiguration {
 	}
 
 	@Bean
-	@ConditionalOnMaven
+	@ConditionalOnBuildSystem(MavenBuildSystem.ID)
 	public GitIgnoreCustomizer mavenGitIgnoreCustomizer() {
 		return (gitIgnore) -> {
 			gitIgnore.getGeneral().add("/target/", "!.mvn/wrapper/maven-wrapper.jar");
@@ -55,7 +56,7 @@ public class GitProjectGenerationConfiguration {
 	}
 
 	@Bean
-	@ConditionalOnGradle
+	@ConditionalOnBuildSystem(GradleBuildSystem.ID)
 	public GitIgnoreCustomizer gradleGitIgnoreCustomizer() {
 		return (gitIgnore) -> {
 			gitIgnore.getGeneral().add(".gradle", "/build/",

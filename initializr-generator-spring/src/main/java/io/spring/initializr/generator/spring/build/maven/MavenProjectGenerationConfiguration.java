@@ -20,10 +20,12 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import io.spring.initializr.generator.buildsystem.BuildItemResolver;
-import io.spring.initializr.generator.buildsystem.maven.ConditionalOnMaven;
 import io.spring.initializr.generator.buildsystem.maven.MavenBuild;
+import io.spring.initializr.generator.buildsystem.maven.MavenBuildSystem;
+import io.spring.initializr.generator.condition.ConditionalOnBuildSystem;
+import io.spring.initializr.generator.condition.ConditionalOnPackaging;
 import io.spring.initializr.generator.io.IndentingWriterFactory;
-import io.spring.initializr.generator.packaging.war.ConditionalOnWarPackaging;
+import io.spring.initializr.generator.packaging.war.WarPackaging;
 import io.spring.initializr.generator.project.ProjectGenerationConfiguration;
 import io.spring.initializr.generator.project.ResolvedProjectDescription;
 import io.spring.initializr.generator.spring.build.BuildCustomizer;
@@ -39,7 +41,7 @@ import org.springframework.context.annotation.Bean;
  * @author Andy Wilkinson
  */
 @ProjectGenerationConfiguration
-@ConditionalOnMaven
+@ConditionalOnBuildSystem(MavenBuildSystem.ID)
 public class MavenProjectGenerationConfiguration {
 
 	@Bean
@@ -83,7 +85,7 @@ public class MavenProjectGenerationConfiguration {
 	}
 
 	@Bean
-	@ConditionalOnWarPackaging
+	@ConditionalOnPackaging(WarPackaging.ID)
 	public BuildCustomizer<MavenBuild> mavenWarPackagingConfigurer() {
 		return (build) -> build.setPackaging("war");
 	}

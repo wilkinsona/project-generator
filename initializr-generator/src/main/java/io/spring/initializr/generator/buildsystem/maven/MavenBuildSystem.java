@@ -25,7 +25,10 @@ import io.spring.initializr.generator.buildsystem.BuildSystem;
  */
 public final class MavenBuildSystem implements BuildSystem {
 
-	static final String ID = "maven";
+	/**
+	 * Maven {@link BuildSystem} identifier.
+	 */
+	public static final String ID = "maven";
 
 	@Override
 	public String id() {

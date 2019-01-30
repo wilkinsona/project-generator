@@ -19,8 +19,10 @@ package io.spring.initializr.generator.spring.code.groovy;
 import java.lang.reflect.Modifier;
 
 import io.spring.initializr.generator.buildsystem.Build;
-import io.spring.initializr.generator.buildsystem.gradle.ConditionalOnGradle;
-import io.spring.initializr.generator.buildsystem.maven.ConditionalOnMaven;
+import io.spring.initializr.generator.buildsystem.gradle.GradleBuildSystem;
+import io.spring.initializr.generator.buildsystem.maven.MavenBuildSystem;
+import io.spring.initializr.generator.condition.ConditionalOnBuildSystem;
+import io.spring.initializr.generator.condition.ConditionalOnPackaging;
 import io.spring.initializr.generator.language.Annotation;
 import io.spring.initializr.generator.language.Parameter;
 import io.spring.initializr.generator.language.groovy.GroovyExpressionStatement;
@@ -28,7 +30,7 @@ import io.spring.initializr.generator.language.groovy.GroovyMethodDeclaration;
 import io.spring.initializr.generator.language.groovy.GroovyMethodInvocation;
 import io.spring.initializr.generator.language.groovy.GroovyReturnStatement;
 import io.spring.initializr.generator.language.groovy.GroovyTypeDeclaration;
-import io.spring.initializr.generator.packaging.war.ConditionalOnWarPackaging;
+import io.spring.initializr.generator.packaging.war.WarPackaging;
 import io.spring.initializr.generator.project.ResolvedProjectDescription;
 import io.spring.initializr.generator.spring.build.BuildCustomizer;
 import io.spring.initializr.generator.spring.code.MainApplicationTypeCustomizer;
@@ -77,7 +79,7 @@ class GroovyProjectGenerationDefaultContributorsConfiguration {
 	 * Groovy source code contributions for projects using war packaging.
 	 */
 	@Configuration
-	@ConditionalOnWarPackaging
+	@ConditionalOnPackaging(WarPackaging.ID)
 	static class WarPackagingConfiguration {
 
 		@Bean
@@ -105,7 +107,7 @@ class GroovyProjectGenerationDefaultContributorsConfiguration {
 	 * Configuration for Groovy projects built with Maven.
 	 */
 	@Configuration
-	@ConditionalOnMaven
+	@ConditionalOnBuildSystem(MavenBuildSystem.ID)
 	static class GroovyMavenProjectConfiguration {
 
 		@Bean
@@ -119,7 +121,7 @@ class GroovyProjectGenerationDefaultContributorsConfiguration {
 	 * Configuration for Groovy projects built with Gradle.
 	 */
 	@Configuration
-	@ConditionalOnGradle
+	@ConditionalOnBuildSystem(GradleBuildSystem.ID)
 	static class GroovyGradleProjectConfiguration {
 
 		@Bean

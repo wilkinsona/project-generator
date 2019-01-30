@@ -26,7 +26,10 @@ import io.spring.initializr.generator.language.Language;
  */
 public final class KotlinLanguage extends AbstractLanguage {
 
-	static final String ID = "kotlin";
+	/**
+	 * Kotlin {@link Language} identifier.
+	 */
+	public static final String ID = "kotlin";
 
 	public KotlinLanguage() {
 		this(DEFAULT_JVM_VERSION);

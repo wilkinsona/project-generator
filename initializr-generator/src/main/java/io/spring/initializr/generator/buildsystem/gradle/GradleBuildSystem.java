@@ -25,7 +25,10 @@ import io.spring.initializr.generator.buildsystem.BuildSystem;
  */
 public final class GradleBuildSystem implements BuildSystem {
 
-	static final String ID = "gradle";
+	/**
+	 * Gradle {@link BuildSystem} identifier.
+	 */
+	public static final String ID = "gradle";
 
 	@Override
 	public String id() {

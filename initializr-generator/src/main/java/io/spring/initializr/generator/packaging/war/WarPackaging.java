@@ -25,7 +25,10 @@ import io.spring.initializr.generator.packaging.Packaging;
  */
 public final class WarPackaging implements Packaging {
 
-	static final String ID = "war";
+	/**
+	 * War {@link Packaging} identifier.
+	 */
+	public static final String ID = "war";
 
 	@Override
 	public String id() {

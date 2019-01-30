@@ -16,9 +16,10 @@
 
 package io.spring.initializr.generator.spring.code.groovy;
 
+import io.spring.initializr.generator.condition.ConditionalOnLanguage;
 import io.spring.initializr.generator.io.IndentingWriterFactory;
-import io.spring.initializr.generator.language.groovy.ConditionalOnGroovyLanguage;
 import io.spring.initializr.generator.language.groovy.GroovyCompilationUnit;
+import io.spring.initializr.generator.language.groovy.GroovyLanguage;
 import io.spring.initializr.generator.language.groovy.GroovySourceCode;
 import io.spring.initializr.generator.language.groovy.GroovySourceCodeWriter;
 import io.spring.initializr.generator.language.groovy.GroovyTypeDeclaration;
@@ -43,7 +44,7 @@ import org.springframework.context.annotation.Import;
  * @author Stephane Nicoll
  */
 @ProjectGenerationConfiguration
-@ConditionalOnGroovyLanguage
+@ConditionalOnLanguage(GroovyLanguage.ID)
 @Import(GroovyProjectGenerationDefaultContributorsConfiguration.class)
 public class GroovyProjectGenerationConfiguration {
 

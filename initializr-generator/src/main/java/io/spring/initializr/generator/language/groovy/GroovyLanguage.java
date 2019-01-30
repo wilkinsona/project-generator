@@ -26,7 +26,10 @@ import io.spring.initializr.generator.language.Language;
  */
 public final class GroovyLanguage extends AbstractLanguage {
 
-	static final String ID = "groovy";
+	/**
+	 * Groovy {@link Language} identifier.
+	 */
+	public static final String ID = "groovy";
 
 	public GroovyLanguage() {
 		this(DEFAULT_JVM_VERSION);
