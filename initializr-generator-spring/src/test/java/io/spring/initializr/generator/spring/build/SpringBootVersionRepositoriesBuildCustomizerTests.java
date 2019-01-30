@@ -21,7 +21,7 @@ import java.util.stream.Collectors;
 
 import io.spring.initializr.generator.buildsystem.MavenRepository;
 import io.spring.initializr.generator.buildsystem.maven.MavenBuild;
-import io.spring.initializr.generator.util.Version;
+import io.spring.initializr.generator.version.Version;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;

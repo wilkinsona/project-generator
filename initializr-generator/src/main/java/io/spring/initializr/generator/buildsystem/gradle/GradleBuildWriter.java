@@ -38,8 +38,8 @@ import io.spring.initializr.generator.buildsystem.DependencyScope;
 import io.spring.initializr.generator.buildsystem.MavenRepository;
 import io.spring.initializr.generator.buildsystem.gradle.GradleBuild.TaskCustomization;
 import io.spring.initializr.generator.io.IndentingWriter;
-import io.spring.initializr.generator.util.VersionProperty;
-import io.spring.initializr.generator.util.VersionReference;
+import io.spring.initializr.generator.version.VersionProperty;
+import io.spring.initializr.generator.version.VersionReference;
 
 /**
  * A {@link GradleBuild} writer for {@code build.gradle}.

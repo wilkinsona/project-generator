@@ -16,7 +16,7 @@
 
 package io.spring.initializr.generator.buildsystem;
 
-import io.spring.initializr.generator.util.VersionReference;
+import io.spring.initializr.generator.version.VersionReference;
 
 /**
  * A dependency to be declared in a project's build configuration.

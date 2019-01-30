@@ -18,7 +18,7 @@ package io.spring.initializr.generator.condition;
 
 import io.spring.initializr.generator.project.ProjectDescription;
 import io.spring.initializr.generator.test.project.ProjectAssetTester;
-import io.spring.initializr.generator.util.Version;
+import io.spring.initializr.generator.version.Version;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.context.annotation.Bean;

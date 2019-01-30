@@ -22,8 +22,8 @@ import java.util.function.Consumer;
 import io.spring.initializr.generator.buildsystem.DependencyScope;
 import io.spring.initializr.generator.io.IndentingWriter;
 import io.spring.initializr.generator.test.assertj.NodeAssert;
-import io.spring.initializr.generator.util.VersionProperty;
-import io.spring.initializr.generator.util.VersionReference;
+import io.spring.initializr.generator.version.VersionProperty;
+import io.spring.initializr.generator.version.VersionReference;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;

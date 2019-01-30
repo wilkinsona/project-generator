@@ -24,7 +24,7 @@ import io.spring.initializr.generator.buildsystem.BuildSystem;
 import io.spring.initializr.generator.buildsystem.Dependency;
 import io.spring.initializr.generator.language.Language;
 import io.spring.initializr.generator.packaging.Packaging;
-import io.spring.initializr.generator.util.Version;
+import io.spring.initializr.generator.version.Version;
 
 /**
  * Description of a project to generate.

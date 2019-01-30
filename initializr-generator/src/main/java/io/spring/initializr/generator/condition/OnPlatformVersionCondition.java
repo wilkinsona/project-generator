@@ -17,8 +17,8 @@
 package io.spring.initializr.generator.condition;
 
 import io.spring.initializr.generator.project.ResolvedProjectDescription;
-import io.spring.initializr.generator.util.VersionParser;
-import io.spring.initializr.generator.util.VersionRange;
+import io.spring.initializr.generator.version.VersionParser;
+import io.spring.initializr.generator.version.VersionRange;
 
 import org.springframework.context.annotation.ConditionContext;
 import org.springframework.core.type.AnnotatedTypeMetadata;

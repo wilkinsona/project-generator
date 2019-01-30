@@ -20,8 +20,8 @@ import io.spring.initializr.generator.buildsystem.Build;
 import io.spring.initializr.generator.buildsystem.DependencyScope;
 import io.spring.initializr.generator.buildsystem.maven.MavenBuild;
 import io.spring.initializr.generator.spring.build.BuildCustomizer;
-import io.spring.initializr.generator.util.Version;
-import io.spring.initializr.generator.util.VersionReference;
+import io.spring.initializr.generator.version.Version;
+import io.spring.initializr.generator.version.VersionReference;
 
 /**
  * {@link BuildCustomizer} that adds the dependencies required by projects written in

@@ -18,7 +18,7 @@ package io.spring.initializr.generator.spring.build;
 
 import io.spring.initializr.generator.buildsystem.Build;
 import io.spring.initializr.generator.buildsystem.MavenRepository;
-import io.spring.initializr.generator.util.Version;
+import io.spring.initializr.generator.version.Version;
 
 /**
  * A {@link BuildCustomizer} that configures the build's repositories based on the version

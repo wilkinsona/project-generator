@@ -21,7 +21,7 @@ import io.spring.initializr.generator.language.TypeDeclaration;
 import io.spring.initializr.generator.packaging.Packaging;
 import io.spring.initializr.generator.project.ProjectDescription;
 import io.spring.initializr.generator.test.project.ProjectAssetTester;
-import io.spring.initializr.generator.util.Version;
+import io.spring.initializr.generator.version.Version;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;

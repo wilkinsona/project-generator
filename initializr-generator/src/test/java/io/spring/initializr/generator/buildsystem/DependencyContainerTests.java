@@ -16,7 +16,7 @@
 
 package io.spring.initializr.generator.buildsystem;
 
-import io.spring.initializr.generator.util.VersionReference;
+import io.spring.initializr.generator.version.VersionReference;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;

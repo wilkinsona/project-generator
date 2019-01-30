@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,7 +19,7 @@ package io.spring.initializr.generator.buildsystem;
 import java.util.LinkedHashMap;
 import java.util.function.Function;
 
-import io.spring.initializr.generator.util.VersionReference;
+import io.spring.initializr.generator.version.VersionReference;
 
 /**
  * A {@link BuildItemContainer} implementation for boms.

@@ -19,7 +19,7 @@ package io.spring.initializr.generator.buildsystem;
 import java.util.LinkedHashMap;
 import java.util.function.Function;
 
-import io.spring.initializr.generator.util.VersionReference;
+import io.spring.initializr.generator.version.VersionReference;
 
 /**
  * A {@link BuildItemContainer} implementation for dependencies.

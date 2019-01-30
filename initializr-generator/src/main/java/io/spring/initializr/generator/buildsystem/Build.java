@@ -20,7 +20,7 @@ import java.util.Collections;
 import java.util.Map;
 import java.util.TreeMap;
 
-import io.spring.initializr.generator.util.VersionProperty;
+import io.spring.initializr.generator.version.VersionProperty;
 
 /**
  * Build configuration for a project.

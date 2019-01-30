@@ -35,7 +35,7 @@ import io.spring.initializr.generator.buildsystem.maven.MavenPlugin.Configuratio
 import io.spring.initializr.generator.buildsystem.maven.MavenPlugin.Execution;
 import io.spring.initializr.generator.buildsystem.maven.MavenPlugin.Setting;
 import io.spring.initializr.generator.io.IndentingWriter;
-import io.spring.initializr.generator.util.VersionReference;
+import io.spring.initializr.generator.version.VersionReference;
 
 /**
  * A {@link MavenBuild} writer.
