@@ -91,7 +91,7 @@ public class MavenBuildWriter {
 	private void writeProjectCoordinates(IndentingWriter writer, MavenBuild build) {
 		writeSingleElement(writer, "groupId", build.getGroup());
 		writeSingleElement(writer, "artifactId", build.getArtifact());
-		writeSingleElement(writer, "version", "0.0.1-SNAPSHOT");
+		writeSingleElement(writer, "version", build.getVersion());
 	}
 
 	private void writePackaging(IndentingWriter writer, MavenBuild build) {

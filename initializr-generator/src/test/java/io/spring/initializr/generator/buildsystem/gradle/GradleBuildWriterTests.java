@@ -340,6 +340,14 @@ class GradleBuildWriterTests {
 				"    }", "}");
 	}
 
+	@Test
+	void gradleBuildWithCustomVersion() throws IOException {
+		GradleBuild build = new GradleBuild();
+		build.setVersion("1.2.4.RELEASE");
+		List<String> lines = generateBuild(build);
+		assertThat(lines).contains("version = '1.2.4.RELEASE'");
+	}
+
 	private List<String> generateBuild(GradleBuild build) throws IOException {
 		GradleBuildWriter writer = new GradleBuildWriter();
 		StringWriter out = new StringWriter();

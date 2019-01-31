@@ -496,6 +496,15 @@ class MavenBuildWriterTests {
 		});
 	}
 
+	@Test
+	void pomWithCustomVersion() throws Exception {
+		MavenBuild build = new MavenBuild();
+		build.setVersion("1.2.4.RELEASE");
+		generatePom(build, (pom) -> {
+			assertThat(pom).textAtPath("/project/version").isEqualTo("1.2.4.RELEASE");
+		});
+	}
+
 	private void generatePom(MavenBuild mavenBuild, Consumer<NodeAssert> consumer)
 			throws Exception {
 		MavenBuildWriter writer = new MavenBuildWriter();
