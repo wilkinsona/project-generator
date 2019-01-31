@@ -17,8 +17,13 @@
 package io.spring.initializr.generator.test.project;
 
 import java.nio.file.Path;
+import java.util.Collections;
+import java.util.Map;
 import java.util.function.Consumer;
+import java.util.function.Supplier;
 
+import io.spring.initializr.generator.io.IndentingWriterFactory;
+import io.spring.initializr.generator.io.SimpleIndentStrategy;
 import io.spring.initializr.generator.project.ProjectDescription;
 import io.spring.initializr.generator.project.ProjectGenerationContext;
 import io.spring.initializr.generator.project.ProjectGenerationContextProcessor;
@@ -32,20 +37,28 @@ import io.spring.initializr.generator.project.ProjectGenerator;
 public class ProjectGeneratorTester
 		extends AbstractProjectGenerationTester<ProjectGeneratorTester> {
 
-	private ProjectGeneratorTester(Consumer<ProjectGenerationContext> contextInitializer,
+	private ProjectGeneratorTester(Map<Class<?>, Supplier<?>> beanDefinitions,
+			Consumer<ProjectGenerationContext> contextInitializer,
 			Consumer<ProjectDescription> descriptionCustomizer) {
-		super(contextInitializer, descriptionCustomizer);
+		super(beanDefinitions, contextInitializer, descriptionCustomizer);
 	}
 
 	public ProjectGeneratorTester() {
-		super(defaultContextInitializer(), defaultDescriptionCustomizer());
+		super(defaultBeans());
+	}
+
+	private static Map<Class<?>, Supplier<?>> defaultBeans() {
+		return Collections.singletonMap(IndentingWriterFactory.class,
+				() -> IndentingWriterFactory.create(new SimpleIndentStrategy("    ")));
 	}
 
 	@Override
 	protected ProjectGeneratorTester newInstance(
+			Map<Class<?>, Supplier<?>> beanDefinitions,
 			Consumer<ProjectGenerationContext> contextInitializer,
 			Consumer<ProjectDescription> descriptionCustomizer) {
-		return new ProjectGeneratorTester(contextInitializer, descriptionCustomizer);
+		return new ProjectGeneratorTester(beanDefinitions, contextInitializer,
+				descriptionCustomizer);
 	}
 
 	public ProjectStructure generate(ProjectDescription description) {

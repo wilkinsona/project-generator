@@ -17,8 +17,11 @@
 package io.spring.initializr.generator.test.project;
 
 import java.nio.file.Path;
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.function.Consumer;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 import io.spring.initializr.generator.project.ProjectContributor;
@@ -41,27 +44,26 @@ public class ProjectAssetTester
 		extends AbstractProjectGenerationTester<ProjectAssetTester> {
 
 	public ProjectAssetTester() {
-		super((context) -> {
-		}, defaultDescriptionCustomizer());
+		super(Collections.emptyMap());
 	}
 
-	private ProjectAssetTester(Consumer<ProjectGenerationContext> contextInitializer,
+	private ProjectAssetTester(Map<Class<?>, Supplier<?>> beanDefinitions,
+			Consumer<ProjectGenerationContext> contextInitializer,
 			Consumer<ProjectDescription> descriptionCustomizer) {
-		super(contextInitializer, descriptionCustomizer);
+		super(beanDefinitions, contextInitializer, descriptionCustomizer);
 	}
 
 	@Override
-	protected ProjectAssetTester newInstance(
+	protected ProjectAssetTester newInstance(Map<Class<?>, Supplier<?>> beanDefinitions,
 			Consumer<ProjectGenerationContext> contextInitializer,
 			Consumer<ProjectDescription> descriptionCustomizer) {
-		return new ProjectAssetTester(contextInitializer, descriptionCustomizer);
+		return new ProjectAssetTester(beanDefinitions, contextInitializer,
+				descriptionCustomizer);
 	}
 
 	public ProjectAssetTester withConfiguration(Class<?>... configurationClasses) {
-		return newInstance(
-				contextInitializer()
-						.andThen((context) -> context.register(configurationClasses)),
-				descriptionCustomizer());
+		return withContextInitializer(
+				(context) -> context.register(configurationClasses));
 	}
 
 	/**
@@ -77,7 +79,6 @@ public class ProjectAssetTester
 	public <T> T generate(ProjectDescription description,
 			ProjectGenerationContextProcessor<T> projectGenerationContextProcessor) {
 		return invokeProjectGeneration(description, (contextInitializer) -> {
-			descriptionCustomizer().accept(description);
 			try (ProjectGenerationContext context = new ProjectGenerationContext()) {
 				ResolvedProjectDescription resolvedProjectDescription = new ResolvedProjectDescription(
 						description);

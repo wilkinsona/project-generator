@@ -49,7 +49,7 @@ class GroovyProjectGenerationConfigurationTests {
 
 	@BeforeEach
 	void setup(@TempDir Path directory) {
-		this.projectTester = new ProjectAssetTester().withDefaultContextInitializer()
+		this.projectTester = new ProjectAssetTester().withIndentingWriterFactory()
 				.withConfiguration(SourceCodeProjectGenerationConfiguration.class,
 						GroovyProjectGenerationConfiguration.class)
 				.withDirectory(directory).withDescriptionCustomizer((description) -> {

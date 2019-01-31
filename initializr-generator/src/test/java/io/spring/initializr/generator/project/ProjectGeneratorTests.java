@@ -41,7 +41,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 class ProjectGeneratorTests {
 
 	private final ProjectGeneratorTester projectTester = new ProjectGeneratorTester()
-			.withDefaultContextInitializer().withDescriptionCustomizer((description) -> {
+			.withDescriptionCustomizer((description) -> {
 				description.setBuildSystem(new MavenBuildSystem());
 				description.setPlatformVersion(Version.parse("2.1.0.RELEASE"));
 			});

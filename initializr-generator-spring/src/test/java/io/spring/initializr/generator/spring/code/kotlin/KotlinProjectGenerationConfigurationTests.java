@@ -49,7 +49,7 @@ class KotlinProjectGenerationConfigurationTests {
 
 	@BeforeEach
 	void setup(@TempDir Path directory) {
-		this.projectTester = new ProjectAssetTester().withDefaultContextInitializer()
+		this.projectTester = new ProjectAssetTester().withIndentingWriterFactory()
 				.withConfiguration(SourceCodeProjectGenerationConfiguration.class,
 						KotlinProjectGenerationConfiguration.class)
 				.withDirectory(directory).withDescriptionCustomizer((description) -> {

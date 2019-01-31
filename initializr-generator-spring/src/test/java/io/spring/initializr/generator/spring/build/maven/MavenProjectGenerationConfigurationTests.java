@@ -50,7 +50,7 @@ class MavenProjectGenerationConfigurationTests {
 
 	@BeforeEach
 	void setup(@TempDir Path directory) {
-		this.projectTester = new ProjectAssetTester().withDefaultContextInitializer()
+		this.projectTester = new ProjectAssetTester().withIndentingWriterFactory()
 				.withConfiguration(BuildProjectGenerationConfiguration.class,
 						MavenProjectGenerationConfiguration.class)
 				.withDirectory(directory).withDescriptionCustomizer((description) -> {

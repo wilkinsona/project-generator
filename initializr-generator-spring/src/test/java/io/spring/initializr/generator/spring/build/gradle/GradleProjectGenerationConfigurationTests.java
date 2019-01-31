@@ -57,7 +57,7 @@ class GradleProjectGenerationConfigurationTests {
 
 	@BeforeEach
 	void setup(@TempDir Path directory) {
-		this.projectTester = new ProjectAssetTester().withDefaultContextInitializer()
+		this.projectTester = new ProjectAssetTester().withIndentingWriterFactory()
 				.withConfiguration(BuildProjectGenerationConfiguration.class,
 						GradleProjectGenerationConfiguration.class)
 				.withDirectory(directory)

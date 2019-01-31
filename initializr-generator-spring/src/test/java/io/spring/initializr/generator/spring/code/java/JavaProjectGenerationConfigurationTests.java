@@ -49,7 +49,7 @@ class JavaProjectGenerationConfigurationTests {
 
 	@BeforeEach
 	void setup(@TempDir Path directory) {
-		this.projectTester = new ProjectAssetTester().withDefaultContextInitializer()
+		this.projectTester = new ProjectAssetTester().withIndentingWriterFactory()
 				.withConfiguration(SourceCodeProjectGenerationConfiguration.class,
 						JavaProjectGenerationConfiguration.class)
 				.withDirectory(directory).withDescriptionCustomizer((description) -> {

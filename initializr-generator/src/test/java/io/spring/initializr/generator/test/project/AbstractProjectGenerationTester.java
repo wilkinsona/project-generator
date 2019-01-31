@@ -19,7 +19,10 @@ package io.spring.initializr.generator.test.project;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 import io.spring.initializr.generator.io.IndentingWriterFactory;
 import io.spring.initializr.generator.io.SimpleIndentStrategy;
@@ -34,65 +37,63 @@ import io.spring.initializr.generator.project.ProjectGenerationContext;
  */
 public abstract class AbstractProjectGenerationTester<SELF extends AbstractProjectGenerationTester<SELF>> {
 
+	private final Map<Class<?>, Supplier<?>> beanDefinitions;
+
 	private final Consumer<ProjectGenerationContext> contextInitializer;
 
 	private final Consumer<ProjectDescription> descriptionCustomizer;
 
 	protected AbstractProjectGenerationTester(
+			Map<Class<?>, Supplier<?>> beanDefinitions) {
+		this(beanDefinitions, defaultContextInitializer(),
+				defaultDescriptionCustomizer());
+	}
+
+	protected AbstractProjectGenerationTester(Map<Class<?>, Supplier<?>> beanDefinitions,
 			Consumer<ProjectGenerationContext> contextInitializer,
 			Consumer<ProjectDescription> descriptionCustomizer) {
+		this.beanDefinitions = new LinkedHashMap<>(beanDefinitions);
 		this.descriptionCustomizer = descriptionCustomizer;
 		this.contextInitializer = contextInitializer;
 	}
 
-	protected abstract SELF newInstance(
+	protected abstract SELF newInstance(Map<Class<?>, Supplier<?>> beanDefinitions,
 			Consumer<ProjectGenerationContext> contextInitializer,
 			Consumer<ProjectDescription> descriptionCustomizer);
 
-	public SELF withDirectory(Path directory) {
-		return newInstance(
-				this.contextInitializer.andThen(
-						(context) -> context.registerBean(ProjectDirectoryFactory.class,
-								() -> (description) -> Files
-										.createTempDirectory(directory, "project-"))),
-				this.descriptionCustomizer);
+	public <T> SELF withBean(Class<T> beanType, Supplier<T> beanDefinition) {
+		LinkedHashMap<Class<?>, Supplier<?>> beans = new LinkedHashMap<>(
+				this.beanDefinitions);
+		beans.put(beanType, beanDefinition);
+		return newInstance(beans, this.contextInitializer, this.descriptionCustomizer);
 	}
 
-	public SELF withDefaultContextInitializer() {
-		return newInstance(this.contextInitializer.andThen(defaultContextInitializer()),
-				this.descriptionCustomizer);
+	public SELF withDirectory(Path directory) {
+		return withBean(ProjectDirectoryFactory.class,
+				() -> (description) -> Files.createTempDirectory(directory, "project-"));
+	}
+
+	public SELF withIndentingWriterFactory() {
+		return withBean(IndentingWriterFactory.class,
+				() -> IndentingWriterFactory.create(new SimpleIndentStrategy("    ")));
 	}
 
 	public SELF withContextInitializer(Consumer<ProjectGenerationContext> context) {
-		return newInstance(this.contextInitializer.andThen(context),
+		return newInstance(this.beanDefinitions, this.contextInitializer.andThen(context),
 				this.descriptionCustomizer);
 	}
 
 	public SELF withDescriptionCustomizer(Consumer<ProjectDescription> description) {
-		return newInstance(this.contextInitializer,
+		return newInstance(this.beanDefinitions, this.contextInitializer,
 				this.descriptionCustomizer.andThen(description));
 	}
 
-	protected Consumer<ProjectGenerationContext> contextInitializer() {
-		return this.contextInitializer;
+	protected static Consumer<ProjectGenerationContext> defaultContextInitializer() {
+		return (context) -> {
+		};
 	}
 
-	protected Consumer<ProjectDescription> descriptionCustomizer() {
-		return this.descriptionCustomizer;
-	}
-
-	protected <T> T invokeProjectGeneration(ProjectDescription description,
-			ProjectGenerationInvoker<T> invoker) {
-		this.descriptionCustomizer.accept(description);
-		try {
-			return invoker.generate(this.contextInitializer);
-		}
-		catch (IOException ex) {
-			throw new IllegalStateException("Failed to generated project ", ex);
-		}
-	}
-
-	static Consumer<ProjectDescription> defaultDescriptionCustomizer() {
+	protected static Consumer<ProjectDescription> defaultDescriptionCustomizer() {
 		return (projectDescription) -> {
 			if (projectDescription.getGroupId() == null) {
 				projectDescription.setGroupId("com.example");
@@ -106,10 +107,29 @@ public abstract class AbstractProjectGenerationTester<SELF extends AbstractProje
 		};
 	}
 
-	static Consumer<ProjectGenerationContext> defaultContextInitializer() {
-		return (projectGenerationContext) -> projectGenerationContext.registerBean(
-				IndentingWriterFactory.class,
-				() -> IndentingWriterFactory.create(new SimpleIndentStrategy("    ")));
+	protected <T> T invokeProjectGeneration(ProjectDescription description,
+			ProjectGenerationInvoker<T> invoker) {
+		this.descriptionCustomizer.accept(description);
+		try {
+			return invoker.generate(beansConfigurer().andThen(this.contextInitializer));
+		}
+		catch (IOException ex) {
+			throw new IllegalStateException("Failed to generated project ", ex);
+		}
+	}
+
+	private Consumer<ProjectGenerationContext> beansConfigurer() {
+		return (context) -> {
+			this.beanDefinitions.forEach(
+					(type, definition) -> register(context, type, definition.get()));
+		};
+	}
+
+	// Restore proper generic signature to make sure the context resolve the bean properly
+	private <T> void register(ProjectGenerationContext context, Class<T> type,
+			Object instance) {
+		T bean = type.cast(instance);
+		context.registerBean(type, () -> bean);
 	}
 
 	protected interface ProjectGenerationInvoker<T> {
