@@ -52,13 +52,14 @@ class KotlinProjectGenerationConfigurationTests {
 		this.projectTester = new ProjectAssetTester().withIndentingWriterFactory()
 				.withConfiguration(SourceCodeProjectGenerationConfiguration.class,
 						KotlinProjectGenerationConfiguration.class)
-				.withDirectory(directory).withDescriptionCustomizer((description) -> {
+				.withDirectory(directory)
+				.withBean(KotlinProjectSettings.class,
+						() -> new SimpleKotlinProjectSettings("1.2.70"))
+				.withDescriptionCustomizer((description) -> {
 					description.setLanguage(new KotlinLanguage());
 					description.setPlatformVersion(Version.parse("2.1.0.RELEASE"));
 					description.setBuildSystem(new MavenBuildSystem());
-				}).withContextInitializer(
-						(context) -> context.registerBean(KotlinProjectSettings.class,
-								() -> new SimpleKotlinProjectSettings("1.2.70")));
+				});
 	}
 
 	@Test
