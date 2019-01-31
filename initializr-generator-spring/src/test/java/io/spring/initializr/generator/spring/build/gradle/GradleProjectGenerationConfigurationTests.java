@@ -32,9 +32,11 @@ import io.spring.initializr.generator.language.java.JavaLanguage;
 import io.spring.initializr.generator.packaging.war.WarPackaging;
 import io.spring.initializr.generator.project.ProjectDescription;
 import io.spring.initializr.generator.spring.build.BuildProjectGenerationConfiguration;
+import io.spring.initializr.generator.spring.test.InitializrMetadataTestBuilder;
 import io.spring.initializr.generator.test.project.ProjectAssetTester;
 import io.spring.initializr.generator.test.project.ProjectStructure;
 import io.spring.initializr.generator.version.Version;
+import io.spring.initializr.metadata.InitializrMetadata;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -61,6 +63,8 @@ class GradleProjectGenerationConfigurationTests {
 				.withConfiguration(BuildProjectGenerationConfiguration.class,
 						GradleProjectGenerationConfiguration.class)
 				.withDirectory(directory)
+				.withBean(InitializrMetadata.class,
+						() -> InitializrMetadataTestBuilder.withDefaults().build())
 				.withDescriptionCustomizer((description) -> description
 						.setBuildSystem(new GradleBuildSystem()));
 	}
@@ -119,7 +123,9 @@ class GradleProjectGenerationConfigurationTests {
 				"apply plugin: 'io.spring.dependency-management'", "",
 				"group = 'com.example'", "version = '0.0.1-SNAPSHOT'",
 				"sourceCompatibility = '11'", "", "repositories {", "    mavenCentral()",
-				"}", "", "dependencies {", "    implementation 'com.example:acme'",
+				"}", "", "dependencies {",
+				"    implementation 'org.springframework.boot:spring-boot-starter'",
+				"    implementation 'com.example:acme'",
 				"    testImplementation 'org.springframework.boot:spring-boot-starter-test'",
 				"}");
 	}

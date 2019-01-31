@@ -20,6 +20,7 @@ import io.spring.initializr.generator.buildsystem.Build;
 import io.spring.initializr.generator.buildsystem.DependencyScope;
 import io.spring.initializr.generator.project.ProjectGenerationConfiguration;
 import io.spring.initializr.generator.project.ResolvedProjectDescription;
+import io.spring.initializr.metadata.InitializrMetadata;
 
 import org.springframework.context.annotation.Bean;
 
@@ -35,6 +36,12 @@ public class BuildProjectGenerationConfiguration {
 	public BuildCustomizer<Build> testStarterContributor() {
 		return (build) -> build.dependencies().add("test", "org.springframework.boot",
 				"spring-boot-starter-test", DependencyScope.TEST_COMPILE);
+	}
+
+	@Bean
+	public DefaultStarterBuildCustomizer defaultStarterContributor(
+			InitializrMetadata metadata) {
+		return new DefaultStarterBuildCustomizer(metadata);
 	}
 
 	@Bean
