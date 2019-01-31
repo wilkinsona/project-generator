@@ -48,6 +48,12 @@
 				<groupId>io.spring.initializr</groupId>
 				<artifactId>initializr-generator</artifactId>
 				<version>0.7.0.RELEASE</version>
+				<exclusions>
+					<exclusion>
+						<groupId>org.slf4j</groupId>
+						<artifactId>slf4j-api</artifactId>
+					</exclusion>
+				</exclusions>
 			</dependency>
 		</dependencies>
 	</dependencyManagement>
