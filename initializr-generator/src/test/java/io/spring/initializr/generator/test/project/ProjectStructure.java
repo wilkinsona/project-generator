@@ -32,24 +32,32 @@ import java.util.List;
  */
 public class ProjectStructure {
 
-	private final Path directory;
+	private final Path projectDirectory;
 
 	/**
-	 * Create an instance based on the specified root project structure.
-	 * @param directory the project's root directory
+	 * Create an instance based on the specified project {@link Path directory}.
+	 * @param projectDirectory the project's root directory
 	 */
-	public ProjectStructure(Path directory) {
-		this.directory = directory;
+	public ProjectStructure(Path projectDirectory) {
+		this.projectDirectory = projectDirectory;
 	}
 
 	/**
-	 * Resolve a {@link Path} relative to the root of the project structure.
+	 * Return the project directory.
+	 * @return the project directory
+	 */
+	public Path getProjectDirectory() {
+		return this.projectDirectory;
+	}
+
+	/**
+	 * Resolve a {@link Path} relative to the project directory
 	 * @param other the path string to resolve against the root of the project structure
 	 * @return the resulting path
 	 * @see Path#resolve(String)
 	 */
 	public Path resolve(String other) {
-		return this.directory.resolve(other);
+		return this.projectDirectory.resolve(other);
 	}
 
 	/**
@@ -59,11 +67,11 @@ public class ProjectStructure {
 	public List<String> getRelativePathsOfProjectFiles() {
 		List<String> relativePaths = new ArrayList<>();
 		try {
-			Files.walkFileTree(this.directory, new SimpleFileVisitor<Path>() {
+			Files.walkFileTree(this.projectDirectory, new SimpleFileVisitor<Path>() {
 				@Override
 				public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) {
-					relativePaths.add(
-							ProjectStructure.this.directory.relativize(file).toString());
+					relativePaths.add(ProjectStructure.this.projectDirectory
+							.relativize(file).toString());
 					return FileVisitResult.CONTINUE;
 				}
 			});
