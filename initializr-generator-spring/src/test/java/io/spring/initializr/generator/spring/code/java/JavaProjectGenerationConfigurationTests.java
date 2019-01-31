@@ -65,7 +65,7 @@ class JavaProjectGenerationConfigurationTests {
 		List<String> relativePaths = this.projectTester.generate(description)
 				.getRelativePathsOfProjectFiles();
 		assertThat(relativePaths)
-				.contains("src/main/java/com/example/DemoApplication.java");
+				.contains("src/main/java/com/example/demo/DemoApplication.java");
 	}
 
 	@Test
@@ -74,10 +74,10 @@ class JavaProjectGenerationConfigurationTests {
 		ProjectStructure projectStructure = this.projectTester.generate(description);
 		List<String> relativePaths = projectStructure.getRelativePathsOfProjectFiles();
 		assertThat(relativePaths)
-				.contains("src/test/java/com/example/DemoApplicationTests.java");
+				.contains("src/test/java/com/example/demo/DemoApplicationTests.java");
 		List<String> lines = Files.readAllLines(projectStructure
-				.resolve("src/test/java/com/example/DemoApplicationTests.java"));
-		assertThat(lines).containsExactly("package com.example;", "",
+				.resolve("src/test/java/com/example/demo/DemoApplicationTests.java"));
+		assertThat(lines).containsExactly("package com.example.demo;", "",
 				"import org.junit.Test;", "import org.junit.runner.RunWith;",
 				"import org.springframework.boot.test.context.SpringBootTest;",
 				"import org.springframework.test.context.junit4.SpringRunner;", "",
@@ -95,10 +95,10 @@ class JavaProjectGenerationConfigurationTests {
 		ProjectStructure projectStructure = this.projectTester.generate(description);
 		List<String> relativePaths = projectStructure.getRelativePathsOfProjectFiles();
 		assertThat(relativePaths)
-				.contains("src/main/java/com/example/ServletInitializer.java");
+				.contains("src/main/java/com/example/demo/ServletInitializer.java");
 		List<String> lines = Files.readAllLines(projectStructure
-				.resolve("src/main/java/com/example/ServletInitializer.java"));
-		assertThat(lines).containsExactly("package com.example;", "",
+				.resolve("src/main/java/com/example/demo/ServletInitializer.java"));
+		assertThat(lines).containsExactly("package com.example.demo;", "",
 				"import org.springframework.boot.builder.SpringApplicationBuilder;",
 				"import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;",
 				"",
@@ -112,12 +112,12 @@ class JavaProjectGenerationConfigurationTests {
 	@Test
 	void customPackageNameIsUsedWhenGeneratingProject() {
 		ProjectDescription description = new ProjectDescription();
-		description.setPackageName("com.example.demo");
+		description.setPackageName("com.example.foo");
 		List<String> relativePaths = this.projectTester.generate(description)
 				.getRelativePathsOfProjectFiles();
 		assertThat(relativePaths).contains(
-				"src/main/java/com/example/demo/DemoApplication.java",
-				"src/test/java/com/example/demo/DemoApplicationTests.java");
+				"src/main/java/com/example/foo/DemoApplication.java",
+				"src/test/java/com/example/foo/DemoApplicationTests.java");
 	}
 
 	@Test
@@ -126,8 +126,9 @@ class JavaProjectGenerationConfigurationTests {
 		description.setApplicationName("MyApplication");
 		List<String> relativePaths = this.projectTester.generate(description)
 				.getRelativePathsOfProjectFiles();
-		assertThat(relativePaths).contains("src/main/java/com/example/MyApplication.java",
-				"src/test/java/com/example/MyApplicationTests.java");
+		assertThat(relativePaths).contains(
+				"src/main/java/com/example/demo/MyApplication.java",
+				"src/test/java/com/example/demo/MyApplicationTests.java");
 	}
 
 }

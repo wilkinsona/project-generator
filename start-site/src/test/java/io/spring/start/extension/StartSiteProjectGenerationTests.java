@@ -97,9 +97,9 @@ class StartSiteProjectGenerationTests {
 		ProjectStructure projectStructure = this.projectTester.generate(description);
 		List<String> relativePaths = projectStructure.getRelativePathsOfProjectFiles();
 		assertThat(relativePaths)
-				.contains("src/main/java/com/example/DemoApplication.java");
+				.contains("src/main/java/com/example/demo/DemoApplication.java");
 		List<String> source = Files.readAllLines(projectStructure
-				.resolve("src/main/java/com/example/DemoApplication.java"));
+				.resolve("src/main/java/com/example/demo/DemoApplication.java"));
 		assertThat(source).contains("@EnableConfigServer");
 	}
 

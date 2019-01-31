@@ -26,6 +26,8 @@ import io.spring.initializr.generator.language.Language;
 import io.spring.initializr.generator.packaging.Packaging;
 import io.spring.initializr.generator.version.Version;
 
+import org.springframework.util.StringUtils;
+
 /**
  * An immutable description of a project that is being generated.
  *
@@ -67,12 +69,22 @@ public final class ResolvedProjectDescription {
 		this.name = description.getName();
 		this.description = description.getDescription();
 		this.applicationName = description.getApplicationName();
-		this.packageName = (description.getPackageName() != null)
-				? description.getPackageName() : this.groupId;
+		this.packageName = getPackageName(description);
 		this.baseDirectory = description.getBaseDirectory();
 		Map<String, Dependency> requestedDependencies = new LinkedHashMap<>(
 				description.getRequestedDependencies());
 		this.requestedDependencies = Collections.unmodifiableMap(requestedDependencies);
+	}
+
+	private String getPackageName(ProjectDescription description) {
+		if (StringUtils.hasText(description.getPackageName())) {
+			return description.getPackageName();
+		}
+		if (StringUtils.hasText(description.getGroupId())
+				&& StringUtils.hasText(description.getArtifactId())) {
+			return description.getGroupId() + "." + description.getArtifactId();
+		}
+		return null;
 	}
 
 	public Map<String, Dependency> getRequestedDependencies() {

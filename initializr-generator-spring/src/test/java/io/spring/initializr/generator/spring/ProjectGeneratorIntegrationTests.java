@@ -65,9 +65,9 @@ class ProjectGeneratorIntegrationTests {
 				"test/demo-app/.mvn/wrapper/MavenWrapperDownloader.java",
 				"test/demo-app/.mvn/wrapper/maven-wrapper.properties",
 				"test/demo-app/.mvn/wrapper/maven-wrapper.jar",
-				"test/demo-app/src/main/java/com/example/DemoApplication.java",
+				"test/demo-app/src/main/java/com/example/demo/DemoApplication.java",
 				"test/demo-app/src/main/resources/application.properties",
-				"test/demo-app/src/test/java/com/example/DemoApplicationTests.java");
+				"test/demo-app/src/test/java/com/example/demo/DemoApplicationTests.java");
 	}
 
 	private ProjectDescription initProjectDescription() {

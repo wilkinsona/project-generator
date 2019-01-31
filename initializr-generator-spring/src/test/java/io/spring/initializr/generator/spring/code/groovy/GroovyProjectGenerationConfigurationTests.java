@@ -64,7 +64,7 @@ class GroovyProjectGenerationConfigurationTests {
 		List<String> relativePaths = this.projectTester.generate(new ProjectDescription())
 				.getRelativePathsOfProjectFiles();
 		assertThat(relativePaths)
-				.contains("src/main/groovy/com/example/DemoApplication.groovy");
+				.contains("src/main/groovy/com/example/demo/DemoApplication.groovy");
 	}
 
 	@Test
@@ -73,10 +73,10 @@ class GroovyProjectGenerationConfigurationTests {
 				.generate(new ProjectDescription());
 		List<String> relativePaths = projectStructure.getRelativePathsOfProjectFiles();
 		assertThat(relativePaths)
-				.contains("src/test/groovy/com/example/DemoApplicationTests.groovy");
+				.contains("src/test/groovy/com/example/demo/DemoApplicationTests.groovy");
 		List<String> lines = Files.readAllLines(projectStructure
-				.resolve("src/test/groovy/com/example/DemoApplicationTests.groovy"));
-		assertThat(lines).containsExactly("package com.example", "",
+				.resolve("src/test/groovy/com/example/demo/DemoApplicationTests.groovy"));
+		assertThat(lines).containsExactly("package com.example.demo", "",
 				"import org.junit.Test", "import org.junit.runner.RunWith",
 				"import org.springframework.boot.test.context.SpringBootTest",
 				"import org.springframework.test.context.junit4.SpringRunner", "",
@@ -94,10 +94,10 @@ class GroovyProjectGenerationConfigurationTests {
 		ProjectStructure projectStructure = this.projectTester.generate(description);
 		List<String> relativePaths = projectStructure.getRelativePathsOfProjectFiles();
 		assertThat(relativePaths)
-				.contains("src/main/groovy/com/example/ServletInitializer.groovy");
+				.contains("src/main/groovy/com/example/demo/ServletInitializer.groovy");
 		List<String> lines = Files.readAllLines(projectStructure
-				.resolve("src/main/groovy/com/example/ServletInitializer.groovy"));
-		assertThat(lines).containsExactly("package com.example", "",
+				.resolve("src/main/groovy/com/example/demo/ServletInitializer.groovy"));
+		assertThat(lines).containsExactly("package com.example.demo", "",
 				"import org.springframework.boot.builder.SpringApplicationBuilder",
 				"import org.springframework.boot.web.servlet.support.SpringBootServletInitializer",
 				"", "class ServletInitializer extends SpringBootServletInitializer {", "",
