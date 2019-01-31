@@ -43,6 +43,12 @@
 				<artifactId>initializr-generator-spring</artifactId>
 				<version>0.1.0.BUILD-SNAPSHOT</version>
 			</dependency>
+
+			<dependency>
+				<groupId>io.spring.initializr</groupId>
+				<artifactId>initializr-generator</artifactId>
+				<version>0.7.0.RELEASE</version>
+			</dependency>
 		</dependencies>
 	</dependencyManagement>
 
@@ -148,5 +154,16 @@
 			</plugins>
 		</pluginManagement>
 	</build>
+
+	<repositories>
+		<repository>
+			<id>spring-releases</id>
+			<name>Spring Releases</name>
+			<url>http://repo.spring.io/release</url>
+			<snapshots>
+				<enabled>false</enabled>
+			</snapshots>
+		</repository>
+	</repositories>
 
 </project>
