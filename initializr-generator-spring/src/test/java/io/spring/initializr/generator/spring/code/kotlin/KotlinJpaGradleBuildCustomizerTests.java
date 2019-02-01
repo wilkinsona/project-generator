@@ -20,7 +20,6 @@ import java.util.Collections;
 
 import io.spring.initializr.generator.buildsystem.gradle.GradleBuild;
 import io.spring.initializr.generator.spring.build.MetadataBuildItemResolver;
-import io.spring.initializr.generator.spring.build.MetadataResolver;
 import io.spring.initializr.generator.spring.test.InitializrMetadataTestBuilder;
 import io.spring.initializr.metadata.Dependency;
 import io.spring.initializr.metadata.InitializrMetadata;
@@ -33,10 +32,10 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Madhura Bhave
  */
-public class KotlinJpaGradleBuildCustomizerTests {
+class KotlinJpaGradleBuildCustomizerTests {
 
 	@Test
-	public void customizeWhenJpaFacetPresentShouldAddKotlinJpaPlugin() {
+	void customizeWhenJpaFacetPresentShouldAddKotlinJpaPlugin() {
 		Dependency dependency = Dependency.withId("foo");
 		dependency.setFacets(Collections.singletonList("jpa"));
 		GradleBuild build = getCustomizedBuild(dependency);
@@ -48,7 +47,7 @@ public class KotlinJpaGradleBuildCustomizerTests {
 	}
 
 	@Test
-	public void customizeWhenJpaFacetAbsentShouldNotAddKotlinJpaPlugin() {
+	void customizeWhenJpaFacetAbsentShouldNotAddKotlinJpaPlugin() {
 		Dependency dependency = Dependency.withId("foo");
 		GradleBuild build = getCustomizedBuild(dependency);
 		assertThat(build.getAppliedPlugins()).hasSize(0);
@@ -61,15 +60,10 @@ public class KotlinJpaGradleBuildCustomizerTests {
 		SimpleKotlinProjectSettings settings = new SimpleKotlinProjectSettings("1.2.70");
 		KotlinJpaGradleBuildCustomizer customizer = new KotlinJpaGradleBuildCustomizer(
 				metadata, settings);
-		GradleBuild build = createBuild(metadata);
+		GradleBuild build = new GradleBuild(new MetadataBuildItemResolver(metadata));
 		build.dependencies().add("foo");
 		customizer.customize(build);
 		return build;
-	}
-
-	private GradleBuild createBuild(InitializrMetadata metadata) {
-		MetadataResolver resolver = new MetadataResolver(metadata);
-		return new GradleBuild(new MetadataBuildItemResolver(resolver));
 	}
 
 }

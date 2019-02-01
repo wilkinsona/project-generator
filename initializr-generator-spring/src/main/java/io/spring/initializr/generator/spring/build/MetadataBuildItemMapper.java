@@ -22,17 +22,17 @@ import io.spring.initializr.generator.version.VersionReference;
 import io.spring.initializr.metadata.BillOfMaterials;
 import io.spring.initializr.metadata.Dependency;
 import io.spring.initializr.metadata.Repository;
+import io.spring.initializr.util.Version;
 import io.spring.initializr.util.VersionProperty;
 
 /**
- * An internal class used to easily translate metadata information to infrastructure
- * elements.
+ * An internal class used to easily translate metadata information to {@link Build} items.
  *
  * @author Stephane Nicoll
  */
-public final class MetadataBuildMapper {
+public final class MetadataBuildItemMapper {
 
-	private MetadataBuildMapper() {
+	private MetadataBuildItemMapper() {
 	}
 
 	/**
@@ -80,17 +80,11 @@ public final class MetadataBuildMapper {
 			return null;
 		}
 		VersionReference version = (bom.getVersionProperty() != null)
-				? VersionReference.ofProperty(
-						MetadataBuildMapper.toVersionProperty(bom.getVersionProperty()))
+				? VersionReference.ofProperty(MetadataBuildItemMapper
+						.toVersionProperty(bom.getVersionProperty()))
 				: VersionReference.ofValue(bom.getVersion());
 		return new io.spring.initializr.generator.buildsystem.BillOfMaterials(
 				bom.getGroupId(), bom.getArtifactId(), version, bom.getOrder());
-	}
-
-	public static io.spring.initializr.generator.version.VersionProperty toVersionProperty(
-			VersionProperty versionProperty) {
-		return io.spring.initializr.generator.version.VersionProperty
-				.of(versionProperty.toStandardFormat(), versionProperty.isInternal());
 	}
 
 	/**
@@ -107,6 +101,19 @@ public final class MetadataBuildMapper {
 		return new io.spring.initializr.generator.buildsystem.MavenRepository(id,
 				repository.getName(), repository.getUrl().toExternalForm(),
 				repository.isSnapshotsEnabled());
+	}
+
+	@Deprecated
+	public static io.spring.initializr.generator.version.VersionProperty toVersionProperty(
+			VersionProperty versionProperty) {
+		return io.spring.initializr.generator.version.VersionProperty
+				.of(versionProperty.toStandardFormat(), versionProperty.isInternal());
+	}
+
+	@Deprecated
+	public static Version fromVersion(
+			io.spring.initializr.generator.version.Version version) {
+		return Version.parse(version.toString());
 	}
 
 }

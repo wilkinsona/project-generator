@@ -42,13 +42,10 @@ public class DependencyManagementBuildCustomizer implements BuildCustomizer<Buil
 
 	private final InitializrMetadata metadata;
 
-	private final MetadataResolver resolver;
-
 	public DependencyManagementBuildCustomizer(
 			ResolvedProjectDescription projectDescription, InitializrMetadata metadata) {
 		this.projectDescription = projectDescription;
 		this.metadata = metadata;
-		this.resolver = new MetadataResolver(metadata);
 	}
 
 	@Override
@@ -66,8 +63,8 @@ public class DependencyManagementBuildCustomizer implements BuildCustomizer<Buil
 		Map<String, Repository> repositories = new LinkedHashMap<>();
 		mapDependencies(build).forEach((dependency) -> {
 			if (dependency.getBom() != null) {
-				resolveBom(resolvedBoms, dependency.getBom(),
-						this.projectDescription.getPlatformVersion().toString());
+				resolveBom(resolvedBoms, dependency.getBom(), MetadataBuildItemMapper
+						.fromVersion(this.projectDescription.getPlatformVersion()));
 			}
 			if (dependency.getRepository() != null) {
 				String repositoryId = dependency.getRepository();
@@ -81,11 +78,10 @@ public class DependencyManagementBuildCustomizer implements BuildCustomizer<Buil
 								repositoryId, (key) -> this.metadata.getConfiguration()
 										.getEnv().getRepositories().get(key))));
 		resolvedBoms.forEach((key, bom) -> {
-			build.boms().add(key, MetadataBuildMapper.toBom(bom));
+			build.boms().add(key, MetadataBuildItemMapper.toBom(bom));
 			if (bom.getVersionProperty() != null) {
-				build.addVersionProperty(
-						MetadataBuildMapper.toVersionProperty(bom.getVersionProperty()),
-						bom.getVersion());
+				build.addVersionProperty(MetadataBuildItemMapper
+						.toVersionProperty(bom.getVersionProperty()), bom.getVersion());
 			}
 		});
 		repositories.keySet().forEach((id) -> build.repositories().add(id));
@@ -98,10 +94,10 @@ public class DependencyManagementBuildCustomizer implements BuildCustomizer<Buil
 	}
 
 	private void resolveBom(Map<String, BillOfMaterials> boms, String bomId,
-			String requestedVersion) {
+			Version requestedVersion) {
 		if (!boms.containsKey(bomId)) {
-			BillOfMaterials bom = this.resolver.resolveBom(bomId)
-					.resolve(Version.parse(requestedVersion));
+			BillOfMaterials bom = this.metadata.getConfiguration().getEnv().getBoms()
+					.get(bomId).resolve(requestedVersion);
 			bom.getAdditionalBoms()
 					.forEach((id) -> resolveBom(boms, id, requestedVersion));
 			boms.put(bomId, bom);

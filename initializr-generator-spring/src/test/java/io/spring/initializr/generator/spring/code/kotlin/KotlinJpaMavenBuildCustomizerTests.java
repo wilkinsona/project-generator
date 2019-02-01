@@ -21,7 +21,6 @@ import java.util.Collections;
 import io.spring.initializr.generator.buildsystem.maven.MavenBuild;
 import io.spring.initializr.generator.buildsystem.maven.MavenPlugin;
 import io.spring.initializr.generator.spring.build.MetadataBuildItemResolver;
-import io.spring.initializr.generator.spring.build.MetadataResolver;
 import io.spring.initializr.generator.spring.test.InitializrMetadataTestBuilder;
 import io.spring.initializr.metadata.Dependency;
 import io.spring.initializr.metadata.InitializrMetadata;
@@ -34,10 +33,10 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Madhura Bhave
  */
-public class KotlinJpaMavenBuildCustomizerTests {
+class KotlinJpaMavenBuildCustomizerTests {
 
 	@Test
-	public void customizeWhenJpaFacetPresentShouldAddKotlinJpaPlugin() {
+	void customizeWhenJpaFacetPresentShouldAddKotlinJpaPlugin() {
 		Dependency dependency = Dependency.withId("foo");
 		dependency.setFacets(Collections.singletonList("jpa"));
 		MavenBuild build = getCustomizedBuild(dependency);
@@ -53,7 +52,7 @@ public class KotlinJpaMavenBuildCustomizerTests {
 	}
 
 	@Test
-	public void customizeWhenJpaFacetAbsentShouldNotAddKotlinJpaPlugin() {
+	void customizeWhenJpaFacetAbsentShouldNotAddKotlinJpaPlugin() {
 		Dependency dependency = Dependency.withId("foo");
 		MavenBuild build = getCustomizedBuild(dependency);
 		assertThat(build.getPlugins()).hasSize(0);
@@ -64,15 +63,10 @@ public class KotlinJpaMavenBuildCustomizerTests {
 				.addDependencyGroup("test", dependency).build();
 		KotlinJpaMavenBuildCustomizer customizer = new KotlinJpaMavenBuildCustomizer(
 				metadata);
-		MavenBuild build = createBuild(metadata);
+		MavenBuild build = new MavenBuild(new MetadataBuildItemResolver(metadata));
 		build.dependencies().add("foo");
 		customizer.customize(build);
 		return build;
-	}
-
-	private MavenBuild createBuild(InitializrMetadata metadata) {
-		MetadataResolver resolver = new MetadataResolver(metadata);
-		return new MavenBuild(new MetadataBuildItemResolver(resolver));
 	}
 
 }

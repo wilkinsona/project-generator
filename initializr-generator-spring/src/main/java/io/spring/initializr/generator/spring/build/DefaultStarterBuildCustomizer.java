@@ -16,8 +16,6 @@
 
 package io.spring.initializr.generator.spring.build;
 
-import java.util.Objects;
-
 import io.spring.initializr.generator.buildsystem.Build;
 import io.spring.initializr.metadata.Dependency;
 import io.spring.initializr.metadata.InitializrMetadata;
@@ -36,23 +34,22 @@ class DefaultStarterBuildCustomizer implements BuildCustomizer<Build> {
 	 */
 	static final String DEFAULT_STARTER = "root_starter";
 
-	private final MetadataResolver buildResolver;
+	private final BuildMetadataResolver buildResolver;
 
 	DefaultStarterBuildCustomizer(InitializrMetadata metadata) {
-		this.buildResolver = new MetadataResolver(metadata);
+		this.buildResolver = new BuildMetadataResolver(metadata);
 	}
 
 	@Override
 	public void customize(Build build) {
-		boolean hasStarter = build.dependencies().ids()
-				.map(this.buildResolver.dependencies()::get).filter(Objects::nonNull)
+		boolean hasStarter = this.buildResolver.dependencies(build)
 				.anyMatch(this::isValidStarter);
 		if (!hasStarter) {
 			Dependency root = new Dependency();
 			root.setId(DEFAULT_STARTER);
 			root.asSpringBootStarter("");
 			build.dependencies().add(DEFAULT_STARTER,
-					MetadataBuildMapper.toDependency(root));
+					MetadataBuildItemMapper.toDependency(root));
 		}
 	}
 

@@ -32,10 +32,10 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Stephane Nicoll
  */
-public class WarPackagingWebStarterBuildCustomizerTests {
+class WarPackagingWebStarterBuildCustomizerTests {
 
 	@Test
-	public void addWebStarterWhenNoWebFacetIsPresent() {
+	void addWebStarterWhenNoWebFacetIsPresent() {
 		Dependency dependency = Dependency.withId("test", "com.example", "acme", null,
 				Dependency.SCOPE_COMPILE);
 		InitializrMetadata metadata = InitializrMetadataTestBuilder.withDefaults()
@@ -47,7 +47,7 @@ public class WarPackagingWebStarterBuildCustomizerTests {
 	}
 
 	@Test
-	public void addWebStarterWhenNoWebFacetIsPresentWithCustomWebStarter() {
+	void addWebStarterWhenNoWebFacetIsPresentWithCustomWebStarter() {
 		Dependency dependency = Dependency.withId("test", "com.example", "acme", null,
 				Dependency.SCOPE_COMPILE);
 		Dependency web = Dependency.withId("web", "com.example", "custom-web-starter",
@@ -61,21 +61,20 @@ public class WarPackagingWebStarterBuildCustomizerTests {
 	}
 
 	@Test
-	public void addWebStarterDoesNotReplaceWebFacetDependency() {
+	void addWebStarterDoesNotReplaceWebFacetDependency() {
 		Dependency dependency = Dependency.withId("test", "com.example", "acme", null,
 				Dependency.SCOPE_COMPILE);
 		dependency.setFacets(Collections.singletonList("web"));
 		InitializrMetadata metadata = InitializrMetadataTestBuilder.withDefaults()
 				.addDependencyGroup("test", dependency).build();
-		Build build = createBuild(metadata);
+		Build build = new MavenBuild(new MetadataBuildItemResolver(metadata));
 		build.dependencies().add("test");
 		new WarPackagingWebStarterBuildCustomizer(metadata).customize(build);
 		assertThat(build.dependencies().ids()).containsOnly("test", "tomcat");
 	}
 
 	private Build createBuild(InitializrMetadata metadata) {
-		MetadataResolver resolver = new MetadataResolver(metadata);
-		return new MavenBuild(new MetadataBuildItemResolver(resolver));
+		return new MavenBuild(new MetadataBuildItemResolver(metadata));
 	}
 
 }

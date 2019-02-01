@@ -34,7 +34,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Madhura Bhave
  */
-public class MetadataMavenBuildCustomizerTests {
+class MetadataMavenBuildCustomizerTests {
 
 	@Test
 	void customizeWhenNoParentShouldUseSpringBootParent() {

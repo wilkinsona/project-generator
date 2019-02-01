@@ -30,20 +30,22 @@ import io.spring.initializr.metadata.InitializrMetadata;
  */
 public final class MetadataBuildItemResolver implements BuildItemResolver {
 
-	private final MetadataResolver resolver;
+	private final InitializrMetadata metadata;
 
-	public MetadataBuildItemResolver(MetadataResolver resolver) {
-		this.resolver = resolver;
+	public MetadataBuildItemResolver(InitializrMetadata metadata) {
+		this.metadata = metadata;
 	}
 
 	@Override
 	public Dependency resolveDependency(String id) {
-		return MetadataBuildMapper.toDependency(this.resolver.resolveDependency(id));
+		return MetadataBuildItemMapper
+				.toDependency(this.metadata.getDependencies().get(id));
 	}
 
 	@Override
 	public BillOfMaterials resolveBom(String id) {
-		return MetadataBuildMapper.toBom(this.resolver.resolveBom(id));
+		return MetadataBuildItemMapper
+				.toBom(this.metadata.getConfiguration().getEnv().getBoms().get(id));
 	}
 
 	@Override
@@ -51,7 +53,8 @@ public final class MetadataBuildItemResolver implements BuildItemResolver {
 		if (id.equals(MavenRepository.MAVEN_CENTRAL.getId())) {
 			return MavenRepository.MAVEN_CENTRAL;
 		}
-		return MetadataBuildMapper.toRepository(id, this.resolver.resolveRepository(id));
+		return MetadataBuildItemMapper.toRepository(id,
+				this.metadata.getConfiguration().getEnv().getRepositories().get(id));
 	}
 
 }

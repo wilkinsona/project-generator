@@ -20,7 +20,7 @@ import io.spring.initializr.generator.buildsystem.BillOfMaterials;
 import io.spring.initializr.generator.buildsystem.maven.MavenBuild;
 import io.spring.initializr.generator.project.ResolvedProjectDescription;
 import io.spring.initializr.generator.spring.build.BuildCustomizer;
-import io.spring.initializr.generator.spring.build.MetadataBuildMapper;
+import io.spring.initializr.generator.spring.build.MetadataBuildItemMapper;
 import io.spring.initializr.metadata.InitializrConfiguration.Env.Maven;
 import io.spring.initializr.metadata.InitializrConfiguration.Env.Maven.ParentPom;
 import io.spring.initializr.metadata.InitializrMetadata;
@@ -50,7 +50,7 @@ public class MetadataMavenBuildCustomizer implements BuildCustomizer<MavenBuild>
 		ParentPom parentPom = maven.resolveParentPom(springBootVersion);
 		if (parentPom.isIncludeSpringBootBom()) {
 			String versionProperty = "spring-boot.version";
-			BillOfMaterials springBootBom = MetadataBuildMapper.toBom(this.metadata
+			BillOfMaterials springBootBom = MetadataBuildItemMapper.toBom(this.metadata
 					.createSpringBootBom(springBootVersion, versionProperty));
 			if (!hasBom(build, springBootBom)) {
 				build.addInternalVersionProperty(versionProperty, springBootVersion);
@@ -68,7 +68,7 @@ public class MetadataMavenBuildCustomizer implements BuildCustomizer<MavenBuild>
 	private boolean hasBom(MavenBuild build, BillOfMaterials bom) {
 		return build.boms().items()
 				.anyMatch((candidate) -> candidate.getGroupId().equals(bom.getGroupId())
-						&& candidate.getArtifactId().equals(candidate.getArtifactId()));
+						&& candidate.getArtifactId().equals(bom.getArtifactId()));
 	}
 
 }

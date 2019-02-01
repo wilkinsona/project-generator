@@ -33,10 +33,10 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Stephane Nicoll
  */
-public class DependencyManagementBuildCustomizerTests {
+class DependencyManagementBuildCustomizerTests {
 
 	@Test
-	public void contributeBom() { // ProjectRequestTests#resolveAdditionalBoms
+	void contributeBom() { // ProjectRequestTests#resolveAdditionalBoms
 		Dependency dependency = Dependency.withId("foo");
 		dependency.setBom("foo-bom");
 		BillOfMaterials bom = BillOfMaterials.create("com.example", "foo-bom", "1.0.0");
@@ -53,7 +53,7 @@ public class DependencyManagementBuildCustomizerTests {
 	}
 
 	@Test
-	public void contributeRepositories() { // ProjectRequestTests#resolveAdditionalRepositories
+	void contributeRepositories() { // ProjectRequestTests#resolveAdditionalRepositories
 		Dependency dependency = Dependency.withId("foo");
 		dependency.setBom("foo-bom");
 		dependency.setRepository("foo-repo");
@@ -72,8 +72,7 @@ public class DependencyManagementBuildCustomizerTests {
 	}
 
 	private MavenBuild createBuild(InitializrMetadata metadata) {
-		MetadataResolver resolver = new MetadataResolver(metadata);
-		return new MavenBuild(new MetadataBuildItemResolver(resolver));
+		return new MavenBuild(new MetadataBuildItemResolver(metadata));
 	}
 
 	private void customizeBuild(Build build, InitializrMetadata metadata) {

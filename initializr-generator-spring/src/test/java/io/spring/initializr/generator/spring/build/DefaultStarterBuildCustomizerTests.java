@@ -69,8 +69,7 @@ class DefaultStarterBuildCustomizerTests {
 	}
 
 	private Build createBuild(InitializrMetadata metadata) {
-		MetadataResolver resolver = new MetadataResolver(metadata);
-		return new MavenBuild(new MetadataBuildItemResolver(resolver));
+		return new MavenBuild(new MetadataBuildItemResolver(metadata));
 	}
 
 }

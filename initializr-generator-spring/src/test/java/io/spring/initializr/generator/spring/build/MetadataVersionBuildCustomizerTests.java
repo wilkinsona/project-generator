@@ -28,7 +28,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Madhura Bhave
  */
-public class MetadataVersionBuildCustomizerTests {
+class MetadataVersionBuildCustomizerTests {
 
 	@Test
 	void customizeShouldSetVersionFromMetadata() {
