@@ -19,7 +19,6 @@
 		<dependency>
 			<groupId>io.spring.initializr</groupId>
 			<artifactId>initializr-generator</artifactId>
-			<scope>provided</scope>
 		</dependency>
 		<!-- End of nasty hack. No I am not proud -->
 
