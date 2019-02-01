@@ -22,7 +22,7 @@ import java.util.stream.Collectors;
 import io.spring.initializr.generator.language.CompilationUnit;
 import io.spring.initializr.generator.language.SourceCode;
 import io.spring.initializr.generator.language.TypeDeclaration;
-import io.spring.initializr.generator.util.LambdaSafe;
+import io.spring.initializr.generator.spring.util.LambdaSafe;
 
 import org.springframework.beans.factory.ObjectProvider;
 
