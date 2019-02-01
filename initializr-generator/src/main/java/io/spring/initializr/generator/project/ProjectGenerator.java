@@ -53,9 +53,10 @@ public class ProjectGenerator {
 	 * Generate a project structure based on the specified {@link ProjectDescription}.
 	 * @param description the description of the project to generate
 	 * @return the root directory of the generated project structure
-	 * @throws IOException if an error occurs while handling resource
+	 * @throws ProjectGenerationException if an error occurs while generating the project
 	 */
-	public Path generate(ProjectDescription description) throws IOException {
+	public Path generate(ProjectDescription description)
+			throws ProjectGenerationException {
 		return generate(description, (context) -> {
 			ResolvedProjectDescription resolvedProjectDescription = context
 					.getBean(ResolvedProjectDescription.class);
@@ -76,18 +77,23 @@ public class ProjectGenerator {
 	 * {@link ProjectGenerationContextProcessor} to invoke
 	 * @param <T> the return type of the generation
 	 * @return the generated content
-	 * @throws IOException if an error occurs while handling resource
+	 * @throws ProjectGenerationException if an error occurs while generating the project
 	 */
 	public <T> T generate(ProjectDescription description,
 			ProjectGenerationContextProcessor<T> projectGenerationContextProcessor)
-			throws IOException {
+			throws ProjectGenerationException {
 		try (ProjectGenerationContext context = new ProjectGenerationContext()) {
 			context.registerBean(ResolvedProjectDescription.class,
 					resolve(description, context));
 			context.register(CoreConfiguration.class);
 			this.projectGenerationContext.accept(context);
 			context.refresh();
-			return projectGenerationContextProcessor.process(context);
+			try {
+				return projectGenerationContextProcessor.process(context);
+			}
+			catch (IOException ex) {
+				throw new ProjectGenerationException("Failed to generate project", ex);
+			}
 		}
 	}
 

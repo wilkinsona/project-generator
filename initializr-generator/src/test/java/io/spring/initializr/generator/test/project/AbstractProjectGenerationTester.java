@@ -29,6 +29,7 @@ import io.spring.initializr.generator.io.SimpleIndentStrategy;
 import io.spring.initializr.generator.project.ProjectDescription;
 import io.spring.initializr.generator.project.ProjectDirectoryFactory;
 import io.spring.initializr.generator.project.ProjectGenerationContext;
+import io.spring.initializr.generator.project.ProjectGenerationException;
 
 /**
  * Base tester for project generation.
@@ -114,7 +115,7 @@ public abstract class AbstractProjectGenerationTester<SELF extends AbstractProje
 			return invoker.generate(beansConfigurer().andThen(this.contextInitializer));
 		}
 		catch (IOException ex) {
-			throw new IllegalStateException("Failed to generated project ", ex);
+			throw new ProjectGenerationException("Failed to generated project", ex);
 		}
 	}
 
