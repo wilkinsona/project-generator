@@ -27,7 +27,6 @@ import io.spring.initializr.generator.condition.ConditionalOnPackaging;
 import io.spring.initializr.generator.io.IndentingWriterFactory;
 import io.spring.initializr.generator.packaging.war.WarPackaging;
 import io.spring.initializr.generator.project.ProjectGenerationConfiguration;
-import io.spring.initializr.generator.project.ResolvedProjectDescription;
 import io.spring.initializr.generator.spring.build.BuildCustomizer;
 import io.spring.initializr.generator.spring.util.LambdaSafe;
 
@@ -64,18 +63,6 @@ public class MavenProjectGenerationConfiguration {
 		LambdaSafe.callbacks(BuildCustomizer.class, buildCustomizers, build)
 				.invoke((customizer) -> customizer.customize(build));
 		return build;
-	}
-
-	@Bean
-	public BuildCustomizer<MavenBuild> defaultMavenConfigurationContributor(
-			ResolvedProjectDescription projectDescription) {
-		return (build) -> {
-			build.setName(projectDescription.getName());
-			build.setDescription(projectDescription.getDescription());
-			build.setProperty("java.version",
-					projectDescription.getLanguage().jvmVersion());
-			build.plugin("org.springframework.boot", "spring-boot-maven-plugin");
-		};
 	}
 
 	@Bean
