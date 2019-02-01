@@ -15,7 +15,7 @@
 
 	<properties>
 		<spring-javaformat.version>0.0.6</spring-javaformat.version>
-		<junit-jupiter.version>5.4.0-RC1</junit-jupiter.version>
+		<junit-jupiter.version>5.4.0-RC2</junit-jupiter.version>
 	</properties>
 
 	<modules>
