@@ -16,11 +16,7 @@
 
 package io.spring.initializr.generator.spring.build;
 
-import java.util.Objects;
-import java.util.stream.Stream;
-
 import io.spring.initializr.generator.buildsystem.BillOfMaterials;
-import io.spring.initializr.generator.buildsystem.Build;
 import io.spring.initializr.generator.buildsystem.BuildItemResolver;
 import io.spring.initializr.generator.buildsystem.Dependency;
 import io.spring.initializr.generator.buildsystem.MavenRepository;
@@ -34,21 +30,20 @@ import io.spring.initializr.metadata.InitializrMetadata;
  */
 public final class MetadataBuildItemResolver implements BuildItemResolver {
 
-	private final InitializrMetadata metadata;
+	private final MetadataResolver resolver;
 
-	public MetadataBuildItemResolver(InitializrMetadata metadata) {
-		this.metadata = metadata;
+	public MetadataBuildItemResolver(MetadataResolver resolver) {
+		this.resolver = resolver;
 	}
 
 	@Override
 	public Dependency resolveDependency(String id) {
-		return MetadataBuildMapper.toDependency(this.metadata.getDependencies().get(id));
+		return MetadataBuildMapper.toDependency(this.resolver.resolveDependency(id));
 	}
 
 	@Override
 	public BillOfMaterials resolveBom(String id) {
-		return MetadataBuildMapper
-				.toBom(this.metadata.getConfiguration().getEnv().getBoms().get(id));
+		return MetadataBuildMapper.toBom(this.resolver.resolveBom(id));
 	}
 
 	@Override
@@ -56,14 +51,7 @@ public final class MetadataBuildItemResolver implements BuildItemResolver {
 		if (id.equals(MavenRepository.MAVEN_CENTRAL.getId())) {
 			return MavenRepository.MAVEN_CENTRAL;
 		}
-		return MetadataBuildMapper.toRepository(id,
-				this.metadata.getConfiguration().getEnv().getRepositories().get(id));
-	}
-
-	public Stream<io.spring.initializr.metadata.Dependency> dependencies(Build build) {
-		return build.dependencies().ids()
-				.map((id) -> this.metadata.getDependencies().get(id))
-				.filter(Objects::nonNull);
+		return MetadataBuildMapper.toRepository(id, this.resolver.resolveRepository(id));
 	}
 
 }

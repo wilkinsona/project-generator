@@ -32,6 +32,7 @@ import io.spring.initializr.generator.spring.code.MainSourceCodeProjectContribut
 import io.spring.initializr.generator.spring.code.TestApplicationTypeCustomizer;
 import io.spring.initializr.generator.spring.code.TestSourceCodeCustomizer;
 import io.spring.initializr.generator.spring.code.TestSourceCodeProjectContributor;
+import io.spring.initializr.metadata.InitializrMetadata;
 
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.context.annotation.Bean;
@@ -80,6 +81,11 @@ public class KotlinProjectGenerationConfiguration {
 				KotlinSourceCode::new,
 				new KotlinSourceCodeWriter(this.indentingWriterFactory),
 				testApplicationTypeCustomizers, testSourceCodeCustomizers);
+	}
+
+	@Bean
+	public KotlinProjectSettings kotlinProjectSettings(InitializrMetadata metadata) {
+		return new MetadataKotlinProjectSettings(this.projectDescription, metadata);
 	}
 
 }

@@ -18,8 +18,19 @@ package io.spring.initializr.generator.spring.build;
 
 import io.spring.initializr.generator.buildsystem.Build;
 import io.spring.initializr.generator.buildsystem.DependencyScope;
+import io.spring.initializr.generator.buildsystem.gradle.GradleBuildSystem;
+import io.spring.initializr.generator.buildsystem.maven.MavenBuildSystem;
+import io.spring.initializr.generator.condition.ConditionalOnBuildSystem;
+import io.spring.initializr.generator.condition.ConditionalOnLanguage;
+import io.spring.initializr.generator.condition.ConditionalOnPackaging;
+import io.spring.initializr.generator.language.kotlin.KotlinLanguage;
+import io.spring.initializr.generator.packaging.war.WarPackaging;
 import io.spring.initializr.generator.project.ProjectGenerationConfiguration;
 import io.spring.initializr.generator.project.ResolvedProjectDescription;
+import io.spring.initializr.generator.spring.build.maven.MetadataMavenBuildCustomizer;
+import io.spring.initializr.generator.spring.code.kotlin.KotlinJpaGradleBuildCustomizer;
+import io.spring.initializr.generator.spring.code.kotlin.KotlinJpaMavenBuildCustomizer;
+import io.spring.initializr.generator.spring.code.kotlin.KotlinProjectSettings;
 import io.spring.initializr.metadata.InitializrMetadata;
 
 import org.springframework.context.annotation.Bean;
@@ -42,6 +53,47 @@ public class BuildProjectGenerationConfiguration {
 	public DefaultStarterBuildCustomizer defaultStarterContributor(
 			InitializrMetadata metadata) {
 		return new DefaultStarterBuildCustomizer(metadata);
+	}
+
+	@Bean
+	public MetadataVersionBuildCustomizer initializrMetadataBuildCustomizer(
+			InitializrMetadata metadata) {
+		return new MetadataVersionBuildCustomizer(metadata);
+	}
+
+	@Bean
+	public MetadataMavenBuildCustomizer initializrMetadataMavenBuildCustomizer(
+			ResolvedProjectDescription projectDescription, InitializrMetadata metadata) {
+		return new MetadataMavenBuildCustomizer(projectDescription, metadata);
+	}
+
+	@Bean
+	@ConditionalOnPackaging(WarPackaging.ID)
+	public WarPackagingWebStarterBuildCustomizer warPackagingWebStarterBuildCustomizer(
+			InitializrMetadata metadata) {
+		return new WarPackagingWebStarterBuildCustomizer(metadata);
+	}
+
+	@Bean
+	@ConditionalOnLanguage(KotlinLanguage.ID)
+	@ConditionalOnBuildSystem(GradleBuildSystem.ID)
+	public KotlinJpaGradleBuildCustomizer kotlinJpaGradleBuildCustomizer(
+			InitializrMetadata metadata, KotlinProjectSettings settings) {
+		return new KotlinJpaGradleBuildCustomizer(metadata, settings);
+	}
+
+	@Bean
+	@ConditionalOnLanguage(KotlinLanguage.ID)
+	@ConditionalOnBuildSystem(MavenBuildSystem.ID)
+	public KotlinJpaMavenBuildCustomizer kotlinJpaMavenBuildCustomizer(
+			InitializrMetadata metadata) {
+		return new KotlinJpaMavenBuildCustomizer(metadata);
+	}
+
+	@Bean
+	public DependencyManagementBuildCustomizer dependencyManagementBuildCustomizer(
+			ResolvedProjectDescription projectDescription, InitializrMetadata metadata) {
+		return new DependencyManagementBuildCustomizer(projectDescription, metadata);
 	}
 
 	@Bean

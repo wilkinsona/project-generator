@@ -87,7 +87,7 @@ public final class MetadataBuildMapper {
 				bom.getGroupId(), bom.getArtifactId(), version, bom.getOrder());
 	}
 
-	private static io.spring.initializr.generator.version.VersionProperty toVersionProperty(
+	public static io.spring.initializr.generator.version.VersionProperty toVersionProperty(
 			VersionProperty versionProperty) {
 		return io.spring.initializr.generator.version.VersionProperty
 				.of(versionProperty.toStandardFormat(), versionProperty.isInternal());
