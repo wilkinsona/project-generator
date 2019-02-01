@@ -48,4 +48,15 @@ public class BuildMetadataResolver {
 				.filter(Objects::nonNull);
 	}
 
+	/**
+	 * Specify if the given {@link Build} has the given {@code facet} enabled.
+	 * @param build the build to query
+	 * @param facet the facet to query
+	 * @return {@code true} if this build defines at least a dependency with that facet
+	 */
+	public boolean hasFacet(Build build, String facet) {
+		return dependencies(build)
+				.anyMatch((dependency) -> dependency.getFacets().contains(facet));
+	}
+
 }

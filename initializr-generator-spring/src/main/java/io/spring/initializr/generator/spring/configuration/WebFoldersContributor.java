@@ -22,7 +22,7 @@ import java.nio.file.Path;
 
 import io.spring.initializr.generator.buildsystem.Build;
 import io.spring.initializr.generator.project.ProjectContributor;
-import io.spring.initializr.metadata.Dependency;
+import io.spring.initializr.generator.spring.build.BuildMetadataResolver;
 import io.spring.initializr.metadata.InitializrMetadata;
 
 import org.springframework.core.Ordered;
@@ -37,16 +37,16 @@ public class WebFoldersContributor implements ProjectContributor {
 
 	private final Build build;
 
-	private final InitializrMetadata metadata;
+	private final BuildMetadataResolver buildMetadataResolver;
 
 	public WebFoldersContributor(Build build, InitializrMetadata metadata) {
 		this.build = build;
-		this.metadata = metadata;
+		this.buildMetadataResolver = new BuildMetadataResolver(metadata);
 	}
 
 	@Override
 	public void contribute(Path projectRoot) throws IOException {
-		if (hasWebFacet()) {
+		if (this.buildMetadataResolver.hasFacet(this.build, "web")) {
 			Files.createDirectories(projectRoot.resolve("src/main/resources/templates"));
 			Files.createDirectories(projectRoot.resolve("src/main/resources/static"));
 		}
@@ -55,16 +55,6 @@ public class WebFoldersContributor implements ProjectContributor {
 	@Override
 	public int getOrder() {
 		return Ordered.LOWEST_PRECEDENCE - 10;
-	}
-
-	private boolean hasWebFacet() {
-		return this.build.dependencies().ids().anyMatch((id) -> {
-			Dependency dependency = this.metadata.getDependencies().get(id);
-			if (dependency != null) {
-				return dependency.getFacets().contains("web");
-			}
-			return false;
-		});
 	}
 
 }

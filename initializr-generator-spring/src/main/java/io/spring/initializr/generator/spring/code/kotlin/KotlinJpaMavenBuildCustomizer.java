@@ -19,7 +19,7 @@ package io.spring.initializr.generator.spring.code.kotlin;
 import io.spring.initializr.generator.buildsystem.maven.MavenBuild;
 import io.spring.initializr.generator.buildsystem.maven.MavenPlugin;
 import io.spring.initializr.generator.spring.build.BuildCustomizer;
-import io.spring.initializr.metadata.Dependency;
+import io.spring.initializr.generator.spring.build.BuildMetadataResolver;
 import io.spring.initializr.metadata.InitializrMetadata;
 
 /**
@@ -30,31 +30,21 @@ import io.spring.initializr.metadata.InitializrMetadata;
  */
 public class KotlinJpaMavenBuildCustomizer implements BuildCustomizer<MavenBuild> {
 
-	private final InitializrMetadata metadata;
+	private final BuildMetadataResolver buildMetadataResolver;
 
 	public KotlinJpaMavenBuildCustomizer(InitializrMetadata metadata) {
-		this.metadata = metadata;
+		this.buildMetadataResolver = new BuildMetadataResolver(metadata);
 	}
 
 	@Override
 	public void customize(MavenBuild build) {
-		if (hasJpaFacet(build)) {
+		if (this.buildMetadataResolver.hasFacet(build, "jpa")) {
 			MavenPlugin kotlinNoArgPlugin = build.plugin("org.jetbrains.kotlin",
 					"kotlin-maven-noarg", "${kotlin.version}");
 			kotlinNoArgPlugin
 					.configuration((configuration) -> configuration.add("compilerPlugins",
 							(compilerPlugins) -> compilerPlugins.add("plugin", "jpa")));
 		}
-	}
-
-	private boolean hasJpaFacet(MavenBuild build) {
-		return build.dependencies().ids().anyMatch((id) -> {
-			Dependency dependency = this.metadata.getDependencies().get(id);
-			if (dependency != null) {
-				return dependency.getFacets().contains("jpa");
-			}
-			return false;
-		});
 	}
 
 }

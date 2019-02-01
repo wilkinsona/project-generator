@@ -33,13 +33,16 @@ public class WarPackagingWebStarterBuildCustomizer implements BuildCustomizer<Bu
 
 	private final InitializrMetadata metadata;
 
+	private final BuildMetadataResolver buildMetadataResolver;
+
 	public WarPackagingWebStarterBuildCustomizer(InitializrMetadata metadata) {
 		this.metadata = metadata;
+		this.buildMetadataResolver = new BuildMetadataResolver(metadata);
 	}
 
 	@Override
 	public void customize(Build build) {
-		if (!hasWebFacet(build)) {
+		if (!this.buildMetadataResolver.hasFacet(build, "web")) {
 			// Need to be able to bootstrap the web app
 			Dependency dependency = determineWebDependency(this.metadata);
 			build.dependencies().add(dependency.getId(),
@@ -59,16 +62,6 @@ public class WarPackagingWebStarterBuildCustomizer implements BuildCustomizer<Bu
 	private Dependency determineWebDependency(InitializrMetadata metadata) {
 		Dependency web = metadata.getDependencies().get("web");
 		return (web != null) ? web : Dependency.withId("web").asSpringBootStarter("web");
-	}
-
-	private boolean hasWebFacet(Build build) {
-		return build.dependencies().ids().anyMatch((id) -> {
-			Dependency dependency = this.metadata.getDependencies().get(id);
-			if (dependency != null) {
-				return dependency.getFacets().contains("web");
-			}
-			return false;
-		});
 	}
 
 }

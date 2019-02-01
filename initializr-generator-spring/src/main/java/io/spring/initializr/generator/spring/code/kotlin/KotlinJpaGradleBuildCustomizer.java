@@ -18,7 +18,7 @@ package io.spring.initializr.generator.spring.code.kotlin;
 
 import io.spring.initializr.generator.buildsystem.gradle.GradleBuild;
 import io.spring.initializr.generator.spring.build.BuildCustomizer;
-import io.spring.initializr.metadata.Dependency;
+import io.spring.initializr.generator.spring.build.BuildMetadataResolver;
 import io.spring.initializr.metadata.InitializrMetadata;
 
 /**
@@ -30,33 +30,23 @@ import io.spring.initializr.metadata.InitializrMetadata;
  */
 public class KotlinJpaGradleBuildCustomizer implements BuildCustomizer<GradleBuild> {
 
-	private final InitializrMetadata metadata;
+	private final BuildMetadataResolver buildMetadataResolver;
 
 	private final KotlinProjectSettings settings;
 
 	public KotlinJpaGradleBuildCustomizer(InitializrMetadata metadata,
 			KotlinProjectSettings settings) {
-		this.metadata = metadata;
+		this.buildMetadataResolver = new BuildMetadataResolver(metadata);
 		this.settings = settings;
 	}
 
 	@Override
 	public void customize(GradleBuild build) {
-		if (hasJpaFacet(build)) {
+		if (this.buildMetadataResolver.hasFacet(build, "jpa")) {
 			build.addPlugin("org.jetbrains.kotlin.plugin.jpa",
 					this.settings.getVersion());
 			build.applyPlugin("kotlin-jpa");
 		}
-	}
-
-	private boolean hasJpaFacet(GradleBuild build) {
-		return build.dependencies().ids().anyMatch((id) -> {
-			Dependency dependency = this.metadata.getDependencies().get(id);
-			if (dependency != null) {
-				return dependency.getFacets().contains("jpa");
-			}
-			return false;
-		});
 	}
 
 }
