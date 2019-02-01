@@ -56,12 +56,6 @@ public class BuildProjectGenerationConfiguration {
 	}
 
 	@Bean
-	public MetadataVersionBuildCustomizer initializrMetadataBuildCustomizer(
-			InitializrMetadata metadata) {
-		return new MetadataVersionBuildCustomizer(metadata);
-	}
-
-	@Bean
 	public DefaultMavenBuildCustomizer initializrMetadataMavenBuildCustomizer(
 			ResolvedProjectDescription projectDescription, InitializrMetadata metadata) {
 		return new DefaultMavenBuildCustomizer(projectDescription, metadata);
@@ -97,9 +91,9 @@ public class BuildProjectGenerationConfiguration {
 	}
 
 	@Bean
-	public ProjectDescriptionBuildCustomizer projectDescriptionBuildCustomizer(
-			ResolvedProjectDescription projectDescription) {
-		return new ProjectDescriptionBuildCustomizer(projectDescription);
+	public SimpleBuildCustomizer projectDescriptionBuildCustomizer(
+			ResolvedProjectDescription projectDescription, InitializrMetadata metadata) {
+		return new SimpleBuildCustomizer(projectDescription, metadata);
 	}
 
 	@Bean

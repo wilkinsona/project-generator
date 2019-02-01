@@ -18,29 +18,34 @@ package io.spring.initializr.generator.spring.build;
 
 import io.spring.initializr.generator.buildsystem.Build;
 import io.spring.initializr.generator.project.ResolvedProjectDescription;
+import io.spring.initializr.metadata.InitializrMetadata;
 
 import org.springframework.core.Ordered;
 
 /**
- * Customize the {@link Build} based on the state of a {@link ResolvedProjectDescription}.
+ * Customize the {@link Build} as early as possible based on the information held in the
+ * {@link ResolvedProjectDescription}.
  *
  * @author Andy Wilkinson
  * @author Stephane Nicoll
  */
-public class ProjectDescriptionBuildCustomizer implements BuildCustomizer<Build> {
+public class SimpleBuildCustomizer implements BuildCustomizer<Build> {
 
 	private final ResolvedProjectDescription projectDescription;
 
-	public ProjectDescriptionBuildCustomizer(
-			ResolvedProjectDescription projectDescription) {
+	private final InitializrMetadata metadata;
+
+	public SimpleBuildCustomizer(ResolvedProjectDescription projectDescription,
+			InitializrMetadata metadata) {
 		this.projectDescription = projectDescription;
+		this.metadata = metadata;
 	}
 
 	@Override
 	public void customize(Build build) {
 		build.setGroup(this.projectDescription.getGroupId());
 		build.setArtifact(this.projectDescription.getArtifactId());
-		build.setVersion("0.0.1-SNAPSHOT");
+		build.setVersion(this.metadata.getVersion().getContent());
 		this.projectDescription.getRequestedDependencies()
 				.forEach((id, dependency) -> build.dependencies().add(id, dependency));
 	}
