@@ -34,6 +34,11 @@ public enum DependencyScope {
 	COMPILE,
 
 	/**
+	 * A dependency that is a compile time only dependency and not used at runtime.
+	 */
+	COMPILE_ONLY,
+
+	/**
 	 * A dependency this is used to run a project.
 	 */
 	RUNTIME,

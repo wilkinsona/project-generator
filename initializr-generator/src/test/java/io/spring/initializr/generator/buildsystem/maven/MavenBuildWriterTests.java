@@ -144,6 +144,25 @@ class MavenBuildWriterTests {
 	}
 
 	@Test
+	void pomWithCompileOnlyDependency() throws Exception {
+		MavenBuild build = new MavenBuild();
+		build.setGroup("com.example.demo");
+		build.setArtifact("demo");
+		build.dependencies().add("foo-bar", "org.springframework.boot",
+				"spring-boot-foo-bar", DependencyScope.COMPILE_ONLY);
+		generatePom(build, (pom) -> {
+			NodeAssert dependency = pom.nodeAtPath("/project/dependencies/dependency");
+			assertThat(dependency).textAtPath("groupId")
+					.isEqualTo("org.springframework.boot");
+			assertThat(dependency).textAtPath("artifactId")
+					.isEqualTo("spring-boot-foo-bar");
+			assertThat(dependency).textAtPath("version").isNullOrEmpty();
+			assertThat(dependency).textAtPath("scope").isNullOrEmpty();
+			assertThat(dependency).textAtPath("optional").isEqualTo("true");
+		});
+	}
+
+	@Test
 	void pomWithCompileDependency() throws Exception {
 		MavenBuild build = new MavenBuild();
 		build.setGroup("com.example.demo");

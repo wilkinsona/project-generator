@@ -60,7 +60,7 @@ public final class MetadataBuildItemMapper {
 		case Dependency.SCOPE_RUNTIME:
 			return DependencyScope.RUNTIME;
 		case Dependency.SCOPE_COMPILE_ONLY:
-			return DependencyScope.ANNOTATION_PROCESSOR;
+			return DependencyScope.COMPILE_ONLY;
 		case Dependency.SCOPE_PROVIDED:
 			return DependencyScope.PROVIDED_RUNTIME;
 		case Dependency.SCOPE_TEST:

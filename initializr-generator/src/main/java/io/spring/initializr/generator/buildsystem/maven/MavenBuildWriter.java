@@ -132,6 +132,7 @@ public class MavenBuildWriter {
 				writer.println();
 			}
 			writeDependencies(writer, dependencies, DependencyScope.RUNTIME);
+			writeDependencies(writer, dependencies, DependencyScope.COMPILE_ONLY);
 			writeDependencies(writer, dependencies, DependencyScope.ANNOTATION_PROCESSOR);
 			writeDependencies(writer, dependencies, DependencyScope.PROVIDED_RUNTIME);
 			writeDependencies(writer, dependencies, DependencyScope.TEST_COMPILE,
@@ -173,6 +174,8 @@ public class MavenBuildWriter {
 			return null;
 		case COMPILE:
 			return null;
+		case COMPILE_ONLY:
+			return null;
 		case PROVIDED_RUNTIME:
 			return "provided";
 		case RUNTIME:
@@ -188,7 +191,8 @@ public class MavenBuildWriter {
 	}
 
 	private boolean isOptional(DependencyScope type) {
-		return type == DependencyScope.ANNOTATION_PROCESSOR;
+		return (type == DependencyScope.ANNOTATION_PROCESSOR
+				|| type == DependencyScope.COMPILE_ONLY);
 	}
 
 	private void writeDependencyManagement(IndentingWriter writer, MavenBuild build) {

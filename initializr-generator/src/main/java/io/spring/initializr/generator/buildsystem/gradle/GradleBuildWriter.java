@@ -162,6 +162,8 @@ public class GradleBuildWriter {
 		sortedDependencies
 				.addAll(filterDependencies(dependencies, DependencyScope.COMPILE));
 		sortedDependencies
+				.addAll(filterDependencies(dependencies, DependencyScope.COMPILE_ONLY));
+		sortedDependencies
 				.addAll(filterDependencies(dependencies, DependencyScope.RUNTIME));
 		sortedDependencies.addAll(
 				filterDependencies(dependencies, DependencyScope.ANNOTATION_PROCESSOR));
@@ -315,6 +317,8 @@ public class GradleBuildWriter {
 			return "annotationProcessor";
 		case COMPILE:
 			return "implementation";
+		case COMPILE_ONLY:
+			return "compileOnly";
 		case PROVIDED_RUNTIME:
 			return "providedRuntime";
 		case RUNTIME:

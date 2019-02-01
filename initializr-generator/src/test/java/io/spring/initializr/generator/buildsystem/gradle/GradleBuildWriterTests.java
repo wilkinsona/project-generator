@@ -294,6 +294,17 @@ class GradleBuildWriterTests {
 	}
 
 	@Test
+	void gradleBuildWithCompileOnlyDependency() throws IOException {
+		GradleBuild build = new GradleBuild();
+		build.dependencies().add("test", "org.springframework.boot",
+				"spring-boot-starter-foobar", DependencyScope.COMPILE_ONLY);
+		List<String> lines = generateBuild(build);
+		assertThat(lines).containsSequence("dependencies {",
+				"    compileOnly 'org.springframework.boot:spring-boot-starter-foobar'",
+				"}");
+	}
+
+	@Test
 	void gradleBuildWithTestRuntimeDependency() throws IOException {
 		GradleBuild build = new GradleBuild();
 		build.dependencies().add("embed-mongo", "de.flapdoodle.embed",
