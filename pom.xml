@@ -43,6 +43,12 @@
 				<artifactId>initializr-generator-spring</artifactId>
 				<version>0.1.0.BUILD-SNAPSHOT</version>
 			</dependency>
+			<dependency>
+				<groupId>io.spring.initializr.experimental</groupId>
+				<artifactId>initializr-generator-spring</artifactId>
+				<version>0.1.0.BUILD-SNAPSHOT</version>
+				<type>test-jar</type>
+			</dependency>
 
 			<dependency>
 				<groupId>io.spring.initializr</groupId>

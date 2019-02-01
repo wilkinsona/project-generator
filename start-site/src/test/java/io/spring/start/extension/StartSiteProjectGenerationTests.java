@@ -27,10 +27,12 @@ import io.spring.initializr.generator.buildsystem.gradle.GradleBuildSystem;
 import io.spring.initializr.generator.buildsystem.maven.MavenBuildSystem;
 import io.spring.initializr.generator.language.java.JavaLanguage;
 import io.spring.initializr.generator.project.ProjectDescription;
+import io.spring.initializr.generator.spring.test.InitializrMetadataTestBuilder;
 import io.spring.initializr.generator.test.assertj.NodeAssert;
 import io.spring.initializr.generator.test.project.ProjectGeneratorTester;
 import io.spring.initializr.generator.test.project.ProjectStructure;
 import io.spring.initializr.generator.version.Version;
+import io.spring.initializr.metadata.InitializrMetadata;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -50,6 +52,8 @@ class StartSiteProjectGenerationTests {
 	@BeforeEach
 	void setup(@TempDir Path directory) {
 		this.projectTester = new ProjectGeneratorTester().withDirectory(directory)
+				.withBean(InitializrMetadata.class,
+						() -> InitializrMetadataTestBuilder.withDefaults().build())
 				.withDescriptionCustomizer((description) -> {
 					description.setPlatformVersion(Version.parse("2.1.0.RELEASE"));
 					description.setLanguage(new JavaLanguage());
