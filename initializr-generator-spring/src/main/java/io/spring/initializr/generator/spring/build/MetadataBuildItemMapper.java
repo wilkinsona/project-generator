@@ -116,4 +116,10 @@ public final class MetadataBuildItemMapper {
 		return Version.parse(version.toString());
 	}
 
+	@Deprecated
+	public static io.spring.initializr.generator.version.Version toVersion(
+			String version) {
+		return io.spring.initializr.generator.version.Version.parse(version);
+	}
+
 }
