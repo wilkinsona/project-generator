@@ -240,6 +240,40 @@ class GradleBuildWriterTests {
 	}
 
 	@Test
+	void gradleBuildWithConfiguration() throws Exception {
+		GradleBuild build = new GradleBuild();
+		build.addConfiguration("developmentOnly");
+		List<String> lines = generateBuild(build);
+		assertThat(lines).containsSequence("configurations {", "    developmentOnly",
+				"}");
+	}
+
+	@Test
+	void gradleBuildWithConfigurationCustomization() throws Exception {
+		GradleBuild build = new GradleBuild();
+		build.customizeConfiguration("developmentOnly",
+				(configuration) -> configuration.extendsFrom("compile"));
+		build.customizeConfiguration("developmentOnly",
+				(configuration) -> configuration.extendsFrom("testCompile"));
+		List<String> lines = generateBuild(build);
+		assertThat(lines).containsSequence("configurations {", "    developmentOnly {",
+				"        extendsFrom compile,testCompile", "    }", "}");
+	}
+
+	@Test
+	void gradleBuildWithConfigurationCustomizations() throws Exception {
+		GradleBuild build = new GradleBuild();
+		build.customizeConfiguration("developmentOnly",
+				(configuration) -> configuration.extendsFrom("compile"));
+		build.customizeConfiguration("testOnly",
+				(configuration) -> configuration.extendsFrom("testCompile"));
+		List<String> lines = generateBuild(build);
+		assertThat(lines).containsSequence("configurations {", "    developmentOnly {",
+				"        extendsFrom compile", "    }", "    testOnly {",
+				"        extendsFrom testCompile", "    }", "}");
+	}
+
+	@Test
 	void gradleBuildWithAnnotationProcessorDependency() throws IOException {
 		GradleBuild build = new GradleBuild();
 		build.dependencies().add("annotation-processor", "org.springframework.boot",

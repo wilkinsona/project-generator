@@ -36,6 +36,7 @@ import io.spring.initializr.generator.buildsystem.DependencyComparator;
 import io.spring.initializr.generator.buildsystem.DependencyContainer;
 import io.spring.initializr.generator.buildsystem.DependencyScope;
 import io.spring.initializr.generator.buildsystem.MavenRepository;
+import io.spring.initializr.generator.buildsystem.gradle.GradleBuild.ConfigurationCustomization;
 import io.spring.initializr.generator.buildsystem.gradle.GradleBuild.TaskCustomization;
 import io.spring.initializr.generator.io.IndentingWriter;
 import io.spring.initializr.generator.version.VersionProperty;
@@ -55,6 +56,7 @@ public class GradleBuildWriter {
 		writeProperty(writer, "group", build.getGroup());
 		writeProperty(writer, "version", build.getVersion());
 		writeProperty(writer, "sourceCompatibility", build.getSourceCompatibility());
+		writeConfigurations(writer, build);
 		writeRepositories(writer, build, writer::println);
 		writeProperties(writer, build);
 		writeDependencies(writer, build);
@@ -116,6 +118,35 @@ public class GradleBuildWriter {
 			string += " version '" + plugin.getVersion() + "'";
 		}
 		return string;
+	}
+
+	private void writeConfigurations(IndentingWriter writer, GradleBuild build) {
+		Map<String, ConfigurationCustomization> configurationCustomizations = build
+				.getConfigurationCustomizations();
+		if (configurationCustomizations.isEmpty()) {
+			return;
+		}
+		writer.println();
+		writer.println("configurations {");
+		writer.indented(() -> {
+			configurationCustomizations.forEach((name, customization) -> {
+				writeConfiguration(writer, name, customization);
+			});
+		});
+		writer.println("}");
+	}
+
+	private void writeConfiguration(IndentingWriter writer, String configurationName,
+			ConfigurationCustomization configurationCustomization) {
+		if (configurationCustomization.getExtendsFrom().isEmpty()) {
+			writer.println(configurationName);
+		}
+		else {
+			writer.println(configurationName + " {");
+			writer.indented(() -> writer.println(String.format("extendsFrom %s",
+					String.join(",", configurationCustomization.getExtendsFrom()))));
+			writer.println("}");
+		}
 	}
 
 	private void writeRepositories(IndentingWriter writer, GradleBuild build) {

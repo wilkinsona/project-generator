@@ -20,8 +20,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.TreeMap;
 import java.util.function.Consumer;
 
@@ -42,6 +44,8 @@ public class GradleBuild extends Build {
 	private final List<GradlePlugin> plugins = new ArrayList<>();
 
 	private final List<String> appliedPlugins = new ArrayList<>();
+
+	private final Map<String, ConfigurationCustomization> configurationCustomizations = new LinkedHashMap<>();
 
 	private final Map<String, TaskCustomization> taskCustomizations = new LinkedHashMap<>();
 
@@ -102,6 +106,21 @@ public class GradleBuild extends Build {
 		return this.buildscript;
 	}
 
+	public void customizeConfiguration(String configurationName,
+			Consumer<ConfigurationCustomization> customizer) {
+		customizer.accept(this.configurationCustomizations.computeIfAbsent(
+				configurationName, (name) -> new ConfigurationCustomization()));
+	}
+
+	public void addConfiguration(String configurationName) {
+		customizeConfiguration(configurationName, (configuration) -> {
+		});
+	}
+
+	public Map<String, ConfigurationCustomization> getConfigurationCustomizations() {
+		return Collections.unmodifiableMap(this.configurationCustomizations);
+	}
+
 	public void customizeTask(String taskName, Consumer<TaskCustomization> customizer) {
 		customizer.accept(this.taskCustomizations.computeIfAbsent(taskName,
 				(name) -> new TaskCustomization()));
@@ -136,6 +155,23 @@ public class GradleBuild extends Build {
 
 		public Map<String, String> getExt() {
 			return Collections.unmodifiableMap(this.ext);
+		}
+
+	}
+
+	/**
+	 * Customization of a configuration in a Gradle build.
+	 */
+	public static class ConfigurationCustomization {
+
+		private final Set<String> extendsFrom = new LinkedHashSet<>();
+
+		public void extendsFrom(String configurationName) {
+			this.extendsFrom.add(configurationName);
+		}
+
+		public Set<String> getExtendsFrom() {
+			return Collections.unmodifiableSet(this.extendsFrom);
 		}
 
 	}
