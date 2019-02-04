@@ -80,6 +80,11 @@ public class GradleProjectGenerationConfiguration {
 	}
 
 	@Bean
+	public GradleConfigurationBuildCustomizer gradleConfigurationBuildCustomizer() {
+		return new GradleConfigurationBuildCustomizer();
+	}
+
+	@Bean
 	@ConditionalOnLanguage(JavaLanguage.ID)
 	public BuildCustomizer<GradleBuild> javaPluginContributor() {
 		return (build) -> build.addPlugin("java");
