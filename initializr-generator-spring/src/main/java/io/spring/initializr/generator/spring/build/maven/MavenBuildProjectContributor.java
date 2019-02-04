@@ -26,6 +26,7 @@ import io.spring.initializr.generator.buildsystem.maven.MavenBuildWriter;
 import io.spring.initializr.generator.io.IndentingWriter;
 import io.spring.initializr.generator.io.IndentingWriterFactory;
 import io.spring.initializr.generator.project.ProjectContributor;
+import io.spring.initializr.generator.spring.build.BuildWriter;
 
 /**
  * {@link ProjectContributor} to contribute the files for a {@link MavenBuild}.
@@ -33,7 +34,7 @@ import io.spring.initializr.generator.project.ProjectContributor;
  * @author Andy Wilkinson
  * @author Stephane Nicoll
  */
-public class MavenBuildProjectContributor implements ProjectContributor {
+public class MavenBuildProjectContributor implements BuildWriter, ProjectContributor {
 
 	private final MavenBuild build;
 
@@ -54,6 +55,7 @@ public class MavenBuildProjectContributor implements ProjectContributor {
 		writeBuild(Files.newBufferedWriter(pomFile));
 	}
 
+	@Override
 	public void writeBuild(Writer out) throws IOException {
 		try (IndentingWriter writer = this.indentingWriterFactory
 				.createIndentingWriter("maven", out)) {

@@ -32,6 +32,7 @@ import io.spring.initializr.generator.language.java.JavaLanguage;
 import io.spring.initializr.generator.packaging.war.WarPackaging;
 import io.spring.initializr.generator.project.ProjectDescription;
 import io.spring.initializr.generator.spring.build.BuildProjectGenerationConfiguration;
+import io.spring.initializr.generator.spring.build.BuildWriter;
 import io.spring.initializr.generator.spring.test.InitializrMetadataTestBuilder;
 import io.spring.initializr.generator.test.project.ProjectAssetTester;
 import io.spring.initializr.generator.test.project.ProjectStructure;
@@ -64,6 +65,16 @@ class GradleProjectGenerationConfigurationTests {
 						() -> InitializrMetadataTestBuilder.withDefaults().build())
 				.withDescriptionCustomizer((description) -> description
 						.setBuildSystem(new GradleBuildSystem()));
+	}
+
+	@Test
+	void buildWriterIsContributed() {
+		ProjectDescription description = new ProjectDescription();
+		description.setPlatformVersion(Version.parse("2.1.0.RELEASE"));
+		description.setLanguage(new JavaLanguage());
+		BuildWriter buildWriter = this.projectTester.generate(description,
+				(context) -> context.getBean(BuildWriter.class));
+		assertThat(buildWriter).isInstanceOf(GradleBuildProjectContributor.class);
 	}
 
 	@Test

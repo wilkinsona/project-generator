@@ -26,13 +26,14 @@ import io.spring.initializr.generator.buildsystem.gradle.GradleBuildWriter;
 import io.spring.initializr.generator.io.IndentingWriter;
 import io.spring.initializr.generator.io.IndentingWriterFactory;
 import io.spring.initializr.generator.project.ProjectContributor;
+import io.spring.initializr.generator.spring.build.BuildWriter;
 
 /**
  * {@link ProjectContributor} for the project's {@code build.gradle} file.
  *
  * @author Andy Wilkinson
  */
-public class GradleBuildProjectContributor implements ProjectContributor {
+public class GradleBuildProjectContributor implements BuildWriter, ProjectContributor {
 
 	private final GradleBuild build;
 
@@ -53,6 +54,7 @@ public class GradleBuildProjectContributor implements ProjectContributor {
 		writeBuild(Files.newBufferedWriter(buildGradle));
 	}
 
+	@Override
 	public void writeBuild(Writer out) throws IOException {
 		try (IndentingWriter writer = this.indentingWriterFactory
 				.createIndentingWriter("gradle", out)) {
