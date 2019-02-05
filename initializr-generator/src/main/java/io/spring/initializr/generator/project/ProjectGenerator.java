@@ -23,6 +23,9 @@ import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
+import io.spring.initializr.generator.buildsystem.Build;
+
+import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
@@ -55,7 +58,7 @@ public class ProjectGenerator {
 	 * @return the root directory of the generated project structure
 	 * @throws ProjectGenerationException if an error occurs while generating the project
 	 */
-	public Path generate(ProjectDescription description)
+	public ProjectGenerationResult<Path> generate(ProjectDescription description)
 			throws ProjectGenerationException {
 		return generate(description, (context) -> {
 			ResolvedProjectDescription resolvedProjectDescription = context
@@ -76,10 +79,11 @@ public class ProjectGenerator {
 	 * @param projectGenerationContextProcessor the
 	 * {@link ProjectGenerationContextProcessor} to invoke
 	 * @param <T> the return type of the generation
-	 * @return the generated content
+	 * @return a {@link ProjectGenerationResult} with the generated content and the
+	 * corresponding {@link Build}
 	 * @throws ProjectGenerationException if an error occurs while generating the project
 	 */
-	public <T> T generate(ProjectDescription description,
+	public <T> ProjectGenerationResult<T> generate(ProjectDescription description,
 			ProjectGenerationContextProcessor<T> projectGenerationContextProcessor)
 			throws ProjectGenerationException {
 		try (ProjectGenerationContext context = new ProjectGenerationContext()) {
@@ -89,11 +93,22 @@ public class ProjectGenerator {
 			this.projectGenerationContext.accept(context);
 			context.refresh();
 			try {
-				return projectGenerationContextProcessor.process(context);
+				T process = projectGenerationContextProcessor.process(context);
+				Build build = getBuild(context);
+				return new ProjectGenerationResult<>(process, build);
 			}
 			catch (IOException ex) {
 				throw new ProjectGenerationException("Failed to generate project", ex);
 			}
+		}
+	}
+
+	private Build getBuild(ProjectGenerationContext context) {
+		try {
+			return context.getBean(Build.class);
+		}
+		catch (NoSuchBeanDefinitionException ex) {
+			return null;
 		}
 	}
 

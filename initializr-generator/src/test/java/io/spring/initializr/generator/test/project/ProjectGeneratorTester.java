@@ -64,7 +64,7 @@ public class ProjectGeneratorTester
 	public ProjectStructure generate(ProjectDescription description) {
 		return invokeProjectGeneration(description, (contextInitializer) -> {
 			Path directory = new ProjectGenerator(contextInitializer)
-					.generate(description);
+					.generate(description).getArtifact();
 			return new ProjectStructure(directory);
 		});
 	}
@@ -73,7 +73,8 @@ public class ProjectGeneratorTester
 			ProjectGenerationContextProcessor<T> projectGenerationContextProcessor) {
 		return invokeProjectGeneration(description,
 				(contextInitializer) -> new ProjectGenerator(contextInitializer)
-						.generate(description, projectGenerationContextProcessor));
+						.generate(description, projectGenerationContextProcessor))
+								.getArtifact();
 	}
 
 }
