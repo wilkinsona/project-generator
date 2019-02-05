@@ -17,16 +17,10 @@
 package io.spring.initializr.generator.project;
 
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
-import io.spring.initializr.generator.buildsystem.Build;
-
-import org.springframework.beans.factory.NoSuchBeanDefinitionException;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.ImportSelector;
@@ -53,38 +47,15 @@ public class ProjectGenerator {
 	}
 
 	/**
-	 * Generate a project structure based on the specified {@link ProjectDescription}.
+	 * Generate project assets using the specified {@link ProjectAssetGenerator}.
 	 * @param description the description of the project to generate
-	 * @return the root directory of the generated project structure
+	 * @param projectAssetGenerator the {@link ProjectAssetGenerator} to invoke
+	 * @param <T> the type that gathers the project assets
+	 * @return the generated content
 	 * @throws ProjectGenerationException if an error occurs while generating the project
 	 */
-	public ProjectGenerationResult<Path> generate(ProjectDescription description)
-			throws ProjectGenerationException {
-		return generate(description, (context) -> {
-			ResolvedProjectDescription resolvedProjectDescription = context
-					.getBean(ResolvedProjectDescription.class);
-			Path projectRoot = context.getBean(ProjectDirectoryFactory.class)
-					.createProjectDirectory(resolvedProjectDescription);
-			Path projectDirectory = initializerProjectDirectory(projectRoot,
-					resolvedProjectDescription);
-			context.getBean(ProjectContributors.class).contribute(projectDirectory);
-			return projectRoot;
-		});
-	}
-
-	/**
-	 * Generate a project structure using the specified
-	 * {@link ProjectGenerationContextProcessor}.
-	 * @param description the description of the project to generate
-	 * @param projectGenerationContextProcessor the
-	 * {@link ProjectGenerationContextProcessor} to invoke
-	 * @param <T> the return type of the generation
-	 * @return a {@link ProjectGenerationResult} with the generated content and the
-	 * corresponding {@link Build}
-	 * @throws ProjectGenerationException if an error occurs while generating the project
-	 */
-	public <T> ProjectGenerationResult<T> generate(ProjectDescription description,
-			ProjectGenerationContextProcessor<T> projectGenerationContextProcessor)
+	public <T> T generate(ProjectDescription description,
+			ProjectAssetGenerator<T> projectAssetGenerator)
 			throws ProjectGenerationException {
 		try (ProjectGenerationContext context = new ProjectGenerationContext()) {
 			context.registerBean(ResolvedProjectDescription.class,
@@ -93,22 +64,11 @@ public class ProjectGenerator {
 			this.projectGenerationContext.accept(context);
 			context.refresh();
 			try {
-				T process = projectGenerationContextProcessor.process(context);
-				Build build = getBuild(context);
-				return new ProjectGenerationResult<>(process, build);
+				return projectAssetGenerator.generate(context);
 			}
 			catch (IOException ex) {
 				throw new ProjectGenerationException("Failed to generate project", ex);
 			}
-		}
-	}
-
-	private Build getBuild(ProjectGenerationContext context) {
-		try {
-			return context.getBean(Build.class);
-		}
-		catch (NoSuchBeanDefinitionException ex) {
-			return null;
 		}
 	}
 
@@ -121,18 +81,6 @@ public class ProjectGenerator {
 		};
 	}
 
-	private Path initializerProjectDirectory(Path rootDir,
-			ResolvedProjectDescription description) throws IOException {
-		if (description.getBaseDirectory() != null) {
-			Path dir = rootDir.resolve(description.getBaseDirectory());
-			Files.createDirectories(dir);
-			return dir;
-		}
-		else {
-			return rootDir;
-		}
-	}
-
 	/**
 	 * Configuration used to bootstrap the application context used for project
 	 * generation.
@@ -140,12 +88,6 @@ public class ProjectGenerator {
 	@Configuration
 	@Import(ProjectGenerationImportSelector.class)
 	static class CoreConfiguration {
-
-		@Bean
-		public ProjectContributors projectContributors(
-				List<ProjectContributor> projectContributors) {
-			return new ProjectContributors(projectContributors);
-		}
 
 	}
 

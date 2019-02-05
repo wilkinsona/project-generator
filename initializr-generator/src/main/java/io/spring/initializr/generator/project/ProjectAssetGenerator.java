@@ -19,20 +19,20 @@ package io.spring.initializr.generator.project;
 import java.io.IOException;
 
 /**
- * Process a {@link ProjectGenerationContext}.
+ * Generate project assets using a {@link ProjectGenerationContext}.
  *
- * @param <T> the type of project assets this processor handles
+ * @param <T> the type that gathers the project assets
  * @author Stephane Nicoll
  */
 @FunctionalInterface
-public interface ProjectGenerationContextProcessor<T> {
+public interface ProjectAssetGenerator<T> {
 
 	/**
 	 * Generate project assets using the specified {@link ProjectGenerationContext}.
-	 * @param projectGenerationContext the context to use
-	 * @return the generated project assets
+	 * @param context the context to use
+	 * @return the type that gathers the project assets
 	 * @throws IOException if writing project assets failed
 	 */
-	T process(ProjectGenerationContext projectGenerationContext) throws IOException;
+	T generate(ProjectGenerationContext context) throws IOException;
 
 }

@@ -24,11 +24,11 @@ import java.util.function.Consumer;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
+import io.spring.initializr.generator.project.ProjectAssetGenerator;
 import io.spring.initializr.generator.project.ProjectContributor;
 import io.spring.initializr.generator.project.ProjectDescription;
 import io.spring.initializr.generator.project.ProjectDirectoryFactory;
 import io.spring.initializr.generator.project.ProjectGenerationContext;
-import io.spring.initializr.generator.project.ProjectGenerationContextProcessor;
 import io.spring.initializr.generator.project.ResolvedProjectDescription;
 
 /**
@@ -67,17 +67,15 @@ public class ProjectAssetTester
 	}
 
 	/**
-	 * Generate a project asset using the specified
-	 * {@link ProjectGenerationContextProcessor}.
+	 * Generate a project asset using the specified {@link ProjectAssetGenerator}.
 	 * @param description the description of the project to generate
-	 * @param projectGenerationContextProcessor the
-	 * {@link ProjectGenerationContextProcessor} to invoke
+	 * @param projectAssetGenerator the {@link ProjectAssetGenerator} to invoke
 	 * @param <T> the project asset type
 	 * @return the project asset
 	 * @see #withConfiguration(Class[])
 	 */
 	public <T> T generate(ProjectDescription description,
-			ProjectGenerationContextProcessor<T> projectGenerationContextProcessor) {
+			ProjectAssetGenerator<T> projectAssetGenerator) {
 		return invokeProjectGeneration(description, (contextInitializer) -> {
 			try (ProjectGenerationContext context = new ProjectGenerationContext()) {
 				ResolvedProjectDescription resolvedProjectDescription = new ResolvedProjectDescription(
@@ -86,7 +84,7 @@ public class ProjectAssetTester
 						() -> resolvedProjectDescription);
 				contextInitializer.accept(context);
 				context.refresh();
-				return projectGenerationContextProcessor.process(context);
+				return projectAssetGenerator.generate(context);
 			}
 		});
 	}
@@ -102,7 +100,7 @@ public class ProjectAssetTester
 		return generate(description, runAllAvailableContributors());
 	}
 
-	private ProjectGenerationContextProcessor<ProjectStructure> runAllAvailableContributors() {
+	private ProjectAssetGenerator<ProjectStructure> runAllAvailableContributors() {
 		return (context) -> {
 			Path projectDirectory = context.getBean(ProjectDirectoryFactory.class)
 					.createProjectDirectory(

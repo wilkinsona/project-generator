@@ -24,9 +24,10 @@ import java.util.function.Supplier;
 
 import io.spring.initializr.generator.io.IndentingWriterFactory;
 import io.spring.initializr.generator.io.SimpleIndentStrategy;
+import io.spring.initializr.generator.project.DefaultProjectAssetGenerator;
+import io.spring.initializr.generator.project.ProjectAssetGenerator;
 import io.spring.initializr.generator.project.ProjectDescription;
 import io.spring.initializr.generator.project.ProjectGenerationContext;
-import io.spring.initializr.generator.project.ProjectGenerationContextProcessor;
 import io.spring.initializr.generator.project.ProjectGenerator;
 
 /**
@@ -64,17 +65,16 @@ public class ProjectGeneratorTester
 	public ProjectStructure generate(ProjectDescription description) {
 		return invokeProjectGeneration(description, (contextInitializer) -> {
 			Path directory = new ProjectGenerator(contextInitializer)
-					.generate(description).getArtifact();
+					.generate(description, new DefaultProjectAssetGenerator());
 			return new ProjectStructure(directory);
 		});
 	}
 
 	public <T> T generate(ProjectDescription description,
-			ProjectGenerationContextProcessor<T> projectGenerationContextProcessor) {
+			ProjectAssetGenerator<T> projectAssetGenerator) {
 		return invokeProjectGeneration(description,
 				(contextInitializer) -> new ProjectGenerator(contextInitializer)
-						.generate(description, projectGenerationContextProcessor))
-								.getArtifact();
+						.generate(description, projectAssetGenerator));
 	}
 
 }
