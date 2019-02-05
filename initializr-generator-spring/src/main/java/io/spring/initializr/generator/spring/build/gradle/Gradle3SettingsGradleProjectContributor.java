@@ -22,7 +22,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 
 import io.spring.initializr.generator.buildsystem.gradle.GradleBuild;
-import io.spring.initializr.generator.project.ProjectContributor;
+import io.spring.initializr.generator.project.contributor.ProjectContributor;
 
 /**
  * {@link ProjectContributor} for the project's {@code settings.gradle} file when using

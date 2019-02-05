@@ -21,8 +21,8 @@ import java.io.PrintWriter;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
-import io.spring.initializr.generator.project.ProjectContributor;
-import io.spring.initializr.generator.project.SingleResourceProjectContributor;
+import io.spring.initializr.generator.project.contributor.ProjectContributor;
+import io.spring.initializr.generator.project.contributor.SingleResourceProjectContributor;
 
 /**
  * A {@link SingleResourceProjectContributor} that contributes a {@code .gitignore} file

@@ -16,7 +16,7 @@
 
 package io.spring.initializr.generator.spring.build.gradle;
 
-import io.spring.initializr.generator.project.MultipleResourcesProjectContributor;
+import io.spring.initializr.generator.project.contributor.MultipleResourcesProjectContributor;
 
 /**
  * A {@link MultipleResourcesProjectContributor} that contributes Gradle's wrapper to a

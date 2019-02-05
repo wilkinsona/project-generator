@@ -16,7 +16,7 @@
 
 package io.spring.initializr.generator.spring.configuration;
 
-import io.spring.initializr.generator.project.SingleResourceProjectContributor;
+import io.spring.initializr.generator.project.contributor.SingleResourceProjectContributor;
 
 /**
  * A {@link SingleResourceProjectContributor} that contributes a

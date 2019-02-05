@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package io.spring.initializr.generator.project;
+package io.spring.initializr.generator.project.contributor;
 
 import java.io.IOException;
 import java.nio.file.Path;

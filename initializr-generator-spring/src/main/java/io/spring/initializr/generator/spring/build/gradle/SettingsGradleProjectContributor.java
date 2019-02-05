@@ -24,7 +24,7 @@ import io.spring.initializr.generator.buildsystem.gradle.GradleBuild;
 import io.spring.initializr.generator.buildsystem.gradle.GradleSettingsWriter;
 import io.spring.initializr.generator.io.IndentingWriter;
 import io.spring.initializr.generator.io.IndentingWriterFactory;
-import io.spring.initializr.generator.project.ProjectContributor;
+import io.spring.initializr.generator.project.contributor.ProjectContributor;
 
 /**
  * {@link ProjectContributor} for the project's {@code settings.gradle} file.

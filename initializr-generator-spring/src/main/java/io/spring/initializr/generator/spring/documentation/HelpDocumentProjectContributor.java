@@ -21,7 +21,7 @@ import java.io.PrintWriter;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
-import io.spring.initializr.generator.project.ProjectContributor;
+import io.spring.initializr.generator.project.contributor.ProjectContributor;
 
 /**
  * {@link ProjectContributor} for the project's {@code HELP.md} file.

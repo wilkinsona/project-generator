@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.function.Consumer;
 
 import io.spring.initializr.generator.buildsystem.maven.MavenBuildSystem;
+import io.spring.initializr.generator.project.contributor.ProjectContributor;
 import io.spring.initializr.generator.test.project.ProjectGeneratorTester;
 import io.spring.initializr.generator.version.Version;
 import org.junit.jupiter.api.Test;

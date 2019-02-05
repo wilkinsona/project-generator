@@ -25,11 +25,11 @@ import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 import io.spring.initializr.generator.project.ProjectAssetGenerator;
-import io.spring.initializr.generator.project.ProjectContributor;
 import io.spring.initializr.generator.project.ProjectDescription;
 import io.spring.initializr.generator.project.ProjectDirectoryFactory;
 import io.spring.initializr.generator.project.ProjectGenerationContext;
 import io.spring.initializr.generator.project.ResolvedProjectDescription;
+import io.spring.initializr.generator.project.contributor.ProjectContributor;
 
 /**
  * A tester for project asset that does not detect available {@link ProjectContributor

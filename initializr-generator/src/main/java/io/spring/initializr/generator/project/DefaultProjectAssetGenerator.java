@@ -22,6 +22,8 @@ import java.nio.file.Path;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import io.spring.initializr.generator.project.contributor.ProjectContributor;
+
 /**
  * The default {@link ProjectAssetGenerator}. Generates a directory structure with all
  * available {@link ProjectContributor project contributors}.
