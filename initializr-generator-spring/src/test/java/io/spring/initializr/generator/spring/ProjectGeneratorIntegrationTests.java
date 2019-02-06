@@ -52,7 +52,7 @@ class ProjectGeneratorIntegrationTests {
 	}
 
 	@Test
-	void customBaseDirectionIsUsedWhenGeneratingProject() {
+	void customBaseDirectoryIsUsedWhenGeneratingProject() {
 		ProjectDescription description = initProjectDescription();
 		description.setBuildSystem(new MavenBuildSystem());
 		description.setPlatformVersion(Version.parse("2.1.0.RELEASE"));

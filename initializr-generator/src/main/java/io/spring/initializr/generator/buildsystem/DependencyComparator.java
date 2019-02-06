@@ -19,7 +19,7 @@ package io.spring.initializr.generator.buildsystem;
 import java.util.Comparator;
 
 /**
- * A {@link Comparator} that order {@link Dependency dependencies} in a suitable form for
+ * A {@link Comparator} that orders {@link Dependency dependencies} in a suitable form for
  * being referenced in the build.
  *
  * @author Stephane Nicoll
