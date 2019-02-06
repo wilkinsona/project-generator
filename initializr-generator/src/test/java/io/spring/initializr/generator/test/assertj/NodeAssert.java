@@ -19,6 +19,8 @@ package io.spring.initializr.generator.test.assertj;
 import java.io.ByteArrayInputStream;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.xpath.XPath;
@@ -28,9 +30,11 @@ import javax.xml.xpath.XPathFactory;
 
 import org.assertj.core.api.AbstractAssert;
 import org.assertj.core.api.AssertProvider;
+import org.assertj.core.api.ListAssert;
 import org.assertj.core.api.StringAssert;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 
 /**
  * AssertJ {@link AssertProvider} for {@link Node} assertions.
@@ -88,6 +92,17 @@ public class NodeAssert extends AbstractAssert<NodeAssert, Node>
 		}
 	}
 
+	public ListAssert<Node> nodesAtPath(String xpath) {
+		try {
+			NodeList nodeList = (NodeList) this.xpath.evaluate(xpath, this.actual,
+					XPathConstants.NODESET);
+			return new ListAssert<>(toList(nodeList));
+		}
+		catch (XPathExpressionException ex) {
+			throw new RuntimeException(ex);
+		}
+	}
+
 	public StringAssert textAtPath(String xpath) {
 		try {
 			return new StringAssert((String) this.xpath.evaluate(xpath + "/text()",
@@ -101,6 +116,14 @@ public class NodeAssert extends AbstractAssert<NodeAssert, Node>
 	@Override
 	public NodeAssert assertThat() {
 		return this;
+	}
+
+	private static List<Node> toList(NodeList nodeList) {
+		List<Node> nodes = new ArrayList<>();
+		for (int i = 0; i < nodeList.getLength(); i++) {
+			nodes.add(nodeList.item(i));
+		}
+		return nodes;
 	}
 
 }
