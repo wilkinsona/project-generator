@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package io.spring.initializr.generator.spring.test;
+package io.spring.initializr.generator.spring.test.code;
 
 import java.io.IOException;
 import java.io.InputStream;

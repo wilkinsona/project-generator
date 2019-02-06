@@ -22,6 +22,11 @@ import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.Properties;
 
+import io.spring.initializr.generator.spring.test.build.GradleBuildAssert;
+import io.spring.initializr.generator.spring.test.build.GradleSettingsAssert;
+import io.spring.initializr.generator.spring.test.build.PomAssert;
+import io.spring.initializr.generator.spring.test.code.SourceCodeAssert;
+
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.support.PropertiesLoaderUtils;
 import org.springframework.util.StreamUtils;
