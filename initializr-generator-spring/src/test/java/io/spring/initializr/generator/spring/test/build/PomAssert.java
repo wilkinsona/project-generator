@@ -135,6 +135,15 @@ public class PomAssert {
 	}
 
 	/**
+	 * Assert {@code pom.xml} does not defined the specified property.
+	 * @param name the name of the property
+	 * @return this
+	 */
+	public PomAssert doesNotHaveProperty(String name) {
+		return doesNotHaveNode("/project/properties/" + name);
+	}
+
+	/**
 	 * Assert {@code pom.xml} defines the specified Java version.
 	 * @param javaVersion the java version of the project
 	 * @return this
