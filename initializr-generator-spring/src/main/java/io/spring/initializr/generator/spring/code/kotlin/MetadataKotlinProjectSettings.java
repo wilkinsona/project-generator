@@ -17,7 +17,6 @@
 package io.spring.initializr.generator.spring.code.kotlin;
 
 import io.spring.initializr.generator.project.ResolvedProjectDescription;
-import io.spring.initializr.generator.spring.build.MetadataBuildItemMapper;
 import io.spring.initializr.metadata.InitializrMetadata;
 
 /**
@@ -32,8 +31,7 @@ public class MetadataKotlinProjectSettings implements KotlinProjectSettings {
 	public MetadataKotlinProjectSettings(ResolvedProjectDescription projectDescription,
 			InitializrMetadata metadata) {
 		this.version = metadata.getConfiguration().getEnv().getKotlin()
-				.resolveKotlinVersion(MetadataBuildItemMapper
-						.fromVersion(projectDescription.getPlatformVersion()));
+				.resolveKotlinVersion(projectDescription.getPlatformVersion());
 	}
 
 	@Override

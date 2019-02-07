@@ -23,11 +23,11 @@ import java.util.stream.Stream;
 
 import io.spring.initializr.generator.buildsystem.Build;
 import io.spring.initializr.generator.project.ResolvedProjectDescription;
+import io.spring.initializr.generator.version.Version;
 import io.spring.initializr.metadata.BillOfMaterials;
 import io.spring.initializr.metadata.Dependency;
 import io.spring.initializr.metadata.InitializrMetadata;
 import io.spring.initializr.metadata.Repository;
-import io.spring.initializr.util.Version;
 
 import org.springframework.core.Ordered;
 
@@ -63,8 +63,8 @@ public class DependencyManagementBuildCustomizer implements BuildCustomizer<Buil
 		Map<String, Repository> repositories = new LinkedHashMap<>();
 		mapDependencies(build).forEach((dependency) -> {
 			if (dependency.getBom() != null) {
-				resolveBom(resolvedBoms, dependency.getBom(), MetadataBuildItemMapper
-						.fromVersion(this.projectDescription.getPlatformVersion()));
+				resolveBom(resolvedBoms, dependency.getBom(),
+						this.projectDescription.getPlatformVersion());
 			}
 			if (dependency.getRepository() != null) {
 				String repositoryId = dependency.getRepository();
@@ -80,8 +80,7 @@ public class DependencyManagementBuildCustomizer implements BuildCustomizer<Buil
 		resolvedBoms.forEach((key, bom) -> {
 			build.boms().add(key, MetadataBuildItemMapper.toBom(bom));
 			if (bom.getVersionProperty() != null) {
-				build.addVersionProperty(MetadataBuildItemMapper
-						.toVersionProperty(bom.getVersionProperty()), bom.getVersion());
+				build.addVersionProperty(bom.getVersionProperty(), bom.getVersion());
 			}
 		});
 		repositories.keySet().forEach((id) -> build.repositories().add(id));

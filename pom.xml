@@ -52,8 +52,8 @@
 
 			<dependency>
 				<groupId>io.spring.initializr</groupId>
-				<artifactId>initializr-generator</artifactId>
-				<version>0.7.0.RELEASE</version>
+				<artifactId>initializr-metadata</artifactId>
+				<version>0.8.0.BUILD-SNAPSHOT</version>
 				<exclusions>
 					<exclusion>
 						<groupId>org.slf4j</groupId>

@@ -15,12 +15,10 @@
 			<groupId>io.spring.initializr.experimental</groupId>
 			<artifactId>initializr-generator</artifactId>
 		</dependency>
-		<!-- Here's a nasty hack to get access to the metadata prior to the merge -->
 		<dependency>
 			<groupId>io.spring.initializr</groupId>
-			<artifactId>initializr-generator</artifactId>
+			<artifactId>initializr-metadata</artifactId>
 		</dependency>
-		<!-- End of nasty hack. No I am not proud -->
 
 		<dependency>
 			<groupId>com.samskivert</groupId>
